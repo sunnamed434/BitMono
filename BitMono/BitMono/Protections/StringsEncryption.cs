@@ -1,4 +1,5 @@
-﻿using BitMono.API.Injection;
+﻿using Autofac;
+using BitMono.API.Injection;
 using BitMono.API.Injection.Fields;
 using BitMono.API.Injection.Methods;
 using BitMono.API.Injection.Types;
