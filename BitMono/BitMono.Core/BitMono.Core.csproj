@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net472</TargetFramework>
+	<LangVersion>9.0</LangVersion>
+	<ImplicitUsings>disable</ImplicitUsings>
+	<Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="dnlib">
+      <HintPath>..\lib\dnlib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
