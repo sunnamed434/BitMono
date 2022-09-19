@@ -30,7 +30,6 @@ namespace BitMono.Core.Injection
             FieldDef fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
             classWithLayout.Fields.Add(fieldInjectedArray);
 
-            // and finally add code to global .cctor to initialize array.
             /*
               ldc.i4     XXXsizeofarrayXXX
               newarr     [mscorlib]System.Byte
