@@ -31,6 +31,10 @@ public class Program
         {
             Console.WriteLine("Executing packer!");
             await packer.ExecuteAsync();
+            if (packer is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
         }
 
         Console.WriteLine("[+] Writing..");
