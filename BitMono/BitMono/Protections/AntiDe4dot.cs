@@ -1,12 +1,11 @@
 ﻿using BitMono.API.Injection;
 using BitMono.API.Protections;
 using BitMono.Core.Protections;
-using System;
 using System.Threading.Tasks;
 
 namespace BitMono.Packers
 {
-    public class AntiDe4dot : IProtection, IAsyncDisposable
+    public class AntiDe4dot : IProtection
     {
         private readonly ProtectionContext m_Context;
         private readonly IInjector m_Injector;
@@ -37,11 +36,6 @@ namespace BitMono.Packers
             m_Injector.InjectAttributeWithContent(m_Context.ModuleDefMD, string.Empty, "();\u0009", string.Empty);
             m_Injector.InjectAttributeWithContent(m_Context.ModuleDefMD, string.Empty, "EMyPID_8234_", string.Empty);
             return Task.CompletedTask;
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask();
         }
     }
 }
