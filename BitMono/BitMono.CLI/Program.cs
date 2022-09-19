@@ -22,18 +22,19 @@ public class Program
         var encryptionModuleDefMD = ModuleDefMD.Load(encryptionFile);
 
         var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
-        var container = new Application(
-            moduleDefMD: moduleDefMD, moduleWriterOptions: moduleWriterOptions, encryptionModuleDefMD: encryptionModuleDefMD, targetAssembly: Assembly.ReflectionOnlyLoadFrom(file))
-            .BuildContainer();
+        var container = new Application().BuildContainer();
+        var protectionContext = new ProtectionContext(moduleDefMD: moduleDefMD,
+                                                      moduleWriterOptions: moduleWriterOptions,
+                                                      encryptionModuleDefMD: encryptionModuleDefMD,
+                                                      targetAssembly: Assembly.ReflectionOnlyLoadFrom(file));
 
-        var packers = container.Resolve<ICollection<IProtection>>();
-        foreach (var packer in packers)
+        using (container)
         {
-            Console.WriteLine("Executing packer!");
-            await packer.ExecuteAsync();
-            if (packer is IAsyncDisposable asyncDisposable)
+            var protections = container.Resolve<ICollection<IProtection>>(); 
+            foreach (var protection in protections)
             {
-                await asyncDisposable.DisposeAsync();
+                Console.WriteLine("Executing protection! " + protection.GetType().FullName);
+                await protection.ExecuteAsync(protectionContext);
             }
         }
 

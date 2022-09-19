@@ -2,7 +2,7 @@
 using dnlib.DotNet.Writer;
 using System.Reflection;
 
-namespace BitMono.Core.Protections
+namespace BitMono.API.Protections
 {
     public class ProtectionContext
     {

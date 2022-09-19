@@ -1,33 +1,31 @@
 ﻿using BitMono.API.Protections;
+using BitMono.Core.Analyzing;
 using BitMono.Core.Attributes;
-using BitMono.Core.Extensions;
-using BitMono.Core.Protections;
 using dnlib.DotNet.Emit;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    [ExceptRegisterService]
     public class MethodsBreak : IProtection
     {
-        private readonly ProtectionContext m_Context;
+        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
 
-        public MethodsBreak(ProtectionContext context)
+        public MethodsBreak(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
         {
-            m_Context = context;
+            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
         }
 
 
-        public Task ExecuteAsync()
+        public Task ExecuteAsync(ProtectionContext context)
         {
-            foreach (var typeDef in m_Context.ModuleDefMD.Types)
+            foreach (var typeDef in context.ModuleDefMD.Types)
             {
                 if (typeDef.HasMethods)
                 {
                     foreach (var methodDef in typeDef.Methods)
                     {
                         if (methodDef.HasBody && methodDef.IsConstructor == false
-                            && methodDef.NotCriticalToMakeChanges())
+                            && m_MethodDefCriticalAnalyzer.Analyze(methodDef))
                         {
                             var exceptionHandler = new ExceptionHandler();
                             exceptionHandler.TryStart = new Instruction(OpCodes.Nop);
