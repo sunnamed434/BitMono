@@ -6,17 +6,22 @@ namespace BitMono.API.Protections
 {
     public class ProtectionContext
     {
-        public readonly ModuleDefMD ModuleDefMD;
-        public readonly ModuleWriterOptions ModuleWriterOptions;
-        public readonly ModuleDefMD EncryptionModuleDefMD;
-        public readonly Assembly TargetAssembly;
-
-        public ProtectionContext(ModuleDefMD moduleDefMD, ModuleWriterOptions moduleWriterOptions, ModuleDefMD encryptionModuleDefMD, Assembly targetAssembly)
+        public ProtectionContext(
+            ModuleDefMD moduleDefMD, 
+            ModuleWriterOptions moduleWriterOptions, 
+            ModuleDefMD encryptionModuleDefMD, 
+            Assembly targetAssembly)
         {
             ModuleDefMD = moduleDefMD;
             ModuleWriterOptions = moduleWriterOptions;
             EncryptionModuleDefMD = encryptionModuleDefMD;
             TargetAssembly = targetAssembly;
         }
+
+
+        public ModuleDefMD ModuleDefMD { get; set; }
+        public ModuleWriterOptions ModuleWriterOptions { get; set; }
+        public ModuleDefMD EncryptionModuleDefMD { get; set; }
+        public Assembly TargetAssembly { get; set; }
     }
 }
