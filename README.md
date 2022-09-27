@@ -1,5 +1,11 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/BitMonoLogo.png" alt="BitMono" width="180" /><br>
+  Free open-source obfuscator for Mono, empty decompilers? bits? crashes?!<br>
+  All this, right here
+</p>
+
 # BitMono
-BitMono is a open-source protector for Mono.
+BitMono is a open-source protector for Mono, with many new protections.
 
 ## Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
