@@ -4,9 +4,6 @@
   All this, right here
 </p>
 
-# BitMono
-BitMono is a open-source protector for Mono, with many new protections.
-
 ## Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
 * Strings encryption
