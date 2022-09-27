@@ -19,16 +19,17 @@ using System.Runtime.CompilerServices;
 
 class MyClass
 {
-	[MethodImpl(MethodImplOptions.NoInlining)]
-	void MyMethod() 
-	{
-		// potential critical code used to be here
-	}
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    void MyMethod()
+    {
+        // potential critical code used to be here
+    }
 }
 ```
 
 ## Excluding of Having issues with third-parties (API/Libraries)
 Open `config.json`
+```json
 {
   "FileWatermark": true,
   "Logging": {
@@ -93,7 +94,7 @@ Open `config.json`
     "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
-
+```
 
 Credits
 -------
