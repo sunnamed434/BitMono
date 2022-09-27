@@ -19,11 +19,11 @@ using System.Runtime.CompilerServices;
 
 class MyClass
 {
-	[MethodImpl(MethodImplOptions.NoInlining)]
-	void MyMethod() 
-	{
-		// potential critical code used to be here
-	}
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    void MyMethod()
+    {
+        // potential critical code used to be here
+    }
 }
 ```
 
