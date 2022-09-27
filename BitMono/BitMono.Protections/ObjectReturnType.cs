@@ -1,6 +1,6 @@
-﻿using BitMono.API.Protections;
-using BitMono.Core;
-using BitMono.Core.Analyzing;
+﻿using BitMono.API.Protecting;
+using BitMono.Core.Protecting.Analyzing;
+using BitMono.Utilities.Extensions.Dnlib;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,31 +10,30 @@ namespace BitMono.Protections
     {
         private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
 
-        public ObjectReturnType(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, ILogger logger)
+        public ObjectReturnType(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
         {
             m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            logger.Warn(this, "Hello world!");
-            logger.Debug(this, "Hello world!");
-            logger.Info(this, "Hello world!");
         }
 
 
         public Task ExecuteAsync(ProtectionContext context)
         {
-            foreach (var typeDef in context.ModuleDefMD.Types)
+            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
                 if (typeDef.HasMethods)
                 {
-                    foreach (var methodDef in typeDef.Methods)
+                    foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (methodDef.HasReturnType)
+                        if (methodDef.HasReturnType
+                            && methodDef.ReturnType != context.ModuleDefMD.CorLibTypes.Boolean)
                         {
                             if (methodDef.IsConstructor == false && methodDef.IsVirtual == false
-                                && m_MethodDefCriticalAnalyzer.Analyze(methodDef))
+                                && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
+                                && methodDef.NotAsync())
                             {
                                 if (methodDef.IsSetter == false && methodDef.IsGetter == false)
                                 {
-                                    if (methodDef.Parameters.Any(p => p.ParamDef.IsOut == false && p.ParamDef.IsIn == false))
+                                    if (methodDef.Parameters.Any(p => p.HasParamDef && (p.ParamDef.IsOut || p.ParamDef.IsIn)) == false)
                                     {
                                         methodDef.ReturnType = context.ModuleDefMD.CorLibTypes.Object;
                                     }
@@ -44,7 +43,6 @@ namespace BitMono.Protections
                     }
                 }
             }
-                
             return Task.CompletedTask;
         }
     }

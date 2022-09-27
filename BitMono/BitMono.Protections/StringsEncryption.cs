@@ -1,13 +1,12 @@
-﻿using BitMono.API.Injection;
-using BitMono.API.Injection.Fields;
-using BitMono.API.Injection.Methods;
-using BitMono.API.Injection.Types;
-using BitMono.API.Naming;
-using BitMono.API.Protections;
-using BitMono.Core.Analyzing;
-using BitMono.Core.Attributes;
-using BitMono.Core.Extensions;
+﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Injection;
+using BitMono.API.Protecting.Injection.Fields;
+using BitMono.API.Protecting.Injection.Methods;
+using BitMono.API.Protecting.Injection.Types;
+using BitMono.API.Protecting.Renaming;
+using BitMono.Core.Protecting.Analyzing;
 using BitMono.Encryption;
+using BitMono.Utilities.Extensions.Dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    [ExceptRegisterProtection]
     public class StringsEncryption : IProtection
     {
         private readonly IInjector m_Injector;
@@ -61,6 +59,7 @@ namespace BitMono.Protections
 
             context.ModuleDefMD.GlobalType.NestedTypes.Add(encryptorPrivateImplementationType);
             context.ModuleDefMD.GlobalType.NestedTypes.Add(encryptorType);
+
             m_MethodRemover.Remove("EncryptContent", context.ModuleDefMD);
             encryptorType = m_TypeSearcher.FindInGlobalNestedTypes("Encryptor", context.ModuleDefMD);
             encryptorType.Namespace = string.Empty;
@@ -76,60 +75,29 @@ namespace BitMono.Protections
             }
             var saltBytesField = m_FieldSearcher.FindInGlobalNestedTypes("saltBytes", context.ModuleDefMD);
             var cryptKeyBytesField = m_FieldSearcher.FindInGlobalNestedTypes("cryptKeyBytes", context.ModuleDefMD);
-            m_Renamer.Rename(saltBytesField, cryptKeyBytesField);
+            m_Renamer.Rename(context, saltBytesField, cryptKeyBytesField);
 
-            foreach (TypeDef type in context.ModuleDefMD.Types)
+            foreach (TypeDef typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (type.HasNestedTypes)
+                if (typeDef.HasMethods)
                 {
-                    foreach (TypeDef childType in type.NestedTypes)
+                    foreach (MethodDef methodDef in typeDef.Methods.ToArray())
                     {
-                        if (childType.HasMethods)
+                        if (methodDef.HasBody && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
                         {
-                            foreach (MethodDef childTypeMethod in childType.Methods)
+                            for (int i = 0; i < methodDef.Body.Instructions.Count(); i++)
                             {
-                                if (childTypeMethod.HasBody && m_MethodDefCriticalAnalyzer.Analyze(childTypeMethod))
-                                {
-                                    for (int i = 0; i < childTypeMethod.Body.Instructions.Count(); i++)
-                                    {
-                                        if (childTypeMethod.Body.Instructions[i].OpCode == OpCodes.Ldstr
-                                            && childTypeMethod.Body.Instructions[i].Operand is string stringContent)
-                                        {
-                                            byte[] encryptedContentBytes = Encryptor.EncryptContent(stringContent);
-
-                                            FieldDef injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalType(context.ModuleDefMD, encryptedContentBytes, m_Renamer.Rename());
-                                            childTypeMethod.Body.Instructions[i].OpCode = OpCodes.Nop;
-                                            childTypeMethod.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                            childTypeMethod.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, decryptorMethod));
-                                            i += 2;
-                                            childTypeMethod.Body.SimplifyAndOptimizeBranches();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (type.HasMethods)
-                {
-                    foreach (MethodDef method in type.Methods)
-                    {
-                        if (method.HasBody)
-                        {
-                            for (int i = 0; i < method.Body.Instructions.Count(); i++)
-                            {
-                                if (method.Body.Instructions[i].OpCode == OpCodes.Ldstr
-                                    && method.Body.Instructions[i].Operand is string stringContent)
+                                if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
+                                    && methodDef.Body.Instructions[i].Operand is string stringContent)
                                 {
                                     byte[] encryptedContentBytes = Encryptor.EncryptContent(stringContent);
-                                    FieldDef injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalType(context.ModuleDefMD, encryptedContentBytes, m_Renamer.Rename());
+                                    FieldDef injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalType(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
-                                    method.Body.Instructions[i].OpCode = OpCodes.Nop;
-                                    method.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                    method.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, decryptorMethod));
+                                    methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
+                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
+                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, decryptorMethod));
+                                    methodDef.Body.SimplifyAndOptimizeBranches();
                                     i += 2;
-                                    method.Body.SimplifyAndOptimizeBranches();
                                 }
                             }
                         }

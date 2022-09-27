@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono", "BitMono\BitMono.csproj", "{EB50787A-474C-4A09-89BD-973087CD2CF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.API", "BitMono.API\BitMono.API.csproj", "{09EB78D1-98CD-4517-A211-817665D8CCAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.API", "BitMono.API\BitMono.API.csproj", "{09EB78D1-98CD-4517-A211-817665D8CCAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.CLI", "BitMono.CLI\BitMono.CLI.csproj", "{140B2503-CBD9-4F9B-879D-5E2ACEF676FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.CLI", "BitMono.CLI\BitMono.CLI.csproj", "{140B2503-CBD9-4F9B-879D-5E2ACEF676FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Core", "BitMono.Core\BitMono.Core.csproj", "{8E8D5433-9620-4064-97BC-919E77F52DC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Core", "BitMono.Core\BitMono.Core.csproj", "{8E8D5433-9620-4064-97BC-919E77F52DC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Encryption", "BitMono.Encryption\BitMono.Encryption.csproj", "{87564237-3AE5-4B61-AE74-BF77B8C7130B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Encryption", "BitMono.Encryption\BitMono.Encryption.csproj", "{87564237-3AE5-4B61-AE74-BF77B8C7130B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Protections", "BitMono.Protections\BitMono.Protections.csproj", "{0CE94FE0-9983-4218-899F-74F15549A0FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Utilities", "BitMono.Utilities\BitMono.Utilities.csproj", "{0F33C31F-8AA5-474B-AD19-042A36C90C8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Host", "BitMono.Host\BitMono.Host.csproj", "{9CAC15CC-EB40-4148-8FBD-270BCE788CEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB50787A-474C-4A09-89BD-973087CD2CF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB50787A-474C-4A09-89BD-973087CD2CF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB50787A-474C-4A09-89BD-973087CD2CF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB50787A-474C-4A09-89BD-973087CD2CF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09EB78D1-98CD-4517-A211-817665D8CCAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{09EB78D1-98CD-4517-A211-817665D8CCAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09EB78D1-98CD-4517-A211-817665D8CCAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +39,18 @@ Global
 		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F33C31F-8AA5-474B-AD19-042A36C90C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F33C31F-8AA5-474B-AD19-042A36C90C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F33C31F-8AA5-474B-AD19-042A36C90C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F33C31F-8AA5-474B-AD19-042A36C90C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CAC15CC-EB40-4148-8FBD-270BCE788CEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CAC15CC-EB40-4148-8FBD-270BCE788CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CAC15CC-EB40-4148-8FBD-270BCE788CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CAC15CC-EB40-4148-8FBD-270BCE788CEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

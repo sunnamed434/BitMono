@@ -1,6 +1,6 @@
 ﻿using dnlib.DotNet;
 
-namespace BitMono.Core.Extensions
+namespace BitMono.Utilities.Extensions.Dnlib
 {
     public static class PropertyDefExtensions
     {

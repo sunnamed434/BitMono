@@ -1,11 +1,10 @@
-﻿using BitMono.API.Injection;
-using BitMono.API.Protections;
-using BitMono.Core.Attributes;
+﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Injection;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    [ExceptRegisterProtection]
     public class AntiDe4dot : IProtection
     {
         private readonly IInjector m_Injector;

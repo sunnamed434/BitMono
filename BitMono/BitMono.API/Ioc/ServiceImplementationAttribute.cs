@@ -2,7 +2,7 @@
 
 namespace BitMono.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class ServiceImplementationAttribute : Attribute
     {
     }
