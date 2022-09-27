@@ -29,6 +29,7 @@ class MyClass
 
 ## Excluding of Having issues with third-parties (API/Libraries)
 Open `config.json`
+```json
 {
   "FileWatermark": true,
   "Logging": {
@@ -93,7 +94,7 @@ Open `config.json`
     "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
-
+```
 
 Credits
 -------
