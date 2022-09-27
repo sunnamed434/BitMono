@@ -18,7 +18,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace BitMono
+namespace BitMono.Host
 {
     public class Application : IApplication
     {
@@ -27,7 +27,7 @@ namespace BitMono
             var containerBuilder = new ContainerBuilder();
 
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile("config.json");
+            configurationBuilder.AddJsonFile("config.json", optional: true, reloadOnChange: true);
             var configuration = configurationBuilder.Build();
 
             containerBuilder.Register(context => configuration)

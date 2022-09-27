@@ -1,51 +1,28 @@
-# BitMono
-BitMono is a open-source protector for Mono.
-
-## Features
-* Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
-* Strings encryption
-* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most of bit took from there)
-* **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** 
-* Invisible types
-* Call to calli
-
-## Quick Start
-`BitMono.CLI <path to PE file> or BitMono.GUI`
-
-## Ignoring protections
-To make sure your method is in ignore you shall to make as shown in example here
-```cs
-using System.Runtime.CompilerServices;
-
-class MyClass
-{
-	[MethodImpl(MethodImplOptions.NoInlining)]
-	void MyMethod() 
-	{
-		// potential critical code used to be here
-	}
-}
-```
-
-## Excluding of Having issues with third-parties (API/Libraries)
-Open `config.json`
-{
+﻿{
   "FileWatermark": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
   "Protections": [
     {
+      "Name": "AntiILdasm",
+      "Enabled": true
+    },
+    {
+      "Name": "AntiDe4dot",
+      "Enabled": true
+    },
+    {
       "Name": "StringsEncryption",
       "Enabled": false
     },
     {
       "Name": "FieldsHiding",
-      "Enabled": true
-    },
+      "Enabled": false
+    }
     {
       "Name": "CallToCalli",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "ObjectReturnType",
@@ -56,17 +33,65 @@ Open `config.json`
       "Enabled": false
     },
     {
+      "Name": "NoNamespaces",
+      "Enabled": false
+    },
+    {
+      "Name": "FullRenamer",
+      "Enabled": false
+    },
+    {
       "Name": "BitDotNet",
       "Enabled": false
     },
+    {
+      "Name": "Tests",
+      "Enabled": true
+    }
   ],
   "CriticalMethods": [
-    // Unity, here is only a few in config you will see all methods that supports Unity
+    // Unity
     "Awake",
     "OnEnable",
     "Reset",
     "Start",
     "FixedUpdate",
+    "OnMouseUp",
+    "OnMouseEnter",
+    "OnMouseExit",
+    "OnMouseOver",
+    "OnMouseUpAsButton",
+    "OnMouseDown",
+    "OnMouseDrag",
+    "Update",
+    "LateUpdate",
+    "OnAnimatorIK",
+    "OnPreCull",
+    "OnWillRenderObject",
+    "OnBecameVisible",
+    "OnBecameInvisible",
+    "OnPreRender",
+    "OnRenderObject",
+    "OnDrawGizmos",
+    "OnGUI",
+    "OnTriggerEnter",
+    "OnTriggerStay",
+    "OnTriggerExit",
+    "OnTriggerEnter2D",
+    "OnTriggerStay2D",
+    "OnTriggerExit2D",
+    "OnCollisionEnter",
+    "OnCollisionStay",
+    "OnCollisionExit",
+    "OnCollisionEnter2D",
+    "OnCollisionStay2D",
+    "OnCollisionExit2D",
+    "WaitForEndOfFrame",
+    "OnApplicationPause",
+    "OnApplicationQuit",
+    "OnDisable",
+    "OnDestroy"
+
   ],
   "CriticalInterfaces": [
     // RocketMod
@@ -93,8 +118,3 @@ Open `config.json`
     "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
-
-
-Credits
--------
-**[0x59R11](https://github.com/0x59R11)** for his **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
