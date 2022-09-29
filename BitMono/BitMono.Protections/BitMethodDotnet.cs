@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    public class MethodsBreak : IProtection
+    public class BitMethodDotnet : IProtection
     {
         private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
         private readonly Random m_Random;
 
-        public MethodsBreak(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
+        public BitMethodDotnet(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
         {
             m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
             m_Random = new Random();

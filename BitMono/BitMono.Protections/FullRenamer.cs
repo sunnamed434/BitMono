@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    public class Renamer : IProtection
+    public class FullRenamer : IProtection
     {
         private readonly TypeDefCriticalAnalyzer m_TypeDefCriticalAnalyzer;
         private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
 
-        public Renamer(TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, IRenamer renamer)
+        public FullRenamer(TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, IRenamer renamer)
         {
             m_TypeDefCriticalAnalyzer = typeDefCriticalAnalyzer;
             m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;

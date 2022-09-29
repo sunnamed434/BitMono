@@ -6,6 +6,6 @@
         public string BaseDirectory { get; set; }
         public string OutputDirectory { get; set; }
         public string ProtectedModuleFile { get; set; }
-        public bool FileWatermark { get; set; }
+        public bool Watermark { get; set; }
     }
 }
