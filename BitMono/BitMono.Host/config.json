@@ -1,5 +1,5 @@
 ﻿{
-  "FileWatermark": true,
+  "Watermark": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
@@ -14,7 +14,7 @@
     },
     {
       "Name": "StringsEncryption",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "CallToCalli",
@@ -25,11 +25,15 @@
       "Enabled": true
     },
     {
-      "Name": "MethodsBreak",
+      "Name": "BitMethodDotnet",
       "Enabled": true
     },
     {
       "Name": "FullRenamer",
+      "Enabled": true
+    },
+    {
+      "Name": "FieldsHiding",
       "Enabled": true
     },
     {
