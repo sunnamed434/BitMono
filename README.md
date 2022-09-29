@@ -129,4 +129,4 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
 
 Credits
 -------
-**[0x59R11](https://github.com/0x59R11)** for his investigation big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
+**[0x59R11](https://github.com/0x59R11)** for his investigation in big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
