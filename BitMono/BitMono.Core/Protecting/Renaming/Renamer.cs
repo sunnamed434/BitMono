@@ -75,12 +75,16 @@ namespace BitMono.Core.Protecting.Renaming
                 methodDef.Name = RenameUnsafely();
             }
         }
+        public void Rename(ProtectionContext context, FieldDef fieldDef)
+        {
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+            {
+                fieldDef.Name = RenameUnsafely();
+            }
+        }
         public void Rename(ProtectionContext context, IFullName fullName)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, fullName.Name))
-            {
-                fullName.Name = RenameUnsafely();
-            }
+            fullName.Name = RenameUnsafely();
         }
         public void Rename(ProtectionContext context, params IFullName[] fullNames)
         {
@@ -91,10 +95,7 @@ namespace BitMono.Core.Protecting.Renaming
         }
         public void Rename(ProtectionContext context, IVariable variable)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, variable.Name))
-            {
-                variable.Name = RenameUnsafely();
-            }
+            variable.Name = RenameUnsafely();
         }
     }
 }
