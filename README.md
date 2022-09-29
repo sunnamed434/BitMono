@@ -27,13 +27,14 @@ To make sure class is in ignore make as shown in example
 ```cs
 using System;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
-[Serializable]
+[Serializable] // Marking as serializable
 class ProductModel
 {
-    [XmlAttribute("Product Name")]
+    [XmlAttribute("Product Name")] // Marking as Xml attribute
     string Name { get; set; }
-    [XmlAttribute("Product Description")]
+    [JsonProperty("Product Description")] // Or marking as Json Property
     string Description { get; set; }
     [XmlAttribute("Product Price")]
     double Price { get; set; }
@@ -46,7 +47,7 @@ using System.Runtime.CompilerServices;
 
 class MyClass
 {
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)] // Add this attribute to ignore renaming of method
     void MyMethod()
     {
         // potential critical code used to be here
@@ -57,16 +58,16 @@ class MyClass
 ## Excluding of Having issues with third-parties (API/Libraries)
 Open `config.json`
 
-Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have. 
-<br>There is already all `Unity` methods and some third-parties (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
+Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
+<br>There is already supporting all `Unity` methods and a few third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
 
 ```json
 {
-  "FileWatermark": true,
+  "Watermark": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
-  "Protections": [
+  "Protections": [ // By default protections is already configured
     {
       "Name": "StringsEncryption",
       "Enabled": false
@@ -99,6 +100,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
     "Reset",
     "Start",
     "FixedUpdate",
+    // other tons of Unity methods
   ],
   "CriticalInterfaces": [
     // RocketMod
@@ -121,7 +123,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
     "RustPlugin"
   ],
   "Tips": [
-    "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore obfuscation of your method!",
+    "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore renaming of your method!",
     "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
