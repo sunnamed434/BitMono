@@ -70,7 +70,7 @@ namespace BitMono.Core.Protecting.Renaming
         }
         public void Rename(ProtectionContext context, MethodDef methodDef)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef.Name))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
             {
                 methodDef.Name = RenameUnsafely();
             }
