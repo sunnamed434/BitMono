@@ -11,12 +11,14 @@ namespace BitMono.Protections
     {
         private readonly TypeDefCriticalAnalyzer m_TypeDefCriticalAnalyzer;
         private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
+        private readonly FieldDefCriticalAnalyzer m_FieldDefCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
 
-        public FullRenamer(TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, IRenamer renamer)
+        public FullRenamer(TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, FieldDefCriticalAnalyzer fieldDefCriticalAnalyzer, IRenamer renamer)
         {
             m_TypeDefCriticalAnalyzer = typeDefCriticalAnalyzer;
             m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+            m_FieldDefCriticalAnalyzer = fieldDefCriticalAnalyzer;
             m_Renamer = renamer;
         }
 
@@ -29,6 +31,18 @@ namespace BitMono.Protections
                     && m_TypeDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
                 {
                     m_Renamer.Rename(context, typeDef);
+
+                    if (typeDef.HasFields)
+                    {
+                        foreach (var fieldDef in typeDef.Fields.ToArray())
+                        {
+                            if (m_FieldDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+                            {
+                                m_Renamer.Rename(context, fieldDef);
+                            }
+                        }
+                    }
+
                     if (typeDef.HasMethods)
                     {
                         foreach (var methodDef in typeDef.Methods.ToArray())
