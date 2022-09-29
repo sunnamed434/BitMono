@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/BitMonoLogo.png" alt="BitMono" width="180" /><br>
-  Free open-source obfuscator for Mono, empty decompilers? bits? crashes?!<br>
-  All this, right here
+  Free open-source protector for Mono, empty decompilers? bits? crashes?!<br>
+  All this and even more right here
 </p>
 
 ## Features
@@ -11,12 +11,36 @@
 * **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** 
 * Invisible types
 * Call to calli
+* FieldsHiding
+* ObjectReturnType
+* NoNamespaces
+* FullRenamer
+
+## Wiki 
+Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections etc.
 
 ## Quick Start
-`BitMono.CLI <path to PE file> or BitMono.GUI`
+`BitMono.CLI <path to PE file>/drag-and-drop/first file in Base directory or BitMono.GUI`
 
-## Ignoring protections
-To make sure your method is in ignore you shall to make as shown in example here
+## Ignore renaming
+To make sure class is in ignore make as shown in example
+```cs
+using System;
+using System.Xml.Serialization;
+
+[Serializable]
+class ProductModel
+{
+    [XmlAttribute("Product Name")]
+    string Name { get; set; }
+    [XmlAttribute("Product Description")]
+    string Description { get; set; }
+    [XmlAttribute("Product Price")]
+    double Price { get; set; }
+}
+```
+
+To make sure method is in ignore make as shown in example
 ```cs
 using System.Runtime.CompilerServices;
 
@@ -32,6 +56,10 @@ class MyClass
 
 ## Excluding of Having issues with third-parties (API/Libraries)
 Open `config.json`
+
+Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have. 
+<br>There is already all `Unity` methods and some third-parties (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
+
 ```json
 {
   "FileWatermark": true,
@@ -101,4 +129,4 @@ Open `config.json`
 
 Credits
 -------
-**[0x59R11](https://github.com/0x59R11)** for his **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
+**[0x59R11](https://github.com/0x59R11)** for his investigation big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
