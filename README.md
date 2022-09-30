@@ -7,7 +7,7 @@
 ## Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
 * Strings encryption
-* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most of bit took from there)
+* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most part of bit took from there)
 * **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** 
 * Invisible types
 * Call to calli
