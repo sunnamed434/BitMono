@@ -18,4 +18,4 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         
       - name: build the solution
-        run: msbuild BitMono.sln
+        run: msbuild BitMono\BitMono.sln
