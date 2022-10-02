@@ -26,20 +26,17 @@ namespace BitMono.Core.Configuration.Dependencies
             List<IProtection> protections = new List<IProtection>();
             disabled = new List<string>();
             var protectionsSettings = m_Configuration.GetSection("Protections").Get<List<ProtectionSettings>>();
-            foreach (var item in protectionsSettings)
+            foreach (var item in protectionsSettings.Where(p => p.Enabled))
             {
-                if (item.Enabled)
+                var protection = m_Protections.FirstOrDefault(p => p.GetType().Name.Equals(item.Name));
+                if (protection != null)
                 {
-                    var protection = m_Protections.FirstOrDefault(p => p.GetType().Name.Equals(item.Name));
-                    if (protection != null)
-                    {
-                        protections.Add(protection);
-                        m_Protections.Remove(protection);
-                    }
-                    else
-                    {
-                        m_Logger.Warn($"Protection: {item.Name}, not found in current context!");
-                    }
+                    protections.Add(protection);
+                    m_Protections.Remove(protection);
+                }
+                else
+                {
+                    m_Logger.Warn($"Protection: {item.Name}, not exsist in current context!");
                 }
             }
             foreach (var protection in m_Protections)
