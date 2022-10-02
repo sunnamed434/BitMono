@@ -77,10 +77,7 @@ namespace BitMono.Core.Protecting.Renaming
         }
         public void Rename(ProtectionContext context, FieldDef fieldDef)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
-            {
-                fieldDef.Name = RenameUnsafely();
-            }
+            fieldDef.Name = RenameUnsafely();
         }
         public void Rename(ProtectionContext context, IFullName fullName)
         {
