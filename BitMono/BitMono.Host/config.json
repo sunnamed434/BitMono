@@ -1,5 +1,6 @@
 ﻿{
   "Watermark": true,
+  "FailOnNoRequiredDependency": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
@@ -13,8 +14,8 @@
       "Enabled": true
     },
     {
-      "Name": "StringsEncryption",
-      "Enabled": true
+      "Name": "ControlFlow",
+      "Enabled": false
     },
     {
       "Name": "CallToCalli",
@@ -33,11 +34,19 @@
       "Enabled": true
     },
     {
-      "Name": "FieldsHiding",
+      "Name": "AntiDebugBreakpoints",
+      "Enabled": true
+    },
+    {
+      "Name": "StringsEncryption",
       "Enabled": true
     },
     {
       "Name": "BitDotNet",
+      "Enabled": false
+    },
+    {
+      "Name": "FieldsHiding",
       "Enabled": true
     }
   ],
@@ -107,6 +116,7 @@
   ],
   "Tips": [
     "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore obfuscation of your method!",
-    "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
+    "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!",
+    "[Tip]: Drop your libraries in 'Base' directory!"
   ]
 }

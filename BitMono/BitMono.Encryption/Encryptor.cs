@@ -29,6 +29,7 @@ namespace BitMono.Encryption
                         cryptoStream.Close();
                     }
                     decryptedBytes = memoryStream.ToArray();
+                    key.Dispose();
                 }
             }
 
@@ -55,6 +56,7 @@ namespace BitMono.Encryption
                         cryptoStream.Close();
                     }
                     encryptedBytes = memoryStream.ToArray();
+                    key.Dispose();
                 }
             }
             return encryptedBytes;

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using ILogger = BitMono.Core.Logging.ILogger;
 
@@ -26,7 +27,7 @@ namespace BitMono.Protections
         }
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var importer = new Importer(context.ModuleDefMD);
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
@@ -47,11 +48,14 @@ namespace BitMono.Protections
                                 {
                                     if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                     {
-                                        var locals = methodDef.Body.Variables;
-                                        var addrLocal = locals.Add(new Local(new ValueTypeSig(importer.Import(typeof(RuntimeMethodHandle)))));
-
+                                        
+                                        m_Logger.Info("methodDef.HasGenericParameters: " + methodDef.HasGenericParameters);
+                                        m_Logger.Info("memberRef.Signature.ContainsGenericParameter: " + memberRef.Signature.ContainsGenericParameter);
                                         if (methodDef.Body.HasExceptionHandlers == false)
                                         {
+                                            var locals = methodDef.Body.Variables;
+                                            var addrLocal = locals.Add(new Local(new ValueTypeSig(importer.Import(typeof(RuntimeMethodHandle)))));
+
                                             methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
                                             var getTypeFromHandleMethod = importer.Import(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]

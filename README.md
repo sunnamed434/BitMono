@@ -4,10 +4,13 @@
   All this and even more right here
 </p>
 
-## Features
+## Documentation 
+Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections functionnality and even more.
+
+## Obfuscation Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
 * Strings encryption
-* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most of bit took from there)
+* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most part of bit took from there)
 * **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** 
 * Invisible types
 * Call to calli
@@ -15,38 +18,37 @@
 * ObjectReturnType
 * NoNamespaces
 * FullRenamer
-
-## Wiki 
-Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections etc.
+* AntiDebugBreakpoints
 
 ## Quick Start
 `BitMono.CLI <path to PE file>/drag-and-drop/first file in Base directory or BitMono.GUI`
 
-## Ignore renaming
-To make sure class is in ignore make as shown in example
+## Except from Protect
+Ignoring classes/properties
 ```cs
 using System;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
-[Serializable]
+[Serializable] // Marking as serializable attribute is enough to ignore everything in this model
 class ProductModel
 {
-    [XmlAttribute("Product Name")]
+    [XmlAttribute("Product Name")] // Marking as Xml attribute
     string Name { get; set; }
-    [XmlAttribute("Product Description")]
+    [JsonProperty("Product Description")] // Or marking as Json Property
     string Description { get; set; }
     [XmlAttribute("Product Price")]
     double Price { get; set; }
 }
 ```
 
-To make sure method is in ignore make as shown in example
+Ignoring methods
 ```cs
 using System.Runtime.CompilerServices;
 
 class MyClass
 {
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)] // Add this attribute to ignore renaming of method
     void MyMethod()
     {
         // potential critical code used to be here
@@ -57,16 +59,16 @@ class MyClass
 ## Excluding of Having issues with third-parties (API/Libraries)
 Open `config.json`
 
-Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have. 
-<br>There is already all `Unity` methods and some third-parties (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
+Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
+<br>There is already supporting all `Unity` methods and a few third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
 
 ```json
 {
-  "FileWatermark": true,
+  "Watermark": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
-  "Protections": [
+  "Protections": [ // By default protections is already configured
     {
       "Name": "StringsEncryption",
       "Enabled": false
@@ -99,6 +101,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
     "Reset",
     "Start",
     "FixedUpdate",
+    // other tons of Unity methods
   ],
   "CriticalInterfaces": [
     // RocketMod
@@ -121,7 +124,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
     "RustPlugin"
   ],
   "Tips": [
-    "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore obfuscation of your method!",
+    "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore renaming of your method!",
     "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
@@ -129,4 +132,4 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
 
 Credits
 -------
-**[0x59R11](https://github.com/0x59R11)** for his investigation big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
+**[0x59R11](https://github.com/0x59R11)** for his investigation in big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!

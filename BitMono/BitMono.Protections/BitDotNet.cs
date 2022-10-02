@@ -1,8 +1,6 @@
 ﻿using BitMono.API.Protecting;
-using dnlib.DotNet.MD;
-using dnlib.DotNet;
-using dnlib.DotNet.Writer;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -12,7 +10,7 @@ namespace BitMono.Protections
         public CallingConditions Condition => CallingConditions.End;
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             using (var stream = File.Open(context.BitMonoContext.ProtectedModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             using (var reader = new BinaryReader(stream))

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -25,7 +26,7 @@ namespace BitMono.Protections
         public CallingConditions Condition => CallingConditions.End;
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.ProtectedModuleFile, new ModuleCreationOptions(CLRRuntimeReaderKind.Mono));
             var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);

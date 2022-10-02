@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.Core.Protecting.Analyzing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -17,7 +18,7 @@ namespace BitMono.Protections
         }
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {

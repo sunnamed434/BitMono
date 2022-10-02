@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BitMono.API.Protecting;
+using BitMono.Core;
 using BitMono.Core.Configuration.Dependencies;
 using BitMono.Host;
 using dnlib.DotNet;
@@ -13,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,7 +66,11 @@ public class Program
 
         bitMonoContext.ModuleFile = moduleFile;
 
-        var moduleDefMD = ModuleDefMD.Load(moduleFile, new ModuleCreationOptions(CLRRuntimeReaderKind.Mono));
+        var assemblyResolver = new AssemblyResolver();
+        var moduleContext = new ModuleContext(assemblyResolver);
+        assemblyResolver.DefaultModuleContext = moduleContext;
+        var moduleCreationOptions = new ModuleCreationOptions(assemblyResolver.DefaultModuleContext, CLRRuntimeReaderKind.Mono);
+        var moduleDefMD = ModuleDefMD.Load(moduleFile, moduleCreationOptions);
         var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
         moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
         moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
@@ -90,13 +96,13 @@ public class Program
         if (moduleAssembly == null)
         {
             logger.Warn($"Failed to load module assembly [{moduleFile}]!");
-            Console.ReadLine();
             return;
         }
 
         var protectionContext = new ProtectionContext
         {
             ModuleDefMD = moduleDefMD,
+            ModuleCreationOptions = moduleCreationOptions,
             ModuleWriterOptions = moduleWriterOptions,
             EncryptionModuleDefMD = encryptionModuleDefMD,
             TargetAssembly = Assembly.LoadFrom(moduleFile),
@@ -109,13 +115,35 @@ public class Program
         var protections = container.Resolve<ICollection<IProtection>>();
         protections = new DependencyResolver(protections, container.Resolve<IConfiguration>(), logger)
             .Sort(out ICollection<string> skipped);
+        var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
+        protections.Except(protectionsWithConditions);
+
+        var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
+        await bitMonoAssemblyResolver.ResolveAsync();
+        if (configuration.GetValue<bool>("FailOnNoRequiredDependency"))
+        {
+            if (bitMonoAssemblyResolver.ResolvingFailed)
+            {
+                logger.Warn("Drop libraries in 'Base' directory.");
+                return;
+            }
+        }
 
         if (skipped.Any())
         {
             logger.Warn("Skipping next protections: " + string.Join(", ", skipped.Select(p => p ?? "NULL")));
         }
+        
+        if (protections.Any())
+        {
+            logger.Warn("Executing protections: " + string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
+        }
 
-        var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
+        if (protectionsWithConditions.Any())
+        {
+            logger.Warn("Executing calling condition protections: " + string.Join(", ", protectionsWithConditions.Select(p => p.GetType().Name ?? "NULL")));
+        }
+
         foreach (var protection in protections.Except(protectionsWithConditions))
         {
             logger.Info($"[{protection.GetType().FullName}] -> Executing.. ");
@@ -188,7 +216,6 @@ public class Program
         var tip = tips.Reverse().ToArray()[random.Next(0, tips.Length)];
         logger.Info("Today is your day! Generating helpful tip for you - see it a bit down!");
         logger.Info(tip);
-
         Console.ReadLine();
     }
 }
