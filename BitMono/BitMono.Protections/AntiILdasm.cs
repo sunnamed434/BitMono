@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Injection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -15,7 +16,7 @@ namespace BitMono.Protections
         }
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             m_Injector.InjectAttribute(context.ModuleDefMD, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute));
             return Task.CompletedTask;

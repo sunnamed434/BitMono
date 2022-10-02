@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Injection;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -15,7 +16,7 @@ namespace BitMono.Protections
         }
         
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             m_Injector.InjectAttributeWithContent(context.ModuleDefMD, "SmartAssembly.Attributes", "PoweredBy", string.Empty);
             m_Injector.InjectAttributeWithContent(context.ModuleDefMD, "Xenocode.Client.Attributes.AssemblyAttributes", "PoweredBy", string.Empty);
