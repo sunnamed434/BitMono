@@ -3,6 +3,7 @@ using BitMono.API.Protecting.Renaming;
 using BitMono.Core.Protecting.Analyzing;
 using BitMono.Utilities.Extensions.Dnlib;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -12,23 +13,31 @@ namespace BitMono.Protections
         private readonly TypeDefCriticalAnalyzer m_TypeDefCriticalAnalyzer;
         private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
         private readonly FieldDefCriticalAnalyzer m_FieldDefCriticalAnalyzer;
+        private readonly TypeDefModelCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
 
-        public FullRenamer(TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, FieldDefCriticalAnalyzer fieldDefCriticalAnalyzer, IRenamer renamer)
+        public FullRenamer(
+            TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, 
+            MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, 
+            FieldDefCriticalAnalyzer fieldDefCriticalAnalyzer, 
+            TypeDefModelCriticalAnalyzer typeDefModelCriticalAnalyzer, 
+            IRenamer renamer)
         {
             m_TypeDefCriticalAnalyzer = typeDefCriticalAnalyzer;
             m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
             m_FieldDefCriticalAnalyzer = fieldDefCriticalAnalyzer;
+            m_TypeDefModelCriticalAnalyzer = typeDefModelCriticalAnalyzer;
             m_Renamer = renamer;
         }
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
                 if (typeDef.IsGlobalModuleType == false
-                    && m_TypeDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
+                    && m_TypeDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
+                    && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
                 {
                     m_Renamer.Rename(context, typeDef);
 
