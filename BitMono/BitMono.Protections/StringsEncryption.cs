@@ -9,6 +9,7 @@ using BitMono.Utilities.Extensions.Dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
@@ -36,12 +37,11 @@ namespace BitMono.Protections
         }
 
 
-        public Task ExecuteAsync(ProtectionContext context)
+        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
 
             var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, "Encryptor");
-            //m_Injector.InjectArray(context.ModuleDefMD, encryptorTypeDef, new byte[10], m_Renamer.RenameUnsafely());
             var saltBytes = new byte[] { 0x1, 0x3, 0x2, 0x3, 0x3, 0x4, 0x5, 0x10, 0x10 };
             var cryptKeyBytes = new byte[] { 0x1, 0x3, 0x10, 0x15, 0x20, 0x50, 0x5, 0x10, 0x10 };
             var saltBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, saltBytes, "saltBytes");
@@ -96,8 +96,8 @@ namespace BitMono.Protections
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
                                     && methodDef.Body.Instructions[i].Operand is string stringContent)
                                 {
-                                    byte[] encryptedContentBytes = Encryptor.EncryptContent(stringContent, saltBytes, cryptKeyBytes);
-                                    FieldDef injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
+                                    var encryptedContentBytes = Encryptor.EncryptContent(stringContent, saltBytes, cryptKeyBytes);
+                                    var injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
                                     methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
                                     methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
