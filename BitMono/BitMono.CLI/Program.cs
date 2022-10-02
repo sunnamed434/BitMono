@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BitMono.API.Protecting;
+using BitMono.Core;
 using BitMono.Core.Configuration.Dependencies;
 using BitMono.Host;
 using dnlib.DotNet;
@@ -8,13 +9,14 @@ using dnlib.DotNet.Writer;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ILogger = BitMono.Core.Logging.ILogger;
 
@@ -23,11 +25,8 @@ public class Program
     const string EncryptionFile = nameof(BitMono) + "." + nameof(BitMono.Encryption) + ".dll";
     const string ProtectionsFile = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
 
-    private static BitMonoContext _bitMonoContext;
-
     private static async Task Main(string[] args)
     {
-        AppDomain.CurrentDomain.AssemblyResolve += onAssemblyResolve;
         Assembly.LoadFrom(ProtectionsFile);
         var encryptionModuleDefMD = ModuleDefMD.Load(EncryptionFile);
 
@@ -45,7 +44,6 @@ public class Program
             OutputDirectory = outputDirectory,
             Watermark = configuration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
         };
-        _bitMonoContext = bitMonoContext;
 
         string moduleFile = null;
         if (args.Length != 0)
@@ -68,8 +66,11 @@ public class Program
 
         bitMonoContext.ModuleFile = moduleFile;
 
-        var assemblyResolve = new AssemblyResolver(new ModuleContext());
-        var moduleDefMD = ModuleDefMD.Load(moduleFile, new ModuleCreationOptions(CLRRuntimeReaderKind.Mono));
+        var assemblyResolver = new AssemblyResolver();
+        var moduleContext = new ModuleContext(assemblyResolver);
+        assemblyResolver.DefaultModuleContext = moduleContext;
+        var moduleCreationOptions = new ModuleCreationOptions(assemblyResolver.DefaultModuleContext, CLRRuntimeReaderKind.Mono);
+        var moduleDefMD = ModuleDefMD.Load(moduleFile, moduleCreationOptions);
         var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
         moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
         moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
@@ -95,13 +96,13 @@ public class Program
         if (moduleAssembly == null)
         {
             logger.Warn($"Failed to load module assembly [{moduleFile}]!");
-            Console.ReadLine();
             return;
         }
 
         var protectionContext = new ProtectionContext
         {
             ModuleDefMD = moduleDefMD,
+            ModuleCreationOptions = moduleCreationOptions,
             ModuleWriterOptions = moduleWriterOptions,
             EncryptionModuleDefMD = encryptionModuleDefMD,
             TargetAssembly = Assembly.LoadFrom(moduleFile),
@@ -116,6 +117,17 @@ public class Program
             .Sort(out ICollection<string> skipped);
         var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
         protections.Except(protectionsWithConditions);
+
+        var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
+        await bitMonoAssemblyResolver.ResolveAsync();
+        if (configuration.GetValue<bool>("FailOnNoRequiredDependency"))
+        {
+            if (bitMonoAssemblyResolver.ResolvingFailed)
+            {
+                logger.Warn("Drop libraries in 'Base' directory.");
+                return;
+            }
+        }
 
         if (skipped.Any())
         {
@@ -204,23 +216,6 @@ public class Program
         var tip = tips.Reverse().ToArray()[random.Next(0, tips.Length)];
         logger.Info("Today is your day! Generating helpful tip for you - see it a bit down!");
         logger.Info(tip);
-
         Console.ReadLine();
-    }
-
-    private static Assembly onAssemblyResolve(object sender, ResolveEventArgs args)
-    {
-        Console.WriteLine("Resolving dependencies...");
-        string[] files = Directory.GetFiles(_bitMonoContext.BaseDirectory);
-        for (int i = 0; i < files.Length; i++)
-        {
-            if (files[i] == args.Name)
-            {
-                Console.WriteLine("Dependency resolved!");
-                return Assembly.LoadFrom(files[i]);
-            }
-        }
-        Console.WriteLine("Failed to resolve dependency: " + args.Name);
-        return null;
     }
 }
