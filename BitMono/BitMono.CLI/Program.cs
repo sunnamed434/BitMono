@@ -8,13 +8,13 @@ using dnlib.DotNet.Writer;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using ILogger = BitMono.Core.Logging.ILogger;
 
@@ -23,8 +23,11 @@ public class Program
     const string EncryptionFile = nameof(BitMono) + "." + nameof(BitMono.Encryption) + ".dll";
     const string ProtectionsFile = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
 
+    private static BitMonoContext _bitMonoContext;
+
     private static async Task Main(string[] args)
     {
+        AppDomain.CurrentDomain.AssemblyResolve += onAssemblyResolve;
         Assembly.LoadFrom(ProtectionsFile);
         var encryptionModuleDefMD = ModuleDefMD.Load(EncryptionFile);
 
@@ -42,6 +45,7 @@ public class Program
             OutputDirectory = outputDirectory,
             Watermark = configuration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
         };
+        _bitMonoContext = bitMonoContext;
 
         string moduleFile = null;
         if (args.Length != 0)
@@ -64,6 +68,7 @@ public class Program
 
         bitMonoContext.ModuleFile = moduleFile;
 
+        var assemblyResolve = new AssemblyResolver(new ModuleContext());
         var moduleDefMD = ModuleDefMD.Load(moduleFile, new ModuleCreationOptions(CLRRuntimeReaderKind.Mono));
         var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
         moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
@@ -109,13 +114,24 @@ public class Program
         var protections = container.Resolve<ICollection<IProtection>>();
         protections = new DependencyResolver(protections, container.Resolve<IConfiguration>(), logger)
             .Sort(out ICollection<string> skipped);
+        var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
+        protections.Except(protectionsWithConditions);
 
         if (skipped.Any())
         {
             logger.Warn("Skipping next protections: " + string.Join(", ", skipped.Select(p => p ?? "NULL")));
         }
+        
+        if (protections.Any())
+        {
+            logger.Warn("Executing protections: " + string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
+        }
 
-        var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
+        if (protectionsWithConditions.Any())
+        {
+            logger.Warn("Executing calling condition protections: " + string.Join(", ", protectionsWithConditions.Select(p => p.GetType().Name ?? "NULL")));
+        }
+
         foreach (var protection in protections.Except(protectionsWithConditions))
         {
             logger.Info($"[{protection.GetType().FullName}] -> Executing.. ");
@@ -190,5 +206,21 @@ public class Program
         logger.Info(tip);
 
         Console.ReadLine();
+    }
+
+    private static Assembly onAssemblyResolve(object sender, ResolveEventArgs args)
+    {
+        Console.WriteLine("Resolving dependencies...");
+        string[] files = Directory.GetFiles(_bitMonoContext.BaseDirectory);
+        for (int i = 0; i < files.Length; i++)
+        {
+            if (files[i] == args.Name)
+            {
+                Console.WriteLine("Dependency resolved!");
+                return Assembly.LoadFrom(files[i]);
+            }
+        }
+        Console.WriteLine("Failed to resolve dependency: " + args.Name);
+        return null;
     }
 }
