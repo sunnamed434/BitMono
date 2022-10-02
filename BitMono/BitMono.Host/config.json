@@ -1,6 +1,6 @@
 ﻿{
   "Watermark": true,
-  "FailOnNoRequiredDependency": false,
+  "FailOnNoRequiredDependency": true,
   "Logging": {
     "LogsFile": "logs.txt"
   },
