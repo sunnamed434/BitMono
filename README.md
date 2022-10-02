@@ -4,7 +4,10 @@
   All this and even more right here
 </p>
 
-## Features
+## Documentation 
+Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections functionnality and even more.
+
+## Obfuscation Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
 * Strings encryption
 * **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most part of bit took from there)
@@ -15,21 +18,19 @@
 * ObjectReturnType
 * NoNamespaces
 * FullRenamer
-
-## Wiki 
-Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections etc.
+* AntiDebugBreakpoints
 
 ## Quick Start
 `BitMono.CLI <path to PE file>/drag-and-drop/first file in Base directory or BitMono.GUI`
 
-## Ignore renaming
-To make sure class is in ignore make as shown in example
+## Except from Protect
+Ignoring classes/properties
 ```cs
 using System;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-[Serializable] // Marking as serializable
+[Serializable] // Marking as serializable attribute is enough to ignore everything in this model
 class ProductModel
 {
     [XmlAttribute("Product Name")] // Marking as Xml attribute
@@ -41,7 +42,7 @@ class ProductModel
 }
 ```
 
-To make sure method is in ignore make as shown in example
+Ignoring methods
 ```cs
 using System.Runtime.CompilerServices;
 
