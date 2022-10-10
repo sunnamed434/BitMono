@@ -25,7 +25,7 @@ namespace BitMono.Core.Protecting.Analyzing
 
         public bool NotCriticalToMakeChanges(ProtectionContext context, TypeDef typeDef)
         {
-            var assemblyTypes = context.TargetAssembly.GetLoadableTypes();
+            var assemblyTypes = context.Assembly.GetLoadableTypes();
             var type = assemblyTypes.FirstOrDefault(t => t.Name.Equals(typeDef.ReflectionName));
             if (type != null)
             {
