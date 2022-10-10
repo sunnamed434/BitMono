@@ -91,6 +91,7 @@ namespace BitMono.Protections
             {
                 moduleDefMD.Write(fileStream, moduleWriterOptions);
             }
+            context.ModuleDefMD = moduleDefMD;
             return Task.CompletedTask;
         }
     }
