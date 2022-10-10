@@ -1,12 +1,16 @@
 ﻿using Autofac;
 using BitMono.API.Protecting;
-using BitMono.Core;
 using BitMono.Core.Configuration.Dependencies;
+using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Models;
+using BitMono.Core.Protecting;
 using BitMono.Host;
+using BitMono.Host.Modules;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.DotNet.Writer;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,11 +18,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Contexts;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using ILogger = BitMono.Core.Logging.ILogger;
+using ILogger = Serilog.ILogger;
 
 public class Program
 {
@@ -30,11 +32,19 @@ public class Program
         Assembly.LoadFrom(ProtectionsFile);
         var encryptionModuleDefMD = ModuleDefMD.Load(EncryptionFile);
 
-        var container = new Application().BuildContainer();
-        var logger = container.Resolve<ILogger>();
-        var configuration = container.Resolve<IConfiguration>();
+        var container = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
+        {
+            configureLogger.WriteTo.Async(configureSinkConfiguration =>
+            {
+                configureSinkConfiguration.Console();
+            });
+        })).Build();
+
+        var logger = container.LifetimeScope.Resolve<ILogger>();
+        var configuration = container.LifetimeScope.Resolve<IConfiguration>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        Directory.CreateDirectory("Base");
         Directory.CreateDirectory("Output");
         var baseDirectory = Path.Combine(currentAssemblyDirectory, "Base");
         var outputDirectory = Path.Combine(currentAssemblyDirectory, "Output");
@@ -55,8 +65,7 @@ public class Program
             var baseDirectoryFiles = Directory.GetFiles(bitMonoContext.BaseDirectory);
             if (baseDirectoryFiles.Length == 0)
             {
-                logger.Warn("Please specify module file (target), " +
-                    "drag and drop it to CLI or drop it in 'Base' directory!");
+                logger.Warning("Please specify module file, drag and drop it to CLI or drop it in {0} directory!", bitMonoContext.BaseDirectory);
                 Console.ReadLine();
                 return;
             }
@@ -85,17 +94,26 @@ public class Program
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                logger.Warn($"Seems your Module - {moduleFile}, is blocked, try to unblock it (disabling the security) by opening propetries of the file, should be checked 'Unblock' & then pressed button 'Apply'");
+                logger.Fatal("Seems Module {0}, is blocked, try to unblock it (disabling the security) by opening propetries of the file, should be checked 'Unblock' & then pressed button 'Apply'", moduleFile);
             }
             else
             {
-                logger.Warn($"Failed to load module assembly [{moduleFile}]! " + ex.ToString());
+                logger.Fatal(ex, "Failed to load module assembly!");
             }
+            Console.ReadLine();
+            return;
+        }
+        catch (Exception ex)
+        {
+            logger.Fatal(ex, "Failed to load module assembly!");
+            Console.ReadLine();
+            return;
         }
 
         if (moduleAssembly == null)
         {
-            logger.Warn($"Failed to load module assembly [{moduleFile}]!");
+            logger.Fatal("Failed to load module assembly {0}!", moduleFile);
+            Console.ReadLine();
             return;
         }
 
@@ -105,15 +123,15 @@ public class Program
             ModuleCreationOptions = moduleCreationOptions,
             ModuleWriterOptions = moduleWriterOptions,
             EncryptionModuleDefMD = encryptionModuleDefMD,
-            TargetAssembly = Assembly.LoadFrom(moduleFile),
+            Assembly = Assembly.LoadFrom(moduleFile),
             BitMonoContext = bitMonoContext,
         };
 
-        logger.Info("Loaded Module: " + moduleDefMD.Name);
-        logger.Info("Protecting: " + bitMonoContext.ModuleFile);
+        logger.Information("Loaded Module {0}", moduleDefMD.Name);
+        logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
 
-        var protections = container.Resolve<ICollection<IProtection>>();
-        protections = new DependencyResolver(protections, container.Resolve<IConfiguration>(), logger)
+        var protections = container.LifetimeScope.Resolve<ICollection<IProtection>>();
+        protections = new DependencyResolver(protections, configuration.GetProtectionSettings(), logger)
             .Sort(out ICollection<string> skipped);
         var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
         protections.Except(protectionsWithConditions);
@@ -124,37 +142,39 @@ public class Program
         {
             if (bitMonoAssemblyResolver.ResolvingFailed)
             {
-                logger.Warn("Drop libraries in 'Base' directory.");
+                logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", bitMonoContext.BaseDirectory);
+                Console.ReadLine();
                 return;
             }
         }
+        logger.Information("Protecting: {0}", bitMonoContext.ModuleFile);
 
         if (skipped.Any())
         {
-            logger.Warn("Skipping next protections: " + string.Join(", ", skipped.Select(p => p ?? "NULL")));
+            logger.Warning("Skip protections: {0}", string.Join(", ", skipped.Select(p => p ?? "NULL")));
         }
         
         if (protections.Any())
         {
-            logger.Warn("Executing protections: " + string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
+            logger.Information("Execute protections: {0}", string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
         }
 
         if (protectionsWithConditions.Any())
         {
-            logger.Warn("Executing calling condition protections: " + string.Join(", ", protectionsWithConditions.Select(p => p.GetType().Name ?? "NULL")));
+            logger.Information("Execute calling condition protections: {0}", string.Join(", ", protectionsWithConditions.Select(p => p.GetType().Name ?? "NULL")));
         }
 
         foreach (var protection in protections.Except(protectionsWithConditions))
         {
-            logger.Info($"[{protection.GetType().FullName}] -> Executing.. ");
             try
             {
+                logger.Information("{0} -> Executing.. ", protection.GetType().FullName);
                 await protection.ExecuteAsync(protectionContext);
-                logger.Info($"[{protection.GetType().FullName}] -> Executed! ");
+                logger.Information("{0} -> Executed! ", protection.GetType().FullName);
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                logger.Error(ex, "Error while executing protections!");
             }
         }
 
@@ -184,7 +204,7 @@ public class Program
         }
         catch (Exception ex)
         {
-            logger.Error(ex);
+            logger.Error(ex, "Error while saving module!");
         }
 
         try
@@ -195,27 +215,27 @@ public class Program
                 {
                     if (callingCondition.Condition == CallingConditions.End)
                     {
-                        logger.Info($"[{protection.GetType().FullName}] -> Executing.. ");
+                        logger.Information("{0} -> Executing.. ", protection.GetType().FullName);
                         await protection.ExecuteAsync(protectionContext);
-                        logger.Info($"[{protection.GetType().FullName}] -> Executed! ");
+                        logger.Information("{0} -> Executed! ", protection.GetType().FullName);
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            logger.Error(ex);
+            logger.Error(ex, "Error while executing Calling condition protections!");
         }
 
-        logger.Info($"Saved protected module in {bitMonoContext.OutputDirectory} ...");
+        logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
+        logger.Information("Completed!");
         Process.Start(bitMonoContext.OutputDirectory);
-        logger.Info($"Completed!");
 
         var tips = configuration.GetSection("Tips").Get<string[]>();
         Random random = new Random();
         var tip = tips.Reverse().ToArray()[random.Next(0, tips.Length)];
-        logger.Info("Today is your day! Generating helpful tip for you - see it a bit down!");
-        logger.Info(tip);
+        logger.Information("Today is your day! Generating helpful tip for you - see it a bit down!");
+        logger.Information(tip);
         Console.ReadLine();
     }
 }
