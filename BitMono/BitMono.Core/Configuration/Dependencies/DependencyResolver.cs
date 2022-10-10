@@ -1,7 +1,7 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Logging;
 using BitMono.Core.Models;
-using Microsoft.Extensions.Configuration;
+using BitMono.Core.Protecting;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,13 +10,13 @@ namespace BitMono.Core.Configuration.Dependencies
     public class DependencyResolver
     {
         private readonly ICollection<IProtection> m_Protections;
-        private readonly IConfiguration m_Configuration;
+        private readonly ICollection<ProtectionSettings> m_ProtectionSettings;
         private readonly ILogger m_Logger;
 
-        public DependencyResolver(ICollection<IProtection> protections, IConfiguration configuration, ILogger logger)
+        public DependencyResolver(ICollection<IProtection> protections, ICollection<ProtectionSettings> protectionSettings, ILogger logger)
         {
             m_Protections = protections;
-            m_Configuration = configuration;
+            m_ProtectionSettings = protectionSettings;
             m_Logger = logger;
         }
 
@@ -25,10 +25,9 @@ namespace BitMono.Core.Configuration.Dependencies
         {
             List<IProtection> protections = new List<IProtection>();
             disabled = new List<string>();
-            var protectionsSettings = m_Configuration.GetSection("Protections").Get<List<ProtectionSettings>>();
-            foreach (var item in protectionsSettings.Where(p => p.Enabled))
+            foreach (var protectionSettings in m_ProtectionSettings.Where(p => p.Enabled))
             {
-                var protection = m_Protections.FirstOrDefault(p => p.GetType().Name.Equals(item.Name));
+                var protection = m_Protections.FirstOrDefault(p => p.GetType().Name.Equals(protectionSettings.Name));
                 if (protection != null)
                 {
                     protections.Add(protection);
@@ -36,7 +35,7 @@ namespace BitMono.Core.Configuration.Dependencies
                 }
                 else
                 {
-                    m_Logger.Warn($"Protection: {item.Name}, not exsist in current context!");
+                    m_Logger.Warning($"Protection: {protectionSettings.Name}, does not exsist in current context!");
                 }
             }
             foreach (var protection in m_Protections)
