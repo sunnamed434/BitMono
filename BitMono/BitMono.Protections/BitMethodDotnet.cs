@@ -4,6 +4,7 @@ using BitMono.Utilities.Extensions.Dnlib;
 using dnlib.DotNet.Emit;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
