@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/BitMonoLogo.png" alt="BitMono" width="180" /><br>
   Free open-source protector for Mono, empty decompilers? bits? crashes?!<br>
-  All this and even more right here
+  All this and even more is right here
 </p>
 
 ## Documentation 
