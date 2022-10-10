@@ -118,7 +118,6 @@ namespace BitMono.Core.Injection
             invislbeTypeDef.IsAbstract = false;
             invislbeTypeDef.IsSealed = false;
             invislbeTypeDef.IsBeforeFieldInit = false;
-            //invislbeTypeDef.Attributes |= TypeAttributes.ExplicitLayout;
             return invislbeTypeDef;
         }
         public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null)

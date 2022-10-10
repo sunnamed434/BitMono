@@ -5,6 +5,8 @@
 	<TargetFramework>net472</TargetFramework>
 	<ImplicitUsings>disable</ImplicitUsings>
 	<Nullable>disable</Nullable>
+	<PackageIcon></PackageIcon>
+	<ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,7 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="BitMonoLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
   </ItemGroup>
 
   <ItemGroup>

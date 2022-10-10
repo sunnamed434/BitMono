@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ILogger = BitMono.Core.Logging.ILogger;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
@@ -44,18 +44,17 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
                             {
-                                if (methodDef.DeclaredInSameAssemblyAs(context.TargetAssembly))
+                                if (methodDef.DeclaredInSameAssemblyAs(context.Assembly))
                                 {
                                     if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                     {
-                                        
-                                        m_Logger.Info("methodDef.HasGenericParameters: " + methodDef.HasGenericParameters);
-                                        m_Logger.Info("memberRef.Signature.ContainsGenericParameter: " + memberRef.Signature.ContainsGenericParameter);
+                                        var locals = methodDef.Body.Variables;
+                                        var local = locals.Add(new Local(new ValueTypeSig(importer.Import(typeof(RuntimeMethodHandle)))));
+
+                                        m_Logger.Information("methodDef.HasGenericParameters: " + methodDef.HasGenericParameters);
+                                        m_Logger.Information("memberRef.Signature.ContainsGenericParameter: " + memberRef.Signature.ContainsGenericParameter);
                                         if (methodDef.Body.HasExceptionHandlers == false)
                                         {
-                                            var locals = methodDef.Body.Variables;
-                                            var addrLocal = locals.Add(new Local(new ValueTypeSig(importer.Import(typeof(RuntimeMethodHandle)))));
-
                                             methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
                                             var getTypeFromHandleMethod = importer.Import(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
@@ -81,8 +80,8 @@ namespace BitMono.Protections
 
                                             methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                            methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Stloc, addrLocal));
-                                            methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, addrLocal));
+                                            methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Stloc, local));
+                                            methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, local));
 
                                             methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Call, getFunctionPointerMethod));
                                             methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, memberRef.MethodSig));
