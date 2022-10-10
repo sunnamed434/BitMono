@@ -1,0 +1,68 @@
+﻿{
+  "CriticalMethods": [
+    // Unity
+    "Awake",
+    "OnEnable",
+    "Reset",
+    "Start",
+    "FixedUpdate",
+    "OnMouseUp",
+    "OnMouseEnter",
+    "OnMouseExit",
+    "OnMouseOver",
+    "OnMouseUpAsButton",
+    "OnMouseDown",
+    "OnMouseDrag",
+    "Update",
+    "LateUpdate",
+    "OnAnimatorIK",
+    "OnPreCull",
+    "OnWillRenderObject",
+    "OnBecameVisible",
+    "OnBecameInvisible",
+    "OnPreRender",
+    "OnRenderObject",
+    "OnDrawGizmos",
+    "OnGUI",
+    "OnTriggerEnter",
+    "OnTriggerStay",
+    "OnTriggerExit",
+    "OnTriggerEnter2D",
+    "OnTriggerStay2D",
+    "OnTriggerExit2D",
+    "OnCollisionEnter",
+    "OnCollisionStay",
+    "OnCollisionExit",
+    "OnCollisionEnter2D",
+    "OnCollisionStay2D",
+    "OnCollisionExit2D",
+    "WaitForEndOfFrame",
+    "OnApplicationPause",
+    "OnApplicationQuit",
+    "OnDisable",
+    "OnDestroy"
+
+  ],
+  "CriticalInterfaces": [
+    // RocketMod
+    "IRocketPlugin",
+    "IRocketCommand",
+    "IRocketPluginConfiguration",
+    "IDefaultable",
+
+    // OpenMod
+    "IOpenModPlugin"
+  ],
+  "CriticalBaseTypes": [
+    // RocketMod
+    "RocketPlugin",
+
+    // OpenMod
+    "OpenModUnturnedPlugin",
+    "OpenModUniversalPlugin",
+    "Command",
+
+    // rust-oxide-umod
+    "RustPlugin"
+  ]
+}
