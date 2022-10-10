@@ -21,7 +21,46 @@ Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about
 * AntiDebugBreakpoints
 
 ## Quick Start
-`BitMono.CLI <path to PE file>/drag-and-drop/first file in Base directory or BitMono.GUI`
+`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI`
+
+## Configuring Protections
+Open `protections.json`, by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
+
+_Executing of protections depends how they are located in `protections.json` (protections order is up-to-down, sometimes order may ignored with special protection executing order eg Calling Condition as well as `BitDotNet` and `FieldsHiding` they are always executing at the end)._
+
+Lets look at this example, first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `FieldsHiding`.
+Always you could write in `protections.json` - protections which are doesnt mentioned here or if you create protection by yourself.
+```json
+{
+  "Protections": [
+    {
+      "Name": "AntiILdasm",
+      "Enabled": true
+    },
+    {
+      "Name": "AntiDe4dot",
+      "Enabled": true
+    },
+    {
+      "Name": "ControlFlow",
+      "Enabled": true
+    },
+    {
+      "Name": "FieldsHiding",
+      "Enabled": true
+    }
+  ]
+}
+```
+
+## No required dependency (Deprecated file for obfuscation)
+Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+<br>Open `config.json` and set `FailOnNoRequiredDependency` to false, be careful with this parameter, change it in cases when file truly deprecated
+```json
+{
+  "FailOnNoRequiredDependency": false,
+}
+```
 
 ## Except from Protect
 Ignoring classes/properties
@@ -57,55 +96,26 @@ class MyClass
 ```
 
 ## Excluding of Having issues with third-parties (API/Libraries)
-Open `config.json`
+Open `criticals.json`
 
 Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
 <br>There is already supporting all `Unity` methods and a few third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
 
 ```json
 {
-  "Watermark": true,
-  "Logging": {
-    "LogsFile": "logs.txt"
-  },
-  "Protections": [ // By default protections is already configured
-    {
-      "Name": "StringsEncryption",
-      "Enabled": false
-    },
-    {
-      "Name": "FieldsHiding",
-      "Enabled": true
-    },
-    {
-      "Name": "CallToCalli",
-      "Enabled": false
-    },
-    {
-      "Name": "ObjectReturnType",
-      "Enabled": false
-    },
-    {
-      "Name": "MethodsBreak",
-      "Enabled": false
-    },
-    {
-      "Name": "BitDotNet",
-      "Enabled": false
-    },
-  ],
   "CriticalMethods": [
-    // Unity, here is only a few in config you will see all methods that supports Unity
+    // Unity
     "Awake",
     "OnEnable",
-    "Reset",
     "Start",
     "FixedUpdate",
-    // other tons of Unity methods
+    // .. and more tons there
+
   ],
   "CriticalInterfaces": [
     // RocketMod
     "IRocketPlugin",
+    "IRocketCommand",
     "IRocketPluginConfiguration",
     "IDefaultable",
 
@@ -119,13 +129,10 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
     // OpenMod
     "OpenModUnturnedPlugin",
     "OpenModUniversalPlugin",
+    "Command",
 
     // rust-oxide-umod
     "RustPlugin"
-  ],
-  "Tips": [
-    "[Tip]: Mark your method with attribute [MethodImpl(MethodImplOptions.NoInlining)] to ignore renaming of your method!",
-    "[Tip]: Open config.json and set FileWatermark to 'true', to disable watermarking of your file!"
   ]
 }
 ```
