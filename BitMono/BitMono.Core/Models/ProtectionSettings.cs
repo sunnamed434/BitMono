@@ -9,5 +9,15 @@ namespace BitMono.Core.Models
         public bool Enabled { get; set; }
         [JsonIgnore]
         public bool Disabled => Enabled == false;
+
+
+        public void Enable()
+        {
+            Enabled = true;
+        }
+        public void Disable()
+        {
+            Enabled = false;
+        }
     }
 }
