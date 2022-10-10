@@ -1,0 +1,152 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0-android;net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
+        <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+        <!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
+        <OutputType>Exe</OutputType>
+        <RootNamespace>BitMono.GUI</RootNamespace>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <EnableDefaultCssItems>false</EnableDefaultCssItems>
+
+        <!-- Display name -->
+        <ApplicationTitle>BitMono.GUI</ApplicationTitle>
+
+        <!-- App Identifier -->
+        <ApplicationId>com.companyname.bitmono.gui</ApplicationId>
+        <ApplicationIdGuid>079989D2-5ABC-41C5-B294-2EC8376934AA</ApplicationIdGuid>
+
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+        <PackageIcon></PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\bitmonologo.png" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+
+        <!-- Custom Fonts -->
+        <MauiFont Include="Resources\Fonts\*" />
+
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.bundle.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.bundle.js.map" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.bundle.min.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.bundle.min.js.map" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.esm.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.esm.js.map" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.esm.min.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.esm.min.js.map" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.js.map" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.min.js" />
+      <Content Remove="C:\Users\cetni\.nuget\packages\bootstrap.sass\5.0.0\contentFiles\any\any\wwwroot\js\bootstrap.min.js.map" />
+      <Content Remove="compilerconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
+      <PackageReference Include="Serilog" Version="2.12.0" />
+      <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.1-dev-00077" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
+      <ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
+      <ProjectReference Include="..\BitMono.Encryption\BitMono.Encryption.csproj" />
+      <ProjectReference Include="..\BitMono.GUI.API\BitMono.GUI.API.csproj" />
+      <ProjectReference Include="..\BitMono.GUI.Components\BitMono.GUI.Components.csproj" />
+      <ProjectReference Include="..\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj" />
+      <ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
+      <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
+      <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="dnlib">
+        <HintPath>..\lib\dnlib.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="compilerconfig.json" />
+      <None Include="wwwroot\css\bootstrap\forms\_floating-labels.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_form-check.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_form-control.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_form-range.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_form-select.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_form-text.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_input-group.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_labels.scss" />
+      <None Include="wwwroot\css\bootstrap\forms\_validation.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_clearfix.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_colored-links.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_position.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_ratio.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_stacks.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_stretched-link.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_text-truncation.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_visually-hidden.scss" />
+      <None Include="wwwroot\css\bootstrap\helpers\_vr.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_alert.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_backdrop.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_border-radius.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_box-shadow.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_breakpoints.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_buttons.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_caret.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_clearfix.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_color-scheme.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_container.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_deprecate.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_forms.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_gradients.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_grid.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_image.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_list-group.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_lists.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_pagination.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_reset-text.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_resize.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_table-variants.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_text-truncate.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_transition.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_utilities.scss" />
+      <None Include="wwwroot\css\bootstrap\mixins\_visually-hidden.scss" />
+      <None Include="wwwroot\css\bootstrap\utilities\_api.scss" />
+      <None Include="wwwroot\css\bootstrap\vendor\_rfs.scss" />
+      <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
+      <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
+      <None Include="wwwroot\css\open-iconic\ICON-LICENSE" />
+      <None Include="wwwroot\css\open-iconic\README.md" />
+    </ItemGroup>
+
+</Project>
