@@ -21,4 +21,16 @@ jobs:
         run: dotnet restore BitMono\BitMono.sln
         
       - name: build the solution
-        run: msbuild BitMono\BitMono.sln
+        run: msbuild BitMono\BitMono.Host\BitMono.Host.csproj
+        
+      - name: build the solution
+        run: msbuild BitMono\BitMono.CLI\BitMono.CLI.csproj
+        
+      - name: build the solution
+        run: msbuild BitMono\BitMono.Core\BitMono.Core.csproj
+        
+      - name: build the solution
+        run: msbuild BitMono\BitMono.Protections\BitMono.Protections.csproj
+        
+      - name: build the solution
+        run: msbuild BitMono\BitMono.Utilities\BitMono.Utilities.csproj
