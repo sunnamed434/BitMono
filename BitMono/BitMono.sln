@@ -19,11 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Host", "BitMono.Hos
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI", "BitMono.GUI\BitMono.GUI.csproj", "{25B6BF0D-2997-4C2E-A125-4A727AE766EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.Components", "BitMono.GUI.Components\BitMono.GUI.Components.csproj", "{AEDBAC58-F3D8-46CA-B38C-2678F4CE409D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.API", "BitMono.GUI.API\BitMono.GUI.API.csproj", "{33E73D54-385D-4F27-8C53-7B2FDD137DC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.GUI.Utilities", "BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj", "{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.Utilities", "BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj", "{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +63,6 @@ Global
 		{25B6BF0D-2997-4C2E-A125-4A727AE766EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25B6BF0D-2997-4C2E-A125-4A727AE766EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{25B6BF0D-2997-4C2E-A125-4A727AE766EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{AEDBAC58-F3D8-46CA-B38C-2678F4CE409D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEDBAC58-F3D8-46CA-B38C-2678F4CE409D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AEDBAC58-F3D8-46CA-B38C-2678F4CE409D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AEDBAC58-F3D8-46CA-B38C-2678F4CE409D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33E73D54-385D-4F27-8C53-7B2FDD137DC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33E73D54-385D-4F27-8C53-7B2FDD137DC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33E73D54-385D-4F27-8C53-7B2FDD137DC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
