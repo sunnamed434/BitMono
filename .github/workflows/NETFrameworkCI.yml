@@ -17,20 +17,20 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1.1
         
-      - name: restore dotnet
+      - name: restore dotnet of whole BitMono solution
         run: dotnet restore BitMono\BitMono.sln
         
-      - name: build the solution
+      - name: build the BitMono.Host solution
         run: msbuild BitMono\BitMono.Host\BitMono.Host.csproj
         
-      - name: build the solution
+      - name: build the BitMono.CLI solution
         run: msbuild BitMono\BitMono.CLI\BitMono.CLI.csproj
         
-      - name: build the solution
+      - name: build the BitMono.Core solution
         run: msbuild BitMono\BitMono.Core\BitMono.Core.csproj
         
-      - name: build the solution
+      - name: build the BitMono.Protections solution
         run: msbuild BitMono\BitMono.Protections\BitMono.Protections.csproj
         
-      - name: build the solution
+      - name: build the BitMono.Utilities solution
         run: msbuild BitMono\BitMono.Utilities\BitMono.Utilities.csproj
