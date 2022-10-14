@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: BitMono Restore dependencies
-      run: dotnet restore BitMono\BitMono.sln
+      run: dotnet restore "BitMono\BitMono.sln"
       
     - name: Build BitMono.GUI
       run: dotnet build --no-restore BitMono\BitMono.GUI\BitMono.GUI.csproj
