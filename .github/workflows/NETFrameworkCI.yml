@@ -23,6 +23,9 @@ jobs:
       - name: build the BitMono.Host solution
         run: msbuild BitMono\BitMono.Host\BitMono.Host.csproj
         
+      - name: build the BitMono.Encryption solution
+        run: msbuild BitMono\BitMono.Encryption\BitMono.Encryption.csproj
+        
       - name: build the BitMono.CLI solution
         run: msbuild BitMono\BitMono.CLI\BitMono.CLI.csproj
         
