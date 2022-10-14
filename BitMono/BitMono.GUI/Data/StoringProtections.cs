@@ -2,12 +2,10 @@
 using BitMono.Core.Models;
 using BitMono.GUI.API;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BitMono.GUI.Data
 {
-	public class StoringProtections : IStoringProtections
+	internal class StoringProtections : IStoringProtections
 	{
 		private readonly IConfiguration m_Configuration;
 
