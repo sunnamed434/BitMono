@@ -1,0 +1,53 @@
+﻿<div class="textarea-container">
+    <textarea @attributes="CapturedAttributes" @ref="TextAreaReference" value="@TextAreaText" class="form-control" rows="@Rows" />
+    @if (ClipboardCopy)
+    {
+        <button @onclick="copyTextToClipboardAsync" class="btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
+            Copy
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public int Rows { get; set; } = 5;
+    [Parameter] public bool AutoScrolling { get; set; }
+    [Parameter] public bool ClipboardCopy { get; set; } = true;
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+    public string TextAreaText { get; protected set; } = string.Empty;
+    private ElementReference TextAreaReference { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.AddTooltipsAsync();
+    }
+
+    public async Task ScrollToEndAsync()
+    {
+        await JSRuntime.ScrollToEndAsync(TextAreaReference);
+        await InvokeAsync(StateHasChanged);
+    }
+    public async Task WriteLineAsync(string text)
+    {
+        TextAreaText += new StringBuilder()
+            .Append(text)
+            .Append("\n")
+            .ToString();
+        await InvokeAsync(StateHasChanged);
+        @if (AutoScrolling)
+        {
+            await ScrollToEndAsync();
+        }
+    }
+    public Task FlushAsync()
+    {
+        TextAreaText = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    private async Task copyTextToClipboardAsync()
+    {
+        await JSRuntime.CopyTextToClipboardAsync(TextAreaText);
+    }
+}
