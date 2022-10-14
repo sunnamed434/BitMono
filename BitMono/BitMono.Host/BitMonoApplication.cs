@@ -18,7 +18,7 @@ namespace BitMono.Host
             m_Modules = new List<IModule>();
         }
 
-        
+
         public IApplication Populate(ICollection<ServiceDescriptor> descriptors)
         {
             m_ContainerBuilder.Populate(descriptors);
