@@ -18,17 +18,8 @@ jobs:
       with:
         dotnet-version: 6.0.x
         
-    - name: BitMono.GUI Restore dependencies
-      run: dotnet restore BitMono\BitMono.GUI\BitMono.GUI.csproj
-      
-    - name: BitMono.GUI.API Restore dependencies
-      run: dotnet restore BitMono\BitMono.GUI.API\BitMono.GUI.API.csproj
-      
-    - name: BitMono.GUI.API Restore dependencies
-      run: dotnet restore BitMono\BitMono.GUI.API\BitMono.GUI.API.csproj
-      
-    - name: BitMono.GUI.Utilities Restore dependencies
-      run: dotnet restore BitMono\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj
+    - name: BitMono Restore dependencies
+      run: dotnet restore BitMono\BitMono.sln
       
     - name: Build BitMono.GUI
       run: dotnet build --no-restore BitMono\BitMono.GUI\BitMono.GUI.csproj
