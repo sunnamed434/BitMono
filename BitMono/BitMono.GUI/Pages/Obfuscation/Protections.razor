@@ -1,0 +1,102 @@
+﻿@page "/protections"
+
+<h1>Protections</h1>
+<p>This component helps to configure exsisting protections from configuration.</p>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>
+				<div class="d-flex align-items-center">
+					<div class="ms-2">
+						Enabled
+					</div>
+					<div class="ms-2">
+						<button @onclick="EnableAll" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Enables all protections">Enable All</button>
+					</div>
+					<div class="ms-2">
+						<button @onclick="DisableAll" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Disables all protections">Disable All</button>
+					</div>
+				</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var protectionSetting in StoringProtections.Protections)
+		{
+			<tr>
+				@if (protectionSetting.Disabled)
+				{
+					<td style="text-decoration:line-through">@protectionSetting.Name</td>
+				}
+				else
+				{
+					<td>
+						<div class="d-flex align-items-center">
+							@if (protectionSetting.AsProtection(RegisteredProtections, out IProtection protection)
+								&& protection is ICallingCondition callingCondition)
+							{
+								if (callingCondition.Condition == CallingConditions.End)
+								{
+									<div class="ms-2">
+										<a class="btn btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="top" title="This protection ignoring order and always executing at the end">
+											<i class="fa-solid fa-triangle-exclamation" />
+										</a>
+									</div>
+								}
+							}
+							<div class="ms-2">@protectionSetting.Name</div>
+						</div>
+					</td>
+				}
+				<td>
+					@if (StoringProtections.Protections.IndexOf(protectionSetting) == StoringProtections.Protections.Count - 1)
+					{
+						<div class="d-flex align-items-center">
+							<div class="ms-2">
+								<input type="checkbox" @bind="@protectionSetting.Enabled" data-toggle="tooltip" data-placement="top" title="State of Protection" />
+							</div>
+							<div class="ms-2">
+								<button @onclick="(_) => MoveUp(protectionSetting)" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Move up">
+									<i class="fa-solid fa-arrow-up" />
+								</button>
+							</div>
+						</div>
+					}
+					else if (StoringProtections.Protections.IndexOf(protectionSetting) == 0)
+					{
+						<div class="d-flex align-items-center">
+							<div class="ms-2">
+								<input type="checkbox" @bind="@protectionSetting.Enabled" data-toggle="tooltip" data-placement="top" title="State of Protection" />
+							</div>
+							<div class="ms-2">
+								<button @onclick="(_) => MoveDown(protectionSetting)" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Move down">
+									<i class="fa-solid fa-arrow-down" />
+								</button>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="d-flex align-items-center">
+							<div class="ms-2">
+								<input type="checkbox" @bind="@protectionSetting.Enabled" data-toggle="tooltip" data-placement="top" title="State of Protection" />
+							</div>
+							<div class="ms-2">
+								<button @onclick="(_) => MoveUp(protectionSetting)" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Move up">
+									<i class="fa-solid fa-arrow-up" />
+								</button>
+							</div>
+							<div class="ms-2">
+								<button @onclick="(_) => MoveDown(protectionSetting)" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Move down">
+									<i class="fa-solid fa-arrow-down" />
+								</button>
+							</div>
+						</div>
+					}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
