@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: BitMono Install workloads needed for a solution
-      run: dotnet workload restore BitMono.GUI/BitMono.GUI.sln
+      run: dotnet workload restore BitMono.sln
           
     - name: BitMono Restore dependencies
       run: dotnet restore BitMono.GUI/BitMono.GUI.sln
