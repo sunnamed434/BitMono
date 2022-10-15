@@ -25,10 +25,10 @@ jobs:
       run: dotnet restore "BitMono\BitMono.sln"
       
     - name: Build BitMono.GUI
-      run: dotnet build --no-restore BitMono\BitMono.GUI\BitMono.GUI.csproj
+      run: dotnet build --no-restore "BitMono\BitMono.GUI\BitMono.GUI.csproj"
       
     - name: Build BitMono.GUI.API
-      run: dotnet build --no-restore BitMono\BitMono.GUI.API\BitMono.GUI.API.csproj
+      run: dotnet build --no-restore "BitMono\BitMono.GUI.API\BitMono.GUI.API.csproj"
       
     - name: Build BitMono.GUI.Utilities
-      run: dotnet build --no-restore BitMono\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj
+      run: dotnet build --no-restore "BitMono\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj"
