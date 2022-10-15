@@ -11,7 +11,7 @@
 @code {
     [Parameter] public int Rows { get; set; } = 5;
     [Parameter] public bool AutoScrolling { get; set; }
-    [Parameter] public bool ClipboardCopy { get; set; } = true;
+    [Parameter] public bool ClipboardCopy { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
     [Inject] public IJSRuntime JSRuntime { get; set; }
     public string TextAreaText { get; protected set; } = string.Empty;
