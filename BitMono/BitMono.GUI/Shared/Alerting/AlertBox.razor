@@ -1,0 +1,11 @@
+﻿@if (ShouldShow)
+{
+    <div class="p-2 @getBackgroundClass() rounded-3 mb-2">
+        <small class="text-white">
+            <i class="@getIcon()" />
+            <span class="ms-1">
+                @Text
+            </span>
+        </small>
+    </div>
+}

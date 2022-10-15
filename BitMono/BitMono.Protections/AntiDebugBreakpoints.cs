@@ -125,8 +125,6 @@ namespace BitMono.Protections
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldloc_S, intValue));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Div));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Pop));
-                            //methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldnull));
-                            //methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Call, environmentFailFast));
                             methodDef.Body.Instructions.Insert(endIndex++, nopInstruction);
                         }
                     }

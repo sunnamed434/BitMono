@@ -1,4 +1,5 @@
-﻿@using System.Net.Http
+﻿@using System.Text
+@using System.Net.Http
 
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
@@ -6,10 +7,18 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
 
+@using BitMono.API.Protecting
+
 @using BitMono.Core.Models
 @using BitMono.Core.Protecting
-@using BitMono.Core.Configuration.Extensions
+
 @using BitMono.GUI.API
+@using BitMono.GUI.Data
 @using BitMono.GUI.Shared
-@using BitMono.GUI.Components.Buttons
+@using BitMono.GUI.Shared.Alerting
+@using BitMono.GUI.Shared.Buttons
+@using BitMono.GUI.Shared.Inputs
+
+@using static BitMono.Core.Configuration.Extensions.ConfigurationExtensions
 @using static BitMono.Utilities.Extensions.Collections.EnumerableExtensions
+@using static BitMono.GUI.Utilities.Extensions.JSInterop.JSRuntimeExtensions

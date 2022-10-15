@@ -21,18 +21,22 @@ Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about
 * AntiDebugBreakpoints
 
 ## Quick Start
-`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI`
+`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI (GUI Windows only)`
 
 ## Configuring Protections
 Open `protections.json`, by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
 
-_Executing of protections depends how they are located in `protections.json` (protections order is up-to-down, sometimes order may ignored with special protection executing order eg Calling Condition as well as `BitDotNet` and `FieldsHiding` they are always executing at the end)._
+_Executing of protections depends how they are located in `protections.json` (protections order is up-to-down, sometimes order may ignored with special protection executing order eg Calling Condition as well as `BitDotNet` and `FieldsHiding` they are executing always after all protections)._
 
-Lets look at this example, first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `FieldsHiding`.
+Lets look at this example, first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `BitDotNet` and `FieldsHiding`.
 Always you could write in `protections.json` - protections which are doesnt mentioned here or if you create protection by yourself.
 ```json
 {
   "Protections": [
+    {
+      "Name": "BitDotNet", // Executing always after all protections because of Calling Condition
+      "Enabled": true,
+    }
     {
       "Name": "AntiILdasm",
       "Enabled": true
@@ -46,7 +50,7 @@ Always you could write in `protections.json` - protections which are doesnt ment
       "Enabled": true
     },
     {
-      "Name": "FieldsHiding",
+      "Name": "FieldsHiding", // Executing always after all protections because of Calling Condition
       "Enabled": true
     }
   ]
@@ -62,7 +66,7 @@ Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture
 }
 ```
 
-## Except from Protect
+## Except from Protecting
 Ignoring classes/properties
 ```cs
 using System;
@@ -99,7 +103,7 @@ class MyClass
 Open `criticals.json`
 
 Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
-<br>There is already supporting all `Unity` methods and a few third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
+<br>There is already supporting all `Unity` methods and third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
 
 ```json
 {

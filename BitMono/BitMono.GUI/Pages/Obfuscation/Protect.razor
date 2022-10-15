@@ -1,0 +1,30 @@
+﻿@page "/protect"
+@inject IJSRuntime JSRuntime
+@inject HandlerLogEventSink HandlerLogEventSink
+@inject AlertsContainer AlertsContainer
+
+<h1>Protect</h1>
+<p>This component obfuscates .NET file.</p>
+
+<AlertBox Id="obfuscation-info" Group="obfuscationpage" />
+
+<div class="btn-group" role="group">
+    <InputFile class="btn btn-primary" OnChange="OnObfuscationFileChangeAsync" />
+
+    <InputFolder class="btn btn-primary" OnChange="(folder) => SelectDependencyFolderAsync(folder)" Body="Select Dependency Folder" />
+
+    @if (ObfuscationInProcess == false)
+    {
+        <button @onclick="ObfuscateFileAsync" class="btn btn-primary">Protect</button>
+    }
+    else
+    {
+        <LoadingButton class="btn btn-primary" Body="Protecting..." />
+    }
+</div>
+
+<div class="d-grid gap-3 my-3">
+    <div class="p-2 bg-light border">
+        <Highlight @ref="Highlight" style="resize:none" AutoScrolling="true" Rows="15" disabled />
+    </div>
+</div>

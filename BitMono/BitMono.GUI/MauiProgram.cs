@@ -2,12 +2,9 @@
 using Autofac.Extensions.DependencyInjection;
 using BitMono.GUI.API;
 using BitMono.GUI.Data;
+using BitMono.GUI.Shared.Alerting;
 using BitMono.Host.Modules;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
-using System;
-using System.IO;
+using Serilog;
 using System.Reflection;
 
 namespace BitMono.GUI
@@ -31,13 +28,22 @@ namespace BitMono.GUI
 #if WINDOWS
             builder.Services.AddTransient<IFolderPicker, Platforms.Windows.FolderPicker>();
 #endif
+            builder.Services.AddScoped<AlertsContainer>();
             builder.Services.AddSingleton<IStoringProtections, StoringProtections>();
+            var handlerLogEventSink = new HandlerLogEventSink();
+            builder.Services.AddSingleton(handlerLogEventSink);
 
             const string ProtectionsFile = "BitMono.Protections.dll";
             Assembly.LoadFrom(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ProtectionsFile));
             builder.ConfigureContainer(new AutofacServiceProviderFactory(), configure =>
             {
-                configure.RegisterModule(new BitMonoModule());
+                configure.RegisterModule(new BitMonoModule(configureLogger =>
+                {
+                    configureLogger.WriteTo.Async(configure =>
+                    {
+                        configure.Sink(handlerLogEventSink);
+                    });
+                }));
             });
 
             return builder.Build();

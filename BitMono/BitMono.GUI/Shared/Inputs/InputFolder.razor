@@ -1,0 +1,16 @@
+﻿<button @attributes="CapturedAttributes" @onclick="PickFolderAsync">
+    @Body
+</button>
+
+@code {
+    [Inject] public IFolderPicker FolderPicker { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
+    [Parameter] public string Body { get; set; }
+    [Parameter] public EventCallback<string> OnChange { get; set; }
+
+    public async Task PickFolderAsync()
+    {
+        var folder = await FolderPicker.PickAsync();
+        await OnChange.InvokeAsync(folder);
+    }
+}
