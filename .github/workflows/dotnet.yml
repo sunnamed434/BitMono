@@ -22,9 +22,10 @@ jobs:
       run: dotnet workload restore
       working-directory: BitMono
       
-    - name: Build BitMono GUI project
-      run: dotnet build
-      working-directory: BitMono/BitMono.GUI
+    - name: dotnet restore
+      run: dotnet workload restore
+      working-directory: BitMono
       
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Build BitMono GUI project
+      run: dotnet build --no-restore
+      working-directory: BitMono/BitMono.GUI
