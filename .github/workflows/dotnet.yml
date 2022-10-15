@@ -21,13 +21,10 @@ jobs:
     - name: Install workloads needed for a solution
       run: dotnet workload restore
       working-directory: BitMono
-        
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: BitMono
       
-    - name: Build
+    - name: Build BitMono GUI project
       run: dotnet build --no-restore
+      working-directory: BitMono/BitMono.GUI
       
     - name: Test
       run: dotnet test --no-build --verbosity normal
