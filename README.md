@@ -21,7 +21,7 @@ Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about
 * AntiDebugBreakpoints
 
 ## Quick Start
-`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI`
+`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI (GUI Windows only)`
 
 ## Configuring Protections
 Open `protections.json`, by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
@@ -62,7 +62,7 @@ Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture
 }
 ```
 
-## Except from Protect
+## Except from Protecting
 Ignoring classes/properties
 ```cs
 using System;
@@ -99,7 +99,7 @@ class MyClass
 Open `criticals.json`
 
 Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
-<br>There is already supporting all `Unity` methods and a few third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
+<br>There is already supporting all `Unity` methods and third-party frameworks (`RocketMod`, `rust-oxide-umod`, `OpenMod`)
 
 ```json
 {
