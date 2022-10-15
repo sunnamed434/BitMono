@@ -3,7 +3,7 @@
         <div class="modal-content">
             <EditForm Model="Model" OnValidSubmit="SubmitAsync">
                 <div class="modal-header">
-                    <h5 class="modal-title">Create new Product</h5>
+                    <h5 class="modal-title">Create new Protection</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -15,7 +15,7 @@
                                 <option value="@protectionSetting.Name">@protectionSetting.Name</option>
                             }
                         </InputSelect>
-                        <div class="form-text">Set the category of your product</div>
+                        <div class="form-text">Set the protection name</div>
                     </div>
 
                     <DataAnnotationsValidator />
