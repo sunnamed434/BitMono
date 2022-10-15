@@ -17,15 +17,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-        
-    - name: BitMono Restore dependencies
+    - name: Restore dependencies
       run: dotnet restore
-      
-    - name: Build BitMono.GUI
-      run: dotnet build --no-restore BitMono\BitMono.GUI\BitMono.GUI.csproj
-      
-    - name: Build BitMono.GUI.API
-      run: dotnet build --no-restore BitMono\BitMono.GUI.API\BitMono.GUI.API.csproj
-      
-    - name: Build BitMono.GUI.Utilities
-      run: dotnet build --no-restore BitMono\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
