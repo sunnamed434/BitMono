@@ -1,16 +1,36 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/BitMonoLogo.png" alt="BitMono" width="180" /><br>
+  <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/logo/BitMonoLogo.png" alt="BitMono logo" width="180" /><br>
   Free open-source protector for Mono, empty decompilers? bits? crashes?!<br>
   All this and even more is right here
 </p>
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
+  alt="Before and after obfuscation preview by BitMono"
+</p>
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/GUI.png"
+  alt="GUI"
+</p>
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/CLI.png"
+  alt="CLI"
+</p>
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/configuration.png"
+  alt="Configuration"
+</p>
+
 ## Documentation 
-Click **[here](https://github.com/sunnamed434/BitMono/wiki)** to open wiki about protections functionnality and even more.
+Open **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections functionnality and more.
 
 ## Obfuscation Features
 * Breaks decompilers (crash when analyzing types, no code, seems to C++ application)
 * Strings encryption
-* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (most part of bit took from there)
+* **[BitDotNet](https://github.com/0x59R11/BitDotNet)** (based and improved on existing protection)
 * **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** 
 * Invisible types
 * Call to calli
