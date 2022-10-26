@@ -1,6 +1,6 @@
 ﻿using dnlib.DotNet.Emit;
 
-namespace BitMono.Utilities.Extensions.Dnlib
+namespace BitMono.Utilities.Extensions.dnlib
 {
     public static class CILBodyExtensions
     {
