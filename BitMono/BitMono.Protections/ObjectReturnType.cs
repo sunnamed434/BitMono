@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.API.Protecting.Contexts;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Utilities.Extensions.dnlib;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,13 +10,12 @@ namespace BitMono.Protections
 {
     public class ObjectReturnType : IProtection
     {
-        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
 
-        public ObjectReturnType(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
+        public ObjectReturnType(DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer)
         {
-            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+            m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
         }
-
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
@@ -29,7 +29,7 @@ namespace BitMono.Protections
                             && methodDef.ReturnType != context.ModuleDefMD.CorLibTypes.Boolean)
                         {
                             if (methodDef.IsConstructor == false && methodDef.IsVirtual == false
-                                && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
+                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
                                 && methodDef.NotAsync())
                             {
                                 if (methodDef.IsSetter == false && methodDef.IsGetter == false)
