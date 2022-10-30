@@ -10,14 +10,13 @@ namespace BitMono.Host
     public class BitMonoApplication : IApplication
     {
         private readonly ContainerBuilder m_ContainerBuilder;
-        private readonly List<IModule> m_Modules;
+        private readonly IList<IModule> m_Modules;
 
         public BitMonoApplication()
         {
             m_ContainerBuilder = new ContainerBuilder();
             m_Modules = new List<IModule>();
         }
-
 
         public IApplication Populate(ICollection<ServiceDescriptor> descriptors)
         {
