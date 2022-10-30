@@ -35,9 +35,9 @@
 					<td>
 						<div class="d-flex align-items-center">
 							@if (protectionSetting.AsProtection(RegisteredProtections, out IProtection protection)
-								&& protection is ICallingCondition callingCondition)
+								&& protection is IPipelineStage callingCondition)
 							{
-								if (callingCondition.Condition == CallingConditions.End)
+								if (callingCondition.Stage == PipelineStages.ModuleWrite)
 								{
 									<div class="ms-2">
 										<a class="btn btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="top" title="This protection ignoring order and always executing at the end">
