@@ -8,8 +8,8 @@ namespace BitMono.GUI.Data
 {
     internal class HandlerLogEventSink : ILogEventSink
     {
-        private readonly ITextFormatter m_TextFormatter;
         public event Action OnEnqueued;
+        private readonly ITextFormatter m_TextFormatter;
 
         public HandlerLogEventSink()
         {
