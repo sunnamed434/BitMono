@@ -1,4 +1,5 @@
-﻿using dnlib.DotNet;
+﻿using BitMono.API.Protecting.Contexts;
+using dnlib.DotNet;
 
 namespace BitMono.API.Protecting.Renaming
 {
