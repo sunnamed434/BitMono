@@ -1,6 +1,9 @@
 ﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Pipeline;
 using BitMono.Core.Configuration.Dependencies;
-using BitMono.Core.Protecting;
+using BitMono.Core.Models;
+using BitMono.Core.Protecting.Resolvers;
 using BitMono.GUI.API;
 using BitMono.GUI.Shared.Alerting;
 using BitMono.GUI.Shared.Inputs;
@@ -117,16 +120,16 @@ namespace BitMono.GUI.Pages.Obfuscation
                     var protections = Protections;
                     protections = new DependencyResolver(protections, StoringProtections.Protections, Logger)
                         .Sort(out ICollection<string> skipped);
-                    var protectionsWithConditions = protections.Where(p => p is ICallingCondition);
+                    var protectionsWithConditions = protections.Where(p => p is IPipelineStage);
                     protections.Except(protectionsWithConditions);
 
                     var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(Directory.GetFiles(_dependenciesFolder), protectionContext, Logger);
-                    await bitMonoAssemblyResolver.ResolveAsync();
-                    if (Configuration.GetValue<bool>("FailOnNoRequiredDependency"))
+                    var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
+                    if (Configuration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
                     {
-                        if (bitMonoAssemblyResolver.ResolvingFailed)
+                        if (resolvingSucceed == false)
                         {
-                            Logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", bitMonoContext.BaseDirectory);
+                            Logger.Warning("Drop dependencies in {0}, or set in config 'FailOnNoRequiredDependency' to false to ignore this", bitMonoContext.BaseDirectory);
                             return;
                         }
                     }
@@ -173,7 +176,7 @@ namespace BitMono.GUI.Pages.Obfuscation
                     stringBuilder.Append(Path.GetExtension(bitMonoContext.ModuleFile));
 
                     var outputFile = Path.Combine(bitMonoContext.OutputDirectory, stringBuilder.ToString());
-                    bitMonoContext.ProtectedModuleFile = outputFile;
+                    bitMonoContext.OutputModuleFile = outputFile;
 
                     try
                     {
@@ -192,9 +195,9 @@ namespace BitMono.GUI.Pages.Obfuscation
                     {
                         foreach (var protection in protectionsWithConditions)
                         {
-                            if (protection is ICallingCondition callingCondition)
+                            if (protection is IPipelineStage callingCondition)
                             {
-                                if (callingCondition.Condition == CallingConditions.End)
+                                if (callingCondition.Stage == PipelineStages.ModuleWrite)
                                 {
                                     Logger.Information("{0} -> Executing.. ", protection.GetType().FullName);
                                     await protection.ExecuteAsync(protectionContext);
