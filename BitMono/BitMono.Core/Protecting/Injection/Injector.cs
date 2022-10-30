@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting.Injection;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
@@ -26,17 +26,9 @@ namespace BitMono.Core.Injection
             classWithLayout.Fields.Add(fieldWithRVA);
 
             var byteArrayRef = importer.Import(typeof(byte[]));
-            FieldDef fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
+            var fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
             classWithLayout.Fields.Add(fieldInjectedArray);
 
-            /*
-              ldc.i4     XXXsizeofarrayXXX
-              newarr     [mscorlib]System.Byte
-              dup
-              ldtoken    field valuetype className fieldName
-              call       void [mscorlib]System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(class [mscorlib]System.Array, valuetype [mscorlib]System.RuntimeFieldHandle)
-              stsfld     uint8[] bla
-             */
             var systemByte = importer.Import(typeof(byte));
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
@@ -46,12 +38,13 @@ namespace BitMono.Core.Injection
 
             var cctor = classWithLayout.FindOrCreateStaticConstructor();
             var cctorBodyInstructions = cctor.Body.Instructions;
-            cctorBodyInstructions.Insert(0, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
-            cctorBodyInstructions.Insert(1, new Instruction(OpCodes.Newarr, systemByte));
-            cctorBodyInstructions.Insert(2, new Instruction(OpCodes.Dup));
-            cctorBodyInstructions.Insert(3, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
-            cctorBodyInstructions.Insert(4, new Instruction(OpCodes.Call, initializeArrayMethod));
-            cctorBodyInstructions.Insert(5, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
+            var index = 0;
+            cctorBodyInstructions.Insert(index, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Newarr, systemByte));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Dup));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Call, initializeArrayMethod));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
 
             cctor.Body.SimplifyAndOptimizeBranches();
             return fieldInjectedArray;
@@ -76,14 +69,6 @@ namespace BitMono.Core.Injection
             FieldDef fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
             classWithLayout.Fields.Add(fieldInjectedArray);
 
-            /*
-              ldc.i4     XXXsizeofarrayXXX
-              newarr     [mscorlib]System.Byte
-              dup
-              ldtoken    field valuetype className fieldName
-              call       void [mscorlib]System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(class [mscorlib]System.Array, valuetype [mscorlib]System.RuntimeFieldHandle)
-              stsfld     uint8[] bla
-             */
             var systemByte = importer.Import(typeof(byte));
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
@@ -93,12 +78,13 @@ namespace BitMono.Core.Injection
 
             var cctor = classWithLayout.FindOrCreateStaticConstructor();
             var cctorBodyInstructions = cctor.Body.Instructions;
-            cctorBodyInstructions.Insert(0, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
-            cctorBodyInstructions.Insert(1, new Instruction(OpCodes.Newarr, systemByte));
-            cctorBodyInstructions.Insert(2, new Instruction(OpCodes.Dup));
-            cctorBodyInstructions.Insert(3, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
-            cctorBodyInstructions.Insert(4, new Instruction(OpCodes.Call, initializeArrayMethod));
-            cctorBodyInstructions.Insert(5, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
+            var index = 0;
+            cctorBodyInstructions.Insert(index, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Newarr, systemByte));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Dup));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Call, initializeArrayMethod));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
 
             cctor.Body.SimplifyAndOptimizeBranches();
             return fieldInjectedArray;
@@ -122,8 +108,8 @@ namespace BitMono.Core.Injection
         }
         public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null)
         {
-            TypeRef compilerGeneratedAttributeType = moduleDefMD.CorLibTypes.GetTypeRef("System.Runtime.CompilerServices", nameof(CompilerGeneratedAttribute));
-            MemberRefUser compilerGeneratedCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), compilerGeneratedAttributeType);
+            var compilerGeneratedAttributeType = moduleDefMD.CorLibTypes.GetTypeRef("System.Runtime.CompilerServices", nameof(CompilerGeneratedAttribute));
+            var compilerGeneratedCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), compilerGeneratedAttributeType);
             var compilerGeneratedAttribute = new CustomAttribute(compilerGeneratedCtor);
             if (typeDef != null)
             {
@@ -133,7 +119,7 @@ namespace BitMono.Core.Injection
         }
         public void InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text)
         {
-            TypeRef attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
+            var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
 
             MemberRefUser attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void, moduleDefMD.CorLibTypes.String), attributeRef);
             CustomAttribute customAttribute = new CustomAttribute(attributeCtor);
@@ -142,7 +128,7 @@ namespace BitMono.Core.Injection
         }
         public void InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name)
         {
-            TypeRef attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
+            var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
 
             MemberRefUser attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), attributeRef);
             moduleDefMD.CustomAttributes.Add(new CustomAttribute(attributeCtor));
