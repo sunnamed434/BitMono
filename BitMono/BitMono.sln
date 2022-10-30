@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.API", "BitMono.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.Utilities", "BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj", "{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.ExternalComponents", "BitMono.ExternalComponents\BitMono.ExternalComponents.csproj", "{A0C2671D-8645-4D4B-984A-EF3400EEAA91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
