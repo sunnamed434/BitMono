@@ -16,7 +16,7 @@ namespace BitMono.Core.Configuration.Dependencies
         {
             m_Protections = protections;
             m_ProtectionSettings = protectionSettings;
-            m_Logger = logger;
+            m_Logger = logger.ForContext<DependencyResolver>();
         }
 
 
