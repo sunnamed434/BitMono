@@ -1,10 +1,16 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Pipeline;
+using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using dnlib.DotNet.MD;
+using dnlib.DotNet.Writer;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -13,33 +19,73 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
-    public class CallToCalli : IProtection
+    public class CallToCalli : IStageProtection
     {
-        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
-        private readonly IDictionary<string, MethodDef> m_CalliMethods;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
-        public CallToCalli(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, ILogger logger)
+        public CallToCalli(
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
+            ILogger logger)
         {
-            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_CalliMethods = new Dictionary<string, MethodDef>();
-            m_Logger = logger;
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+            m_Logger = logger.ForContext<CallToCalli>();
         }
 
+        public PipelineStages Stage => PipelineStages.ModuleWritten;
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            var importer = new Importer(context.ModuleDefMD);
+            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile);
+            context.ModuleDefMD = moduleDefMD;
+            context.Importer = new Importer(moduleDefMD);
+
+            var runtimeMethodHandle = context.Importer.Import(typeof(RuntimeMethodHandle));
+            var getTypeFromHandleMethod = context.Importer.Import(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
+            {
+                typeof(RuntimeTypeHandle)
+            }));
+            var getModuleMethod = context.Importer.Import(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
+            var resolveMethodMethod = context.Importer.Import(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
+            {
+                typeof(int)
+            }));
+            var getMethodHandleMethod = context.Importer.Import(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
+            var getFunctionPointerMethod = context.Importer.Import(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
+
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(CallToCalli),
+                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                {
+                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    {
+                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+                }
+
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (methodDef.HasBody && methodDef.Body.HasInstructions 
+                    if (methodDef.HasBody && methodDef.Body.HasInstructions
                         && methodDef.DeclaringType.IsGlobalModuleType == false
                         && methodDef.IsConstructor == false
                         && methodDef.NotGetterAndSetter()
-                        && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
                     {
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                            out ObfuscationAttribute methodDefObfuscationAttribute))
+                        {
+                            if (methodDefObfuscationAttribute.Exclude)
+                            {
+                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
+                                continue;
+                            }
+                        }
+
                         for (int i = 0; i < methodDef.Body.Instructions.Count; i++)
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
@@ -48,52 +94,56 @@ namespace BitMono.Protections
                                 {
                                     if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                     {
-                                        var locals = methodDef.Body.Variables;
-                                        var local = locals.Add(new Local(new ValueTypeSig(importer.Import(typeof(RuntimeMethodHandle)))));
+                                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                                            out ObfuscationAttribute memberRefObfuscationAttribute))
+                                        {
+                                            if (memberRefObfuscationAttribute.Exclude)
+                                            {
+                                                m_Logger.Debug("Found {0}, that applyed to member ref, skipping it.", nameof(ObfuscationAttribute));
+                                                continue;
+                                            }
+                                        }
 
-                                        m_Logger.Information("methodDef.HasGenericParameters: " + methodDef.HasGenericParameters);
-                                        m_Logger.Information("memberRef.Signature.ContainsGenericParameter: " + memberRef.Signature.ContainsGenericParameter);
+                                        var locals = methodDef.Body.Variables;
+                                        var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
+
                                         if (methodDef.Body.HasExceptionHandlers == false)
                                         {
                                             methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                            var getTypeFromHandleMethod = importer.Import(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
-                                            {
-                                                typeof(RuntimeTypeHandle)
-                                            }));
-                                            methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, methodDef.DeclaringType));
-                                            methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                            var index = i;
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                            var getModuleMethod = importer.Import(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
-                                            methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                            var resolveMethodMethod = importer.Import(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
-                                            {
-                                                typeof(int)
-                                            }));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
 
-                                            methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
-                                            methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Call, resolveMethodMethod));
-
-                                            var getMethodHandleMethod = importer.Import(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
-                                            var getFunctionPointerMethod = importer.Import(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
-
-                                            methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
-
-                                            methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Stloc, local));
-                                            methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, local));
-
-                                            methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                            methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, memberRef.MethodSig));
-                                            i += 10;
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
+                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
+                                            break;
                                         }
                                     }
                                 }
                             }
-                            
                         }
                     }
                 }
+            }
+
+            var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
+            moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
+            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
+            moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
+
+            using (moduleDefMD)
+            using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                moduleDefMD.Write(fileStream, moduleWriterOptions);
             }
             return Task.CompletedTask;
         }
