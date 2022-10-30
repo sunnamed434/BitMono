@@ -1,7 +1,10 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet.Emit;
+using Serilog;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -12,28 +15,54 @@ namespace BitMono.Protections
 {
     public class BitMethodDotnet : IProtection
     {
-        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+        private readonly ILogger m_Logger;
         private readonly Random m_Random;
 
-        public BitMethodDotnet(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
+        public BitMethodDotnet(
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
+            ILogger logger)
         {
-            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+            m_Logger = logger.ForContext<BitMethodDotnet>();
             m_Random = new Random();
         }
-
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(BitMethodDotnet),
+                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                {
+                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    {
+                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+                }
+
                 if (typeDef.HasMethods)
                 {
                     foreach (var methodDef in typeDef.Methods)
                     {
-                        if (methodDef.HasBody && methodDef.IsConstructor == false
-                            && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                            out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
-                            int randomValueForInsturction = 0;
+                            if (methodDefObfuscationAttribute.Exclude)
+                            {
+                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
+                                continue;
+                            }
+                        }
+
+                        if (methodDef.HasBody && methodDef.IsConstructor == false
+                            && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                        {
+                            var randomValueForInsturction = 0;
                             if (methodDef.Body.Instructions.Count >= 3)
                             {
                                 randomValueForInsturction = m_Random.Next(0, methodDef.Body.Instructions.Count - 3);
@@ -41,8 +70,8 @@ namespace BitMono.Protections
 
                             if (methodDef.NotAsync())
                             {
-                                int randomValue = m_Random.Next(0, 3);
-                                Instruction randomlySelectedInstruction = new Instruction();
+                                var randomValue = m_Random.Next(0, 3);
+                                var randomlySelectedInstruction = new Instruction();
                                 randomlySelectedInstruction.OpCode = randomValue switch
                                 {
                                     0 => OpCodes.Readonly,
