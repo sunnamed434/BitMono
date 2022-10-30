@@ -2,17 +2,21 @@
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Analyzing;
 using BitMono.API.Protecting.Injection;
-using BitMono.API.Protecting.Injection.Fields;
-using BitMono.API.Protecting.Injection.Methods;
-using BitMono.API.Protecting.Injection.Types;
+using BitMono.API.Protecting.Injection.FieldDefs;
+using BitMono.API.Protecting.Injection.MethodDefs;
+using BitMono.API.Protecting.Injection.TypeDefs;
 using BitMono.API.Protecting.Renaming;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Injection;
-using BitMono.Core.Protecting.Injection.Fields;
-using BitMono.Core.Protecting.Injection.Methods;
-using BitMono.Core.Protecting.Injection.Types;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Injection.FieldDefs;
+using BitMono.Core.Protecting.Injection.MethodDefs;
+using BitMono.Core.Protecting.Injection.TypeDefs;
 using BitMono.Core.Protecting.Renaming;
+using BitMono.Core.Protecting.Resolvers;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.IO;
 using System.Reflection;
@@ -33,28 +37,31 @@ namespace BitMono.Host.Modules
             m_ConfigureConfiguration = configureConfiguration;
         }
 
-
         protected override void Load(ContainerBuilder containerBuilder)
         {
             var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var file = Path.Combine(currentAssemblyDirectory, "logs", "bitMono-{HalfHour}.log");
+            var fileFormat = string.Format(Path.Combine(currentAssemblyDirectory, "logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now).Replace("\\", "/");
+
+            var loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Async(configure =>
+                {
+                    configure.File(fileFormat, rollingInterval: RollingInterval.Infinite, restrictedToMinimumLevel: LogEventLevel.Information,
+                        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}");
+                });
+
+            m_ConfigureLogger?.Invoke(loggerConfiguration);
+
+            var logger = loggerConfiguration.CreateLogger();
 
             containerBuilder.Register<ILogger>((_, _) =>
             {
-                var loggerConfiguration = new LoggerConfiguration();
-                m_ConfigureLogger?.Invoke(loggerConfiguration);
-
-                return loggerConfiguration
-                    .WriteTo.Async((c) =>
-                    {
-                        c.RollingFile(file, shared: true);
-                    })
-                    .CreateLogger();
+                return logger;
             });
 
             var configurationBuilder = new ConfigurationBuilder();
             m_ConfigureConfiguration?.Invoke(configurationBuilder);
-            configurationBuilder.AddJsonFile("config.json", optional: true, reloadOnChange: true);
+            configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             configurationBuilder.AddJsonFile("criticals.json", optional: true, reloadOnChange: true);
             configurationBuilder.AddJsonFile("protections.json", optional: true, reloadOnChange: true);
             configurationBuilder.AddJsonFile("translations.json", optional: true, reloadOnChange: true);
@@ -69,32 +76,32 @@ namespace BitMono.Host.Modules
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<TypeSearcher>()
-                .As<ITypeSearcher>()
+            containerBuilder.RegisterType<TypeDefSearcher>()
+                .As<ITypeDefSearcher>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<TypeRemover>()
-                .As<ITypeRemover>()
+            containerBuilder.RegisterType<TypeDefRemover>()
+                .As<ITypeDefRemover>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<MethodSearcher>()
-                .As<IMethodSearcher>()
+            containerBuilder.RegisterType<MethodDefsSearcher>()
+                .As<IMethodDefSearcher>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<MethodRemover>()
-                .As<IMethodRemover>()
+            containerBuilder.RegisterType<MethodDefsRemover>()
+                .As<IMethodDefRemover>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<FieldSearcher>()
+            containerBuilder.RegisterType<FieldDefSearcher>()
                 .As<IFieldSearcher>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<FieldRemover>()
+            containerBuilder.RegisterType<FieldDefRemover>()
                 .As<IFieldRemover>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
@@ -104,7 +111,36 @@ namespace BitMono.Host.Modules
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            containerBuilder.RegisterAssemblyTypes(assemblies)
+                .PublicOnly()
+                .Where(t => t.GetInterface(nameof(IDnlibDefAttributeResolver)) != null)
+                .AsImplementedInterfaces()
+                .OwnedByLifetimeScope()
+                .SingleInstance();
+
+            containerBuilder.RegisterAssemblyTypes(assemblies)
+                .PublicOnly()
+                .Where(t => t.GetInterface(nameof(IObfuscationAttributeExcludingResolver)) != null)
+                .AsImplementedInterfaces()
+                .OwnedByLifetimeScope()
+                .SingleInstance();
+
+            containerBuilder.RegisterAssemblyTypes(assemblies)
+                .PublicOnly()
+                .Where(t => t.GetInterface(nameof(IMethodImplAttributeExcludingResolver)) != null)
+                .AsImplementedInterfaces()
+                .OwnedByLifetimeScope()
+                .SingleInstance();
+
+            containerBuilder.RegisterAssemblyTypes(assemblies)
+                .PublicOnly()
+                .Where(t => t.GetInterface(nameof(IAttemptAttributeResolver)) != null)
+                .AsImplementedInterfaces()
+                .OwnedByLifetimeScope()
+                .SingleInstance();
+
+            containerBuilder.RegisterAssemblyTypes(assemblies)
                 .PublicOnly()
                 .AsClosedTypesOf(typeof(ICriticalAnalyzer<>))
                 .OwnedByLifetimeScope()
@@ -112,7 +148,9 @@ namespace BitMono.Host.Modules
 
             containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
                 .PublicOnly()
-                .Where(t => t.GetInterface(nameof(IProtection)) != null)
+                .Where(t => 
+                    t.GetInterface(nameof(IProtection)) != null 
+                    && t.GetInterface(nameof(IProtectionPhase)) == null)
                 .OwnedByLifetimeScope()
                 .AsImplementedInterfaces()
                 .SingleInstance();

@@ -17,6 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.7" />
     <PackageReference Include="Microsoft.JSInterop" Version="6.0.9" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
   </ItemGroup>
 

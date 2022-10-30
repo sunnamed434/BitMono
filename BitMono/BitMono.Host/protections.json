@@ -10,6 +10,34 @@
     },
     {
       "Name": "ControlFlow",
+      "Enabled": false
+    },
+    {
+      "Name": "ObjectReturnType",
+      "Enabled": false
+    },
+    {
+      "Name": "BitMethodDotnet",
+      "Enabled": false
+    },
+    {
+      "Name": "FullRenamer",
+      "Enabled": false
+    },
+    {
+      "Name": "AntiDebugBreakpoints",
+      "Enabled": false
+    },
+    {
+      "Name": "StringsEncryption",
+      "Enabled": false
+    },
+    {
+      "Name": "FieldsHiding",
+      "Enabled": false
+    },
+    {
+      "Name": "DotNetHook",
       "Enabled": true
     },
     {
@@ -17,31 +45,7 @@
       "Enabled": true
     },
     {
-      "Name": "ObjectReturnType",
-      "Enabled": true
-    },
-    {
-      "Name": "BitMethodDotnet",
-      "Enabled": true
-    },
-    {
-      "Name": "FullRenamer",
-      "Enabled": true
-    },
-    {
-      "Name": "AntiDebugBreakpoints",
-      "Enabled": true
-    },
-    {
-      "Name": "StringsEncryption",
-      "Enabled": true
-    },
-    {
       "Name": "BitDotNet",
-      "Enabled": false
-    },
-    {
-      "Name": "FieldsHiding",
       "Enabled": false
     }
   ]

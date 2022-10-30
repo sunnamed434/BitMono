@@ -1,18 +1,19 @@
 ﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Pipeline;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
-    public class BitDotNet : IProtection, ICallingCondition
+    public class BitDotNet : IStageProtection
     {
-        public CallingConditions Condition => CallingConditions.End;
-
+        public PipelineStages Stage => PipelineStages.ModuleWritten;
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            using (var stream = File.Open(context.BitMonoContext.ProtectedModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (var stream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             using (var reader = new BinaryReader(stream))
             using (var writer = new BinaryWriter(stream))
             {
@@ -36,7 +37,8 @@ namespace BitMono.Protections
                 var peHeader = reader.ReadUInt32();
                 stream.Position = peHeader;
 
-                writer.Write(0x00014550);
+                const int bittenPEHeaderWithExtraByte = 0x00014550;
+                writer.Write(bittenPEHeaderWithExtraByte);
 
                 stream.Position += 0x2;
                 var numberOfSections = reader.ReadUInt16();

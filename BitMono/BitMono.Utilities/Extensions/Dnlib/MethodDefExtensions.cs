@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using TypeAttributes = dnlib.DotNet.TypeAttributes;
 
-namespace BitMono.Utilities.Extensions.Dnlib
+namespace BitMono.Utilities.Extensions.dnlib
 {
     public static class MethodDefExtensions
     {

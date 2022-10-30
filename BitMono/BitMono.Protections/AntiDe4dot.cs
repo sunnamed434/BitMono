@@ -1,6 +1,9 @@
 ﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Injection;
-using Microsoft.Extensions.Configuration;
+using BitMono.API.Protecting.Resolvers;
+using Serilog;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,10 +12,17 @@ namespace BitMono.Protections
     public class AntiDe4dot : IProtection
     {
         private readonly IInjector m_Injector;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly ILogger m_Logger;
 
-        public AntiDe4dot(IInjector injector)
+        public AntiDe4dot(
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            IInjector injector, 
+            ILogger logger)
         {
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
             m_Injector = injector;
+            m_Logger = logger;
         }
         
 

@@ -1,67 +1,77 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+        private readonly ILogger m_Logger;
 
-        public AntiDebugBreakpoints(MethodDefCriticalAnalyzer methodDefCriticalAnalyzer)
+        public AntiDebugBreakpoints(
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
+            ILogger logger)
         {
-            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+            m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_Logger = logger;
         }
 
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            var importer = new Importer(context.ModuleDefMD);
             List<IMethod> threadSleepMethods = new List<IMethod>
             {
-                importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+                context.Importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
                 {
                     typeof(int)
                 })),
-                importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+                context.Importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
                 {
                     typeof(TimeSpan)
                 })),
-                importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+                context.Importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
                 {
                     typeof(int)
                 })),
-                importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+                context.Importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
                 {
                     typeof(TimeSpan)
                 })),
-                importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+                context.Importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
                 {
                     typeof(int),
                     typeof(CancellationToken),
                 })),
-                importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+                context.Importer.Import(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
                 {
                     typeof(TimeSpan),
                     typeof(CancellationToken),
                 })),
             };
 
-            var dateTimeUtcNowMethod = importer.Import(typeof(DateTime).GetMethod("get_UtcNow"));
-            var dateTimeSubtractionMethod = importer.Import(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
+            var dateTimeUtcNowMethod = context.Importer.Import(typeof(DateTime).GetMethod("get_UtcNow"));
+            var dateTimeSubtractionMethod = context.Importer.Import(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
             {
                 typeof(DateTime),
                 typeof(DateTime)
             }));
-            var timeSpanTotalMillisecondsMethod = importer.Import(typeof(TimeSpan).GetMethod("get_TotalMilliseconds"));
-            var environmentFailFast = importer.Import(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
+            var timeSpanTotalMillisecondsMethod = context.Importer.Import(typeof(TimeSpan).GetMethod("get_TotalMilliseconds"));
+            var environmentFailFast = context.Importer.Import(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
             {
                 typeof(string)
             }));
@@ -70,7 +80,7 @@ namespace BitMono.Protections
             {
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
+                    if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
                         && methodDef.NotGetterAndSetter()
                         && methodDef.IsConstructor == false)
                     {
@@ -86,7 +96,7 @@ namespace BitMono.Protections
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                     && methodDef.Body.Instructions[i].Operand is MemberRef methodRef)
                                 {
-                                    if (threadSleepMethods.Any(t => new SigComparer().Equals(methodRef, t)))
+                                    if (threadSleepMethods.Any(m => new SigComparer().Equals(methodRef, m)))
                                     {
                                         methodShouldBeIgnored = true;
                                         break;
@@ -100,23 +110,23 @@ namespace BitMono.Protections
                                 continue;
                             }
 
-                            var dateTimeLocal = methodDef.Body.Variables.Add(new Local(importer.ImportAsTypeSig(typeof(DateTime))));
-                            var timeSpanLocal = methodDef.Body.Variables.Add(new Local(importer.ImportAsTypeSig(typeof(TimeSpan))));
-                            var intValue = methodDef.Body.Variables.Add(new Local(importer.ImportAsTypeSig(typeof(int))));
-                            
+                            var dateTimeLocal = methodDef.Body.Variables.Add(new Local(context.Importer.ImportAsTypeSig(typeof(DateTime))));
+                            var timeSpanLocal = methodDef.Body.Variables.Add(new Local(context.Importer.ImportAsTypeSig(typeof(TimeSpan))));
+                            var intValue = methodDef.Body.Variables.Add(new Local(context.Importer.ImportAsTypeSig(typeof(int))));
+
                             methodDef.Body.Instructions.Insert(startIndex++, new Instruction(OpCodes.Call, dateTimeUtcNowMethod));
                             methodDef.Body.Instructions.Insert(startIndex++, new Instruction(OpCodes.Stloc_S, dateTimeLocal));
 
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Call, dateTimeUtcNowMethod));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldloc_S, dateTimeLocal));
-                            
+
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Call, dateTimeSubtractionMethod));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Stloc_S, timeSpanLocal));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldloca_S, timeSpanLocal));
 
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Call, timeSpanTotalMillisecondsMethod));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldc_R8, 5000.0));
-                            
+
                             var nopInstruction = new Instruction(OpCodes.Nop);
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ble_Un_S, nopInstruction));
                             methodDef.Body.Instructions.Insert(endIndex++, new Instruction(OpCodes.Ldc_I4_1));

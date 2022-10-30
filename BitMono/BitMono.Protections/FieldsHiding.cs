@@ -1,9 +1,10 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Analyzing;
+using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Pipeline;
+using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using dnlib.DotNet.MD;
-using dnlib.DotNet.Writer;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,28 +12,40 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
-    public class FieldsHiding : IProtection, ICallingCondition
+    public class FieldsHiding : IStageProtection
     {
-        private readonly FieldDefCriticalAnalyzer m_FieldDefCriticalAnalyzer;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+        private readonly ILogger m_Logger;
 
-        public FieldsHiding(FieldDefCriticalAnalyzer fieldDefCriticalAnalyzer)
+        public FieldsHiding(
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
+            ILogger logger)
         {
-            m_FieldDefCriticalAnalyzer = fieldDefCriticalAnalyzer;
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+            m_Logger = logger;
         }
 
-        public CallingConditions Condition => CallingConditions.End;
-
+        public PipelineStages Stage => PipelineStages.ModuleWritten;
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.ProtectedModuleFile, new ModuleCreationOptions(CLRRuntimeReaderKind.Mono));
-            var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
-            moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
-            moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
+            if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, context.ModuleDefMD.Assembly, nameof(AntiDe4dot), out ObfuscationAttribute obfuscationAttribute))
+            {
+                if (obfuscationAttribute.Exclude)
+                {
+                    m_Logger.Debug("Skip protection because {0} declared in Assembly.", nameof(ObfuscationAttribute));
+                    return Task.CompletedTask;
+                }
+            }
+
+            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
 
             var importer = new Importer(moduleDefMD);
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
@@ -57,7 +70,7 @@ namespace BitMono.Protections
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_FieldDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+                        if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
                         {
                             if (fieldDef.HasFieldRVA)
                             {
@@ -87,9 +100,9 @@ namespace BitMono.Protections
                 }
             }
             using (moduleDefMD)
-            using (var fileStream = File.Open(context.BitMonoContext.ProtectedModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                moduleDefMD.Write(fileStream, moduleWriterOptions);
+                moduleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
             context.ModuleDefMD = moduleDefMD;
             return Task.CompletedTask;

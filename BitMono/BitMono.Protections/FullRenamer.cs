@@ -1,8 +1,13 @@
 ﻿using BitMono.API.Protecting;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Renaming;
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Utilities.Extensions.Dnlib;
+using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Analyzing.TypeDefs;
+using BitMono.Utilities.Extensions.dnlib;
+using Serilog;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,24 +15,24 @@ namespace BitMono.Protections
 {
     public class FullRenamer : IProtection
     {
-        private readonly TypeDefCriticalAnalyzer m_TypeDefCriticalAnalyzer;
-        private readonly MethodDefCriticalAnalyzer m_MethodDefCriticalAnalyzer;
-        private readonly FieldDefCriticalAnalyzer m_FieldDefCriticalAnalyzer;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly TypeDefModelCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
+        private readonly ILogger m_Logger;
 
         public FullRenamer(
-            TypeDefCriticalAnalyzer typeDefCriticalAnalyzer, 
-            MethodDefCriticalAnalyzer methodDefCriticalAnalyzer, 
-            FieldDefCriticalAnalyzer fieldDefCriticalAnalyzer, 
-            TypeDefModelCriticalAnalyzer typeDefModelCriticalAnalyzer, 
-            IRenamer renamer)
+            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
+            TypeDefModelCriticalAnalyzer typeDefModelCriticalAnalyzer,
+            IRenamer renamer,
+            ILogger logger)
         {
-            m_TypeDefCriticalAnalyzer = typeDefCriticalAnalyzer;
-            m_MethodDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_FieldDefCriticalAnalyzer = fieldDefCriticalAnalyzer;
+            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_TypeDefModelCriticalAnalyzer = typeDefModelCriticalAnalyzer;
             m_Renamer = renamer;
+            m_Logger = logger;
         }
 
 
@@ -36,7 +41,7 @@ namespace BitMono.Protections
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
                 if (typeDef.IsGlobalModuleType == false
-                    && m_TypeDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
+                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
                     && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
                 {
                     m_Renamer.Rename(context, typeDef);
@@ -45,7 +50,7 @@ namespace BitMono.Protections
                     {
                         foreach (var fieldDef in typeDef.Fields.ToArray())
                         {
-                            if (m_FieldDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+                            if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
                             {
                                 m_Renamer.Rename(context, fieldDef);
                             }
@@ -58,7 +63,7 @@ namespace BitMono.Protections
                         {
                             if (methodDef.IsConstructor == false
                                 && methodDef.IsVirtual == false
-                                && m_MethodDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
                             {
                                 m_Renamer.Rename(context, methodDef);
                                 if (methodDef.HasParameters())

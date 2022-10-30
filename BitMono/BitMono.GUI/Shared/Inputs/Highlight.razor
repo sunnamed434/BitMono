@@ -32,7 +32,7 @@
     {
         TextAreaText += new StringBuilder()
             .Append(text)
-            .Append("\n")
+            .Append(Environment.NewLine)
             .ToString();
         await InvokeAsync(StateHasChanged);
         @if (AutoScrolling)
