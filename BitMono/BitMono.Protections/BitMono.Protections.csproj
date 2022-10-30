@@ -19,6 +19,8 @@
     <PackageReference Include="Autofac" Version="6.4.0" />
     <PackageReference Include="Autofac.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-rc.2.22472.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.2.22472.3" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
@@ -28,6 +30,7 @@
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
     <ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
     <ProjectReference Include="..\BitMono.Encryption\BitMono.Encryption.csproj" />
+    <ProjectReference Include="..\BitMono.ExternalComponents\BitMono.ExternalComponents.csproj" />
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
   </ItemGroup>
 
