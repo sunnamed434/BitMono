@@ -82,6 +82,28 @@ Always you could write in `protections.json` - protections which are doesnt ment
     }
   ]
 }
+
+```
+
+## Excluding Protection(s)
+More info about excluding - ctor, cctor, interfaces etc to read is **[here](https://github.com/sunnamed434/BitMono/wiki/Excluding-Protection(s))**
+```cs
+[assembly: Obfuscation(Feature = "Name")] // Ignoring whole assembly or in the AssemblyInfo.cs (sometimes it would not exist in your project)
+namespace Project
+{
+}
+
+[Obfuscation(Feature = "CallToCalli")]
+public class ProductModel
+{
+    [Obfuscation(Feature = "Renamer")]
+    public string Name { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)] // Add this attribute to ignore renaming of method
+    void Method()
+    {
+    }
+}
 ```
 
 ## No required dependency (Deprecated file for obfuscation)
@@ -96,7 +118,7 @@ Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture
   "NoInliningMethodObfuscationExcluding": true,
 
   // Excluding from obfuscation if it is a type/method and etc 
-  // should has an [Obfuscation(Feature = "Name", Exclude = true)] attribute with Protection name (Feature) and Excluding set to true
+  // should has an [Obfuscation(Feature = "Name")] attribute with Protection name (Feature) and Excluding set to true
   "ObfuscationAttributeObfuscationExcluding": true,
 
   // Sometimes when you don`t have needed dependency for your app, a tons of reasons could be for that, 
@@ -108,51 +130,6 @@ Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture
   "Logging": {
     "LogsFile": "logs.txt"
   },
-}
-```
-
-## Except from Protecting
-Ignoring classes (Models)
-```cs
-using System;
-using System.Xml.Serialization;
-using Newtonsoft.Json;
-
-[Serializable] // Marking as serializable attribute is enough to ignore everything in this model
-class ProductModel
-{
-    [XmlAttribute("Product Name")] // Marking as Xml attribute
-    string Name { get; set; }
-    [JsonProperty("Product Description")] // Or marking as Json Property
-    string Description { get; set; }
-    [XmlAttribute("Product Price")]
-    double Price { get; set; }
-}
-```
-
-Ignoring classes and their members
-```cs
-using System.Runtime.CompilerServices;
-
-// Set ApplyToMembers to true, to apply it to all members in type,
-// if you have set `ApplyToMembers` to true DONT mark other methods with the same attribute for all members,
-// enough to add attribute to whole class type to ignore obfuscation of concrete protection
-[Obfuscation(Feature = "Renamer", Exclude = true, ApplyToMembers = true)] // Add this attribute to ignore renaming of method
-class MyClass
-{
-    [MethodImpl(MethodImplOptions.NoInlining)] // Add this attribute to ignore renaming of method
-    void MyMethod()
-    {
-        // potential critical code used to be here
-    }
-
-    // Add this attribute to ignore renaming of method
-    [Obfuscation(Feature = "Renamer", Exclude = true)]  // This attribute is won`t work in this case, because 'MyClass' has attribute with the same feature and `ApplyToMembers` set to true
-    [Obfuscation(Feature = "CallToCalli", Exclude = true)] 
-    void MyAnotherMethod()
-    {
-        // potential critical code used to be here
-    }
 }
 ```
 
@@ -201,5 +178,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
 Credits
 -------
 **[0x59R11](https://github.com/0x59R11)** for his acquaintance in big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
+
 **[Gazzi](https://github.com/GazziFX)** for his help that [me](https://github.com/sunnamed434) asked a lot!
-**[Elliesaur](https://github.com/Elliesaur)** for his acquaintance in **(https://github.com/Elliesaur/DotNetHook)** that hides methods execution.
+
+**[Elliesaur](https://github.com/Elliesaur)** for his acquaintance in **[DotNetHook](https://github.com/Elliesaur/DotNetHook)** that hides methods execution.

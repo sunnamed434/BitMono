@@ -19,7 +19,6 @@ namespace BitMono.Core.Configuration.Dependencies
             m_Logger = logger.ForContext<DependencyResolver>();
         }
 
-
         public ICollection<IProtection> Sort(out ICollection<string> disabled)
         {
             List<IProtection> foundProtections = new List<IProtection>();
