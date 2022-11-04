@@ -201,5 +201,7 @@ Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your poten
 Credits
 -------
 **[0x59R11](https://github.com/0x59R11)** for his acquaintance in big part of **[BitDotNet](https://github.com/0x59R11/BitDotNet)** that breaks files for mono executables!
+
 **[Gazzi](https://github.com/GazziFX)** for his help that [me](https://github.com/sunnamed434) asked a lot!
-**[Elliesaur](https://github.com/Elliesaur)** for his acquaintance in **(https://github.com/Elliesaur/DotNetHook)** that hides methods execution.
+
+**[Elliesaur](https://github.com/Elliesaur)** for his acquaintance in **[DotNetHook](https://github.com/Elliesaur/DotNetHook)** that hides methods execution.
