@@ -23,7 +23,6 @@ namespace BitMono.Core.Protecting.Resolvers
         {
         }
 
-
         public Task<bool> ResolveAsync(CancellationToken cancellationToken = default)
         {
             var resolvingSucceed = true;
