@@ -34,7 +34,7 @@ namespace BitMono.Protections
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            List<IMethod> threadSleepMethods = new List<IMethod>
+            var threadSleepMethods = new List<IMethod>
             {
                 context.Importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
                 {
