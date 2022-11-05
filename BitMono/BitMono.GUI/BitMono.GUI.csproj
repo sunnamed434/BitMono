@@ -153,10 +153,10 @@
 		<None Include="wwwroot\vendor\bootstrap\mixins\_visually-hidden.scss" />
 		<None Include="wwwroot\vendor\bootstrap\utilities\_api.scss" />
 		<None Include="wwwroot\vendor\bootstrap\vendor\_rfs.scss" />
-		<None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
-		<None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
-		<None Include="wwwroot\css\open-iconic\ICON-LICENSE" />
-		<None Include="wwwroot\css\open-iconic\README.md" />
+		<None Include="wwwroot\vendor\open-iconic\FONT-LICENSE" />
+		<None Include="wwwroot\vendor\open-iconic\font\fonts\open-iconic.svg" />
+		<None Include="wwwroot\vendor\open-iconic\ICON-LICENSE" />
+		<None Include="wwwroot\vendor\open-iconic\README.md" />
 		<None Include="wwwroot\vendor\fontawesome\js\all.js" />
 		<None Include="wwwroot\vendor\fontawesome\js\all.min.js" />
 		<None Include="wwwroot\vendor\fontawesome\js\brands.js" />
