@@ -5,7 +5,7 @@ using dnlib.DotNet.Emit;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace BitMono.Core.Injection
+namespace BitMono.Core.Protecting.Injection
 {
     public class Injector : IInjector
     {
