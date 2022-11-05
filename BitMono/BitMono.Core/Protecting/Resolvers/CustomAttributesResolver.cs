@@ -9,7 +9,7 @@ namespace BitMono.Core.Protecting.Resolvers
     public class CustomAttributesResolver : ICustomAttributesResolver
     {
         [return: AllowNull]
-        public IEnumerable<TAttribute> Resolve<TAttribute>(IHasCustomAttribute from)
+        public IEnumerable<TAttribute> Resolve<TAttribute>(IHasCustomAttribute from, Func<TAttribute, bool> strip)
             where TAttribute : Attribute
         {
             for (int i = 0; i < from.CustomAttributes.Count; i++)
@@ -29,9 +29,14 @@ namespace BitMono.Core.Protecting.Resolvers
                         {
                             propertyInfo.SetValue(attribute, customAttributeProperty.Value);
                         }
-                        yield return attribute;
                     }
                 }
+
+                if (strip?.Invoke(attribute) == true)
+                {
+                    from.CustomAttributes.RemoveAt(i);
+                }
+                yield return attribute;
             }
         }
     }
