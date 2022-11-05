@@ -1,8 +1,7 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -58,12 +57,12 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(CallToCalli),
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(CallToCalli),
                     out ObfuscationAttribute typeDefObfuscationAttribute))
                 {
-                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    if (typeDefObfuscationAttribute.Exclude)
                     {
-                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
                     }
                 }
@@ -76,12 +75,12 @@ namespace BitMono.Protections
                         && methodDef.NotGetterAndSetter()
                         && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(CallToCalli),
                             out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
                             if (methodDefObfuscationAttribute.Exclude)
                             {
-                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
+                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
                             }
                         }
@@ -94,16 +93,6 @@ namespace BitMono.Protections
                                 {
                                     if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                     {
-                                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
-                                            out ObfuscationAttribute memberRefObfuscationAttribute))
-                                        {
-                                            if (memberRefObfuscationAttribute.Exclude)
-                                            {
-                                                m_Logger.Debug("Found {0}, that applyed to member ref, skipping it.", nameof(ObfuscationAttribute));
-                                                continue;
-                                            }
-                                        }
-
                                         var locals = methodDef.Body.Variables;
                                         var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
 
