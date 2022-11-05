@@ -50,6 +50,8 @@ Open **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections
 ## Quick Start
 `BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI (GUI Windows only)`
 
+Drop dependencies in `base` directory
+
 ## Configuring Protections
 Use `protections.json` - by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
 
