@@ -21,10 +21,10 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public bool TryResolve(IHasCustomAttribute from, string feature, [AllowNull] out ObfuscationAttribute obfuscationAttribute)
         {
-            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, (_) =>
+            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, _ =>
             {
                 return m_Configuration.GetValue<bool>(nameof(AppSettings.ObfuscationAttributeObfuscationExcluding)) == true;
-            }, (o) => o.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase), out obfuscationAttribute);
+            }, o => o.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase), attribute => attribute.StripAfterObfuscation, out obfuscationAttribute);
 
             if (resolvingSucceed == false)
             {
