@@ -1,4 +1,4 @@
-﻿using BitMono.API.Protecting.Contexts;
+﻿using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Renaming;
 using BitMono.Core.Protecting.Analyzing.Naming;
 using dnlib.DotNet;
