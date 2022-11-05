@@ -57,11 +57,13 @@ _Executing of protections depends how they are located in `protections.json` (pr
 
 Lets look at this example, first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `BitDotNet` and `FieldsHiding`.
 Always you could write in `protections.json` - protections which are doesnt mentioned here or if you create protection by yourself.
+
+How to **[edit](https://raw.githubusercontent.com/sunnamed434/BitMono/blob/main/BitMono/BitMono.Host/README.MD#imporving-obfuscation-process-for-everyone)**
 ```json
 {
   "Protections": [
     {
-      "Name": "BitDotNet", // Executing always after all protections because of Calling Condition
+      "Name": "BitDotNet", // Executing always after all protections
       "Enabled": true,
     }
     {
@@ -77,7 +79,7 @@ Always you could write in `protections.json` - protections which are doesnt ment
       "Enabled": true
     },
     {
-      "Name": "FieldsHiding", // Executing always after all protections because of Calling Condition
+      "Name": "FieldsHiding", // Executing always after all protections
       "Enabled": true
     }
   ]
@@ -109,6 +111,8 @@ public class ProductModel
 ## No required dependency (Deprecated file for obfuscation)
 Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 <br>Use `appsettings.json` and set `FailOnNoRequiredDependency` to false, be careful with this parameter, change it in cases when file truly deprecated
+
+How to [edit](https://raw.githubusercontent.com/sunnamed434/BitMono/blob/main/BitMono/BitMono.Host/README.MD#imporving-obfuscation-process-for-everyone)
 ```json
 {
   // Adding visible things that shows you have been used BitMono to protect your app
@@ -140,6 +144,7 @@ Use `criticals.json`
 Add to `CriticalMethods`, `CriticalInterfaces` or `CriticalBaseTypes` your potential critical things if you have it. 
 <br>There is already supported all `Unity` methods and third-party frameworks as `RocketMod`, `rust-oxide-umod`, `OpenMod`.
 
+How to [edit](https://raw.githubusercontent.com/sunnamed434/BitMono/blob/main/BitMono/BitMono.Host/README.MD#imporving-obfuscation-process-for-everyone)
 ```json
 {
   "CriticalMethods": [
