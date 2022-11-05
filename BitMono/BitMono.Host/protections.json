@@ -2,39 +2,35 @@
   "Protections": [
     {
       "Name": "AntiILdasm",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": false
-    },
-    {
-      "Name": "ControlFlow",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "BitMethodDotnet",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "FullRenamer",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDebugBreakpoints",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "StringsEncryption",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "FieldsHiding",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "DotNetHook",
