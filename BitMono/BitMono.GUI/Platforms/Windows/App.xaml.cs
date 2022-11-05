@@ -16,5 +16,10 @@ namespace BitMono.GUI.WinUI
         {
             this.InitializeComponent();
         }
+
+        protected override MauiApp CreateMauiApp()
+        {
+            return MauiProgram.CreateMauiApp();
+        }
     }
 }
