@@ -36,11 +36,10 @@ namespace BitMono.Protections
                 {
                     if (typeDefObfuscationAttribute.Exclude)
                     {
-                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
                     }
                 }
-
                 if (typeDef.HasMethods)
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
@@ -50,7 +49,7 @@ namespace BitMono.Protections
                         {
                             if (methodDefObfuscationAttribute.Exclude)
                             {
-                                m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
                             }
                         }
