@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
@@ -77,10 +77,10 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(DotNetHook),
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(DotNetHook),
                     out ObfuscationAttribute typeDefObfuscationAttribute))
                 {
-                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    if (typeDefObfuscationAttribute.Exclude)
                     {
                         m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
                         continue;
@@ -91,7 +91,7 @@ namespace BitMono.Protections
                 {
                     if (methodDef.HasBody)
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(DotNetHook),
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(DotNetHook),
                             out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
                             if (methodDefObfuscationAttribute.Exclude)
