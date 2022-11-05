@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Configuration.Dependencies;
@@ -37,15 +37,15 @@ public class Program
         var encryptionModuleDefMD = ModuleDefMD.Load(EncryptionFile);
         var externalComponentsModuleDefMD = ModuleDefMD.Load(ExternalComponentsFile);
 
-        var hello = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
+        var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
         {
             configureLogger.WriteTo.Async(configure => configure.Console(
             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
         })).Build();
 
-        var logger = hello.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
-        var configuration = hello.LifetimeScope.Resolve<IConfiguration>();
-        var obfuscationAttributeExcludingResolver = hello.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
+        var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
+        var configuration = serviceProvider.LifetimeScope.Resolve<IConfiguration>();
+        var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         Directory.CreateDirectory("base");
@@ -137,13 +137,13 @@ public class Program
         logger.Information("Loaded Module {0}", moduleDefMD.Name);
         logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
 
-        var protections = hello.LifetimeScope.Resolve<ICollection<IProtection>>();
+        var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
         protections = new DependencyResolver(protections, configuration.GetProtectionSettings(), logger)
             .Sort(out ICollection<string> skipped);
         var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
         var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
         var obfuscationAttributeExcludingProtections = protections.Where(p =>
-            obfuscationAttributeExcludingResolver.TryResolve(protectionContext, moduleDefMD.Assembly, p.GetType().Name, out ObfuscationAttribute obfuscationAttribute)
+            obfuscationAttributeExcludingResolver.TryResolve(moduleDefMD.Assembly, p.GetType().Name, out ObfuscationAttribute obfuscationAttribute)
             && obfuscationAttribute.Exclude);
 
         protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
@@ -344,7 +344,7 @@ public class Program
         logger.Information("Today is your day! Generating helpful tip for you - see it a bit down!");
         logger.Information(tip);
 
-        await hello.DisposeAsync();
+        await serviceProvider.DisposeAsync();
         Console.ReadLine();
     }
 }
