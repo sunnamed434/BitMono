@@ -1,4 +1,4 @@
-﻿namespace BitMono.API.Protecting.Contexts
+﻿namespace BitMono.API.Protecting.Context
 {
     public class BitMonoContext
     {
