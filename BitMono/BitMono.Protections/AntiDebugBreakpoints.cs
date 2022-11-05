@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
@@ -28,7 +28,7 @@ namespace BitMono.Protections
         {
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
             m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
-            m_Logger = logger;
+            m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
 
@@ -78,8 +78,28 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(AntiDebugBreakpoints),
+                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                {
+                    if (typeDefObfuscationAttribute.Exclude)
+                    {
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+                }
+
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
+                    if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(AntiDebugBreakpoints),
+                    out ObfuscationAttribute methodDefObfuscationAttribute))
+                    {
+                        if (methodDefObfuscationAttribute.Exclude)
+                        {
+                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+                    }
+
                     if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
                         && methodDef.NotGetterAndSetter()
                         && methodDef.IsConstructor == false)
@@ -96,7 +116,7 @@ namespace BitMono.Protections
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                     && methodDef.Body.Instructions[i].Operand is MemberRef methodRef)
                                 {
-                                    if (threadSleepMethods.Any(m => new SigComparer().Equals(methodRef, m)))
+                                    if (threadSleepMethods.Any(t => new SigComparer().Equals(methodRef, t)))
                                     {
                                         methodShouldBeIgnored = true;
                                         break;
