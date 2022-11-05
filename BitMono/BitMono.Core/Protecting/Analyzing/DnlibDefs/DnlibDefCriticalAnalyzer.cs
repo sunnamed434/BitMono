@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using dnlib.DotNet;
 
 namespace BitMono.Core.Protecting.Analyzing.DnlibDefs
