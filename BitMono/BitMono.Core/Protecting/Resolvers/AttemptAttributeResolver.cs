@@ -15,10 +15,10 @@ namespace BitMono.Core.Protecting.Resolvers
             m_CustomAttributesResolver = customAttributesResolver;
         }
 
-        public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Predicate<TAttribute> review, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] out TAttribute attribute)
+        public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Predicate<TAttribute> review, [AllowNull] Func<TAttribute, bool> predicate, Func<TAttribute, bool> strip, [AllowNull] out TAttribute attribute)
             where TAttribute : Attribute
         {
-            attribute = m_CustomAttributesResolver.Resolve<TAttribute>(from).FirstOrDefault(predicate);
+            attribute = m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault(predicate);
             if (attribute == null)
             {
                 return false;
