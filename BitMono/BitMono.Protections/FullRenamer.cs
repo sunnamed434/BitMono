@@ -1,15 +1,15 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Analyzing.TypeDefs;
 using BitMono.Utilities.Extensions.dnlib;
-using Serilog;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
@@ -32,7 +32,7 @@ namespace BitMono.Protections
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_TypeDefModelCriticalAnalyzer = typeDefModelCriticalAnalyzer;
             m_Renamer = renamer;
-            m_Logger = logger;
+            m_Logger = logger.ForContext<FullRenamer>();
         }
 
 
@@ -40,6 +40,16 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(FullRenamer),
+                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                {
+                    if (typeDefObfuscationAttribute.Exclude)
+                    {
+                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+                }
+
                 if (typeDef.IsGlobalModuleType == false
                     && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
                     && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
@@ -50,6 +60,16 @@ namespace BitMono.Protections
                     {
                         foreach (var fieldDef in typeDef.Fields.ToArray())
                         {
+                            if (m_ObfuscationAttributeExcludingResolver.TryResolve(fieldDef, feature: nameof(FullRenamer),
+                                out ObfuscationAttribute fieldDefObfuscationAttribute))
+                            {
+                                if (fieldDefObfuscationAttribute.Exclude)
+                                {
+                                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                    continue;
+                                }
+                            }
+
                             if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
                             {
                                 m_Renamer.Rename(context, fieldDef);
@@ -61,6 +81,16 @@ namespace BitMono.Protections
                     {
                         foreach (var methodDef in typeDef.Methods.ToArray())
                         {
+                            if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(FullRenamer),
+                                out ObfuscationAttribute methodDefObfuscationAttribute))
+                            {
+                                if (methodDefObfuscationAttribute.Exclude)
+                                {
+                                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                    continue;
+                                }
+                            }
+
                             if (methodDef.IsConstructor == false
                                 && methodDef.IsVirtual == false
                                 && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
