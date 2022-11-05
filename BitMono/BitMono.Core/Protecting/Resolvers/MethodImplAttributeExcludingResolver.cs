@@ -20,10 +20,10 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public bool TryResolve(IHasCustomAttribute from, [AllowNull] out MethodImplAttribute methodImplAttribute)
         {
-            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, (obfuscationAttribute) =>
+            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, (_) =>
             {
                 return m_Configuration.GetValue<bool>(nameof(AppSettings.NoInliningMethodObfuscationExcluding)) == true;
-            }, null, out methodImplAttribute);
+            }, null, null, out methodImplAttribute);
 
             if (resolvingSucceed == false)
             {
