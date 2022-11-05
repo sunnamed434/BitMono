@@ -1,4 +1,4 @@
-﻿using BitMono.API.Protecting.Contexts;
+﻿using BitMono.API.Protecting.Context;
 
 namespace BitMono.API.Protecting.Analyzing
 {
