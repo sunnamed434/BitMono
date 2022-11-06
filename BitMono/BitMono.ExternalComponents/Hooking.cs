@@ -14,30 +14,30 @@ namespace BitMono.ExternalComponents
             RuntimeHelpers.PrepareMethod(fromHandle);
             RuntimeHelpers.PrepareMethod(toHandle);
 
-            var _fromPtr = fromHandle.GetFunctionPointer();
-            var _toPtr = toHandle.GetFunctionPointer();
+            var fromPtr = fromHandle.GetFunctionPointer();
+            var toPtr = toHandle.GetFunctionPointer();
 
-            VirtualProtect(_fromPtr, (IntPtr)5, 0x40, out uint oldProtect);
+            VirtualProtect(fromPtr, (IntPtr)5, 0x40, out uint oldProtect);
 
             if (IntPtr.Size == 8)
             {
-                Marshal.WriteByte(_fromPtr, 0, 0x49);
-                Marshal.WriteByte(_fromPtr, 1, 0xBB);
+                Marshal.WriteByte(fromPtr, 0, 0x49);
+                Marshal.WriteByte(fromPtr, 1, 0xBB);
 
-                Marshal.WriteInt64(_fromPtr, 2, _toPtr.ToInt64());
+                Marshal.WriteInt64(fromPtr, 2, toPtr.ToInt64());
 
-                Marshal.WriteByte(_fromPtr, 10, 0x41);
-                Marshal.WriteByte(_fromPtr, 11, 0xFF);
-                Marshal.WriteByte(_fromPtr, 12, 0xE3);
+                Marshal.WriteByte(fromPtr, 10, 0x41);
+                Marshal.WriteByte(fromPtr, 11, 0xFF);
+                Marshal.WriteByte(fromPtr, 12, 0xE3);
             }
             else if (IntPtr.Size == 4)
             {
-                Marshal.WriteByte(_fromPtr, 0, 0xE9);
-                Marshal.WriteInt32(_fromPtr, 1, _toPtr.ToInt32() - _fromPtr.ToInt32() - 5);
-                Marshal.WriteByte(_fromPtr, 5, 0xC3);
+                Marshal.WriteByte(fromPtr, 0, 0xE9);
+                Marshal.WriteInt32(fromPtr, 1, toPtr.ToInt32() - fromPtr.ToInt32() - 5);
+                Marshal.WriteByte(fromPtr, 5, 0xC3);
             }
 
-            VirtualProtect(_fromPtr, (IntPtr)5, oldProtect, out _);
+            VirtualProtect(fromPtr, (IntPtr)5, oldProtect, out _);
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
