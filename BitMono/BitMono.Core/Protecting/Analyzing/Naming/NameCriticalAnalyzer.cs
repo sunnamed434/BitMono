@@ -27,11 +27,10 @@ namespace BitMono.Core.Protecting.Analyzing.Naming
             m_Configuration = configuration;
         }
 
-
-        public bool NotCriticalToMakeChanges(ProtectionContext context, string text)
+        public bool NotCriticalToMakeChanges(ProtectionContext context, string methodName)
         {
             var criticalMethodNames = m_Configuration.GetCriticalMethods();
-            if (criticalMethodNames.Any(c => c.Equals(text)))
+            if (criticalMethodNames.Any(c => c.Equals(methodName)))
             {
                 return false;
             }
