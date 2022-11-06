@@ -129,7 +129,6 @@ public class Program
             ExternalComponentsModuleDefMD = externalComponentsModuleDefMD,
             Importer = new Importer(moduleDefMD),
             ExternalComponentsImporter = new Importer(externalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
-            Assembly = Assembly.LoadFrom(moduleFile),
             BitMonoContext = bitMonoContext,
         };
 
