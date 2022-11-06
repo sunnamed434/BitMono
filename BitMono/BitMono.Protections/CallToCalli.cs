@@ -89,33 +89,30 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
                             {
-                                if (methodDef.DeclaredInSameAssemblyAs(context.Assembly))
+                                if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                 {
-                                    if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
+                                    var locals = methodDef.Body.Variables;
+                                    var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
+
+                                    if (methodDef.Body.HasExceptionHandlers == false)
                                     {
-                                        var locals = methodDef.Body.Variables;
-                                        var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
+                                        methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                        if (methodDef.Body.HasExceptionHandlers == false)
-                                        {
-                                            methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
+                                        var index = i;
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                            var index = i;
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
 
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
-
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
-                                            break;
-                                        }
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
+                                        break;
                                     }
                                 }
                             }
