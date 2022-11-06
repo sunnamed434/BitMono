@@ -1,7 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
-using BitMono.Core.Configuration.Dependencies;
 using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
 using BitMono.GUI.API;
@@ -110,7 +109,6 @@ namespace BitMono.GUI.Pages.Obfuscation
                         ModuleCreationOptions = moduleCreationOptions,
                         ModuleWriterOptions = moduleWriterOptions,
                         EncryptionModuleDefMD = encryptionModuleDefMD,
-                        Assembly = Assembly.Load(moduleBytes),
                         BitMonoContext = bitMonoContext,
                     };
 
