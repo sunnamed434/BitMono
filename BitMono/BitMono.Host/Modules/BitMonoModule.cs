@@ -7,13 +7,11 @@ using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Injection.TypeDefs;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Injection;
-using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Injection;
 using BitMono.Core.Protecting.Injection.FieldDefs;
 using BitMono.Core.Protecting.Injection.MethodDefs;
 using BitMono.Core.Protecting.Injection.TypeDefs;
 using BitMono.Core.Protecting.Renaming;
-using BitMono.Core.Protecting.Resolvers;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -114,7 +112,7 @@ namespace BitMono.Host.Modules
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             containerBuilder.RegisterAssemblyTypes(assemblies)
                 .PublicOnly()
-                .Where(t => t.GetInterface(nameof(IDnlibDefAttributeResolver)) != null)
+                .Where(t => t.GetInterface(nameof(ICustomAttributesResolver)) != null)
                 .AsImplementedInterfaces()
                 .OwnedByLifetimeScope()
                 .SingleInstance();

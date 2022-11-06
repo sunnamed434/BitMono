@@ -1,8 +1,7 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -58,12 +57,12 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(CallToCalli),
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(CallToCalli),
                     out ObfuscationAttribute typeDefObfuscationAttribute))
                 {
-                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    if (typeDefObfuscationAttribute.Exclude)
                     {
-                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
                     }
                 }
@@ -76,12 +75,12 @@ namespace BitMono.Protections
                         && methodDef.NotGetterAndSetter()
                         && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(CallToCalli),
                             out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
                             if (methodDefObfuscationAttribute.Exclude)
                             {
-                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
+                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
                             }
                         }
@@ -90,43 +89,30 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
                             {
-                                if (methodDef.DeclaredInSameAssemblyAs(context.Assembly))
+                                if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
                                 {
-                                    if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
+                                    var locals = methodDef.Body.Variables;
+                                    var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
+
+                                    if (methodDef.Body.HasExceptionHandlers == false)
                                     {
-                                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
-                                            out ObfuscationAttribute memberRefObfuscationAttribute))
-                                        {
-                                            if (memberRefObfuscationAttribute.Exclude)
-                                            {
-                                                m_Logger.Debug("Found {0}, that applyed to member ref, skipping it.", nameof(ObfuscationAttribute));
-                                                continue;
-                                            }
-                                        }
+                                        methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                        var locals = methodDef.Body.Variables;
-                                        var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
+                                        var index = i;
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                        if (methodDef.Body.HasExceptionHandlers == false)
-                                        {
-                                            methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                            var index = i;
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
 
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
-
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
-
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                            methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
-                                            break;
-                                        }
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
+                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
+                                        break;
                                     }
                                 }
                             }

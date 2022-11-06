@@ -1,24 +1,26 @@
-﻿using BitMono.API.Protecting.Contexts;
-using BitMono.API.Protecting.Resolvers;
+﻿using BitMono.API.Protecting.Resolvers;
 using dnlib.DotNet;
 using NullGuard;
 using System;
+using System.Linq;
 
 namespace BitMono.Core.Protecting.Resolvers
 {
     public class AttemptAttributeResolver : IAttemptAttributeResolver
     {
-        private readonly IDnlibDefAttributeResolver m_DnlibDefAttributeResolver;
+        private readonly ICustomAttributesResolver m_CustomAttributesResolver;
 
-        public AttemptAttributeResolver(IDnlibDefAttributeResolver dnlibDefAttributeResolver)
+        public AttemptAttributeResolver(ICustomAttributesResolver customAttributesResolver)
         {
-            m_DnlibDefAttributeResolver = dnlibDefAttributeResolver;
+            m_CustomAttributesResolver = customAttributesResolver;
         }
 
-        public bool TryResolve<TAttribute>(ProtectionContext context, IDnlibDef dnlibDef, [AllowNull] Predicate<TAttribute> review, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] out TAttribute attribute, bool inherit = false)
+        public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Predicate<TAttribute> review, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] Func<TAttribute, bool> strip, [AllowNull] out TAttribute attribute)
             where TAttribute : Attribute
         {
-            attribute = m_DnlibDefAttributeResolver.ResolveOrDefault(context, dnlibDef, predicate, inherit);
+            attribute = predicate != null
+                ? m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault(predicate)
+                : m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault();
             if (attribute == null)
             {
                 return false;

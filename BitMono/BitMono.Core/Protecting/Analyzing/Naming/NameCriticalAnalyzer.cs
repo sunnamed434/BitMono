@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Protecting.Analyzing.TypeDefs;
 using dnlib.DotNet;
@@ -27,11 +27,10 @@ namespace BitMono.Core.Protecting.Analyzing.Naming
             m_Configuration = configuration;
         }
 
-
-        public bool NotCriticalToMakeChanges(ProtectionContext context, string text)
+        public bool NotCriticalToMakeChanges(ProtectionContext context, string methodName)
         {
             var criticalMethodNames = m_Configuration.GetCriticalMethods();
-            if (criticalMethodNames.Any(c => c.Equals(text)))
+            if (criticalMethodNames.Any(c => c.Equals(methodName)))
             {
                 return false;
             }

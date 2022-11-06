@@ -4,7 +4,7 @@ using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BitMono.Core.Configuration.Dependencies
+namespace BitMono.Core.Protecting.Resolvers
 {
     public class DependencyResolver
     {

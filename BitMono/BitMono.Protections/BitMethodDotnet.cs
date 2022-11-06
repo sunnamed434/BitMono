@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
@@ -35,10 +35,10 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(BitMethodDotnet),
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(BitMethodDotnet),
                     out ObfuscationAttribute typeDefObfuscationAttribute))
                 {
-                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    if (typeDefObfuscationAttribute.Exclude)
                     {
                         m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
                         continue;
@@ -49,7 +49,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods)
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(CallToCalli),
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(BitMethodDotnet),
                             out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
                             if (methodDefObfuscationAttribute.Exclude)

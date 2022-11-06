@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
@@ -29,22 +29,13 @@ namespace BitMono.Protections
         {
             m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-            m_Logger = logger;
+            m_Logger = logger.ForContext<FieldsHiding>();
         }
 
         public PipelineStages Stage => PipelineStages.ModuleWritten;
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, context.ModuleDefMD.Assembly, nameof(AntiDe4dot), out ObfuscationAttribute obfuscationAttribute))
-            {
-                if (obfuscationAttribute.Exclude)
-                {
-                    m_Logger.Debug("Skip protection because {0} declared in Assembly.", nameof(ObfuscationAttribute));
-                    return Task.CompletedTask;
-                }
-            }
-
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
 
             var importer = new Importer(moduleDefMD);
@@ -66,33 +57,51 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(FieldsHiding),
+                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                {
+                    if (typeDefObfuscationAttribute.Exclude)
+                    {
+                        m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+                }
+
                 if (typeDef.HasFields)
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(fieldDef, feature: nameof(FieldsHiding),
+                            out ObfuscationAttribute fieldDefObfuscationAttribute))
                         {
-                            if (fieldDef.HasFieldRVA)
+                            if (fieldDefObfuscationAttribute.Exclude)
                             {
-                                var cctor = fieldDef.DeclaringType.FindOrCreateStaticConstructor();
-                                for (int i = 0; i < cctor.Body.Instructions.Count; i++)
+                                m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                                continue;
+                            }
+                        }
+
+                        if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef)
+                            && fieldDef.HasFieldRVA)
+                        {
+                            var cctor = fieldDef.DeclaringType.FindOrCreateStaticConstructor();
+                            for (int i = 0; i < cctor.Body.Instructions.Count; i++)
+                            {
+                                if (cctor.Body.Instructions[i].OpCode == OpCodes.Call)
                                 {
-                                    if (cctor.Body.Instructions[i].OpCode == OpCodes.Call)
-                                    {
-                                        cctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
-                                        cctor.Body.Instructions[i].OpCode = OpCodes.Nop;
+                                    cctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
+                                    cctor.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                        cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, fieldDef.DeclaringType));
-                                        cctor.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                        cctor.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                    cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, fieldDef.DeclaringType));
+                                    cctor.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                    cctor.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                        cctor.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, fieldDef.MDToken.ToInt32()));
-                                        cctor.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Callvirt, resolveFieldMethod));
-                                        cctor.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getFieldHandleMethod));
+                                    cctor.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, fieldDef.MDToken.ToInt32()));
+                                    cctor.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Callvirt, resolveFieldMethod));
+                                    cctor.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getFieldHandleMethod));
 
-                                        cctor.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Call, initializeArrayMethod));
-                                        i += 7;
-                                    }
+                                    cctor.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Call, initializeArrayMethod));
+                                    i += 7;
                                 }
                             }
                         }

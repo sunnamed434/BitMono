@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.Core.Configuration.Extensions;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;

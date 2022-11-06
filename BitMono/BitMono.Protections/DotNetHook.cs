@@ -1,7 +1,8 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
+using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.ExternalComponents;
 using BitMono.Utilities.Extensions.dnlib;
@@ -17,7 +18,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 using MethodAttributes = dnlib.DotNet.MethodAttributes;
-using TypeAttributes = dnlib.DotNet.TypeAttributes;
 
 namespace BitMono.Protections
 {
@@ -25,6 +25,7 @@ namespace BitMono.Protections
     {
         private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
+        private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
         private readonly IList<(MethodDef, MethodDef, int)> m_InstructionsToBeTokensUpdated;
         private readonly IList<MethodDef> m_ProtectedMethodDefs;
@@ -32,10 +33,12 @@ namespace BitMono.Protections
         public DotNetHook(
             IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
             IMethodDefSearcher methodDefSearcher,
+            IRenamer renamer,
             ILogger logger)
         {
             m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
             m_MethodDefSearcher = methodDefSearcher;
+            m_Renamer = renamer;
             m_Logger = logger.ForContext<DotNetHook>();
             m_InstructionsToBeTokensUpdated = new List<(MethodDef, MethodDef, int)>();
             m_ProtectedMethodDefs = new List<MethodDef>();
@@ -57,7 +60,6 @@ namespace BitMono.Protections
             virtualProtectMethodDef.Access = MethodAttributes.Assembly;
 
             var managedHookTypeDef = new TypeDefUser("ManagedHook", moduleDefMD.CorLibTypes.Object.TypeDefOrRef);
-            managedHookTypeDef.Attributes = TypeAttributes.Abstract | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit;
 
             var redirectStubMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.RedirectStub), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow();
             redirectStubMethodDef.Access = MethodAttributes.Assembly;
@@ -77,12 +79,12 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, typeDef, feature: nameof(DotNetHook),
+                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(DotNetHook),
                     out ObfuscationAttribute typeDefObfuscationAttribute))
                 {
-                    if (typeDefObfuscationAttribute.Exclude && typeDefObfuscationAttribute.ApplyToMembers)
+                    if (typeDefObfuscationAttribute.Exclude)
                     {
-                        m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
+                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
                         continue;
                     }
                 }
@@ -91,12 +93,12 @@ namespace BitMono.Protections
                 {
                     if (methodDef.HasBody)
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(context, methodDef, feature: nameof(DotNetHook),
+                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(DotNetHook),
                             out ObfuscationAttribute methodDefObfuscationAttribute))
                         {
                             if (methodDefObfuscationAttribute.Exclude)
                             {
-                                m_Logger.Information("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
+                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
                                 continue;
                             }
                         }
@@ -105,19 +107,18 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                 && methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef
-                                && callingMethodDef.DeclaredInSameAssemblyAs(context.Assembly)
                                 && m_ProtectedMethodDefs.Any(p => p.Name.Equals(methodDef.Name)) == false
                                 && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false)
                             {
-                                var dummyMethod = new MethodDefUser("Dummy", callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
+                                var dummyMethod = new MethodDefUser(m_Renamer.RenameUnsafely(), callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
                                 dummyMethod.Body = new CilBody();
                                 foreach (var paramDef in callingMethodDef.ParamDefs)
                                 {
                                     dummyMethod.ParamDefs.Add(new ParamDefUser(paramDef.Name, paramDef.Sequence, paramDef.Attributes));
                                 }
                                 dummyMethod.Body.MaxStack = 4;
-
-                                var initializatorMethodDef = new MethodDefUser("Initialize_" + callingMethodDef.Name,
+                                
+                                var initializatorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(),
                                     MethodSig.CreateStatic(moduleDefMD.CorLibTypes.Void), MethodAttributes.Assembly | MethodAttributes.Static);
 
                                 initializatorMethodDef.Body = new CilBody();
