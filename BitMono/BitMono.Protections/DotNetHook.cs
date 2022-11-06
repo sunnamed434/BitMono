@@ -107,7 +107,6 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                 && methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef
-                                && callingMethodDef.DeclaredInSameAssemblyAs(context.Assembly)
                                 && m_ProtectedMethodDefs.Any(p => p.Name.Equals(methodDef.Name)) == false
                                 && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false)
                             {
