@@ -3,7 +3,6 @@ using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Configuration.Dependencies;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
