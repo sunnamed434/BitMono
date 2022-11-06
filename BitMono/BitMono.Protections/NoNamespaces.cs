@@ -16,18 +16,15 @@ namespace BitMono.Protections
     {
         private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-        private readonly NameCriticalAnalyzer m_NameCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public NoNamespaces(
             IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver, 
             DnlibDefCriticalAnalyzer typeDefCriticalAnalyzer, 
-            NameCriticalAnalyzer nameCriticalAnalyzer,
             ILogger logger)
         {
             m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
             m_DnlibDefCriticalAnalyzer = typeDefCriticalAnalyzer;
-            m_NameCriticalAnalyzer = nameCriticalAnalyzer;
             m_Logger = logger.ForContext<NoNamespaces>();
         }
 
@@ -49,10 +46,7 @@ namespace BitMono.Protections
                     && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
                     && UTF8String.IsNullOrEmpty(typeDef.Namespace) == false)
                 {
-                    if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef.Namespace))
-                    {
-                        typeDef.Namespace = string.Empty;
-                    }
+                    typeDef.Namespace = string.Empty;
                 }
             }
             return Task.CompletedTask;
