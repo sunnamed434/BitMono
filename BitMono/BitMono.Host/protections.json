@@ -10,39 +10,39 @@
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitMethodDotnet",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "FullRenamer",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDebugBreakpoints",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "StringsEncryption",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "FieldsHiding",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "DotNetHook",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "CallToCalli",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitDotNet",
-      "Enabled": false
+      "Enabled": true
     }
   ]
 }
