@@ -1,12 +1,11 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Context;
 using dnlib.DotNet;
 
 namespace BitMono.Core.Protecting.Analyzing.DnlibDefs
 {
     public class DnlibDefCriticalAnalyzer : ICriticalAnalyzer<IDnlibDef>
     {
-        public bool NotCriticalToMakeChanges(ProtectionContext context, IDnlibDef dnlibDef)
+        public bool NotCriticalToMakeChanges(IDnlibDef dnlibDef)
         {
             if (dnlibDef is TypeDef typeDef)
             {
