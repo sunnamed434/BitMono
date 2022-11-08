@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting.Analyzing;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting.Analyzing;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Protecting.Analyzing.TypeDefs;
 using dnlib.DotNet;
@@ -18,11 +19,11 @@ namespace BitMono.Core.Protecting.Analyzing.Naming
         public NameCriticalAnalyzer(
             TypeDefCriticalInterfacesCriticalAnalyzer typeDefCriticalInterfacesCriticalAnalyzer,
             TypeDefCriticalBaseTypesCriticalAnalyzer typeDefCriticalBaseTypesCriticalAnalyzer,
-            IConfiguration configuration)
+            IBitMonoCriticalsConfiguration configuration)
         {
             m_TypeDefCriticalInterfacesCriticalAnalyzer = typeDefCriticalInterfacesCriticalAnalyzer;
             m_TypeDefCriticalBaseTypesCriticalAnalyzer = typeDefCriticalBaseTypesCriticalAnalyzer;
-            m_Configuration = configuration;
+            m_Configuration = configuration.Configuration;
         }
 
         public bool NotCriticalToMakeChanges(TypeDef typeDef)
