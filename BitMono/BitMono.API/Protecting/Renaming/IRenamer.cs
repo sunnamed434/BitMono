@@ -6,6 +6,7 @@ namespace BitMono.API.Protecting.Renaming
     public interface IRenamer
     {
         string RenameUnsafely();
+        void Rename(ProtectionContext context, IDnlibDef dnlibDef);
         void Rename(ProtectionContext context, TypeDef typeDef);
         void Rename(ProtectionContext context, MethodDef methodDef);
         void Rename(ProtectionContext context, FieldDef fieldDef);

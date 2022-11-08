@@ -3,6 +3,7 @@ using BitMono.API.Protecting.Renaming;
 using BitMono.Core.Protecting.Analyzing.Naming;
 using dnlib.DotNet;
 using System;
+using System.Runtime.Remoting.Contexts;
 
 namespace BitMono.Core.Protecting.Renaming
 {
@@ -61,11 +62,14 @@ namespace BitMono.Core.Protecting.Renaming
             string randomStringThree = strings[random.Next(0, strings.Length - 1)];
             return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
         }
-        public void Rename(ProtectionContext context, TypeDef typeDef)
+        public void Rename(ProtectionContext context, IDnlibDef dnlibDef)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
+            if (dnlibDef is TypeDef typeDef)
             {
-                typeDef.Name = RenameUnsafely();
+                if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
+                {
+                    typeDef.Name = RenameUnsafely();
+                }
             }
         }
         public void Rename(ProtectionContext context, MethodDef methodDef)
