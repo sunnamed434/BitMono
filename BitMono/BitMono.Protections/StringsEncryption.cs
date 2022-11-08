@@ -131,10 +131,9 @@ namespace BitMono.Protections
                                     var injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
                                     methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
-                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, decryptorMethodDef));
+                                    methodDef.Body.Instructions.Insert(i++, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
+                                    methodDef.Body.Instructions.Insert(i++, new Instruction(OpCodes.Call, decryptorMethodDef));
                                     methodDef.Body.SimplifyAndOptimizeBranches();
-                                    i += 2;
                                 }
                             }
                         }
