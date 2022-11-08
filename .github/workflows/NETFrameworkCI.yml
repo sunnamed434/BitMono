@@ -18,22 +18,25 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         
       - name: restore dotnet of BitMono solution
-        run: dotnet restore BitMono\BitMono.sln
+        run: dotnet restore BitMono\BitMono.sln 
         
       - name: build the BitMono.Host project
-        run: msbuild BitMono\BitMono.Host\BitMono.Host.csproj
+        run: msbuild BitMono\BitMono.Host\BitMono.Host.csproj /p:Configuration=Release
         
-      - name: build the BitMono.Encryption project
-        run: msbuild BitMono\BitMono.Encryption\BitMono.Encryption.csproj
+      - name: build the BitMono.ExternalComponents project
+        run: msbuild BitMono\BitMono.ExternalComponents\BitMono.ExternalComponents.csproj /p:Configuration=Release
+        
+      - name: build the BitMono.Shared project
+        run: msbuild BitMono\BitMono.Shared\BitMono.Shared.csproj /p:Configuration=Release
         
       - name: build the BitMono.CLI project
-        run: msbuild BitMono\BitMono.CLI\BitMono.CLI.csproj
+        run: msbuild BitMono\BitMono.CLI\BitMono.CLI.csproj /p:Configuration=Release
         
       - name: build the BitMono.Core project
-        run: msbuild BitMono\BitMono.Core\BitMono.Core.csproj
+        run: msbuild BitMono\BitMono.Core\BitMono.Core.csproj /p:Configuration=Release
         
       - name: build the BitMono.Protections project
-        run: msbuild BitMono\BitMono.Protections\BitMono.Protections.csproj
+        run: msbuild BitMono\BitMono.Protections\BitMono.Protections.csproj /p:Configuration=Release
         
       - name: build the BitMono.Utilities project
-        run: msbuild BitMono\BitMono.Utilities\BitMono.Utilities.csproj
+        run: msbuild BitMono\BitMono.Utilities\BitMono.Utilities.csproj /p:Configuration=Release
