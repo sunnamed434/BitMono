@@ -181,8 +181,10 @@ namespace BitMono.Protections
             {
                 var callerMethodDef = m_MethodDefSearcher.Find(tuple.Item1.Name, moduleDefMD);
                 var targetMethodDef = m_MethodDefSearcher.Find(tuple.Item2.Name, moduleDefMD);
-
-                callerMethodDef.Body.Instructions.Insert(tuple.Item3, new Instruction(OpCodes.Ldc_I4, targetMethodDef.MDToken.ToInt32()));
+                if (callerMethodDef != null && targetMethodDef != null)
+                {
+                    callerMethodDef.Body.Instructions.Insert(tuple.Item3, new Instruction(OpCodes.Ldc_I4, targetMethodDef.MDToken.ToInt32()));
+                }
             }
 
             var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
