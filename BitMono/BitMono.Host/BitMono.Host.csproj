@@ -18,6 +18,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="criticals.json" />
+    <None Remove="obfuscation.json" />
     <None Remove="protections.json" />
   </ItemGroup>
 
@@ -26,6 +27,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="criticals.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="obfuscation.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="protections.json">
