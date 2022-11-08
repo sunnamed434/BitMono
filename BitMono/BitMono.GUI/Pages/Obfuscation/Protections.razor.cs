@@ -1,10 +1,10 @@
 using BitMono.API.Protecting;
 using BitMono.Core.Models;
 using BitMono.GUI.API;
-using BitMono.GUI.Utilities.Extensions.JSInterop;
+using BitMono.GUI.Utilities.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using static BitMono.Utilities.Extensions.Collections.EnumerableExtensions;
+using static BitMono.Utilities.Extensions.Collections.CollectionExtensions;
 
 namespace BitMono.GUI.Pages.Obfuscation
 {

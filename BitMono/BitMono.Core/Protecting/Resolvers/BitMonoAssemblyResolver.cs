@@ -31,7 +31,7 @@ namespace BitMono.Core.Protecting.Resolvers
                 m_ProtectionContext.AssemblyResolver.AddToCache(AssemblyDef.Load(m_DependencyFiles[i]));
             }
 
-            foreach (AssemblyRef assemblyRef in m_ProtectionContext.ModuleDefMD.GetAssemblyRefs())
+            foreach (var assemblyRef in m_ProtectionContext.ModuleDefMD.GetAssemblyRefs())
             {
                 cancellationToken.ThrowIfCancellationRequested();
 

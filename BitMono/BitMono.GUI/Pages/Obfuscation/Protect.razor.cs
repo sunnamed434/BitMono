@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.Core.Models;
@@ -25,7 +26,7 @@ namespace BitMono.GUI.Pages.Obfuscation
         private IBrowserFile _obfuscationFile;
 
         [Inject] public ILogger Logger { get; set; }
-        [Inject] public IConfiguration Configuration { get; set; }
+        [Inject] public IBitMonoAppSettingsConfiguration Configuration { get; set; }
         [Inject] public ICollection<IProtection> Protections { get; set; }
         [Inject] public IStoringProtections StoringProtections { get; set; }
         public Highlight Highlight { get; set; }
@@ -59,7 +60,7 @@ namespace BitMono.GUI.Pages.Obfuscation
                     {
                         BaseDirectory = domainBaseDirectory,
                         OutputDirectory = outputDirectory,
-                        Watermark = Configuration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
+                        Watermark = Configuration.Configuration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
                     };
 
                     bitMonoContext.ModuleFile = _obfuscationFile.Name;
@@ -108,7 +109,6 @@ namespace BitMono.GUI.Pages.Obfuscation
                         ModuleDefMD = moduleDefMD,
                         ModuleCreationOptions = moduleCreationOptions,
                         ModuleWriterOptions = moduleWriterOptions,
-                        EncryptionModuleDefMD = encryptionModuleDefMD,
                         BitMonoContext = bitMonoContext,
                     };
 
@@ -123,7 +123,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(Directory.GetFiles(_dependenciesFolder), protectionContext, Logger);
                     var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
-                    if (Configuration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
+                    if (Configuration.Configuration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
                     {
                         if (resolvingSucceed == false)
                         {

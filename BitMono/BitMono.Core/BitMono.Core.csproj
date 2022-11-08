@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
+    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
   </ItemGroup>
 

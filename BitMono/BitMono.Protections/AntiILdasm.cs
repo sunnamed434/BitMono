@@ -1,9 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Injection;
-using BitMono.API.Protecting.Resolvers;
-using Serilog;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BitMono.GUI.Utilities.Extensions.JSInterop
+namespace BitMono.GUI.Utilities.Extensions
 {
     public static class JSRuntimeExtensions
     {

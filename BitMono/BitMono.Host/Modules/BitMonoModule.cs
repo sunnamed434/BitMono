@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Analyzing;
 using BitMono.API.Protecting.Injection;
@@ -12,6 +13,7 @@ using BitMono.Core.Protecting.Injection.FieldDefs;
 using BitMono.Core.Protecting.Injection.MethodDefs;
 using BitMono.Core.Protecting.Injection.TypeDefs;
 using BitMono.Core.Protecting.Renaming;
+using BitMono.Host.Configuration;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -25,14 +27,14 @@ namespace BitMono.Host.Modules
     public class BitMonoModule : Module
     {
         private readonly Action<LoggerConfiguration> m_ConfigureLogger;
-        private readonly Action<ConfigurationBuilder> m_ConfigureConfiguration;
+        private readonly Action<ConfigurationBuilder> m_ConfigureConfigurationBuilder;
 
         public BitMonoModule(
             Action<LoggerConfiguration> configureLogger = default,
-            Action<ConfigurationBuilder> configureConfiguration = default)
+            Action<ConfigurationBuilder> configureConfigurationBuilder = default)
         {
             m_ConfigureLogger = configureLogger;
-            m_ConfigureConfiguration = configureConfiguration;
+            m_ConfigureConfigurationBuilder = configureConfigurationBuilder;
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -48,25 +50,41 @@ namespace BitMono.Host.Modules
                         outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}");
                 });
 
-            m_ConfigureLogger?.Invoke(loggerConfiguration);
-
-            var logger = loggerConfiguration.CreateLogger();
-
-            containerBuilder.Register<ILogger>((_, _) =>
+            if (m_ConfigureLogger != null)
             {
-                return logger;
-            });
+                m_ConfigureLogger.Invoke(loggerConfiguration);
 
-            var configurationBuilder = new ConfigurationBuilder();
-            m_ConfigureConfiguration?.Invoke(configurationBuilder);
-            configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            configurationBuilder.AddJsonFile("criticals.json", optional: true, reloadOnChange: true);
-            configurationBuilder.AddJsonFile("protections.json", optional: true, reloadOnChange: true);
-            configurationBuilder.AddJsonFile("translations.json", optional: true, reloadOnChange: true);
-            var configuration = configurationBuilder.Build();
+                var logger = loggerConfiguration.CreateLogger();
+                containerBuilder.Register<ILogger>((_, _) =>
+                {
+                    return logger;
+                });
+            }
 
-            containerBuilder.Register(context => configuration)
-                .As<IConfiguration>()
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            if (m_ConfigureConfigurationBuilder != null)
+            {
+                m_ConfigureConfigurationBuilder.Invoke(configurationBuilder);
+                var configuration = configurationBuilder.Build();
+                containerBuilder.Register(context => configuration)
+                    .As<IConfiguration>()
+                    .OwnedByLifetimeScope();
+            }
+
+            containerBuilder.Register(context => new BitMonoAppSettingsConfiguration())
+                .As<IBitMonoAppSettingsConfiguration>()
+                .OwnedByLifetimeScope();
+
+            containerBuilder.Register(context => new BitMonoCriticalsConfiguration())
+                .As<IBitMonoCriticalsConfiguration>()
+                .OwnedByLifetimeScope();
+
+            containerBuilder.Register(context => new BitMonoProtectionsConfiguration())
+                .As<IBitMonoProtectionsConfiguration>()
+                .OwnedByLifetimeScope();
+
+            containerBuilder.Register(context => new BitMonoObfuscationConfiguration())
+                .As<IBitMonoObfuscationConfiguration>()
                 .OwnedByLifetimeScope();
 
             containerBuilder.RegisterType<Renamer>()

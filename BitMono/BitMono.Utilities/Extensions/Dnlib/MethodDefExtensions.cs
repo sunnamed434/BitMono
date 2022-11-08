@@ -1,6 +1,5 @@
 ﻿using dnlib.DotNet;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using TypeAttributes = dnlib.DotNet.TypeAttributes;
 
@@ -45,10 +44,6 @@ namespace BitMono.Utilities.Extensions.dnlib
         public static bool HasParameters(this MethodDef source)
         {
             return source.Parameters.Any();
-        }
-        public static bool DeclaredInSameAssemblyAs(this MethodDef source, Assembly target)
-        {
-            return source.ToString().Contains(target.FullName.Split('.', ',')[0]);
         }
     }
 }

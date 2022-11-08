@@ -17,7 +17,7 @@ namespace BitMono.Core.Protecting.Analyzing.TypeDefs
             m_AttemptAttributeResolver = attemptAttributeResolver;
         }
 
-        public bool NotCriticalToMakeChanges(ProtectionContext context, IHasCustomAttribute from)
+        public bool NotCriticalToMakeChanges(IHasCustomAttribute from)
         {
             if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(from, null, null, null, out _))
             {

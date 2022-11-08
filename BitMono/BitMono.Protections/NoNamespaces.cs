@@ -43,7 +43,7 @@ namespace BitMono.Protections
                 }
 
                 if (typeDef.IsGlobalModuleType == false
-                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
+                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
                     && UTF8String.IsNullOrEmpty(typeDef.Namespace) == false)
                 {
                     typeDef.Namespace = string.Empty;

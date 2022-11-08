@@ -73,7 +73,7 @@ namespace BitMono.Protections
                         && methodDef.DeclaringType.IsGlobalModuleType == false
                         && methodDef.IsConstructor == false
                         && methodDef.NotGetterAndSetter()
-                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                     {
                         if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(CallToCalli),
                             out ObfuscationAttribute methodDefObfuscationAttribute))

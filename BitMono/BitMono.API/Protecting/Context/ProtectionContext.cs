@@ -9,7 +9,6 @@ namespace BitMono.API.Protecting.Context
         [AllowNull] public ModuleDefMD ModuleDefMD { get; set; }
         [AllowNull] public ModuleCreationOptions ModuleCreationOptions { get; set; }
         [AllowNull] public ModuleWriterOptions ModuleWriterOptions { get; set; }
-        [AllowNull] public ModuleDefMD EncryptionModuleDefMD { get; set; }
         [AllowNull] public ModuleDefMD ExternalComponentsModuleDefMD { get; set; }
         [AllowNull] public Importer Importer { get; set; }
         [AllowNull] public Importer ExternalComponentsImporter { get; set; }

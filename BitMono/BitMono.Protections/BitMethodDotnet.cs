@@ -60,7 +60,7 @@ namespace BitMono.Protections
                         }
 
                         if (methodDef.HasBody && methodDef.IsConstructor == false
-                            && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                            && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                         {
                             var randomValueForInsturction = 0;
                             if (methodDef.Body.Instructions.Count >= 3)

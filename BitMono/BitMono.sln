@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.CLI", "BitMono.CLI\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Core", "BitMono.Core\BitMono.Core.csproj", "{8E8D5433-9620-4064-97BC-919E77F52DC5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Encryption", "BitMono.Encryption\BitMono.Encryption.csproj", "{87564237-3AE5-4B61-AE74-BF77B8C7130B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Protections", "BitMono.Protections\BitMono.Protections.csproj", "{0CE94FE0-9983-4218-899F-74F15549A0FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Utilities", "BitMono.Utilities\BitMono.Utilities.csproj", "{0F33C31F-8AA5-474B-AD19-042A36C90C8A}"
@@ -23,7 +21,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.API", "BitMono.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.Utilities", "BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj", "{F9EC6697-A4BF-4796-844B-BEC1B3377A3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.ExternalComponents", "BitMono.ExternalComponents\BitMono.ExternalComponents.csproj", "{A0C2671D-8645-4D4B-984A-EF3400EEAA91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.ExternalComponents", "BitMono.ExternalComponents\BitMono.ExternalComponents.csproj", "{A0C2671D-8645-4D4B-984A-EF3400EEAA91}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configs", "configs", "{A2890DD6-805E-4952-9E84-3F001E1829C4}"
+	ProjectSection(SolutionItems) = preProject
+		.formatconfig = .formatconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Shared", "BitMono.Shared\BitMono.Shared.csproj", "{DA8223B2-3423-41E3-A562-B9E883EF4E3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +48,6 @@ Global
 		{8E8D5433-9620-4064-97BC-919E77F52DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E8D5433-9620-4064-97BC-919E77F52DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E8D5433-9620-4064-97BC-919E77F52DC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87564237-3AE5-4B61-AE74-BF77B8C7130B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CE94FE0-9983-4218-899F-74F15549A0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -77,6 +78,10 @@ Global
 		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0C2671D-8645-4D4B-984A-EF3400EEAA91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA8223B2-3423-41E3-A562-B9E883EF4E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA8223B2-3423-41E3-A562-B9E883EF4E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA8223B2-3423-41E3-A562-B9E883EF4E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA8223B2-3423-41E3-A562-B9E883EF4E3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

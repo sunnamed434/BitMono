@@ -1,5 +1,5 @@
-﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Context;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting.Analyzing;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -12,13 +12,12 @@ namespace BitMono.Core.Protecting.Analyzing.TypeDefs
     {
         private readonly IConfiguration m_Configuration;
 
-        public TypeDefCriticalBaseTypesCriticalAnalyzer(IConfiguration configuration)
+        public TypeDefCriticalBaseTypesCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration)
         {
-            m_Configuration = configuration;
+            m_Configuration = configuration.Configuration;
         }
 
-
-        public bool NotCriticalToMakeChanges(ProtectionContext context, TypeDef typeDef)
+        public bool NotCriticalToMakeChanges(TypeDef typeDef)
         {
             if (typeDef.HasBaseType())
             {

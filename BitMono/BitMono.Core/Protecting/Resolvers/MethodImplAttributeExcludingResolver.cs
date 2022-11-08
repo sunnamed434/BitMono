@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting.Resolvers;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Models;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
@@ -12,10 +13,10 @@ namespace BitMono.Core.Protecting.Resolvers
         private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
         private readonly IConfiguration m_Configuration;
 
-        public MethodImplAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IConfiguration configuration)
+        public MethodImplAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoAppSettingsConfiguration configuration)
         {
             m_AttemptAttributeResolver = attemptAttributeResolver;
-            m_Configuration = configuration;
+            m_Configuration = configuration.Configuration;
         }
 
         public bool TryResolve(IHasCustomAttribute from, [AllowNull] out MethodImplAttribute methodImplAttribute)

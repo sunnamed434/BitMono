@@ -2,7 +2,7 @@
 
 namespace BitMono.Utilities.Extensions.Collections
 {
-    public static class EnumerableExtensions
+    public static class CollectionExtensions
 	{
         public static IList<T> Swap<T>(this IList<T> source, int index1, int index2)
         {

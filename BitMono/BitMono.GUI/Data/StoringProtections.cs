@@ -1,4 +1,5 @@
-﻿using BitMono.Core.Configuration.Extensions;
+﻿using BitMono.API.Configuration;
+using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Models;
 using BitMono.GUI.API;
 using Microsoft.Extensions.Configuration;
@@ -9,12 +10,11 @@ namespace BitMono.GUI.Data
 	{
 		private readonly IConfiguration m_Configuration;
 
-		public StoringProtections(IConfiguration configuration)
+		public StoringProtections(IBitMonoProtectionsConfiguration configuration)
 		{
-			m_Configuration = configuration;
+			m_Configuration = configuration.Configuration;
 			Protections = m_Configuration.GetProtectionSettings().ToList();
 		}
-
 
 		public IList<ProtectionSettings> Protections { get; }
 	}

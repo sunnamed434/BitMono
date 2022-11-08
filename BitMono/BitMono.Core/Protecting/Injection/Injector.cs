@@ -39,7 +39,7 @@ namespace BitMono.Core.Protecting.Injection
             var cctor = classWithLayout.FindOrCreateStaticConstructor();
             var cctorBodyInstructions = cctor.Body.Instructions;
             var index = 0;
-            cctorBodyInstructions.Insert(index, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
+            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
             cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Newarr, systemByte));
             cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Dup));
             cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldtoken, fieldWithRVA));

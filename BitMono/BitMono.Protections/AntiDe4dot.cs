@@ -9,6 +9,7 @@ namespace BitMono.Protections
     public class AntiDe4dot : IProtection
     {
         private readonly IInjector m_Injector;
+
         public AntiDe4dot(IInjector injector)
         {
             m_Injector = injector;

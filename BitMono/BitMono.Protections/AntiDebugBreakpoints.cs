@@ -31,7 +31,6 @@ namespace BitMono.Protections
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
-
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var threadSleepMethods = new List<IMethod>
@@ -100,7 +99,7 @@ namespace BitMono.Protections
                         }
                     }
 
-                    if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
+                    if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
                         && methodDef.NotGetterAndSetter()
                         && methodDef.IsConstructor == false)
                     {

@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting;
 using BitMono.Core.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -7,27 +8,51 @@ namespace BitMono.Core.Configuration.Extensions
 {
     public static class ConfigurationExtensions
     {
-        public static ICollection<ProtectionSettings> GetProtectionSettings(this IConfiguration configuration)
+        public static List<ProtectionSettings> GetProtectionSettings(this IBitMonoProtectionsConfiguration source)
         {
-            return configuration.GetSection("Protections").Get<List<ProtectionSettings>>();
+            return source.Configuration.GetProtectionSettings();
         }
-        public static ICollection<string> GetCriticalMethods(this IConfiguration configuration)
+        public static List<ProtectionSettings> GetProtectionSettings(this IConfiguration source)
         {
-            return configuration.GetSection("CriticalMethods").Get<List<string>>();
+            return source.GetSection("Protections").Get<List<ProtectionSettings>>();
         }
-        public static ICollection<string> GetCriticalInterfaces(this IConfiguration configuration)
+        public static List<string> GetCriticalMethods(this IBitMonoCriticalsConfiguration source)
         {
-            return configuration.GetSection("CriticalInterfaces").Get<string[]>();
+            return source.GetCriticalMethods();
         }
-        public static ICollection<string> GetCriticalBaseTypes(this IConfiguration configuration)
+        public static List<string> GetCriticalMethods(this IConfiguration source)
         {
-            return configuration.GetSection("CriticalBaseTypes").Get<string[]>();
+            return source.GetSection("CriticalMethods").Get<List<string>>();
         }
-        public static bool AsProtection(this ProtectionSettings protectionSettings, ICollection<IProtection> protections, out IProtection result)
+        public static string[] GetCriticalInterfaces(this IBitMonoCriticalsConfiguration source)
+        {
+            return source.Configuration.GetSection("CriticalInterfaces").Get<string[]>();
+        }
+        public static string[] GetCriticalInterfaces(this IConfiguration source)
+        {
+            return source.GetSection("CriticalInterfaces").Get<string[]>();
+        }
+        public static string[] GetCriticalBaseTypes(this IBitMonoCriticalsConfiguration source)
+        {
+            return source.Configuration.GetSection("CriticalBaseTypes").Get<string[]>();
+        }
+        public static string[] GetCriticalBaseTypes(this IConfiguration source)
+        {
+            return source.GetSection("CriticalBaseTypes").Get<string[]>();
+        }
+        public static string[] GetStrings(this IBitMonoObfuscationConfiguration source)
+        {
+            return source.Configuration.GetSection("Strings").Get<string[]>();
+        }
+        public static string[] GetStrings(this IConfiguration source)
+        {
+            return source.GetSection("Strings").Get<string[]>();
+        }
+        public static bool AsProtection(this ProtectionSettings source, ICollection<IProtection> protections, out IProtection result)
         {
             foreach (var protection in protections)
             {
-                if (protection.GetType().Name.Equals(protectionSettings.Name))
+                if (protection.GetType().Name.Equals(source.Name))
                 {
                     return (result = protection) != null;
                 }
