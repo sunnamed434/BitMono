@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting.Analyzing;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting.Analyzing;
 using BitMono.Core.Configuration.Extensions;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
@@ -10,9 +11,9 @@ namespace BitMono.Core.Protecting.Analyzing.TypeDefs
     {
         private readonly IConfiguration m_Configuration;
 
-        public TypeDefCriticalInterfacesCriticalAnalyzer(IConfiguration configuration)
+        public TypeDefCriticalInterfacesCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration)
         {
-            m_Configuration = configuration;
+            m_Configuration = configuration.Configuration;
         }
 
         public bool NotCriticalToMakeChanges(TypeDef typeDef)
