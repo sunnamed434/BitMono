@@ -91,7 +91,7 @@ namespace BitMono.Protections
 
             var saltBytesField = m_FieldSearcher.FindInGlobalNestedTypes("saltBytes", context.ModuleDefMD);
             var cryptKeyBytesField = m_FieldSearcher.FindInGlobalNestedTypes("cryptKeyBytes", context.ModuleDefMD);
-            m_Renamer.Rename(context, saltBytesField, cryptKeyBytesField);
+            m_Renamer.Rename(saltBytesField, cryptKeyBytesField);
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
@@ -100,7 +100,7 @@ namespace BitMono.Protections
                 {
                     if (typeDefObfuscationAttribute.Exclude)
                     {
-                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
                     }
                 }
@@ -114,12 +114,12 @@ namespace BitMono.Protections
                         {
                             if (methodDefObfuscationAttribute.Exclude)
                             {
-                                m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
                             }
                         }
 
-                        if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                        if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                         {
                             for (int i = 0; i < methodDef.Body.Instructions.Count(); i++)
                             {
