@@ -109,7 +109,6 @@ namespace BitMono.GUI.Pages.Obfuscation
                         ModuleDefMD = moduleDefMD,
                         ModuleCreationOptions = moduleCreationOptions,
                         ModuleWriterOptions = moduleWriterOptions,
-                        EncryptionModuleDefMD = encryptionModuleDefMD,
                         BitMonoContext = bitMonoContext,
                     };
 
