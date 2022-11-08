@@ -81,7 +81,7 @@ namespace BitMono.Protections
                             }
                         }
 
-                        if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef)
+                        if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef)
                             && fieldDef.HasFieldRVA)
                         {
                             var cctor = fieldDef.DeclaringType.FindOrCreateStaticConstructor();
