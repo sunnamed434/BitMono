@@ -35,7 +35,6 @@ namespace BitMono.Protections
             m_Logger = logger.ForContext<FullRenamer>();
         }
 
-
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
@@ -51,10 +50,10 @@ namespace BitMono.Protections
                 }
 
                 if (typeDef.IsGlobalModuleType == false
-                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef)
-                    && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
+                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
+                    && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
                 {
-                    m_Renamer.Rename(context, typeDef);
+                    m_Renamer.Rename(typeDef);
 
                     if (typeDef.HasFields)
                     {
@@ -65,14 +64,14 @@ namespace BitMono.Protections
                             {
                                 if (fieldDefObfuscationAttribute.Exclude)
                                 {
-                                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                     continue;
                                 }
                             }
 
-                            if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, fieldDef))
+                            if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef))
                             {
-                                m_Renamer.Rename(context, fieldDef);
+                                m_Renamer.Rename(fieldDef);
                             }
                         }
                     }
@@ -86,21 +85,21 @@ namespace BitMono.Protections
                             {
                                 if (methodDefObfuscationAttribute.Exclude)
                                 {
-                                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                     continue;
                                 }
                             }
 
                             if (methodDef.IsConstructor == false
                                 && methodDef.IsVirtual == false
-                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                             {
-                                m_Renamer.Rename(context, methodDef);
+                                m_Renamer.Rename(methodDef);
                                 if (methodDef.HasParameters())
                                 {
                                     foreach (var parameter in methodDef.Parameters.ToArray())
                                     {
-                                        m_Renamer.Rename(context, parameter);
+                                        m_Renamer.Rename(parameter);
                                     }
                                 }
                             }
