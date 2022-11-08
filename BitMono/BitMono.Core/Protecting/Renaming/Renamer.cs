@@ -1,9 +1,7 @@
-﻿using BitMono.API.Protecting.Context;
-using BitMono.API.Protecting.Renaming;
+﻿using BitMono.API.Protecting.Renaming;
 using BitMono.Core.Protecting.Analyzing.Naming;
 using dnlib.DotNet;
 using System;
-using System.Runtime.Remoting.Contexts;
 
 namespace BitMono.Core.Protecting.Renaming
 {
@@ -54,7 +52,6 @@ namespace BitMono.Core.Protecting.Renaming
             m_NameCriticalAnalyzer = nameCriticalAnalyzer;
         }
 
-
         public string RenameUnsafely()
         {
             string randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
@@ -62,39 +59,46 @@ namespace BitMono.Core.Protecting.Renaming
             string randomStringThree = strings[random.Next(0, strings.Length - 1)];
             return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
         }
-        public void Rename(ProtectionContext context, IDnlibDef dnlibDef)
+        public void Rename(IDnlibDef dnlibDef)
         {
             if (dnlibDef is TypeDef typeDef)
             {
-                if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef))
+                if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
                 {
                     typeDef.Name = RenameUnsafely();
                 }
             }
-        }
-        public void Rename(ProtectionContext context, MethodDef methodDef)
-        {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef))
+            if (dnlibDef is MethodDef methodDef)
             {
-                methodDef.Name = RenameUnsafely();
+                if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+                {
+                    methodDef.Name = RenameUnsafely();
+                }
+            }
+            if (dnlibDef is FieldDef fieldDef)
+            {
+                fieldDef.Name = RenameUnsafely();
             }
         }
-        public void Rename(ProtectionContext context, FieldDef fieldDef)
-        {
-            fieldDef.Name = RenameUnsafely();
-        }
-        public void Rename(ProtectionContext context, IFullName fullName)
+        public void Rename(IFullName fullName)
         {
             fullName.Name = RenameUnsafely();
         }
-        public void Rename(ProtectionContext context, params IFullName[] fullNames)
+        public void Rename(params IFullName[] fullNames)
         {
             for (int i = 0; i < fullNames.Length; i++)
             {
-                Rename(context, fullNames[i]);
+                Rename(fullNames[i]);
             }
         }
-        public void Rename(ProtectionContext context, IVariable variable)
+        public void Rename(params IDnlibDef[] dnlibDefs)
+        {
+            for (int i = 0; i < dnlibDefs.Length; i++)
+            {
+                Rename(dnlibDefs[i]);
+            }
+        }
+        public void Rename(IVariable variable)
         {
             variable.Name = RenameUnsafely();
         }
