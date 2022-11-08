@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting;
+﻿using BitMono.API.Configuration;
+using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Injection;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace BitMono.Protections
     {
         private readonly IInjector m_Injector;
 
-        public AntiDe4dot(IInjector injector)
+        public AntiDe4dot(IInjector injector, IBitMonoAppSettingsConfiguration bitMonoAppSettingsConfiguration)
         {
             m_Injector = injector;
         }
