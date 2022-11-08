@@ -1,5 +1,4 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Context;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Protecting.Analyzing.TypeDefs;
 using dnlib.DotNet;
@@ -9,7 +8,6 @@ using System.Linq;
 namespace BitMono.Core.Protecting.Analyzing.Naming
 {
     public class NameCriticalAnalyzer :
-        ICriticalAnalyzer<string>,
         ICriticalAnalyzer<TypeDef>,
         ICriticalAnalyzer<MethodDef>
     {
@@ -27,28 +25,19 @@ namespace BitMono.Core.Protecting.Analyzing.Naming
             m_Configuration = configuration;
         }
 
-        public bool NotCriticalToMakeChanges(ProtectionContext context, string methodName)
+        public bool NotCriticalToMakeChanges(TypeDef typeDef)
         {
-            var criticalMethodNames = m_Configuration.GetCriticalMethods();
-            if (criticalMethodNames.Any(c => c.Equals(methodName)))
+            if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+            {
+                return false;
+            }
+            if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
             {
                 return false;
             }
             return true;
         }
-        public bool NotCriticalToMakeChanges(ProtectionContext context, TypeDef typeDef)
-        {
-            if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef) == false)
-            {
-                return false;
-            }
-            if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(context, typeDef) == false)
-            {
-                return false;
-            }
-            return true;
-        }
-        public bool NotCriticalToMakeChanges(ProtectionContext context, MethodDef methodDef)
+        public bool NotCriticalToMakeChanges(MethodDef methodDef)
         {
             var criticalMethodNames = m_Configuration.GetCriticalMethods();
             if (criticalMethodNames.Any(c => c.Equals(methodDef.Name)))
