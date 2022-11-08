@@ -52,16 +52,17 @@ namespace BitMono.Protections
             context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
 
             var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, "Encryptor");
+
             var saltBytes = new byte[] { 0x1, 0x3, 0x2, 0x3, 0x3, 0x4, 0x5, 0x10, 0x10 };
             var cryptKeyBytes = new byte[] { 0x1, 0x3, 0x10, 0x15, 0x20, 0x50, 0x5, 0x10, 0x10 };
             var saltBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, saltBytes, "saltBytes");
             var cryptKeyBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, cryptKeyBytes, "cryptKeyBytes");
 
-            var decryptMethodDefFromEncryptionModule = m_MethodSearcher.Find("Decrypt", context.EncryptionModuleDefMD);
+            var decryptMethodDefFromEncryptionModule = m_MethodSearcher.Find("Decrypt", context.ExternalComponentsModuleDefMD);
             var decryptorMethodDef = new MethodDefUser("Decrypt", decryptMethodDefFromEncryptionModule.MethodSig, MethodAttributes.Static | MethodAttributes.Assembly);
             decryptorMethodDef.Body = decryptMethodDefFromEncryptionModule.Body;
-            bool saltBytesInjected = false;
-            bool cryptKeyBytesInjected = false;
+            var saltBytesInjected = false;
+            var cryptKeyBytesInjected = false;
             for (int i = 0; i < decryptorMethodDef.Body.Instructions.Count; i++)
             {
                 if (decryptorMethodDef.Body.Instructions[i].OpCode == OpCodes.Ldsfld)
