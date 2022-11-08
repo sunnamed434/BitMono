@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
@@ -26,14 +27,12 @@ using ILogger = Serilog.ILogger;
 
 public class Program
 {
-    const string EncryptionFile = nameof(BitMono) + "." + nameof(BitMono.Encryption) + ".dll";
     const string ProtectionsFile = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
     const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(BitMono.ExternalComponents) + ".dll";
 
     private static async Task Main(string[] args)
     {
         Assembly.LoadFrom(ProtectionsFile);
-        var encryptionModuleDefMD = ModuleDefMD.Load(EncryptionFile);
         var externalComponentsModuleDefMD = ModuleDefMD.Load(ExternalComponentsFile);
 
         var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
@@ -43,7 +42,8 @@ public class Program
         })).Build();
 
         var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
-        var configuration = serviceProvider.LifetimeScope.Resolve<IConfiguration>();
+        var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>().Configuration;
+        var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>().Configuration;
         var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -55,7 +55,7 @@ public class Program
         {
             BaseDirectory = baseDirectory,
             OutputDirectory = outputDirectory,
-            Watermark = configuration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
+            Watermark = appSettingsConfiguration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
         };
 
         string moduleFile = null;
@@ -125,7 +125,6 @@ public class Program
             ModuleDefMD = moduleDefMD,
             ModuleCreationOptions = moduleCreationOptions,
             ModuleWriterOptions = moduleWriterOptions,
-            EncryptionModuleDefMD = encryptionModuleDefMD,
             ExternalComponentsModuleDefMD = externalComponentsModuleDefMD,
             Importer = new Importer(moduleDefMD),
             ExternalComponentsImporter = new Importer(externalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
@@ -136,7 +135,7 @@ public class Program
         logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
 
         var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
-        protections = new DependencyResolver(protections, configuration.GetProtectionSettings(), logger)
+        protections = new DependencyResolver(protections, protectionsConfiguration.GetProtectionSettings(), logger)
             .Sort(out ICollection<string> skipped);
         var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
         var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
@@ -148,7 +147,7 @@ public class Program
 
         var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
         var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
-        if (configuration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
+        if (appSettingsConfiguration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
         {
             if (resolvingSucceed == false)
             {
@@ -336,7 +335,7 @@ public class Program
         logger.Information("Completed!");
         Process.Start(bitMonoContext.OutputDirectory);
 
-        var tips = configuration.GetSection("Tips").Get<string[]>();
+        var tips = appSettingsConfiguration.GetSection("Tips").Get<string[]>();
         Random random = new Random();
         var tip = tips.Reverse().ToArray()[random.Next(0, tips.Length)];
         logger.Information("Today is your day! Generating helpful tip for you - see it a bit down!");
