@@ -58,7 +58,7 @@ namespace BitMono.Protections
                             && methodDef.ReturnType != context.ModuleDefMD.CorLibTypes.Boolean)
                         {
                             if (methodDef.IsConstructor == false && methodDef.IsVirtual == false
-                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(context, methodDef)
+                                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
                                 && methodDef.NotAsync())
                             {
                                 if (methodDef.IsSetter == false && methodDef.IsGetter == false)
