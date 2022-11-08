@@ -1,5 +1,5 @@
 ﻿using BitMono.Core.Models;
-using BitMono.GUI.Utilities.Extensions.JSInterop;
+using BitMono.GUI.Utilities.Extensions;
 using dnlib.DotNet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
