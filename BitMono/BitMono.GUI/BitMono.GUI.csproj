@@ -89,7 +89,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
 		<ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
-		<ProjectReference Include="..\BitMono.Encryption\BitMono.Encryption.csproj" />
 		<ProjectReference Include="..\BitMono.GUI.API\BitMono.GUI.API.csproj" />
 		<ProjectReference Include="..\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj" />
 		<ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
