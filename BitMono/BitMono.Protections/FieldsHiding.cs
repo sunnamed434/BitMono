@@ -37,8 +37,8 @@ namespace BitMono.Protections
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
-
             var importer = new Importer(moduleDefMD);
+
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
                 typeof(Array),
