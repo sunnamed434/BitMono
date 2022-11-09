@@ -6,6 +6,7 @@ using BitMono.API.Protecting.Injection;
 using BitMono.API.Protecting.Injection.FieldDefs;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Injection.TypeDefs;
+using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Injection;
@@ -166,7 +167,7 @@ namespace BitMono.Host.Modules
                 .PublicOnly()
                 .Where(t => 
                     t.GetInterface(nameof(IProtection)) != null 
-                    && t.GetInterface(nameof(IProtectionPhase)) == null)
+                    && t.GetInterface(nameof(IPhaseProtection)) == null)
                 .OwnedByLifetimeScope()
                 .AsImplementedInterfaces()
                 .SingleInstance();
