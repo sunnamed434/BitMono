@@ -333,7 +333,10 @@ public class Program
 
         logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
         logger.Information("Completed!");
-        Process.Start(bitMonoContext.OutputDirectory);
+        if (appSettingsConfiguration.GetValue<bool>("OpenFileDestinationInFileExplorer"))
+        {
+            Process.Start(bitMonoContext.OutputDirectory);
+        }
 
         var tips = appSettingsConfiguration.GetSection("Tips").Get<string[]>();
         Random random = new Random();
