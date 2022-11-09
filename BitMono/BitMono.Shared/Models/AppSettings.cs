@@ -6,5 +6,6 @@
         public bool NoInliningMethodObfuscationExcluding { get; set; }
         public bool ObfuscationAttributeObfuscationExcluding { get; set; }
         public bool FailOnNoRequiredDependency { get; set; }
+        public bool OpenFileDestinationInFileExplorer { get; set; }
     }
 }
