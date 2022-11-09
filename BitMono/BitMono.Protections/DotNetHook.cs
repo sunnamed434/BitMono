@@ -45,7 +45,7 @@ namespace BitMono.Protections
 
         public PipelineStages Stage => PipelineStages.ModuleWritten;
 
-        public IEnumerable<(IProtectionPhase, PipelineStages)> PopulatePipeline()
+        public IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline()
         {
             yield return (new DotNetHookPhase(m_InstructionsToBeTokensUpdated, m_MethodDefSearcher), PipelineStages.ModuleWritten);
         }
@@ -163,7 +163,7 @@ namespace BitMono.Protections
         }
     }
 
-    public class DotNetHookPhase : IProtectionPhase
+    public class DotNetHookPhase : IPhaseProtection
     {
         private readonly IList<(MethodDef, MethodDef, int)> m_InstructionsToBeTokensUpdated;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
