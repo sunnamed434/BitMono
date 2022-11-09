@@ -4,6 +4,6 @@ namespace BitMono.API.Protecting.Pipeline
 {
     public interface IPipelineProtection : IProtection
     {
-        IEnumerable<(IProtectionPhase, PipelineStages)> PopulatePipeline();
+        IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline();
     }
 }
