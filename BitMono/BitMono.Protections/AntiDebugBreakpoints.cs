@@ -90,7 +90,7 @@ namespace BitMono.Protections
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
                     if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(AntiDebugBreakpoints),
-                    out ObfuscationAttribute methodDefObfuscationAttribute))
+                        out ObfuscationAttribute methodDefObfuscationAttribute))
                     {
                         if (methodDefObfuscationAttribute.Exclude)
                         {
