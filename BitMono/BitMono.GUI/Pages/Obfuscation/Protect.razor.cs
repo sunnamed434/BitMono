@@ -7,6 +7,7 @@ using BitMono.Core.Protecting.Resolvers;
 using BitMono.GUI.API;
 using BitMono.GUI.Shared.Alerting;
 using BitMono.GUI.Shared.Inputs;
+using BitMono.Shared.Models;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.DotNet.Writer;
@@ -123,7 +124,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(Directory.GetFiles(_dependenciesFolder), protectionContext, Logger);
                     var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
-                    if (Configuration.Configuration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
+                    if (Configuration.Configuration.GetValue<bool>(nameof(BitMono.Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
                     {
                         if (resolvingSucceed == false)
                         {
