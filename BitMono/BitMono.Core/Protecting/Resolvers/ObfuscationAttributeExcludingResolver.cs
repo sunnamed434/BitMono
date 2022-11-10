@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Models;
+using BitMono.Shared.Models;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
 using NullGuard;
@@ -14,7 +14,7 @@ namespace BitMono.Core.Protecting.Resolvers
         private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
         private readonly IConfiguration m_Configuration;
 
-        public ObfuscationAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoAppSettingsConfiguration configuration)
+        public ObfuscationAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoObfuscationConfiguration configuration)
         {
             m_AttemptAttributeResolver = attemptAttributeResolver;
             m_Configuration = configuration.Configuration;
@@ -22,12 +22,13 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public bool TryResolve(IHasCustomAttribute from, string feature, [AllowNull] out ObfuscationAttribute obfuscationAttribute)
         {
-            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, _ =>
+            obfuscationAttribute = null;
+            if (m_Configuration.GetValue<bool>(nameof(Obfuscation.ObfuscationAttributeObfuscationExcluding)) == false)
             {
-                return m_Configuration.GetValue<bool>(nameof(AppSettings.ObfuscationAttributeObfuscationExcluding)) == true;
-            }, o => o.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase), attribute => attribute.StripAfterObfuscation, out obfuscationAttribute);
-
-            return resolvingSucceed && obfuscationAttribute != null;
+                return false;
+            }
+            return m_AttemptAttributeResolver.TryResolve(from, o => o.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase),
+                strip => strip.StripAfterObfuscation, out obfuscationAttribute);
         }
     }
 }
