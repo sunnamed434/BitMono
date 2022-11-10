@@ -1,10 +1,11 @@
-﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
+﻿using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.ExternalComponents;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using dnlib.DotNet.Writer;
@@ -22,25 +23,26 @@ namespace BitMono.Protections
 {
     public class DotNetHook : IPipelineProtection, IPipelineStage
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<DotNetHook> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
         private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
         private readonly IList<(MethodDef, MethodDef, int)> m_InstructionsToBeTokensUpdated;
-        private readonly IList<MethodDef> m_ProtectedMethodDefs;
 
         public DotNetHook(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<DotNetHook> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             IMethodDefSearcher methodDefSearcher,
             IRenamer renamer,
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_MethodDefSearcher = methodDefSearcher;
             m_Renamer = renamer;
             m_Logger = logger.ForContext<DotNetHook>();
             m_InstructionsToBeTokensUpdated = new List<(MethodDef, MethodDef, int)>();
-            m_ProtectedMethodDefs = new List<MethodDef>();
         }
 
         public PipelineStages Stage => PipelineStages.ModuleWritten;
@@ -71,43 +73,43 @@ namespace BitMono.Protections
             managedHookTypeDef.Methods.Add(redirectStubMethodDef);
             moduleDefMD.Types.Add(managedHookTypeDef);
 
-            var writeLineMethod = context.Importer.Import(typeof(Console).GetMethod(nameof(Console.WriteLine), new Type[]
-            {
-                typeof(string)
-            }));
+            var writeLineMethod = context.Importer.Import(typeof(Console).GetMethod(nameof(Console.WriteLine), new Type[0]));
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(DotNetHook),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Debug("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
                     if (methodDef.HasBody)
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(DotNetHook),
-                            out ObfuscationAttribute methodDefObfuscationAttribute))
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
-                            if (methodDefObfuscationAttribute.Exclude)
-                            {
-                                m_Logger.Debug("Found {0}, that applyed to method, skipping it.", nameof(ObfuscationAttribute));
-                                continue;
-                            }
+                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+
+                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        {
+                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            continue;
                         }
 
                         for (int i = 0; i < methodDef.Body.Instructions.Count; i++)
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                 && methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef
-                                && m_ProtectedMethodDefs.Any(p => p.Name.Equals(methodDef.Name)) == false
-                                && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false)
+                                /*&& callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false*/)
                             {
                                 var dummyMethod = new MethodDefUser(m_Renamer.RenameUnsafely(), callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
                                 dummyMethod.Body = new CilBody();
@@ -124,12 +126,29 @@ namespace BitMono.Protections
                                 var index = initializatorMethodDef.Body.Instructions.Count;
                                 m_InstructionsToBeTokensUpdated.Insert(0, (initializatorMethodDef, callingMethodDef, index));
                                 m_InstructionsToBeTokensUpdated.Insert(1, (initializatorMethodDef, dummyMethod, index));
-                                initializatorMethodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, redirectStubMethodDef));
-                                initializatorMethodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ret));
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ret));
 
                                 moduleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
 
-                                dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldstr, "dummy!"));
+                                if (callingMethodDef.HasParameters() && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut))
+                                {
+                                    foreach (var parameter in callingMethodDef.Parameters)
+                                    {
+                                        if (parameter.HasParamDef && parameter.ParamDef.IsOut)
+                                        {
+                                            dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldarg, parameter));
+                                            if (parameter.IsNullable())
+                                            {
+                                                dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Initobj, parameter.Type));
+                                            }
+                                            m_Logger.Warning("parameter.Type.FullName: " + parameter.Type.FullName);
+                                        }
+                                    }
+                                    dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldnull));
+                                    dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Stind_Ref));
+                                }
+                                
                                 dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Call, writeLineMethod));
                                 if (callingMethodDef.HasReturnType)
                                 {
@@ -141,14 +160,12 @@ namespace BitMono.Protections
 
                                 methodDef.Body.Instructions.Insert(0, new Instruction(OpCodes.Call, initializatorMethodDef));
                                 methodDef.Body.Instructions[i + 1].Operand = dummyMethod;
-                                m_ProtectedMethodDefs.Add(methodDef);
+                                i += 1;
                             }
                         }
                     }
                 }
             }
-
-            m_ProtectedMethodDefs.Clear();
 
             var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
             moduleWriterOptions.Logger = DummyLogger.NoThrowInstance;
