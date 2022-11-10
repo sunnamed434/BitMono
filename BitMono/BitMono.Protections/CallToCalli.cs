@@ -20,16 +20,19 @@ namespace BitMono.Protections
 {
     public class CallToCalli : IStageProtection
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<CallToCalli> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public CallToCalli(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<CallToCalli> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<CallToCalli>();
         }
@@ -57,14 +60,16 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(CallToCalli),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
@@ -75,14 +80,16 @@ namespace BitMono.Protections
                         && methodDef.NotGetterAndSetter()
                         && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(CallToCalli),
-                            out ObfuscationAttribute methodDefObfuscationAttribute))
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
-                            if (methodDefObfuscationAttribute.Exclude)
-                            {
-                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                                continue;
-                            }
+                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+
+                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        {
+                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            continue;
                         }
 
                         for (int i = 0; i < methodDef.Body.Instructions.Count; i++)
