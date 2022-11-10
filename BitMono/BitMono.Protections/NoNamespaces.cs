@@ -1,8 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
-using BitMono.Core.Protecting.Analyzing.Naming;
 using dnlib.DotNet;
 using System.Linq;
 using System.Reflection;
@@ -14,16 +12,19 @@ namespace BitMono.Protections
 {
     public class NoNamespaces : IProtection
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<NoNamespaces> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public NoNamespaces(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver, 
+            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<NoNamespaces> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer typeDefCriticalAnalyzer, 
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = typeDefCriticalAnalyzer;
             m_Logger = logger.ForContext<NoNamespaces>();
         }
@@ -32,14 +33,16 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(NoNamespaces),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 if (typeDef.IsGlobalModuleType == false
