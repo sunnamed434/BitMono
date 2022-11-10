@@ -22,9 +22,10 @@ namespace BitMono.Protections
     public class StringsEncryption : IProtection
     {
         private readonly IInjector m_Injector;
-        private readonly IMethodDefSearcher m_MethodSearcher;
         private readonly IFieldSearcher m_FieldSearcher;
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly IMethodDefSearcher m_MethodSearcher;
+        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<StringsEncryption> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
@@ -32,16 +33,18 @@ namespace BitMono.Protections
         public StringsEncryption(
             IInjector injector,
             IFieldSearcher fieldSearcher,
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
             IMethodDefSearcher methodSearcher,
+            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<StringsEncryption> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             IRenamer renamer,
             ILogger logger)
         {
             m_Injector = injector;
-            m_MethodSearcher = methodSearcher;
             m_FieldSearcher = fieldSearcher;
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_MethodSearcher = methodSearcher;
+            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Renamer = renamer;
             m_Logger = logger.ForContext<StringsEncryption>();
@@ -96,28 +99,32 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(StringsEncryption),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 if (typeDef.HasMethods)
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(StringsEncryption),
-                            out ObfuscationAttribute methodDefObfuscationAttribute))
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
-                            if (methodDefObfuscationAttribute.Exclude)
-                            {
-                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                                continue;
-                            }
+                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+
+                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        {
+                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            continue;
                         }
 
                         if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
