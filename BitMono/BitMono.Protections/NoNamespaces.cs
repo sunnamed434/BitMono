@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using System.Linq;
 using System.Reflection;
@@ -47,7 +48,7 @@ namespace BitMono.Protections
 
                 if (typeDef.IsGlobalModuleType == false
                     && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
-                    && UTF8String.IsNullOrEmpty(typeDef.Namespace) == false)
+                    && typeDef.HasNamespace())
                 {
                     typeDef.Namespace = string.Empty;
                 }
