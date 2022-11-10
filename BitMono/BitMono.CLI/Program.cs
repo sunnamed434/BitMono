@@ -5,7 +5,6 @@ using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Configuration.Extensions;
-using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
 using BitMono.Host;
 using BitMono.Host.Modules;
@@ -43,8 +42,9 @@ public class Program
         })).Build();
 
         var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
-        var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>().Configuration;
+        var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>().Configuration;
         var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>().Configuration;
+        var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>().Configuration;
         var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -56,7 +56,7 @@ public class Program
         {
             BaseDirectory = baseDirectory,
             OutputDirectory = outputDirectory,
-            Watermark = appSettingsConfiguration.GetValue<bool>(nameof(BitMonoContext.Watermark)),
+            Watermark = obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.Watermark)),
         };
 
         string moduleFile = null;
@@ -148,7 +148,7 @@ public class Program
 
         var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
         var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
-        if (appSettingsConfiguration.GetValue<bool>(nameof(Obfuscation.FailOnNoRequiredDependency)))
+        if (obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.FailOnNoRequiredDependency)))
         {
             if (resolvingSucceed == false)
             {
@@ -334,7 +334,7 @@ public class Program
 
         logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
         logger.Information("Completed!");
-        if (appSettingsConfiguration.GetValue<bool>("OpenFileDestinationInFileExplorer"))
+        if (obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
         {
             Process.Start(bitMonoContext.OutputDirectory);
         }
