@@ -131,24 +131,6 @@ namespace BitMono.Protections
 
                                 moduleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
 
-                                if (callingMethodDef.HasParameters() && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut))
-                                {
-                                    foreach (var parameter in callingMethodDef.Parameters)
-                                    {
-                                        if (parameter.HasParamDef && parameter.ParamDef.IsOut)
-                                        {
-                                            dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldarg, parameter));
-                                            if (parameter.IsNullable())
-                                            {
-                                                dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Initobj, parameter.Type));
-                                            }
-                                            m_Logger.Warning("parameter.Type.FullName: " + parameter.Type.FullName);
-                                        }
-                                    }
-                                    dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldnull));
-                                    dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Stind_Ref));
-                                }
-                                
                                 dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Call, writeLineMethod));
                                 if (callingMethodDef.HasReturnType)
                                 {
