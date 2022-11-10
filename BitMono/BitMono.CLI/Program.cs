@@ -9,6 +9,7 @@ using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
 using BitMono.Host;
 using BitMono.Host.Modules;
+using BitMono.Shared.Models;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.DotNet.Writer;
@@ -147,7 +148,7 @@ public class Program
 
         var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
         var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
-        if (appSettingsConfiguration.GetValue<bool>(nameof(AppSettings.FailOnNoRequiredDependency)))
+        if (appSettingsConfiguration.GetValue<bool>(nameof(Obfuscation.FailOnNoRequiredDependency)))
         {
             if (resolvingSucceed == false)
             {
