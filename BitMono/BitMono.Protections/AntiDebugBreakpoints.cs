@@ -1,6 +1,5 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -17,17 +16,20 @@ namespace BitMono.Protections
 {
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<AntiDebugBreakpoints> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public AntiDebugBreakpoints(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<AntiDebugBreakpoints> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
             ILogger logger)
         {
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
@@ -77,26 +79,30 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(AntiDebugBreakpoints),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(AntiDebugBreakpoints),
-                        out ObfuscationAttribute methodDefObfuscationAttribute))
+                    if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                     {
-                        if (methodDefObfuscationAttribute.Exclude)
-                        {
-                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                            continue;
-                        }
+                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                        continue;
+                    }
+
+                    if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                    {
+                        m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                        continue;
                     }
 
                     if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
