@@ -1,11 +1,11 @@
-﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using BitMono.API.Configuration;
+﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.API.Protecting.Writers;
+using BitMono.Obfuscation.API;
 using dnlib.DotNet;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,66 +18,56 @@ namespace BitMono.Obfuscation
 {
     public class BitMonoObfuscator
     {
-        private readonly AutofacServiceProvider m_ServiceProvider;
+        private readonly IServiceProvider m_ServiceProvider;
         private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
+        private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
         private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
         private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
         private readonly IBitMonoProtectionsConfiguration m_ProtectionsConfiguration;
-        private readonly IBitMonoModuleFileResolver m_BitMonoModuleFileResolver;
         private readonly ILogger m_Logger;
 
         public BitMonoObfuscator(
-            AutofacServiceProvider serviceProvider,
-            IBitMonoModuleFileResolver bitMonoModuleFileResolver,
+            IServiceProvider serviceProvider,
             IModuleDefMDWriter moduleDefMDWriter,
+            IModuleDefMDCreator moduleDefMDCreator,
             ILogger logger)
         {
             m_ServiceProvider = serviceProvider;
-            m_BitMonoModuleFileResolver = bitMonoModuleFileResolver;
             m_ModuleDefMDWriter = moduleDefMDWriter;
-            m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
-            m_ObfuscationConfiguratin = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
-            m_ProtectionsConfiguration = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
-            m_ProtectionsConfiguration = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
+            m_ModuleDefMDCreator = moduleDefMDCreator;
+            m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.GetRequiredService<IObfuscationAttributeExcludingResolver>();
+            m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
+            m_ProtectionsConfiguration = m_ServiceProvider.GetRequiredService<IBitMonoProtectionsConfiguration>();
+            m_ProtectionsConfiguration = m_ServiceProvider.GetRequiredService<IBitMonoProtectionsConfiguration>();
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
         public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                context.ModuleFile = await m_BitMonoModuleFileResolver.ResolveAsync(context.BaseDirectory);
-            }
-            catch (Exception ex)
-            {
-                m_Logger.Error(ex, "Failed to resolve module file!");
-                return;
-            }
-
-            var moduleDefMDCreationResult = await new ModuleDefMDCreator().CreateAsync(context.ModuleFile);
+            var moduleDefMDCreationResult = await m_ModuleDefMDCreator.CreateAsync();
             var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
             var protectionsSortingResult = await new ProtectionsSorter(m_ProtectionsConfiguration, m_ObfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
-                .SortAsync(m_ServiceProvider.LifetimeScope.Resolve<ICollection<IProtection>>());
+                .SortAsync(m_ServiceProvider.GetRequiredService<ICollection<IProtection>>());
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
 
             var stringBuilder = new StringBuilder()
-                .Append(Path.GetFileNameWithoutExtension(context.ModuleFile));
+                .Append(Path.GetFileNameWithoutExtension(context.ModuleFileName));
             if (context.Watermark)
             {
                 stringBuilder.
                     Append("_bitmono");
             }
-            stringBuilder.Append(Path.GetExtension(context.ModuleFile));
-            var outputFile = Path.Combine(context.OutputDirectory, stringBuilder.ToString());
+            stringBuilder.Append(Path.GetExtension(context.ModuleFileName));
+            var outputFile = Path.Combine(context.OutputPath, stringBuilder.ToString());
             context.OutputModuleFile = outputFile;
 
-            m_Logger.Information("Preparing to protect module: {0}", context.ModuleFile);
+            m_Logger.Information("Preparing to protect module: {0}", context.ModuleFileName);
             await new BitMonoEngine(m_ObfuscationConfiguratin, protectionsSortingResult.Protections, context, protectionContext, m_ModuleDefMDWriter, m_Logger)
                 .StartAsync(cancellationToken);
-            m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectory);
+            m_Logger.Information("Protected module`s saved in {0}", context.OutputPath);
         }
     }
 }
