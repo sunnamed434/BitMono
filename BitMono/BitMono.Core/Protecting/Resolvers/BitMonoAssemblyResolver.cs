@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Protecting.Context;
 using dnlib.DotNet;
-using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
@@ -9,26 +9,23 @@ namespace BitMono.Core.Protecting.Resolvers
 {
     public class BitMonoAssemblyResolver
     {
-        private readonly string[] m_DependencyFiles;
+        private readonly IEnumerable<byte[]> m_DependenciesData;
         private readonly ProtectionContext m_ProtectionContext;
         private readonly ILogger m_Logger;
 
-        public BitMonoAssemblyResolver(string[] dependencyFiles, ProtectionContext protectionContext, ILogger logger)
+        public BitMonoAssemblyResolver(IEnumerable<byte[]> dependenciesData, ProtectionContext protectionContext, ILogger logger)
         {
-            m_DependencyFiles = dependencyFiles;
+            m_DependenciesData = dependenciesData;
             m_ProtectionContext = protectionContext;
             m_Logger = logger.ForContext<BitMonoAssemblyResolver>();
-        }
-        public BitMonoAssemblyResolver(ProtectionContext protectionContext, ILogger logger) : this(Array.Empty<string>(), protectionContext, logger)
-        {
         }
 
         public Task<bool> ResolveAsync(CancellationToken cancellationToken = default)
         {
             var resolvingSucceed = true;
-            for (int i = 0; i < m_DependencyFiles.Length; i++)
+            foreach (var dependencyData in m_DependenciesData)
             {
-                m_ProtectionContext.AssemblyResolver.AddToCache(AssemblyDef.Load(m_DependencyFiles[i]));
+                m_ProtectionContext.AssemblyResolver.AddToCache(AssemblyDef.Load(dependencyData));
             }
 
             foreach (var assemblyRef in m_ProtectionContext.ModuleDefMD.GetAssemblyRefs())
