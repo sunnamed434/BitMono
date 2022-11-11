@@ -2,12 +2,9 @@
 using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
-using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.CLI.Writers;
-using BitMono.Core.Configuration.Extensions;
 using BitMono.Core.Protecting.Modules;
-using BitMono.Core.Protecting.Resolvers;
 using BitMono.Host;
 using BitMono.Host.Modules;
 using BitMono.Shared.Models;
@@ -44,9 +41,9 @@ public class Program
         })).Build();
 
         var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
-        var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>().Configuration;
-        var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>().Configuration;
-        var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>().Configuration;
+        var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
+        var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
+        var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
         var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -58,7 +55,7 @@ public class Program
         {
             BaseDirectory = baseDirectory,
             OutputDirectory = outputDirectory,
-            Watermark = obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.Watermark)),
+            Watermark = obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.Watermark)),
         };
 
         string moduleFile = null;
@@ -97,35 +94,16 @@ public class Program
         logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
 
         var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
-        protections = new DependencyResolver(protections, protectionsConfiguration.GetProtectionSettings(), logger)
-            .Sort(out ICollection<string> skipped);
-        var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
-        var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
-        var obfuscationAttributeExcludingProtections = protections.Where(p =>
-            obfuscationAttributeExcludingResolver.TryResolve(moduleDefMDCreationResult.ModuleDefMD.Assembly, p.GetType().Name, 
-            out ObfuscationAttribute obfuscationAttribute) && obfuscationAttribute.Exclude);
-
-        protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
-
-        if (obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.FailOnNoRequiredDependency)))
+        var protectionsSortingResult = await new ProtectionsSorter(protectionsConfiguration, obfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, logger).SortAsync(protections);
+        
+        if (protectionsSortingResult.Skipped.Any())
         {
-            var resolvingSucceed = await new BitMonoAssemblyResolver(protectionContext, logger).ResolveAsync();
-            if (resolvingSucceed == false)
-            {
-                logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", bitMonoContext.BaseDirectory);
-                Console.ReadLine();
-                return;
-            }
+            logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSortingResult.Skipped.Select(p => p ?? "NULL")));
         }
 
-        if (skipped.Any())
+        if (protectionsSortingResult.ObfuscationAttributeExcludingProtections.Any())
         {
-            logger.Warning("Skip protections: {0}", string.Join(", ", skipped.Select(p => p ?? "NULL")));
-        }
-
-        if (obfuscationAttributeExcludingProtections.Any())
-        {
-            logger.Warning("Skip protections with obfuscation attribute excluding: {0}", string.Join(", ", obfuscationAttributeExcludingProtections.Select(p => p.GetType().Name ?? "NULL")));
+            logger.Warning("Skip protections with obfuscation attribute excluding: {0}", string.Join(", ", protectionsSortingResult.ObfuscationAttributeExcludingProtections.Select(p => p.GetType().Name ?? "NULL")));
         }
 
         if (protections.Any())
@@ -133,9 +111,9 @@ public class Program
             logger.Information("Execute protections: {0}", string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
         }
 
-        if (stageProtections.Any())
+        if (protectionsSortingResult.StageProtections.Any())
         {
-            logger.Information("Execute calling condition protections: {0}", string.Join(", ", stageProtections.Select(p => p.GetType().Name ?? "NULL")));
+            logger.Information("Execute calling condition protections: {0}", string.Join(", ", protectionsSortingResult.StageProtections.Select(p => p.GetType().Name ?? "NULL")));
         }
 
         var stringBuilder = new StringBuilder()
@@ -153,21 +131,17 @@ public class Program
         bitMonoContext.OutputModuleFile = outputFile;
 
         logger.Information("Preparing to protect: {0}", bitMonoContext.ModuleFile);
-        var bitMonoEngine = new BitMonoEngine(protections, protectionContext, new CLIModuleDefMDWriter(protectionContext), logger);
+        var bitMonoEngine = new BitMonoEngine(obfuscationConfiguration, protections, bitMonoContext, protectionContext, new CLIModuleDefMDWriter(protectionContext), logger);
         await bitMonoEngine.StartAsync(CancellationToken.Token);
-
         logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
         logger.Information("Completed!");
-        if (obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
+
+        if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
         {
             Process.Start(bitMonoContext.OutputDirectory);
         }
 
-        var tips = appSettingsConfiguration.GetSection("Tips").Get<string[]>();
-        Random random = new Random();
-        var tip = tips.Reverse().ToArray()[random.Next(0, tips.Length)];
-        logger.Information("Today is your day! Generating helpful tip for you - see it a bit down!");
-        logger.Information(tip);
+        await new TipsNotifier(appSettingsConfiguration, logger).NotifyAsync();
 
         await serviceProvider.DisposeAsync();
         Console.ReadLine();
