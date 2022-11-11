@@ -130,7 +130,6 @@ namespace BitMono.Host.Modules
                 .SingleInstance();
 
             containerBuilder.RegisterGeneric(typeof(DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<>))
-                .AsSelf()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
