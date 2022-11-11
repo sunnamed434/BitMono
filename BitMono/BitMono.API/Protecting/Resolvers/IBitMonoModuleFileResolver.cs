@@ -1,10 +1,9 @@
-﻿using BitMono.API.Protecting.Context;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace BitMono.API.Protecting.Resolvers
 {
     public interface IBitMonoModuleFileResolver
     {
-        Task ResolveAsync(BitMonoContext context);
+        public Task<string> ResolveAsync(string baseDirectory);
     }
 }
