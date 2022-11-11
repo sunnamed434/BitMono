@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using BitMono.API.Configuration;
 using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.CLI.Writers;
 using BitMono.Core.Protecting.Modules;
@@ -15,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -47,16 +45,7 @@ public class Program
         var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        Directory.CreateDirectory("base");
-        Directory.CreateDirectory("output");
-        var baseDirectory = Path.Combine(currentAssemblyDirectory, "base");
-        var outputDirectory = Path.Combine(currentAssemblyDirectory, "output");
-        var bitMonoContext = new BitMonoContext
-        {
-            BaseDirectory = baseDirectory,
-            OutputDirectory = outputDirectory,
-            Watermark = obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.Watermark)),
-        };
+        var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(currentAssemblyDirectory, "base", "output");
 
         string moduleFile = null;
         if (args.Length != 0)
@@ -72,49 +61,20 @@ public class Program
                 Console.ReadLine();
                 return;
             }
-
             moduleFile = baseDirectoryFiles[0];
         }
 
         bitMonoContext.ModuleFile = moduleFile;
 
         var moduleDefMDCreationResult = await new ModuleDefMDCreator().CreateAsync(moduleFile);
-        var protectionContext = new ProtectionContext
-        {
-            ModuleDefMD = moduleDefMDCreationResult.ModuleDefMD,
-            ModuleCreationOptions = moduleDefMDCreationResult.ModuleCreationOptions,
-            ModuleWriterOptions = moduleDefMDCreationResult.ModuleWriterOptions,
-            ExternalComponentsModuleDefMD = externalComponentsModuleDefMD,
-            Importer = new Importer(moduleDefMDCreationResult.ModuleDefMD),
-            ExternalComponentsImporter = new Importer(externalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
-            BitMonoContext = bitMonoContext,
-        };
+        var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, bitMonoContext).CreateAsync();
 
         logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
-        logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
-
-        var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
-        var protectionsSortingResult = await new ProtectionsSorter(protectionsConfiguration, obfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, logger).SortAsync(protections);
         
-        if (protectionsSortingResult.Skipped.Any())
-        {
-            logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSortingResult.Skipped.Select(p => p ?? "NULL")));
-        }
+        var protectionsSortingResult = await new ProtectionsSorter(protectionsConfiguration, obfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, logger)
+            .SortAsync(serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>());
 
-        if (protectionsSortingResult.ObfuscationAttributeExcludingProtections.Any())
-        {
-            logger.Warning("Skip protections with obfuscation attribute excluding: {0}", string.Join(", ", protectionsSortingResult.ObfuscationAttributeExcludingProtections.Select(p => p.GetType().Name ?? "NULL")));
-        }
-
-        if (protections.Any())
-        {
-            logger.Information("Execute protections: {0}", string.Join(", ", protections.Select(p => p.GetType().Name ?? "NULL")));
-        }
-
-        if (protectionsSortingResult.StageProtections.Any())
-        {
-            logger.Information("Execute calling condition protections: {0}", string.Join(", ", protectionsSortingResult.StageProtections.Select(p => p.GetType().Name ?? "NULL")));
-        }
+        await new ProtectionsExecutionNotifier(logger).NotifyAsync(protectionsSortingResult);
 
         var stringBuilder = new StringBuilder()
             .Append(Path.GetFileNameWithoutExtension(moduleFile));
@@ -125,11 +85,10 @@ public class Program
         }
         stringBuilder.Append(Path.GetExtension(moduleFile));
         var outputFile = Path.Combine(bitMonoContext.OutputDirectory, stringBuilder.ToString());
-
         bitMonoContext.OutputModuleFile = outputFile;
 
         logger.Information("Preparing to protect: {0}", bitMonoContext.ModuleFile);
-        var bitMonoEngine = new BitMonoEngine(obfuscationConfiguration, protections, bitMonoContext, protectionContext, new CLIModuleDefMDWriter(protectionContext), logger);
+        var bitMonoEngine = new BitMonoEngine(obfuscationConfiguration, protectionsSortingResult.Protections, bitMonoContext, protectionContext, new CLIModuleDefMDWriter(protectionContext), logger);
         await bitMonoEngine.StartAsync(CancellationToken.Token);
         logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
         logger.Information("Completed!");
