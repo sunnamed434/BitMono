@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using BitMono.API.Configuration;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.CLI.Modules;
 using BitMono.Host;
 using BitMono.Host.Modules;
@@ -39,12 +38,10 @@ public class Program
         var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
         var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
         var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-        var obfuscationAttributeExcludingResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
 
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
         var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(currentAssemblyDirectory, "base", "output");
-        await new BitMonoObfuscator(obfuscationConfiguration, protectionsConfiguration, new CLIBitMonoModuleFileResolver(args), serviceProvider, obfuscationAttributeExcludingResolver, new CLIModuleDefMDWriter(), logger)
+        await new BitMonoObfuscator(serviceProvider, new CLIBitMonoModuleFileResolver(args), new CLIModuleDefMDWriter(), logger)
             .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, CancellationToken.Token);
 
         if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
