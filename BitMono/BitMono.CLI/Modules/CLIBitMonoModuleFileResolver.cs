@@ -1,5 +1,4 @@
-﻿using BitMono.API.Protecting.Context;
-using BitMono.API.Protecting.Resolvers;
+﻿using BitMono.API.Protecting.Resolvers;
 using NullGuard;
 using System;
 using System.IO;
