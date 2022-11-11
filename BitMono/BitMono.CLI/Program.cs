@@ -18,15 +18,24 @@ using ILogger = Serilog.ILogger;
 
 public class Program
 {
-    const string ProtectionsFile = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-    const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(BitMono.ExternalComponents) + ".dll";
+    const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
+    const string ExternalComponents = nameof(BitMono) + "." + nameof(BitMono.ExternalComponents) + ".dll";
 
     static CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
     private static async Task Main(string[] args)
     {
-        Assembly.LoadFrom(ProtectionsFile);
-        var externalComponentsModuleDefMD = ModuleDefMD.Load(ExternalComponentsFile);
+        var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
+        var externalComponentsFile = Path.Combine(domainBaseDirectory, ExternalComponents);
+        var externalComponentsModuleDefMD = ModuleDefMD.Load(externalComponentsFile);
+
+        Assembly.LoadFrom(protectionsFile);
+
+        var libsDirectoryName = Path.Combine(domainBaseDirectory, "libs");
+        var outputDirectoryName = Path.Combine(Path.GetDirectoryName(args[0]), "output");
+        Directory.CreateDirectory(libsDirectoryName);
+        Directory.CreateDirectory(outputDirectoryName);
 
         var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
         {
@@ -38,15 +47,21 @@ public class Program
         var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
         var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
         var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
+        var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(outputDirectoryName, libsDirectoryName);
+        bitMonoContext.ModuleFileName = await new CLIBitMonoModuleFileResolver(args).ResolveAsync();
+        if (string.IsNullOrWhiteSpace(bitMonoContext.ModuleFileName))
+        {
+            logger.Error("Failed to resolve module file!");
+            Console.ReadLine();
+            return;
+        }
 
-        var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(currentAssemblyDirectory, "base", "output");
-        await new BitMonoObfuscator(serviceProvider, new CLIBitMonoModuleFileResolver(args), new CLIModuleDefMDWriter(), logger)
+        await new BitMonoObfuscator(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(File.ReadAllBytes(bitMonoContext.ModuleFileName)), logger)
             .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, CancellationToken.Token);
 
         if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
         {
-            Process.Start(bitMonoContext.OutputDirectory);
+            Process.Start(bitMonoContext.OutputPath);
         }
 
         await new TipsNotifier(appSettingsConfiguration, logger).NotifyAsync();
