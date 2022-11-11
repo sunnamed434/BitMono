@@ -4,14 +4,14 @@ using BitMono.API.Protecting;
 using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.CLI.Writers;
 using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Protecting.Modules;
 using BitMono.Core.Protecting.Resolvers;
 using BitMono.Host;
 using BitMono.Host.Modules;
 using BitMono.Shared.Models;
 using dnlib.DotNet;
-using dnlib.DotNet.MD;
-using dnlib.DotNet.Writer;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -20,8 +20,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 
@@ -29,6 +29,8 @@ public class Program
 {
     const string ProtectionsFile = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
     const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(BitMono.ExternalComponents) + ".dll";
+
+    static CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
     private static async Task Main(string[] args)
     {
@@ -79,60 +81,19 @@ public class Program
 
         bitMonoContext.ModuleFile = moduleFile;
 
-        var assemblyResolver = new AssemblyResolver();
-        var moduleContext = new ModuleContext(assemblyResolver);
-        assemblyResolver.DefaultModuleContext = moduleContext;
-        var moduleCreationOptions = new ModuleCreationOptions(assemblyResolver.DefaultModuleContext, CLRRuntimeReaderKind.Mono);
-        var moduleDefMD = ModuleDefMD.Load(moduleFile, moduleCreationOptions);
-        var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
-        moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-        moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
-        moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
-
-        Assembly moduleAssembly = null;
-        try
-        {
-            moduleAssembly = Assembly.LoadFrom(moduleFile);
-        }
-        catch (FileLoadException ex)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                logger.Fatal("Seems Module {0}, is blocked, try to unblock it (disabling the security) by opening propetries of the file, should be checked 'Unblock' & then pressed button 'Apply'", moduleFile);
-            }
-            else
-            {
-                logger.Fatal(ex, "Failed to load module assembly!");
-            }
-            Console.ReadLine();
-            return;
-        }
-        catch (Exception ex)
-        {
-            logger.Fatal(ex, "Failed to load module assembly!");
-            Console.ReadLine();
-            return;
-        }
-
-        if (moduleAssembly == null)
-        {
-            logger.Fatal("Failed to load module assembly {0}!", moduleFile);
-            Console.ReadLine();
-            return;
-        }
-
+        var moduleDefMDCreationResult = await new ModuleDefMDCreator().CreateAsync(moduleFile);
         var protectionContext = new ProtectionContext
         {
-            ModuleDefMD = moduleDefMD,
-            ModuleCreationOptions = moduleCreationOptions,
-            ModuleWriterOptions = moduleWriterOptions,
+            ModuleDefMD = moduleDefMDCreationResult.ModuleDefMD,
+            ModuleCreationOptions = moduleDefMDCreationResult.ModuleCreationOptions,
+            ModuleWriterOptions = moduleDefMDCreationResult.ModuleWriterOptions,
             ExternalComponentsModuleDefMD = externalComponentsModuleDefMD,
-            Importer = new Importer(moduleDefMD),
+            Importer = new Importer(moduleDefMDCreationResult.ModuleDefMD),
             ExternalComponentsImporter = new Importer(externalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
             BitMonoContext = bitMonoContext,
         };
 
-        logger.Information("Loaded Module {0}", moduleDefMD.Name);
+        logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
         logger.Warning("Resolving dependecies {0}", bitMonoContext.ModuleFile);
 
         var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
@@ -141,15 +102,14 @@ public class Program
         var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
         var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
         var obfuscationAttributeExcludingProtections = protections.Where(p =>
-            obfuscationAttributeExcludingResolver.TryResolve(moduleDefMD.Assembly, p.GetType().Name, out ObfuscationAttribute obfuscationAttribute)
-            && obfuscationAttribute.Exclude);
+            obfuscationAttributeExcludingResolver.TryResolve(moduleDefMDCreationResult.ModuleDefMD.Assembly, p.GetType().Name, 
+            out ObfuscationAttribute obfuscationAttribute) && obfuscationAttribute.Exclude);
 
         protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
 
-        var bitMonoAssemblyResolver = new BitMonoAssemblyResolver(protectionContext, logger);
-        var resolvingSucceed = await bitMonoAssemblyResolver.ResolveAsync();
         if (obfuscationConfiguration.GetValue<bool>(nameof(Obfuscation.FailOnNoRequiredDependency)))
         {
+            var resolvingSucceed = await new BitMonoAssemblyResolver(protectionContext, logger).ResolveAsync();
             if (resolvingSucceed == false)
             {
                 logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", bitMonoContext.BaseDirectory);
@@ -157,7 +117,6 @@ public class Program
                 return;
             }
         }
-        logger.Information("Protecting: {0}", bitMonoContext.ModuleFile);
 
         if (skipped.Any())
         {
@@ -179,52 +138,6 @@ public class Program
             logger.Information("Execute calling condition protections: {0}", string.Join(", ", stageProtections.Select(p => p.GetType().Name ?? "NULL")));
         }
 
-        foreach (var protection in protections)
-        {
-            try
-            {
-                if (protection is IPipelineStage stage)
-                {
-                    if (stage.Stage == PipelineStages.Begin)
-                    {
-                        logger.Information("{0} -> Executing..", protection.GetType().FullName);
-                        await protection.ExecuteAsync(protectionContext);
-                        logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                    }
-                }
-                else
-                {
-                    logger.Information("{0} -> Executing..", protection.GetType().FullName);
-                    await protection.ExecuteAsync(protectionContext);
-                    logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                }
-
-                try
-                {
-                    if (protection is IPipelineProtection pipelineProtection)
-                    {
-                        foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
-                        {
-                            if (protectionPhase.Item2 == PipelineStages.Begin)
-                            {
-                                logger.Information("Executing.. phase protection!");
-                                await protectionPhase.Item1.ExecuteAsync(protectionContext);
-                                logger.Information("Executed phase protection!");
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, "Error while executing protection pipelines!");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Error while executing protections!");
-            }
-        }
-
         var stringBuilder = new StringBuilder()
             .Append(Path.GetFileNameWithoutExtension(moduleFile));
 
@@ -239,98 +152,9 @@ public class Program
         var outputFile = Path.Combine(bitMonoContext.OutputDirectory, stringBuilder.ToString());
         bitMonoContext.OutputModuleFile = outputFile;
 
-        try
-        {
-            foreach (var protection in protections)
-            {
-                try
-                {
-                    if (protection is IPipelineStage stage)
-                    {
-                        if (stage.Stage == PipelineStages.ModuleWrite)
-                        {
-                            logger.Information("{0} -> Executing..", protection.GetType().FullName);
-                            await protection.ExecuteAsync(protectionContext);
-                            logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                        }
-                    }
-
-                    try
-                    {
-                        if (protection is IPipelineProtection pipelineProtection)
-                        {
-                            foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
-                            {
-                                if (protectionPhase.Item2 == PipelineStages.ModuleWrite)
-                                {
-                                    logger.Information("Executing.. phase protection!");
-                                    await protectionPhase.Item1.ExecuteAsync(protectionContext);
-                                    logger.Information("Executed phase protection!");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "Error while executing protection pipelines!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, "Error while executing protections!");
-                }
-            }
-
-            using (moduleDefMD)
-            using (var fileStream = File.Create(outputFile))
-            {
-                moduleDefMD.Write(fileStream, moduleWriterOptions);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.Error(ex, "Error while saving module!");
-        }
-
-        foreach (var protection in protections)
-        {
-            try
-            {
-                if (protection is IPipelineStage stage)
-                {
-                    if (stage.Stage == PipelineStages.ModuleWritten)
-                    {
-                        logger.Information("{0} -> Executing..", protection.GetType().FullName);
-                        await protection.ExecuteAsync(protectionContext);
-                        logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                    }
-                }
-
-                try
-                {
-                    if (protection is IPipelineProtection pipelineProtection)
-                    {
-                        foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
-                        {
-                            if (protectionPhase.Item2 == PipelineStages.ModuleWritten)
-                            {
-                                logger.Information("Executing.. phase protection!");
-                                await protectionPhase.Item1.ExecuteAsync(protectionContext);
-                                logger.Information("Executed phase protection!");
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, "Error while executing protection pipelines!");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Error while executing protections!");
-            }
-        }
+        logger.Information("Preparing to protect: {0}", bitMonoContext.ModuleFile);
+        var bitMonoEngine = new BitMonoEngine(protections, protectionContext, new CLIModuleDefMDWriter(protectionContext), logger);
+        await bitMonoEngine.StartAsync(CancellationToken.Token);
 
         logger.Information("Saved protected module in {0}", bitMonoContext.OutputDirectory);
         logger.Information("Completed!");
