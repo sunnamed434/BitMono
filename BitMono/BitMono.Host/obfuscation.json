@@ -20,7 +20,7 @@
   "OpenFileDestinationInFileExplorer": true,
 
   // Set to true in cases when you want to obfuscate the specific namespace(s) also add the namespaces 
-  "SpecificNamespacesObfuscationOnly": true,
+  "SpecificNamespacesObfuscationOnly": false,
   "SpecificNamespaces": [
     "Scripts.API",
     "Utilities"
