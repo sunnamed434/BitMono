@@ -6,6 +6,21 @@
 
 ---
 
+### v0.2.1-alpha.3:
+#### Changed:
+* A lot of configurations moved from appsettings.json to separte configurations (obfuscation.json)
+* Optimized obfuscation process
+* Now libraries as well known as dependencies should be in directory `libs` instead of base
+
+#### Fixed:
+* DotNetHook Protection
+* obfuscation.json configuration
+* Module drag-and-dropping
+* GUI version.
+
+#### Removed:
+* `base` directory
+
 ### v0.1.3-alpha.2:
 #### Added:
 * Now it is possible to obfuscate only specific namespace(s) [#27](https://github.com/sunnamed434/BitMono/issues/27).
