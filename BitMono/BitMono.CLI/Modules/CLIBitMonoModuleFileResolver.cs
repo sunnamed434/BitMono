@@ -17,21 +17,12 @@ namespace BitMono.CLI.Modules
         }
 
         [return: AllowNull]
-        public Task<string> ResolveAsync(string baseDirectory)
+        public Task<string> ResolveAsync()
         {
-            string file;
+            string file = null;
             if (m_Args?.Any() == true)
             {
                 file = m_Args[0];
-            }
-            else
-            {
-                var baseDirectoryFiles = Directory.GetFiles(baseDirectory);
-                if (baseDirectoryFiles.Any() == false)
-                {
-                    throw new InvalidOperationException("No one file were found in base directory!");
-                }
-                file = baseDirectoryFiles[0];
             }
             return Task.FromResult(file);
         }
