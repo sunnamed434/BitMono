@@ -18,29 +18,27 @@ namespace BitMono.Obfuscation
 {
     public class BitMonoObfuscator
     {
+        private readonly AutofacServiceProvider m_ServiceProvider;
+        private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
+        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
         private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
         private readonly IBitMonoProtectionsConfiguration m_ProtectionsConfiguration;
         private readonly IBitMonoModuleFileResolver m_BitMonoModuleFileResolver;
-        private readonly AutofacServiceProvider m_ServiceProvider;
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
-        private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
         private readonly ILogger m_Logger;
 
         public BitMonoObfuscator(
-            IBitMonoObfuscationConfiguration obfuscationConfiguration,
-            IBitMonoProtectionsConfiguration protectionsConfiguration,
-            IBitMonoModuleFileResolver bitMonoModuleFileResolver,
             AutofacServiceProvider serviceProvider,
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            IBitMonoModuleFileResolver bitMonoModuleFileResolver,
             IModuleDefMDWriter moduleDefMDWriter,
             ILogger logger)
         {
-            m_ObfuscationConfiguratin = obfuscationConfiguration;
-            m_ProtectionsConfiguration = protectionsConfiguration;
-            m_BitMonoModuleFileResolver = bitMonoModuleFileResolver;
             m_ServiceProvider = serviceProvider;
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_BitMonoModuleFileResolver = bitMonoModuleFileResolver;
             m_ModuleDefMDWriter = moduleDefMDWriter;
+            m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.LifetimeScope.Resolve<IObfuscationAttributeExcludingResolver>();
+            m_ObfuscationConfiguratin = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
+            m_ProtectionsConfiguration = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
+            m_ProtectionsConfiguration = m_ServiceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
