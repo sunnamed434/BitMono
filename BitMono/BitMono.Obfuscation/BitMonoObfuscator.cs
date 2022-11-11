@@ -48,7 +48,7 @@ namespace BitMono.Obfuscation
         {
             try
             {
-                await m_BitMonoModuleFileResolver.ResolveAsync(context);
+                context.ModuleFile = await m_BitMonoModuleFileResolver.ResolveAsync(context.BaseDirectory);
             }
             catch (Exception ex)
             {
