@@ -8,7 +8,7 @@
 
 ### v0.1.3-alpha.2:
 #### Added:
-* Now it is possible to obfuscate only specific namespace(s) [issue #27](https://github.com/sunnamed434/BitMono/issues/27).
+* Now it is possible to obfuscate only specific namespace(s) [#27](https://github.com/sunnamed434/BitMono/issues/27).
 
 #### Fixed:
 * DotNetHook Protection
