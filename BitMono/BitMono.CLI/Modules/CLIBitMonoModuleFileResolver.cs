@@ -1,5 +1,6 @@
 ﻿using BitMono.API.Protecting.Context;
 using BitMono.API.Protecting.Resolvers;
+using NullGuard;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,22 +17,24 @@ namespace BitMono.CLI.Modules
             m_Args = args;
         }
 
-        public Task ResolveAsync(BitMonoContext context)
+        [return: AllowNull]
+        public Task<string> ResolveAsync(string baseDirectory)
         {
+            string file;
             if (m_Args?.Any() == true)
             {
-                context.ModuleFile = m_Args[0];
+                file = m_Args[0];
             }
             else
             {
-                var baseDirectoryFiles = Directory.GetFiles(context.BaseDirectory);
+                var baseDirectoryFiles = Directory.GetFiles(baseDirectory);
                 if (baseDirectoryFiles.Any() == false)
                 {
                     throw new InvalidOperationException("No one file were found in base directory!");
                 }
-                context.ModuleFile = baseDirectoryFiles[0];
+                file = baseDirectoryFiles[0];
             }
-            return Task.CompletedTask;
+            return Task.FromResult(file);
         }
     }
 }
