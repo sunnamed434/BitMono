@@ -11,7 +11,8 @@
 <div class="btn-group" role="group">
     <InputFile class="btn btn-primary" OnChange="OnObfuscationFileChangeAsync" />
 
-    <InputFolder class="btn btn-primary" OnChange="(folder) => SelectDependencyFolderAsync(folder)" Body="Select Dependency Folder" />
+    <InputFolder class="btn btn-primary" OnChange="folder => SelectDependencyFolderAsync(folder)" Body="Select Dependency Folder" />
+    <InputFolder class="btn btn-primary" OnChange="folder => SelectOutputDirectory(folder)" Body="Select Output Folder" />
 
     @if (ObfuscationInProcess == false)
     {
