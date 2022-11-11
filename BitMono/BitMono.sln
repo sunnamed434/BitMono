@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Shared", "BitMono.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation", "BitMono.Obfuscation\BitMono.Obfuscation.csproj", "{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.API", "BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj", "{0C14B05E-4B05-44C5-A030-5D7754A29A02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C14B05E-4B05-44C5-A030-5D7754A29A02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C14B05E-4B05-44C5-A030-5D7754A29A02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C14B05E-4B05-44C5-A030-5D7754A29A02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C14B05E-4B05-44C5-A030-5D7754A29A02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
