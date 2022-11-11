@@ -109,7 +109,7 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                 && methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef
-                                /*&& callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false*/)
+                                && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false)
                             {
                                 var dummyMethod = new MethodDefUser(m_Renamer.RenameUnsafely(), callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
                                 dummyMethod.Body = new CilBody();
