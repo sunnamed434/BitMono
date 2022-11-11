@@ -1,11 +1,17 @@
-﻿namespace BitMono.API.Protecting.Context
+﻿using NullGuard;
+
+namespace BitMono.API.Protecting.Context
 {
     public class BitMonoContext
     {
-        public string ModuleFile { get; set; }
-        public string BaseDirectory { get; set; }
-        public string OutputDirectory { get; set; }
+        [AllowNull]
+        public string ModuleFileName { get; set; }
+        [AllowNull]
+        public string OutputPath { get; set; }
+        [AllowNull]
         public string OutputModuleFile { get; set; }
+        [AllowNull]
+        public string DependenciesDirectoryName { get; set; }
         public bool Watermark { get; set; }
     }
 }
