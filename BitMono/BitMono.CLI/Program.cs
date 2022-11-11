@@ -118,16 +118,14 @@ public class Program
 
         var stringBuilder = new StringBuilder()
             .Append(Path.GetFileNameWithoutExtension(moduleFile));
-
         if (bitMonoContext.Watermark)
         {
             stringBuilder.
                 Append("_bitmono");
         }
-
         stringBuilder.Append(Path.GetExtension(moduleFile));
-
         var outputFile = Path.Combine(bitMonoContext.OutputDirectory, stringBuilder.ToString());
+
         bitMonoContext.OutputModuleFile = outputFile;
 
         logger.Information("Preparing to protect: {0}", bitMonoContext.ModuleFile);
