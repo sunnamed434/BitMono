@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.2.1-alpha](#v021-alpha3) |
 | [v0.1.3-alpha](#v013-alpha2) |
 | [v0.1.2-alpha](#v012-alpha1) |
 | [v0.1.0](#v010) |
