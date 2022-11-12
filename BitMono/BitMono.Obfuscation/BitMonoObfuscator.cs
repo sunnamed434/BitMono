@@ -22,7 +22,7 @@ namespace BitMono.Obfuscation
         private readonly IServiceProvider m_ServiceProvider;
         private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
         private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
         private readonly ILogger m_Logger;
 
@@ -35,7 +35,7 @@ namespace BitMono.Obfuscation
             m_ServiceProvider = serviceProvider;
             m_ModuleDefMDWriter = moduleDefMDWriter;
             m_ModuleDefMDCreator = moduleDefMDCreator;
-            m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.GetRequiredService<IObfuscationAttributeExcludingResolver>();
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = m_ServiceProvider.GetRequiredService<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
             m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
@@ -46,7 +46,7 @@ namespace BitMono.Obfuscation
             var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
-            var protectionsSortingResult = await new ProtectionsSorter(m_ObfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
+            var protectionsSortingResult = await new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
                 .SortAsync(protections, protectionSettings);
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
