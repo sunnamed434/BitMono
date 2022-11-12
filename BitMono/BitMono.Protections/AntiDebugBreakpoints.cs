@@ -1,5 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -16,19 +17,19 @@ namespace BitMono.Protections
 {
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<AntiDebugBreakpoints> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public AntiDebugBreakpoints(
-            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<AntiDebugBreakpoints> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
             ILogger logger)
         {
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
@@ -79,7 +80,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(typeDef) == false)
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -93,7 +94,7 @@ namespace BitMono.Protections
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                    if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(methodDef) == false)
                     {
                         m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
