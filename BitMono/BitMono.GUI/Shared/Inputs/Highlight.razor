@@ -14,9 +14,8 @@
     [Parameter] public bool ClipboardCopy { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
     [Inject] public IJSRuntime JSRuntime { get; set; }
-    public string TextAreaText { get; protected set; } = string.Empty;
+    public string TextAreaText { get; protected set; } = string.Empty; 
     private ElementReference TextAreaReference { get; set; }
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
