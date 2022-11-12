@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BitMono.CLI.Modules
 {
-    public class CLIModuleDefMDWriter : IModuleDefMDWriter
+    internal class CLIModuleDefMDWriter : IModuleDefMDWriter
     {
         public Task WriteAsync(string outputFile, ModuleDefMD moduleDefMD, ModuleWriterOptions moduleWriterOptions)
         {
