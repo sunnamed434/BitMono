@@ -3,6 +3,7 @@ using BitMono.API.Protecting;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
@@ -33,9 +34,9 @@ namespace BitMono.Obfuscation
             m_Logger = logger;
         }
 
-        public Task<ProtectionsSortingResult> SortAsync(ICollection<IProtection> protections)
+        public Task<ProtectionsSortingResult> SortAsync(ICollection<IProtection> protections, List<ProtectionSettings> protectionSettings)
         {
-            protections = new DependencyResolver(protections, m_Configuration.GetProtectionSettings(), m_Logger)
+            protections = new DependencyResolver(protections, protectionSettings, m_Logger)
                 .Sort(out ICollection<string> skipped);
             var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
