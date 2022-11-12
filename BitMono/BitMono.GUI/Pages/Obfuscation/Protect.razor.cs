@@ -53,9 +53,13 @@ namespace BitMono.GUI.Pages.Obfuscation
                     var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(_outputDirectory, _dependenciesDirectory);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
                     await new BitMonoObfuscator(ServiceProvider, new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), Logger)
-                        .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD);
+                        .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections, StoringProtections.Protections);
 
                     await new TipsNotifier(appSettingsConfiguration, Logger).NotifyAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error occured while obfuscating!");
                 }
                 finally
                 {
@@ -73,7 +77,12 @@ namespace BitMono.GUI.Pages.Obfuscation
                 await AlertsContainer.ShowAlertAsync("obfuscation-info", "Please, specify file to be protected!", Alerts.Danger);
                 return;
             }
-            if (_outputDirectory == null)
+            if (string.IsNullOrWhiteSpace(_dependenciesDirectory))
+            {
+                await AlertsContainer.ShowAlertAsync("obfuscation-info", "Please, specify dependecies folder!", Alerts.Danger);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(_outputDirectory))
             {
                 await AlertsContainer.ShowAlertAsync("obfuscation-info", "Please, specify output folder!", Alerts.Danger);
                 return;
