@@ -18,18 +18,18 @@ namespace BitMono.Protections
 {
     public class FieldsHiding : IStageProtection
     {
-        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<FieldsHiding> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public FieldsHiding(
-            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<FieldsHiding> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<FieldsHiding>();
@@ -60,7 +60,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef) == false)
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -76,7 +76,7 @@ namespace BitMono.Protections
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef) == false)
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
