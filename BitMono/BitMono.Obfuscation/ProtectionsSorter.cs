@@ -6,7 +6,6 @@ using BitMono.Core.Protecting.Resolvers;
 using dnlib.DotNet;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 
@@ -14,16 +13,16 @@ namespace BitMono.Obfuscation
 {
     public class ProtectionsSorter
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly AssemblyDef m_ModuleDefMDAssembly;
         private readonly ILogger m_Logger;
 
         public ProtectionsSorter(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             AssemblyDef moduleDefMDAssembly,
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_ModuleDefMDAssembly = moduleDefMDAssembly;
             m_Logger = logger;
         }
@@ -35,8 +34,7 @@ namespace BitMono.Obfuscation
             var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
-                m_ObfuscationAttributeExcludingResolver.TryResolve(m_ModuleDefMDAssembly, p.GetType().Name,
-                out ObfuscationAttribute obfuscationAttribute) && obfuscationAttribute.Exclude);
+                m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(m_ModuleDefMDAssembly, p.GetType().Name));
 
             protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
 
