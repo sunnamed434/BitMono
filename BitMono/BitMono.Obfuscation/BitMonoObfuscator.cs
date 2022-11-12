@@ -24,7 +24,6 @@ namespace BitMono.Obfuscation
         private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
         private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
         private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
-        private readonly IBitMonoProtectionsConfiguration m_ProtectionsConfiguration;
         private readonly ILogger m_Logger;
 
         public BitMonoObfuscator(
@@ -38,7 +37,6 @@ namespace BitMono.Obfuscation
             m_ModuleDefMDCreator = moduleDefMDCreator;
             m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.GetRequiredService<IObfuscationAttributeExcludingResolver>();
             m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
-            m_ProtectionsConfiguration = m_ServiceProvider.GetRequiredService<IBitMonoProtectionsConfiguration>();
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
@@ -48,7 +46,7 @@ namespace BitMono.Obfuscation
             var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
-            var protectionsSortingResult = await new ProtectionsSorter(m_ProtectionsConfiguration, m_ObfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
+            var protectionsSortingResult = await new ProtectionsSorter(m_ObfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
                 .SortAsync(protections, protectionSettings);
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
