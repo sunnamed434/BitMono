@@ -1,7 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Contexts;
 using Microsoft.Extensions.Configuration;
-using NullGuard;
 using System.Threading.Tasks;
 
 namespace BitMono.Obfuscation
@@ -15,7 +14,7 @@ namespace BitMono.Obfuscation
             m_Configuration = configuration.Configuration;
         }
 
-        public Task<BitMonoContext> CreateAsync(string outputDirectoryName, [AllowNull] string dependenciesDirectoryName = null)
+        public Task<BitMonoContext> CreateAsync(string outputDirectoryName, string dependenciesDirectoryName)
         {
             var bitMonoContext = new BitMonoContext
             {
