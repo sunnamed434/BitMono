@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using BitMono.API.Configuration;
+using BitMono.API.Protecting;
 using BitMono.CLI.Modules;
+using BitMono.Core.Configuration.Extensions;
 using BitMono.Host;
 using BitMono.Host.Modules;
 using BitMono.Obfuscation;
@@ -9,6 +11,8 @@ using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -56,8 +60,11 @@ public class Program
             return;
         }
 
-        await new BitMonoObfuscator(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(File.ReadAllBytes(bitMonoContext.ModuleFileName)), logger)
-            .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, CancellationToken.Token);
+        var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
+        var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
+        var protectionSettings = protectionsConfiguration.GetProtectionSettings();
+        await new BitMonoObfuscator(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(moduleFileBytes), logger)
+            .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, protections, protectionSettings, CancellationToken.Token);
 
         if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
         {
