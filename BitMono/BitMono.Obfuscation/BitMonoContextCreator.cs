@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Configuration;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using Microsoft.Extensions.Configuration;
 using NullGuard;
 using System.Threading.Tasks;
