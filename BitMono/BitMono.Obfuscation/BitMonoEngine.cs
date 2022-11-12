@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Writers;
 using BitMono.Core.Protecting.Resolvers;
