@@ -9,12 +9,12 @@ using BitMono.API.Protecting.Injection.TypeDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Injection;
 using BitMono.Core.Protecting.Injection.FieldDefs;
 using BitMono.Core.Protecting.Injection.MethodDefs;
 using BitMono.Core.Protecting.Injection.TypeDefs;
 using BitMono.Core.Protecting.Renaming;
+using BitMono.Core.Protecting.Resolvers;
 using BitMono.Host.Configuration;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -129,7 +129,8 @@ namespace BitMono.Host.Modules
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterGeneric(typeof(DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<>))
+            containerBuilder.RegisterType<DnlibDefFeatureObfuscationAttributeHavingResolver>()
+                .As<IDnlibDefFeatureObfuscationAttributeHavingResolver>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
