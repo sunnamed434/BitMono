@@ -24,7 +24,7 @@ namespace BitMono.Protections
         private readonly IInjector m_Injector;
         private readonly IFieldSearcher m_FieldSearcher;
         private readonly IMethodDefSearcher m_MethodSearcher;
-        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<StringsEncryption> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
@@ -34,7 +34,7 @@ namespace BitMono.Protections
             IInjector injector,
             IFieldSearcher fieldSearcher,
             IMethodDefSearcher methodSearcher,
-            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<StringsEncryption> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             IRenamer renamer,
@@ -43,7 +43,7 @@ namespace BitMono.Protections
             m_Injector = injector;
             m_FieldSearcher = fieldSearcher;
             m_MethodSearcher = methodSearcher;
-            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Renamer = renamer;
@@ -99,7 +99,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(typeDef) == false)
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -115,7 +115,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(methodDef) == false)
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
