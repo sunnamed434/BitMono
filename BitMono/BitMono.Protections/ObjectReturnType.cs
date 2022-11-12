@@ -1,5 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using Serilog;
@@ -12,18 +13,18 @@ namespace BitMono.Protections
 {
     public class ObjectReturnType : IProtection
     {
-        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<ObjectReturnType> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public ObjectReturnType(
-            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<ObjectReturnType> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
             m_Logger = logger.ForContext<ObjectReturnType>();
@@ -33,7 +34,7 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(typeDef) == false)
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -49,7 +50,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(methodDef) == false)
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
