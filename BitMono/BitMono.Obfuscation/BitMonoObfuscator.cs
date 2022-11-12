@@ -1,8 +1,9 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.API.Protecting.Writers;
+using BitMono.Core.Models;
 using BitMono.Obfuscation.API;
 using dnlib.DotNet;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,18 +39,17 @@ namespace BitMono.Obfuscation
             m_ObfuscationAttributeExcludingResolver = m_ServiceProvider.GetRequiredService<IObfuscationAttributeExcludingResolver>();
             m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
             m_ProtectionsConfiguration = m_ServiceProvider.GetRequiredService<IBitMonoProtectionsConfiguration>();
-            m_ProtectionsConfiguration = m_ServiceProvider.GetRequiredService<IBitMonoProtectionsConfiguration>();
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
-        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, CancellationToken cancellationToken = default)
+        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, ICollection<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
         {
             var moduleDefMDCreationResult = await m_ModuleDefMDCreator.CreateAsync();
             var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
             var protectionsSortingResult = await new ProtectionsSorter(m_ProtectionsConfiguration, m_ObfuscationAttributeExcludingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
-                .SortAsync(m_ServiceProvider.GetRequiredService<ICollection<IProtection>>());
+                .SortAsync(protections, protectionSettings);
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
 
