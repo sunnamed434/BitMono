@@ -23,16 +23,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.GUI.Utilities", "Bi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.ExternalComponents", "BitMono.ExternalComponents\BitMono.ExternalComponents.csproj", "{A0C2671D-8645-4D4B-984A-EF3400EEAA91}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configs", "configs", "{A2890DD6-805E-4952-9E84-3F001E1829C4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{A2890DD6-805E-4952-9E84-3F001E1829C4}"
 	ProjectSection(SolutionItems) = preProject
 		.formatconfig = .formatconfig
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Shared", "BitMono.Shared\BitMono.Shared.csproj", "{DA8223B2-3423-41E3-A562-B9E883EF4E3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation", "BitMono.Obfuscation\BitMono.Obfuscation.csproj", "{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Obfuscation", "BitMono.Obfuscation\BitMono.Obfuscation.csproj", "{AE66ED73-BE91-4C02-8CFB-B4D059A947FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.API", "BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj", "{0C14B05E-4B05-44C5-A030-5D7754A29A02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Obfuscation.API", "BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj", "{0C14B05E-4B05-44C5-A030-5D7754A29A02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
