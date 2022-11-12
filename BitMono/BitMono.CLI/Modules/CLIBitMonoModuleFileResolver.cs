@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BitMono.CLI.Modules
 {
-    public class CLIBitMonoModuleFileResolver : IBitMonoModuleFileResolver
+    internal class CLIBitMonoModuleFileResolver : IBitMonoModuleFileResolver
     {
         private readonly string[] m_Args;
 
