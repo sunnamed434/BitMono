@@ -2,6 +2,7 @@
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.ExternalComponents;
 using dnlib.DotNet;
@@ -21,7 +22,7 @@ namespace BitMono.Protections
 {
     public class DotNetHook : IPipelineProtection, IPipelineStage
     {
-        private readonly DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<DotNetHook> m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
         private readonly IRenamer m_Renamer;
@@ -29,13 +30,13 @@ namespace BitMono.Protections
         private readonly IList<(MethodDef, MethodDef, int)> m_InstructionsToBeTokensUpdated;
 
         public DotNetHook(
-            DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer<DotNetHook> dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             IMethodDefSearcher methodDefSearcher,
             IRenamer renamer,
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer = dnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_MethodDefSearcher = methodDefSearcher;
             m_Renamer = renamer;
@@ -75,7 +76,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<DotNetHook>(typeDef) == false)
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -91,7 +92,7 @@ namespace BitMono.Protections
                 {
                     if (methodDef.HasBody)
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<DotNetHook>(methodDef) == false)
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
