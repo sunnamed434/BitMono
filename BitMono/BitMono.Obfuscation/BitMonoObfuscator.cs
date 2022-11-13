@@ -1,71 +1,205 @@
-﻿using BitMono.API.Configuration;
+﻿using Autofac;
+using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
-using BitMono.API.Protecting.Resolvers;
+using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Writers;
-using BitMono.Core.Models;
-using BitMono.Obfuscation.API;
-using dnlib.DotNet;
-using Microsoft.Extensions.DependencyInjection;
+using BitMono.Core.Protecting.Resolvers;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ILogger = Serilog.ILogger;
 
 namespace BitMono.Obfuscation
 {
     public class BitMonoObfuscator
     {
-        private readonly IServiceProvider m_ServiceProvider;
-        private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
-        private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
-        private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
+        private readonly IConfiguration m_Configuration;
+        private readonly ICollection<IProtection> m_Protections;
+        private readonly BitMonoContext m_BitMonoContext;
+        private readonly ProtectionContext m_ProtectionContext;
+        private readonly IModuleDefMDWriter m_ModuleWriter;
         private readonly ILogger m_Logger;
 
         public BitMonoObfuscator(
-            IServiceProvider serviceProvider,
-            IModuleDefMDWriter moduleDefMDWriter,
-            IModuleDefMDCreator moduleDefMDCreator,
+            IBitMonoObfuscationConfiguration configuration,
+            ICollection<IProtection> protections,
+            BitMonoContext bitMonoContext,
+            ProtectionContext protectionContext,
+            IModuleDefMDWriter moduleWriter,
             ILogger logger)
         {
-            m_ServiceProvider = serviceProvider;
-            m_ModuleDefMDWriter = moduleDefMDWriter;
-            m_ModuleDefMDCreator = moduleDefMDCreator;
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = m_ServiceProvider.GetRequiredService<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
-            m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
+            m_Configuration = configuration.Configuration;
+            m_Protections = protections;
+            m_BitMonoContext = bitMonoContext;
+            m_ProtectionContext = protectionContext;
+            m_ModuleWriter = moduleWriter;
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
-        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, ICollection<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
+        public async Task StartAsync(CancellationToken cancellationToken = default)
         {
-            var moduleDefMDCreationResult = await m_ModuleDefMDCreator.CreateAsync();
-            var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
-            m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
-
-            var protectionsSortingResult = await new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
-                .SortAsync(protections, protectionSettings);
-
-            await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
-
-            var stringBuilder = new StringBuilder()
-                .Append(Path.GetFileNameWithoutExtension(context.ModuleFileName));
-            if (context.Watermark)
+            if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
             {
-                stringBuilder.
-                    Append("_bitmono");
-            }
-            stringBuilder.Append(Path.GetExtension(context.ModuleFileName));
-            var outputFile = Path.Combine(context.OutputPath, stringBuilder.ToString());
-            context.OutputModuleFile = outputFile;
+                var dependencies = Directory.GetFiles(m_BitMonoContext.DependenciesDirectoryName);
+                var dependeciesData = new List<byte[]>();
+                for (int i = 0; i < dependencies.Length; i++)
+                {
+                    dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
+                }
 
-            m_Logger.Information("Preparing to protect module: {0}", context.ModuleFileName);
-            await new BitMonoEngine(m_ObfuscationConfiguratin, protectionsSortingResult.Protections, context, protectionContext, m_ModuleDefMDWriter, m_Logger)
-                .StartAsync(cancellationToken);
-            m_Logger.Information("Protected module`s saved in {0}", context.OutputPath);
+                var resolvingSucceed = await new BitMonoAssemblyResolver(dependeciesData, m_ProtectionContext, m_Logger).ResolveAsync();
+                if (resolvingSucceed == false)
+                {
+                    m_Logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", m_BitMonoContext.DependenciesDirectoryName);
+                    Console.ReadLine();
+                    return;
+                }
+            }
+
+            foreach (var protection in m_Protections)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    if (protection is IPipelineStage stage)
+                    {
+                        if (stage.Stage == PipelineStages.Begin)
+                        {
+                            m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
+                            await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                            m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
+                        }
+                    }
+                    else
+                    {
+                        m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
+                        await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                        m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
+                    }
+
+                    try
+                    {
+                        if (protection is IPipelineProtection pipelineProtection)
+                        {
+                            foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
+                            {
+                                if (protectionPhase.Item2 == PipelineStages.Begin)
+                                {
+                                    m_Logger.Information("Executing.. phase protection!");
+                                    await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                                    m_Logger.Information("Executed phase protection!");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Logger.Error(ex, "Error while executing protection pipelines!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.Error(ex, "Error while executing protections!");
+                }
+            }
+
+            foreach (var protection in m_Protections)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    if (protection is IPipelineStage stage)
+                    {
+                        if (stage.Stage == PipelineStages.ModuleWrite)
+                        {
+                            m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
+                            await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                            m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
+                        }
+                    }
+
+                    try
+                    {
+                        if (protection is IPipelineProtection pipelineProtection)
+                        {
+                            foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
+                            {
+                                if (protectionPhase.Item2 == PipelineStages.ModuleWrite)
+                                {
+                                    m_Logger.Information("Executing.. phase protection!");
+                                    await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                                    m_Logger.Information("Executed phase protection!");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Logger.Error(ex, "Error while executing protection pipelines!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.Error(ex, "Error while executing protections!");
+                }
+            }
+
+            try
+            {
+                await m_ModuleWriter.WriteAsync(m_BitMonoContext.OutputModuleFile, m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
+            }
+            catch (Exception ex)
+            {
+                m_Logger.Error(ex, "Failed to write module!");
+            }
+
+            foreach (var protection in m_Protections)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    if (protection is IPipelineStage stage)
+                    {
+                        if (stage.Stage == PipelineStages.ModuleWritten)
+                        {
+                            m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
+                            await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                            m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
+                        }
+                    }
+
+                    try
+                    {
+                        if (protection is IPipelineProtection pipelineProtection)
+                        {
+                            foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
+                            {
+                                if (protectionPhase.Item2 == PipelineStages.ModuleWritten)
+                                {
+                                    m_Logger.Information("Executing.. phase protection!");
+                                    await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, cancellationToken);
+                                    m_Logger.Information("Executed phase protection!");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Logger.Error(ex, "Error while executing protection pipelines!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.Error(ex, "Error while executing protections!");
+                }
+            }
         }
     }
 }
