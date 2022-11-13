@@ -119,7 +119,6 @@ namespace BitMono.Protections
                                         methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Call, getFunctionPointerMethod));
                                         methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Calli, memberRef.MethodSig));
                                         i += 9;
-                                        //break;
                                     }
                                 }
                             }
