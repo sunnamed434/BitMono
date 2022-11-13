@@ -7,7 +7,6 @@ using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Encryption;
-using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace BitMono.Protections
         {
             context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
 
-            var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, "Encryptor");
+            var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, m_Renamer.RenameUnsafely());
 
             var saltBytes = new byte[] { 0x1, 0x3, 0x2, 0x3, 0x3, 0x4, 0x5, 0x10, 0x10 };
             var cryptKeyBytes = new byte[] { 0x1, 0x3, 0x10, 0x15, 0x20, 0x50, 0x5, 0x10, 0x10 };
@@ -62,7 +61,7 @@ namespace BitMono.Protections
             var cryptKeyBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, cryptKeyBytes, "cryptKeyBytes");
 
             var decryptMethodDefFromEncryptionModule = m_MethodSearcher.Find("Decrypt", context.ExternalComponentsModuleDefMD);
-            var decryptorMethodDef = new MethodDefUser("Decrypt", decryptMethodDefFromEncryptionModule.MethodSig, MethodAttributes.Static | MethodAttributes.Assembly);
+            var decryptorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(), decryptMethodDefFromEncryptionModule.MethodSig, MethodAttributes.Static | MethodAttributes.Assembly);
             decryptorMethodDef.Body = decryptMethodDefFromEncryptionModule.Body;
             var saltBytesInjected = false;
             var cryptKeyBytesInjected = false;
@@ -137,10 +136,11 @@ namespace BitMono.Protections
                                     var encryptedContentBytes = Encryptor.EncryptContent(content, saltBytes, cryptKeyBytes);
                                     var injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
-                                    methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
-                                    methodDef.Body.Instructions.Insert(i++, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                    methodDef.Body.Instructions.Insert(i++, new Instruction(OpCodes.Call, decryptorMethodDef));
-                                    methodDef.Body.SimplifyAndOptimizeBranches();
+                                    methodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes);
+                                    //methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
+                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Call, decryptorMethodDef));
+                                    i += 1;
+                                    //methodDef.Body.SimplifyAndOptimizeBranches();
                                 }
                             }
                         }
