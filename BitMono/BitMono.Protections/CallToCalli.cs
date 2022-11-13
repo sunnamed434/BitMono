@@ -105,21 +105,21 @@ namespace BitMono.Protections
                                     {
                                         methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                        var index = i;
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                        methodDef.Body.Instructions.Insert(i, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
+                                        methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                        methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
+                                        methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
+                                        methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Call, resolveMethodMethod));
+                                        methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
+                                        methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Stloc, local));
+                                        methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Ldloca, local));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
-                                        break;
+                                        methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Call, getFunctionPointerMethod));
+                                        methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Calli, memberRef.MethodSig));
+                                        i += 9;
+                                        //break;
                                     }
                                 }
                             }
