@@ -28,17 +28,10 @@ public class Program
 
     private static async Task Main(string[] args)
     {
-        var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
-        {
-            configureLogger.WriteTo.Async(configure => configure.Console(
-            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
-        })).Build();
-
         var moduleFileName = await new CLIBitMonoModuleFileResolver(args).ResolveAsync();
-        var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
         if (string.IsNullOrWhiteSpace(moduleFileName))
         {
-            logger.Fatal("Please, specify file, drag-and-drop it in BitMono CLI");
+            Console.WriteLine("Please, specify file, drag-and-drop it in BitMono CLI");
             Console.ReadLine();
             return;
         }
@@ -47,13 +40,19 @@ public class Program
         var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
         var externalComponentsFile = Path.Combine(domainBaseDirectory, ExternalComponents);
         var externalComponentsModuleDefMD = ModuleDefMD.Load(externalComponentsFile);
-
         Assembly.LoadFrom(protectionsFile);
 
-        var libsDirectoryName = Path.Combine(domainBaseDirectory, "libs");
-        var outputDirectoryName = Path.Combine(Path.GetDirectoryName(args[0]), "output");
+        var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
+        var libsDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
+        var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
         Directory.CreateDirectory(libsDirectoryName);
         Directory.CreateDirectory(outputDirectoryName);
+
+        var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
+        {
+            configureLogger.WriteTo.Async(configure => configure.Console(
+            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
+        })).Build();
 
         var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
         var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
@@ -62,9 +61,10 @@ public class Program
         bitMonoContext.ModuleFileName = moduleFileName;
 
         var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
-        var protectionSettings = protectionsConfiguration.GetProtectionSettings();
         var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
-        await new BitMonoObfuscator(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(moduleFileBytes), logger)
+        var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
+        var protectionSettings = protectionsConfiguration.GetProtectionSettings();
+        await new BitMonoEngine(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(moduleFileBytes), logger)
             .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, protections, protectionSettings, CancellationToken.Token);
 
         if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
