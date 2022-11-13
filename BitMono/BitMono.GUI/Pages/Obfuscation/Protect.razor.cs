@@ -52,7 +52,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(_outputDirectory, _dependenciesDirectory);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
-                    await new BitMonoObfuscator(ServiceProvider, new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), Logger)
+                    await new BitMonoEngine(ServiceProvider, new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), Logger)
                         .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections, StoringProtections.Protections);
 
                     await new TipsNotifier(appSettingsConfiguration, Logger).NotifyAsync();
