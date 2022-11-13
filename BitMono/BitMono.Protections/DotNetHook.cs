@@ -1,4 +1,5 @@
-﻿using BitMono.API.Protecting.Contexts;
+﻿using Autofac;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
@@ -26,6 +27,7 @@ namespace BitMono.Protections
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
         private readonly IRenamer m_Renamer;
+        private readonly ILifetimeScope m_Lifetimescope;
         private readonly ILogger m_Logger;
         private readonly IList<(MethodDef, MethodDef, int)> m_InstructionsToBeTokensUpdated;
 
@@ -34,12 +36,14 @@ namespace BitMono.Protections
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             IMethodDefSearcher methodDefSearcher,
             IRenamer renamer,
+            ILifetimeScope lifetimeScope,
             ILogger logger)
         {
             m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_MethodDefSearcher = methodDefSearcher;
             m_Renamer = renamer;
+            m_Lifetimescope = lifetimeScope;
             m_Logger = logger.ForContext<DotNetHook>();
             m_InstructionsToBeTokensUpdated = new List<(MethodDef, MethodDef, int)>();
         }
