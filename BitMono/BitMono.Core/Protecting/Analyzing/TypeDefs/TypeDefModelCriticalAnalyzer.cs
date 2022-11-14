@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Resolvers;
 using dnlib.DotNet;
 using Newtonsoft.Json;
@@ -19,19 +19,19 @@ namespace BitMono.Core.Protecting.Analyzing.TypeDefs
 
         public bool NotCriticalToMakeChanges(IHasCustomAttribute from)
         {
-            if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(from, null, null, null, out _))
+            if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(from, null, null, out _))
             {
                 return false;
             }
-            if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(from, null, null, null, out _))
+            if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(from, null, null, out _))
             {
                 return false;
             }
-            if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(from, null, null, null, out _))
+            if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(from, null, null, out _))
             {
                 return false;
             }
-            if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(from, null, null, null, out _))
+            if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(from, null, null, out _))
             {
                 return false;
             }

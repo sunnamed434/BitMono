@@ -8,5 +8,9 @@ namespace BitMono.Utilities.Extensions.dnlib
         {
             return source.BaseType != null;
         }
+        public static bool HasNamespace(this TypeDef source)
+        {
+            return UTF8String.IsNullOrEmpty(source.Namespace) == false;
+        }
     }
 }

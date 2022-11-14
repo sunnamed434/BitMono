@@ -10,35 +10,36 @@
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": false
-    },
-    {
-      "Name": "BitMethodDotnet",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "FullRenamer",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDebugBreakpoints",
-      "Enabled": false
+      "Enabled": true
+    },
+    {
+      "Name": "DotNetHook",
+      "Enabled": true
+    },
+    {
+      "Name": "CallToCalli",
+      "Enabled": true
     },
     {
       "Name": "StringsEncryption",
-      "Enabled": false
+      "Enabled": true
     },
+    // Currently should be disabled, because it is working so bad
     {
       "Name": "FieldsHiding",
       "Enabled": false
     },
     {
-      "Name": "DotNetHook",
-      "Enabled": false
-    },
-    {
-      "Name": "CallToCalli",
-      "Enabled": false
+      "Name": "BitMethodDotnet",
+      "Enabled": true
     },
     {
       "Name": "BitDotNet",

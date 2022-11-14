@@ -32,6 +32,7 @@
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
     <ProjectReference Include="..\BitMono.ExternalComponents\BitMono.ExternalComponents.csproj" />
     <ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
+    <ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
     <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
   </ItemGroup>
 

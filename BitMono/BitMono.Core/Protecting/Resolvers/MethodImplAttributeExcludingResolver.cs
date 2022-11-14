@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Models;
+using BitMono.Shared.Models;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
 using NullGuard;
@@ -13,7 +13,7 @@ namespace BitMono.Core.Protecting.Resolvers
         private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
         private readonly IConfiguration m_Configuration;
 
-        public MethodImplAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoAppSettingsConfiguration configuration)
+        public MethodImplAttributeExcludingResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoObfuscationConfiguration configuration)
         {
             m_AttemptAttributeResolver = attemptAttributeResolver;
             m_Configuration = configuration.Configuration;
@@ -21,12 +21,12 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public bool TryResolve(IHasCustomAttribute from, [AllowNull] out MethodImplAttribute methodImplAttribute)
         {
-            var resolvingSucceed = m_AttemptAttributeResolver.TryResolve(from, (_) =>
+            methodImplAttribute = null;
+            if (m_Configuration.GetValue<bool>(nameof(Obfuscation.NoInliningMethodObfuscationExcluding)) == false)
             {
-                return m_Configuration.GetValue<bool>(nameof(AppSettings.NoInliningMethodObfuscationExcluding)) == true;
-            }, null, null, out methodImplAttribute);
-
-            if (resolvingSucceed == false)
+                return false;
+            }
+            if (m_AttemptAttributeResolver.TryResolve(from, null, null, out methodImplAttribute) == false)
             {
                 return false;
             }

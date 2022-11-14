@@ -1,13 +1,11 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using dnlib.DotNet.MD;
-using dnlib.DotNet.Writer;
 using System;
 using System.IO;
 using System.Linq;
@@ -20,16 +18,19 @@ namespace BitMono.Protections
 {
     public class CallToCalli : IStageProtection
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public CallToCalli(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<CallToCalli>();
         }
@@ -38,7 +39,7 @@ namespace BitMono.Protections
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile);
+            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
             context.ModuleDefMD = moduleDefMD;
             context.Importer = new Importer(moduleDefMD);
 
@@ -57,14 +58,16 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(CallToCalli),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<CallToCalli>(typeDef))
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
@@ -75,21 +78,23 @@ namespace BitMono.Protections
                         && methodDef.NotGetterAndSetter()
                         && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(methodDef, feature: nameof(CallToCalli),
-                            out ObfuscationAttribute methodDefObfuscationAttribute))
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<CallToCalli>(methodDef))
                         {
-                            if (methodDefObfuscationAttribute.Exclude)
-                            {
-                                m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                                continue;
-                            }
+                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+
+                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                        {
+                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
+                            continue;
                         }
 
                         for (int i = 0; i < methodDef.Body.Instructions.Count; i++)
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
                             {
-                                if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
+                                if (methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef && callingMethodDef.HasBody)
                                 {
                                     var locals = methodDef.Body.Variables;
                                     var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
@@ -98,21 +103,20 @@ namespace BitMono.Protections
                                     {
                                         methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                        var index = i;
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getModuleMethod));
+                                        methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
+                                        methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
+                                        methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, resolveMethodMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
+                                        methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, callingMethodDef.MDToken.ToInt32()));
+                                        methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Call, resolveMethodMethod));
+                                        methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Stloc, local));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Ldloca, local));
+                                        methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Stloc, local));
+                                        methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, local));
 
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                        methodDef.Body.Instructions.Insert(index++, new Instruction(OpCodes.Calli, memberRef.MethodSig));
-                                        break;
+                                        methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Call, getFunctionPointerMethod));
+                                        methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, callingMethodDef.MethodSig));
+                                        i += 10;
                                     }
                                 }
                             }
@@ -121,15 +125,10 @@ namespace BitMono.Protections
                 }
             }
 
-            var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
-            moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
-            moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
-
-            using (moduleDefMD)
+            using (context.ModuleDefMD)
             using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                moduleDefMD.Write(fileStream, moduleWriterOptions);
+                context.ModuleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
             return Task.CompletedTask;
         }

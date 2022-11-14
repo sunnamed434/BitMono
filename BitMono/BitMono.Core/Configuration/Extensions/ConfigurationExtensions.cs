@@ -1,6 +1,7 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.Core.Models;
+using BitMono.Shared.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
@@ -40,13 +41,21 @@ namespace BitMono.Core.Configuration.Extensions
         {
             return source.GetSection("CriticalBaseTypes").Get<string[]>();
         }
-        public static string[] GetStrings(this IBitMonoObfuscationConfiguration source)
+        public static string[] GetSpecificNamespaces(this IBitMonoObfuscationConfiguration source)
         {
-            return source.Configuration.GetSection("Strings").Get<string[]>();
+            return GetSpecificNamespaces(source.Configuration);
         }
-        public static string[] GetStrings(this IConfiguration source)
+        public static string[] GetSpecificNamespaces(this IConfiguration source)
         {
-            return source.GetSection("Strings").Get<string[]>();
+            return source.GetSection(nameof(Obfuscation.SpecificNamespaces)).Get<string[]>();
+        }
+        public static string[] GetRandomStrings(this IBitMonoObfuscationConfiguration source)
+        {
+            return GetRandomStrings(source.Configuration);
+        }
+        public static string[] GetRandomStrings(this IConfiguration source)
+        {
+            return source.GetSection(nameof(Obfuscation.RandomStrings)).Get<string[]>();
         }
         public static bool AsProtection(this ProtectionSettings source, ICollection<IProtection> protections, out IProtection result)
         {

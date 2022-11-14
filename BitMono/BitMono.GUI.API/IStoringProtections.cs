@@ -5,6 +5,6 @@ namespace BitMono.GUI.API
 {
     public interface IStoringProtections
     {
-        IList<ProtectionSettings> Protections { get; }
+        List<ProtectionSettings> Protections { get; }
     }
 }

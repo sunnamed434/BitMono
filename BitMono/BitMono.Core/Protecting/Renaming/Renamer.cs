@@ -22,7 +22,7 @@ namespace BitMono.Core.Protecting.Renaming
 
         public string RenameUnsafely()
         {
-            var strings = m_Configuration.GetStrings();
+            var strings = m_Configuration.GetRandomStrings();
             string randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
             string randomStringTwo = strings[random.Next(0, strings.Length - 1)];
             string randomStringThree = strings[random.Next(0, strings.Length - 1)];

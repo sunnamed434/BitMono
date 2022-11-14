@@ -8,14 +8,11 @@ namespace BitMono.GUI.Data
 {
 	internal class StoringProtections : IStoringProtections
 	{
-		private readonly IConfiguration m_Configuration;
-
 		public StoringProtections(IBitMonoProtectionsConfiguration configuration)
 		{
-			m_Configuration = configuration.Configuration;
-			Protections = m_Configuration.GetProtectionSettings().ToList();
+			Protections = configuration.GetProtectionSettings();
 		}
 
-		public IList<ProtectionSettings> Protections { get; }
+		public List<ProtectionSettings> Protections { get; }
 	}
 }

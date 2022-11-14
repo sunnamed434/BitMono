@@ -21,7 +21,7 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public ICollection<IProtection> Sort(out ICollection<string> disabled)
         {
-            List<IProtection> foundProtections = new List<IProtection>();
+            var foundProtections = new List<IProtection>();
             var cachedProtections = m_Protections.ToArray().ToList();
             disabled = new List<string>();
             foreach (var protectionSettings in m_ProtectionSettings.Where(p => p.Enabled))

@@ -7,4 +7,4 @@
 `protections.json` - depends how protections will execute, in what order
 * Sort protections as it should be better, to improve BitMono usage experience for others.
 
-`appsettings.json` - something kinda BitMono global config
+`obfuscation.json` - config that used while obfuscating

@@ -45,7 +45,6 @@ namespace BitMono.GUI
                     });
                 }));
             });
-
             return builder.Build();
         }
     }

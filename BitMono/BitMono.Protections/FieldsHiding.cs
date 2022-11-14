@@ -1,5 +1,5 @@
 ﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Context;
+using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
@@ -16,18 +16,22 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [Obsolete]
     public class FieldsHiding : IStageProtection
     {
-        private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
+        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public FieldsHiding(
-            IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
+            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<FieldsHiding>();
         }
@@ -37,8 +41,9 @@ namespace BitMono.Protections
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
+            context.ModuleDefMD = moduleDefMD;
+            var importer = new Importer(context.ModuleDefMD);
 
-            var importer = new Importer(moduleDefMD);
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
                 typeof(Array),
@@ -55,30 +60,34 @@ namespace BitMono.Protections
             }));
             var getFieldHandleMethod = importer.Import(typeof(FieldInfo).GetProperty(nameof(FieldInfo.FieldHandle)).GetMethod);
 
-            foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_ObfuscationAttributeExcludingResolver.TryResolve(typeDef, feature: nameof(FieldsHiding),
-                    out ObfuscationAttribute typeDefObfuscationAttribute))
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef))
                 {
-                    if (typeDefObfuscationAttribute.Exclude)
-                    {
-                        m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
+                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    continue;
+                }
+
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                {
+                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
+                    continue;
                 }
 
                 if (typeDef.HasFields)
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_ObfuscationAttributeExcludingResolver.TryResolve(fieldDef, feature: nameof(FieldsHiding),
-                            out ObfuscationAttribute fieldDefObfuscationAttribute))
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef))
                         {
-                            if (fieldDefObfuscationAttribute.Exclude)
-                            {
-                                m_Logger.Information("Found {0}, that applyed to members of type, skipping type.", nameof(ObfuscationAttribute));
-                                continue;
-                            }
+                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            continue;
+                        }
+
+                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef) == false)
+                        {
+                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
+                            continue;
                         }
 
                         if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef)
@@ -89,7 +98,7 @@ namespace BitMono.Protections
                             {
                                 if (cctor.Body.Instructions[i].OpCode == OpCodes.Call)
                                 {
-                                    cctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
+                                    //ctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
                                     cctor.Body.Instructions[i].OpCode = OpCodes.Nop;
 
                                     cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, fieldDef.DeclaringType));
@@ -108,12 +117,11 @@ namespace BitMono.Protections
                     }
                 }
             }
-            using (moduleDefMD)
+            using (context.ModuleDefMD)
             using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                moduleDefMD.Write(fileStream, context.ModuleWriterOptions);
+                context.ModuleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
-            context.ModuleDefMD = moduleDefMD;
             return Task.CompletedTask;
         }
     }
