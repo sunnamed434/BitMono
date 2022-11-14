@@ -1,10 +1,13 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
+using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -13,7 +16,7 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
-    public class BitMethodDotnet : IProtection
+    public class BitMethodDotnet : IStageProtection
     {
         private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
@@ -34,11 +37,16 @@ namespace BitMono.Protections
             m_Random = new Random();
         }
 
+        public PipelineStages Stage => PipelineStages.ModuleWritten;
+
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
+            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
+            context.ModuleDefMD = moduleDefMD;
+
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -54,7 +62,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods)
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(methodDef))
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
@@ -96,6 +104,12 @@ namespace BitMono.Protections
                         }
                     }
                 }
+            }
+
+            using (moduleDefMD)
+            using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                moduleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
             return Task.CompletedTask;
         }
