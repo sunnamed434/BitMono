@@ -34,7 +34,7 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<NoNamespaces>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<NoNamespaces>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
