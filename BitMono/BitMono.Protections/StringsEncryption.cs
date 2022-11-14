@@ -98,7 +98,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -114,7 +114,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(methodDef))
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
@@ -136,11 +136,10 @@ namespace BitMono.Protections
                                     var encryptedContentBytes = Encryptor.EncryptContent(content, saltBytes, cryptKeyBytes);
                                     var injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
-                                    methodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes);
-                                    //methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Call, decryptorMethodDef));
-                                    i += 1;
-                                    //methodDef.Body.SimplifyAndOptimizeBranches();
+                                    methodDef.Body.Instructions[i] = new Instruction(OpCodes.Nop);
+                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
+                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, decryptorMethodDef));
+                                    i += 2;
                                 }
                             }
                         }
