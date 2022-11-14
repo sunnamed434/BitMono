@@ -34,7 +34,7 @@ namespace BitMono.Protections
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -50,7 +50,7 @@ namespace BitMono.Protections
                 {
                     foreach (var methodDef in typeDef.Methods.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(methodDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<ObjectReturnType>(methodDef))
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
