@@ -4,8 +4,10 @@ using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
 using dnlib.DotNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 
@@ -31,6 +33,7 @@ namespace BitMono.Obfuscation
         {
             protections = new DependencyResolver(protections, protectionSettings, m_Logger)
                 .Sort(out ICollection<string> skipped);
+            var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
             var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
@@ -41,6 +44,7 @@ namespace BitMono.Obfuscation
             return Task.FromResult(new ProtectionsSortingResult
             {
                 Protections = protections,
+                DeprecatedProtections = deprecatedProtections,
                 Skipped = skipped,
                 StageProtections = stageProtections,
                 PipelineProtections = pipelineProtections,
