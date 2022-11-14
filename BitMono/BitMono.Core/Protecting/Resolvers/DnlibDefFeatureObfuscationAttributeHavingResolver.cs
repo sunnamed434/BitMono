@@ -21,10 +21,10 @@ namespace BitMono.Core.Protecting.Resolvers
             {
                 if (typeDefObfuscationAttribute.Exclude)
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
         public bool Resolve<TFeature>(IDnlibDef dnlibDef) where TFeature : IProtection
         {
