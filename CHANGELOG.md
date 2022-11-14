@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.3.0-alpha](#v030-alpha5) |
 | [v0.2.2-alpha](#v022-alpha4) |
 | [v0.2.1-alpha](#v021-alpha3) |
 | [v0.1.3-alpha](#v013-alpha2) |
@@ -7,6 +8,22 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.3.0-alpha.5:
+### Added:
+* Feature that allows to protect types/methods with the specified namespace in obfuscation.json configuration [#27](https://github.com/sunnamed434/BitMono/issues/27)
+
+### Changed:
+* FieldsHiding protection currently is currently deprecated and shouldn`t be used anymore
+
+#### Fixed:
+* AntiDebugBreakpoints Protection
+* BitMethodDotnet Protection
+* FullRenamer Protection
+* CallToCalli Protection
+* NoNamespaces Protection
+* ObjectReturnType Protection
+* StringsEncryption Protection
 
 ### v0.2.2-alpha.4:
 #### Fixed:
