@@ -48,7 +48,7 @@ namespace BitMono.Protections
                     continue;
                 }
 
-                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
                 {
                     m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
                     continue;
@@ -64,7 +64,7 @@ namespace BitMono.Protections
                     {
                         foreach (var fieldDef in typeDef.Fields.ToArray())
                         {
-                            if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FullRenamer>(fieldDef) == false)
+                            if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FullRenamer>(fieldDef))
                             {
                                 m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
@@ -87,7 +87,7 @@ namespace BitMono.Protections
                     {
                         foreach (var methodDef in typeDef.Methods.ToArray())
                         {
-                            if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FullRenamer>(methodDef) == false)
+                            if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FullRenamer>(methodDef))
                             {
                                 m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                                 continue;
