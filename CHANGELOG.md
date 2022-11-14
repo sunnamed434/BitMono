@@ -14,7 +14,7 @@
 * Feature that allows to protect types/methods with the specified namespace in obfuscation.json configuration [#27](https://github.com/sunnamed434/BitMono/issues/27)
 
 ### Changed:
-* FieldsHiding protection currently is currently deprecated and shouldn`t be used anymore
+* FieldsHiding protection currently is deprecated and shouldn`t be used anymore
 
 #### Fixed:
 * AntiDebugBreakpoints Protection
