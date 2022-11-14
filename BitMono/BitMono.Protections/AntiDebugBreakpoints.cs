@@ -80,7 +80,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -94,7 +94,7 @@ namespace BitMono.Protections
 
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(methodDef) == false)
+                    if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(methodDef))
                     {
                         m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
