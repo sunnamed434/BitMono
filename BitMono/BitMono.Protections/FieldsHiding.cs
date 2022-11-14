@@ -40,6 +40,7 @@ namespace BitMono.Protections
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
+            context.ModuleDefMD = moduleDefMD;
             var importer = new Importer(moduleDefMD);
 
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
@@ -60,7 +61,7 @@ namespace BitMono.Protections
 
             foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef) == false)
+                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef))
                 {
                     m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
@@ -76,7 +77,7 @@ namespace BitMono.Protections
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef) == false)
+                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef))
                         {
                             m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
@@ -96,7 +97,7 @@ namespace BitMono.Protections
                             {
                                 if (cctor.Body.Instructions[i].OpCode == OpCodes.Call)
                                 {
-                                    cctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
+                                    //ctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
                                     cctor.Body.Instructions[i].OpCode = OpCodes.Nop;
 
                                     cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, fieldDef.DeclaringType));
