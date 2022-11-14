@@ -41,7 +41,7 @@ namespace BitMono.Protections
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
             context.ModuleDefMD = moduleDefMD;
-            var importer = new Importer(moduleDefMD);
+            var importer = new Importer(context.ModuleDefMD);
 
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
@@ -59,17 +59,17 @@ namespace BitMono.Protections
             }));
             var getFieldHandleMethod = importer.Import(typeof(FieldInfo).GetProperty(nameof(FieldInfo.FieldHandle)).GetMethod);
 
-            foreach (var typeDef in moduleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
                 if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef))
                 {
-                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
 
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                     continue;
                 }
 
@@ -79,13 +79,13 @@ namespace BitMono.Protections
                     {
                         if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef))
                         {
-                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
 
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef) == false)
                         {
-                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                             continue;
                         }
 
@@ -116,12 +116,11 @@ namespace BitMono.Protections
                     }
                 }
             }
-            using (moduleDefMD)
+            using (context.ModuleDefMD)
             using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                moduleDefMD.Write(fileStream, context.ModuleWriterOptions);
+                context.ModuleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
-            context.ModuleDefMD = moduleDefMD;
             return Task.CompletedTask;
         }
     }
