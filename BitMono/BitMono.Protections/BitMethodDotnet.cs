@@ -48,13 +48,13 @@ namespace BitMono.Protections
             {
                 if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(typeDef))
                 {
-                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
 
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                     continue;
                 }
 
@@ -64,13 +64,13 @@ namespace BitMono.Protections
                     {
                         if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<BitMethodDotnet>(methodDef))
                         {
-                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
 
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
-                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                             continue;
                         }
 
