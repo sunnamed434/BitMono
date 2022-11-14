@@ -35,7 +35,7 @@ namespace BitMono.Obfuscation
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
                 m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(m_ModuleDefMDAssembly, p.GetType().Name));
-
+            
             protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
 
             return Task.FromResult(new ProtectionsSortingResult
