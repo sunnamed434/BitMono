@@ -41,16 +41,16 @@ Open **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections
 * **[BitMethodDotnet](https://github.com/sunnamed434/BitMethodDotnet)** (based and improved on existing protection)
 * **[DotNetHook](https://github.com/Elliesaur/DotNetHook)** (based on existing protection)
 * Call to calli
-* FieldsHiding
+* FieldsHiding (Deprecated)
 * ObjectReturnType
 * NoNamespaces
 * FullRenamer
 * AntiDebugBreakpoints
 
 ## Quick Start
-`BitMono.CLI <path to file>/drag-and-drop/first file in Base directory or use BitMono.GUI (GUI Windows only)`
+`BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`
 
-Drop dependencies in `base` directory
+Dont forget to drop dependencies in `libs` directory in the same path where obfuscation `file` is located
 
 ## Configuring Protections
 Use `protections.json` - by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
@@ -112,7 +112,7 @@ public class ProductModel
 
 ## No required dependency (Deprecated file for obfuscation)
 Failed to resolve dependency Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-<br>Use `appsettings.json` and set `FailOnNoRequiredDependency` to false, be careful with this parameter, change it in cases when file truly deprecated
+<br>Use `obfuscation.json` and set `FailOnNoRequiredDependency` to false, be careful with this parameter, change it in cases when file truly deprecated
 
 How to **[edit](https://github.com/sunnamed434/BitMono/tree/main/BitMono/BitMono.Host#imporving-obfuscation-process-for-everyone)**
 ```json
@@ -133,10 +133,6 @@ How to **[edit](https://github.com/sunnamed434/BitMono/tree/main/BitMono/BitMono
   // NB! but be aware of kind a weird errors and issues that breaking you app and it stop working after that
   // Stay it true if it possible!
   "FailOnNoRequiredDependency": true,
-
-  "Logging": {
-    "LogsFile": "logs.txt"
-  },
 }
 ```
 
