@@ -33,8 +33,8 @@ namespace BitMono.Protections.Hooks
 
                 if (initializatorMethodDef != null && fromMethodDef != null && toMethodDef != null)
                 {
-                    initializatorMethodDef.Body.Instructions.Insert(instructionTokensUpdate.Index, new Instruction(OpCodes.Ldc_I4, fromMethodDef.MDToken.ToInt32()));
-                    initializatorMethodDef.Body.Instructions.Insert(instructionTokensUpdate.Index + 1, new Instruction(OpCodes.Ldc_I4, toMethodDef.MDToken.ToInt32()));
+                    initializatorMethodDef.Body.Instructions[instructionTokensUpdate.Index] = new Instruction(OpCodes.Ldc_I4, toMethodDef.MDToken.ToInt32());
+                    initializatorMethodDef.Body.Instructions.Insert(instructionTokensUpdate.Index + 1, new Instruction(OpCodes.Ldc_I4, fromMethodDef.MDToken.ToInt32()));
                 }
             }
 
