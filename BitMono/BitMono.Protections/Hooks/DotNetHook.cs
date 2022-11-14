@@ -79,13 +79,13 @@ namespace BitMono.Protections.Hooks
             {
                 if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<DotNetHook>(typeDef))
                 {
-                    m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
 
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
-                    m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                     continue;
                 }
 
@@ -95,13 +95,13 @@ namespace BitMono.Protections.Hooks
                     {
                         if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<DotNetHook>(methodDef))
                         {
-                            m_Logger.Debug("Found {0}, skipping.", nameof(ObfuscationAttribute));
+                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
 
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
-                            m_Logger.Debug("Not able to make changes because of specific namespace was found, skipping.");
+                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                             continue;
                         }
 
@@ -125,6 +125,7 @@ namespace BitMono.Protections.Hooks
                                 initializatorMethodDef.Body = new CilBody();
 
                                 var index = initializatorMethodDef.Body.Instructions.Count;
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Nop));
                                 initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
                                 initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ret));
 
