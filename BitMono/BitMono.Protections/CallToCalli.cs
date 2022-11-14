@@ -94,7 +94,7 @@ namespace BitMono.Protections
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
                             {
-                                if (methodDef.Body.Instructions[i].Operand is MemberRef memberRef && memberRef.Signature != null)
+                                if (methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef && callingMethodDef.HasBody)
                                 {
                                     var locals = methodDef.Body.Variables;
                                     var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
@@ -107,7 +107,7 @@ namespace BitMono.Protections
                                         methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
                                         methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
 
-                                        methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, memberRef.MDToken.ToInt32()));
+                                        methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, callingMethodDef.MDToken.ToInt32()));
                                         methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Call, resolveMethodMethod));
                                         methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
 
@@ -115,7 +115,7 @@ namespace BitMono.Protections
                                         methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, local));
 
                                         methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                        methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, memberRef.MethodSig));
+                                        methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, callingMethodDef.MethodSig));
                                         i += 10;
                                     }
                                 }
