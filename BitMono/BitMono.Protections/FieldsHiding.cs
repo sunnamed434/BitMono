@@ -16,6 +16,7 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [Obsolete]
     public class FieldsHiding : IStageProtection
     {
         private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
