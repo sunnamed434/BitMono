@@ -1,5 +1,4 @@
-﻿using Autofac;
-using BitMono.API.Configuration;
+﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
