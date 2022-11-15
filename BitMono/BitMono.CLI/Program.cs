@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ public class Program
         var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(outputDirectoryName, libsDirectoryName);
         bitMonoContext.ModuleFileName = moduleFileName;
 
-        var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>();
+        var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
         var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
         var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
         var protectionSettings = protectionsConfiguration.GetProtectionSettings();
