@@ -29,17 +29,17 @@ namespace BitMono.Obfuscation
             m_Logger = logger;
         }
 
-        public Task<ProtectionsSortingResult> SortAsync(ICollection<IProtection> protections, List<ProtectionSettings> protectionSettings)
+        public Task<ProtectionsSortingResult> SortAsync(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
         {
             protections = new DependencyResolver(protections, protectionSettings, m_Logger)
-                .Sort(out ICollection<string> skipped);
+                .Sort(out List<string> skipped);
             var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
             var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
                 m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(m_ModuleDefMDAssembly, p.GetType().Name));
-            
-            protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections);
+
+            protections = protections.Except(stageProtections).Except(obfuscationAttributeExcludingProtections).Except(deprecatedProtections).ToList();
 
             return Task.FromResult(new ProtectionsSortingResult
             {
