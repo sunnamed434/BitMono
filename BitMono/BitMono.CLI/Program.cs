@@ -44,9 +44,9 @@ public class Program
         Assembly.LoadFrom(protectionsFile);
 
         var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
-        var libsDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
+        var dependenciesDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
         var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
-        Directory.CreateDirectory(libsDirectoryName);
+        Directory.CreateDirectory(dependenciesDirectoryName);
         Directory.CreateDirectory(outputDirectoryName);
 
         var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
@@ -58,7 +58,13 @@ public class Program
         var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
         var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
         var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-        var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(outputDirectoryName, libsDirectoryName);
+        var dependencies = Directory.GetFiles(dependenciesDirectoryName);
+        var dependeciesData = new List<byte[]>();
+        for (int i = 0; i < dependencies.Length; i++)
+        {
+            dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
+        }
+        var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(outputDirectoryName, dependeciesData);
         bitMonoContext.ModuleFileName = moduleFileName;
 
         var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
