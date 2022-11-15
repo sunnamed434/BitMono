@@ -40,7 +40,7 @@ namespace BitMono.Obfuscation
             m_Logger = logger.ForContext<BitMonoEngine>();
         }
 
-        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, ICollection<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
+        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
         {
             var moduleDefMDCreationResult = await m_ModuleDefMDCreator.CreateAsync();
             var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
