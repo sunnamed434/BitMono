@@ -1,7 +1,5 @@
 ﻿using BitMono.API.Protecting.Resolvers;
 using NullGuard;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
