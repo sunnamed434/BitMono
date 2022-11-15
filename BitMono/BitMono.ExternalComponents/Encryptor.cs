@@ -12,18 +12,18 @@ namespace BitMono.Encryption
         internal static string Decrypt(byte[] bytes)
         {
             byte[] decryptedBytes = null;
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                using (RijndaelManaged aes = new RijndaelManaged())
+                using (var aes = new RijndaelManaged())
                 {
                     aes.KeySize = 256;
                     aes.BlockSize = 128;
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(cryptKeyBytes, saltBytes, 1000);
+                    var key = new Rfc2898DeriveBytes(cryptKeyBytes, saltBytes, 1000);
                     aes.Key = key.GetBytes(aes.KeySize / 8);
                     aes.IV = key.GetBytes(aes.BlockSize / 8);
                     aes.Mode = CipherMode.CBC;
 
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
+                    using (var cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
                     {
                         cryptoStream.Write(bytes, 0, bytes.Length);
                         cryptoStream.Close();
@@ -37,20 +37,20 @@ namespace BitMono.Encryption
         }
         public static byte[] EncryptContent(string text, byte[] saltBytes, byte[] cryptKeyBytes)
         {
-            byte[] decryptBytes = Encoding.UTF8.GetBytes(text);
+            var decryptBytes = Encoding.UTF8.GetBytes(text);
             byte[] encryptedBytes = null;
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                using (RijndaelManaged aes = new RijndaelManaged())
+                using (var aes = new RijndaelManaged())
                 {
                     aes.KeySize = 256;
                     aes.BlockSize = 128;
-                    Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(saltBytes, cryptKeyBytes, 1000);
+                    var key = new Rfc2898DeriveBytes(saltBytes, cryptKeyBytes, 1000);
                     aes.Key = key.GetBytes(aes.KeySize / 8);
                     aes.IV = key.GetBytes(aes.BlockSize / 8);
                     aes.Mode = CipherMode.CBC;
 
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    using (var cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
                     {
                         cryptoStream.Write(decryptBytes, 0, decryptBytes.Length);
                         cryptoStream.Close();
