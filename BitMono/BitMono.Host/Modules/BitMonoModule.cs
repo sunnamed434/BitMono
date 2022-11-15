@@ -63,7 +63,7 @@ namespace BitMono.Host.Modules
                 });
             }
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             if (m_ConfigureConfigurationBuilder != null)
             {
                 m_ConfigureConfigurationBuilder.Invoke(configurationBuilder);
