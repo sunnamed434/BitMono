@@ -6,8 +6,6 @@ using BitMono.API.Protecting.Writers;
 using BitMono.Core.Models;
 using BitMono.Obfuscation.API;
 using dnlib.DotNet;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -19,7 +17,6 @@ namespace BitMono.Obfuscation
 {
     public class BitMonoEngine
     {
-        private readonly IServiceProvider m_ServiceProvider;
         private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
         private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
         private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
@@ -27,16 +24,16 @@ namespace BitMono.Obfuscation
         private readonly ILogger m_Logger;
 
         public BitMonoEngine(
-            IServiceProvider serviceProvider,
             IModuleDefMDWriter moduleDefMDWriter,
             IModuleDefMDCreator moduleDefMDCreator,
+            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            IBitMonoObfuscationConfiguration obfuscationConfiguration,
             ILogger logger)
         {
-            m_ServiceProvider = serviceProvider;
             m_ModuleDefMDWriter = moduleDefMDWriter;
             m_ModuleDefMDCreator = moduleDefMDCreator;
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = m_ServiceProvider.GetRequiredService<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
-            m_ObfuscationConfiguratin = m_ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
+            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
+            m_ObfuscationConfiguratin = obfuscationConfiguration;
             m_Logger = logger.ForContext<BitMonoEngine>();
         }
 
