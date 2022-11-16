@@ -35,9 +35,15 @@ public class Program
             var moduleFileName = await new CLIBitMonoModuleFileResolver(args).ResolveAsync();
             if (string.IsNullOrWhiteSpace(moduleFileName))
             {
-                Console.WriteLine("Please, specify file, drag-and-drop it in BitMono CLI");
-                Console.ReadLine();
-                return;
+                Console.WriteLine("File not specified, please specify path to the file here: ");
+                moduleFileName = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(moduleFileName))
+                {
+                    Console.WriteLine("Please, specify file, drag-and-drop it in BitMono CLI");
+                    Console.ReadLine();
+                    return;
+                }
             }
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
