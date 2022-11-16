@@ -15,16 +15,14 @@ namespace BitMono.Obfuscation
 
         public async Task<ModuleDefMDCreationResult> CreateAsync()
         {
-            var assemblyResolver = new AssemblyResolver();
-            var moduleContext = new ModuleContext(assemblyResolver);
-            assemblyResolver.DefaultModuleContext = moduleContext;
-            var moduleCreationOptions = new ModuleCreationOptions(assemblyResolver.DefaultModuleContext, CLRRuntimeReaderKind.Mono);
+            var moduleContext = ModuleDefMD.CreateModuleContext();
+            var moduleCreationOptions = new ModuleCreationOptions(moduleContext, CLRRuntimeReaderKind.Mono);
             var moduleDefMD = ModuleDefMD.Load(m_ModuleBytes, moduleCreationOptions);
 
             var moduleDefMDWriterOptions = await new ModuleDefMDWriterOptionsCreator().CreateAsync(moduleDefMD);
             return new ModuleDefMDCreationResult
             {
-                AssemblyResolver = assemblyResolver,
+                AssemblyResolver = moduleContext.AssemblyResolver,
                 ModuleContext = moduleContext,
                 ModuleCreationOptions = moduleCreationOptions,
                 ModuleDefMD = moduleDefMD,
