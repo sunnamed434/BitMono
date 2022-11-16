@@ -68,13 +68,8 @@ public class Program
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
             var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
-            var dependencies = Directory.GetFiles(dependenciesDirectoryName);
-            var dependeciesData = new List<byte[]>();
-            for (int i = 0; i < dependencies.Length; i++)
-            {
-                dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
-            }
-            var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(outputDirectoryName, dependeciesData);
+
+            var bitMonoContext = await new BitMonoContextCreator(new DependenciesDataResolver(dependenciesDirectoryName), obfuscationConfiguration).CreateAsync(outputDirectoryName);
             bitMonoContext.ModuleFileName = moduleFileName;
 
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
