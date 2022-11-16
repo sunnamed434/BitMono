@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using BitMono.API.Configuration;
 using BitMono.API.Protecting;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.CLI.Modules;
 using BitMono.Core.Configuration.Extensions;
 using BitMono.Host;
@@ -60,6 +61,7 @@ public class Program
             var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
+            var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
             var dependencies = Directory.GetFiles(dependenciesDirectoryName);
             var dependeciesData = new List<byte[]>();
             for (int i = 0; i < dependencies.Length; i++)
@@ -73,7 +75,12 @@ public class Program
             var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
-            await new BitMonoEngine(serviceProvider, new CLIModuleDefMDWriter(), new ModuleDefMDCreator(moduleFileBytes), logger)
+            await new BitMonoEngine(
+                new CLIModuleDefMDWriter(),
+                new ModuleDefMDCreator(moduleFileBytes),
+                dnlibDefFeatureObfuscationAttributeHavingResolver,
+                obfuscationConfiguration,
+                logger)
                 .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, protections, protectionSettings, CancellationToken.Token);
 
             if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
