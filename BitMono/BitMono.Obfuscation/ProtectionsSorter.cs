@@ -39,7 +39,7 @@ namespace BitMono.Obfuscation
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
                 m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(m_ModuleDefMDAssembly, p.GetType().Name));
 
-            protections = protections.Except(obfuscationAttributeExcludingProtections).Except(deprecatedProtections).ToList();
+            protections = protections.Except(obfuscationAttributeExcludingProtections).ToList();
 
             return Task.FromResult(new ProtectionsSortingResult
             {
