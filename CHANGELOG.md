@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.3.2-alpha](#v032-alpha7) |
 | [v0.3.1-alpha](#v031-alpha6) |
 | [v0.3.0-alpha](#v030-alpha5) |
 | [v0.2.2-alpha](#v022-alpha4) |
@@ -9,6 +10,10 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.3.2-alpha.7:
+#### Fixed:
+* Specifying file
 
 ### v0.3.1-alpha.6:
 #### Changed:
