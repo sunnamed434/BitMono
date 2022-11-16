@@ -32,7 +32,7 @@
       "Name": "StringsEncryption",
       "Enabled": true
     },
-    // Currently should be disabled, because it is working so bad
+    // Currently should be disabled, because of deprecation
     {
       "Name": "FieldsHiding",
       "Enabled": false

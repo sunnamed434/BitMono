@@ -21,7 +21,7 @@ namespace BitMono.Obfuscation
             }
             if (protectionsSortingResult.Skipped.Any())
             {
-                m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSortingResult.Skipped.Select(p => p?.GetType()?.Name ?? "NULL")));
+                m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSortingResult.Skipped.Select(p => p ?? "NULL")));
             }
             if (protectionsSortingResult.ObfuscationAttributeExcludingProtections.Any())
             {
@@ -33,7 +33,7 @@ namespace BitMono.Obfuscation
             }
             if (protectionsSortingResult.StageProtections.Any())
             {
-                m_Logger.Information("Execute calling condition protections: {0}", string.Join(", ", protectionsSortingResult.StageProtections.Select(p => p?.GetType()?.Name ?? "NULL")));
+                m_Logger.Information("Execute only at the end: {0}", string.Join(", ", protectionsSortingResult.StageProtections.Select(p => p?.GetType()?.Name ?? "NULL")));
             }
             return Task.CompletedTask;
         }

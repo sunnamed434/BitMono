@@ -1,17 +1,15 @@
-﻿using Autofac;
-using BitMono.API.Configuration;
+﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Writers;
 using BitMono.Core.Protecting.Resolvers;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Obfuscation
 {
@@ -44,17 +42,10 @@ namespace BitMono.Obfuscation
         {
             if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
             {
-                var dependencies = Directory.GetFiles(m_BitMonoContext.DependenciesDirectoryName);
-                var dependeciesData = new List<byte[]>();
-                for (int i = 0; i < dependencies.Length; i++)
-                {
-                    dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
-                }
-
-                var resolvingSucceed = await new BitMonoAssemblyResolver(dependeciesData, m_ProtectionContext, m_Logger).ResolveAsync();
+                var resolvingSucceed = await new BitMonoAssemblyResolver(m_BitMonoContext.DependenciesData, m_ProtectionContext, m_Logger).ResolveAsync();
                 if (resolvingSucceed == false)
                 {
-                    m_Logger.Warning("Drop dependencies in {0}, or set in config FailOnNoRequiredDependency to false", m_BitMonoContext.DependenciesDirectoryName);
+                    m_Logger.Fatal("Drop dependencies in 'libs' directory with the same path as your module has, or set in config FailOnNoRequiredDependency to false");
                     Console.ReadLine();
                     return;
                 }

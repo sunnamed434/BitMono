@@ -8,18 +8,18 @@ namespace BitMono.Core.Protecting.Resolvers
 {
     public class DependencyResolver
     {
-        private readonly ICollection<IProtection> m_Protections;
-        private readonly ICollection<ProtectionSettings> m_ProtectionSettings;
+        private readonly List<IProtection> m_Protections;
+        private readonly IEnumerable<ProtectionSettings> m_ProtectionSettings;
         private readonly ILogger m_Logger;
 
-        public DependencyResolver(ICollection<IProtection> protections, ICollection<ProtectionSettings> protectionSettings, ILogger logger)
+        public DependencyResolver(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings, ILogger logger)
         {
             m_Protections = protections;
             m_ProtectionSettings = protectionSettings;
             m_Logger = logger.ForContext<DependencyResolver>();
         }
 
-        public ICollection<IProtection> Sort(out ICollection<string> disabled)
+        public List<IProtection> Sort(out List<string> disabled)
         {
             var foundProtections = new List<IProtection>();
             var cachedProtections = m_Protections.ToArray().ToList();
