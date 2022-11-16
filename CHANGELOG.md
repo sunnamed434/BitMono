@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.3.1-alpha](#v031-alpha6) |
 | [v0.3.0-alpha](#v030-alpha5) |
 | [v0.2.2-alpha](#v022-alpha4) |
 | [v0.2.1-alpha](#v021-alpha3) |
@@ -8,6 +9,15 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.3.1-alpha.6:
+#### Changed:
+* Guarantees loading libraries directly as bytes
+
+### Fixed:
+* Now BitMono.CLI catches errors and outputs it properly [#31](https://github.com/sunnamed434/BitMono/issues/31)
+* Protections now outputs logs properly
+* Protections bugs fixes
 
 ### v0.3.0-alpha.5:
 ### Added:
