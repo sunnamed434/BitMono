@@ -5,11 +5,11 @@ using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Writers;
 using BitMono.Core.Protecting.Resolvers;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace BitMono.Obfuscation
 {
