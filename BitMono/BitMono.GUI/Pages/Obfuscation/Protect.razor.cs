@@ -1,5 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting;
+using BitMono.API.Protecting.Resolvers;
 using BitMono.GUI.API;
 using BitMono.GUI.Modules;
 using BitMono.GUI.Shared.Alerting;
@@ -49,6 +50,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var obfuscationConfiguration = ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
                     var appSettingsConfiguration = ServiceProvider.GetRequiredService<IBitMonoAppSettingsConfiguration>();
+                    var dnlibDefFeatureObfuscationAttributeHavingResolver = ServiceProvider.GetRequiredService<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
 
                     var dependencies = Directory.GetFiles(_dependenciesDirectoryName);
                     var dependeciesData = new List<byte[]>();
@@ -59,7 +61,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(_outputDirectoryName, dependeciesData);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
-                    await new BitMonoEngine(ServiceProvider, new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), Logger)
+                    await new BitMonoEngine(new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), dnlibDefFeatureObfuscationAttributeHavingResolver, obfuscationConfiguration, Logger)
                         .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections.ToList(), StoringProtections.Protections);
 
                     await new TipsNotifier(appSettingsConfiguration, Logger).NotifyAsync();
