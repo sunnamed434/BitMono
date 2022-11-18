@@ -60,7 +60,7 @@ namespace BitMono.GUI.Pages.Obfuscation
                     }
                     
                     var bitMonoContext = await new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
-                        .CreateAsync(_outputDirectoryName);
+                        .Create(_outputDirectoryName);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
                     await new BitMonoEngine(new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), dnlibDefFeatureObfuscationAttributeHavingResolver, obfuscationConfiguration, Logger)
                         .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections.ToList(), StoringProtections.Protections);
