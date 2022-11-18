@@ -17,15 +17,14 @@ namespace BitMono.Obfuscation
             m_Configuration = configuration.Configuration;
         }
 
-        public Task<BitMonoContext> CreateAsync(string outputDirectoryName)
+        public BitMonoContext Create(string outputDirectoryName)
         {
-            var bitMonoContext = new BitMonoContext
+            return new BitMonoContext
             {
                 OutputPath = outputDirectoryName,
                 DependenciesData = m_DependenciesDataResolver.Resolve(),
                 Watermark = m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.Watermark)),
             };
-            return Task.FromResult(bitMonoContext);
         }
     }
 }
