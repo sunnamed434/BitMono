@@ -1,6 +1,5 @@
 ﻿using BitMono.API.Protecting.Contexts;
 using dnlib.DotNet;
-using System.Threading.Tasks;
 
 namespace BitMono.Obfuscation
 {
@@ -17,9 +16,9 @@ namespace BitMono.Obfuscation
             m_Context = context;
         }
 
-        public Task<ProtectionContext> CreateAsync()
+        public ProtectionContext Create()
         {
-            return Task.FromResult(new ProtectionContext
+            return new ProtectionContext
             {
                 ModuleDefMD = m_ModuleDefMDCreationResult.ModuleDefMD,
                 ModuleCreationOptions = m_ModuleDefMDCreationResult.ModuleCreationOptions,
@@ -28,7 +27,7 @@ namespace BitMono.Obfuscation
                 Importer = new Importer(m_ModuleDefMDCreationResult.ModuleDefMD),
                 ExternalComponentsImporter = new Importer(m_ExternalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
                 BitMonoContext = m_Context,
-            });
+            };
         }
     }
 }
