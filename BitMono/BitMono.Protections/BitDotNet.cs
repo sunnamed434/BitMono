@@ -37,8 +37,8 @@ namespace BitMono.Protections
                 var peHeader = reader.ReadUInt32();
                 stream.Position = peHeader;
 
-                const int bittenPEHeaderWithExtraByte = 0x00014550;
-                writer.Write(bittenPEHeaderWithExtraByte);
+                const int PEHeaderWithExtraByteHex = 0x00014550;
+                writer.Write(PEHeaderWithExtraByteHex);
 
                 stream.Position += 0x2;
                 var numberOfSections = reader.ReadUInt16();
