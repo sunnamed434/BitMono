@@ -24,7 +24,6 @@ using ILogger = Serilog.ILogger;
 public class Program
 {
     const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-    const string ExternalComponents = nameof(BitMono) + "." + nameof(BitMono.ExternalComponents) + ".dll";
 
     static CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
@@ -48,8 +47,7 @@ public class Program
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
-            var externalComponentsFile = Path.Combine(domainBaseDirectory, ExternalComponents);
-            var externalComponentsModuleDefMD = ModuleDefMD.Load(externalComponentsFile);
+            var externalComponentsModuleDefMD = ModuleDefMD.Load(typeof(BitMono.ExternalComponents.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
             var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
@@ -69,7 +67,7 @@ public class Program
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
             var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
 
-            var bitMonoContext = await new BitMonoContextCreator(new DependenciesDataResolver(dependenciesDirectoryName), obfuscationConfiguration).CreateAsync(outputDirectoryName);
+            var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(dependenciesDirectoryName), obfuscationConfiguration).Create(outputDirectoryName);
             bitMonoContext.ModuleFileName = moduleFileName;
 
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
@@ -97,7 +95,6 @@ public class Program
         {
             Console.WriteLine("Something went wrong! " + ex.ToString());
         }
-        
         Console.ReadLine();
     }
 }
