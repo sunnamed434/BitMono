@@ -28,6 +28,7 @@ namespace BitMono.Protections.Hooks
         private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
         private readonly IList<InstructionTokensUpdate> m_InstructionsToBeTokensUpdated;
+        private readonly Random m_Random;
 
         public DotNetHook(
             IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
@@ -42,6 +43,7 @@ namespace BitMono.Protections.Hooks
             m_Renamer = renamer;
             m_Logger = logger.ForContext<DotNetHook>();
             m_InstructionsToBeTokensUpdated = new List<InstructionTokensUpdate>();
+            m_Random = new Random();
         }
 
         public PipelineStages Stage => PipelineStages.ModuleWritten;
@@ -113,6 +115,8 @@ namespace BitMono.Protections.Hooks
                             {
                                 var dummyMethod = new MethodDefUser(m_Renamer.RenameUnsafely(),
                                     callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
+                                dummyMethod.IsStatic = true;
+                                dummyMethod.Access = MethodAttributes.Assembly;
                                 dummyMethod.Body = new CilBody();
                                 foreach (var paramDef in callingMethodDef.ParamDefs)
                                 {
@@ -138,7 +142,7 @@ namespace BitMono.Protections.Hooks
                                 }
                                 dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ret));
 
-                                typeDef.Methods.Add(dummyMethod);
+                                context.ModuleDefMD.GlobalType.Methods.Add(dummyMethod);
 
                                 m_InstructionsToBeTokensUpdated.Add(new InstructionTokensUpdate
                                 {
@@ -149,8 +153,9 @@ namespace BitMono.Protections.Hooks
                                 });
 
                                 methodDef.Body.Instructions[i].Operand = dummyMethod;
-                                methodDef.Body.Instructions.Insert(i, new Instruction(OpCodes.Call, initializatorMethodDef));
-                                i += 1;
+                                var globalTypeCctor = context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
+                                var randomIndex = m_Random.Next(0, globalTypeCctor.Body.Instructions.Count - 1);
+                                globalTypeCctor.Body.Instructions.Insert(randomIndex, new Instruction(OpCodes.Call, initializatorMethodDef));
                             }
                         }
                     }
