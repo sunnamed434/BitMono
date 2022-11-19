@@ -36,7 +36,7 @@
     },
     {
       "Name": "CallToCalli",
-      "Enabled": false
+      "Enabled": true
     },
     // Currently should be not used - because of deprecation
     {
