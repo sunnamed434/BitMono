@@ -17,6 +17,11 @@ namespace BitMono.Protections
             using (var reader = new BinaryReader(stream))
             using (var writer = new BinaryWriter(stream))
             {
+                var numberOfRvaAndSizes = 0xF4;
+                stream.Position = numberOfRvaAndSizes;
+                writer.Write(0xD);
+                writer.Write(0x1);
+
                 var dotnetSize = 0x16C;
                 stream.Position = dotnetSize;
                 writer.Write(0);
@@ -37,8 +42,8 @@ namespace BitMono.Protections
                 var peHeader = reader.ReadUInt32();
                 stream.Position = peHeader;
 
-                const int bittenPEHeaderWithExtraByte = 0x00014550;
-                writer.Write(bittenPEHeaderWithExtraByte);
+                const int PEHeaderWithExtraByteHex = 0x00014550;
+                writer.Write(PEHeaderWithExtraByteHex);
 
                 stream.Position += 0x2;
                 var numberOfSections = reader.ReadUInt16();
@@ -67,7 +72,8 @@ namespace BitMono.Protections
 
                 stream.Position = dotNetPointerRaw;
                 writer.Write(0);
-                stream.Position += 0x8;
+                writer.Write(0);
+                stream.Position += 0x4;
                 writer.Write(0);
             }
             return Task.CompletedTask;

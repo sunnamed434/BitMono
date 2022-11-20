@@ -44,6 +44,8 @@ namespace BitMono.Protections
             context.ModuleDefMD = moduleDefMD;
             var importer = new Importer(context.ModuleDefMD);
 
+            var moduleTypeDef = context.Importer.ImportDeclaringType(typeof(Module));
+
             var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
             {
                 typeof(Array),
@@ -98,10 +100,9 @@ namespace BitMono.Protections
                             {
                                 if (cctor.Body.Instructions[i].OpCode == OpCodes.Call)
                                 {
-                                    //ctor.Body.Instructions[i - 1].OpCode = OpCodes.Nop;
                                     cctor.Body.Instructions[i].OpCode = OpCodes.Nop;
 
-                                    cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, fieldDef.DeclaringType));
+                                    cctor.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, moduleTypeDef));
                                     cctor.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
                                     cctor.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
 

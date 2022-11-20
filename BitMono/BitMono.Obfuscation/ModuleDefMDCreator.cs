@@ -1,6 +1,5 @@
 ﻿using BitMono.Obfuscation.API;
 using dnlib.DotNet;
-using System.Threading.Tasks;
 
 namespace BitMono.Obfuscation
 {
@@ -13,13 +12,13 @@ namespace BitMono.Obfuscation
             m_ModuleBytes = moduleBytes;
         }
 
-        public async Task<ModuleDefMDCreationResult> CreateAsync()
+        public ModuleDefMDCreationResult Create()
         {
             var moduleContext = ModuleDefMD.CreateModuleContext();
             var moduleCreationOptions = new ModuleCreationOptions(moduleContext, CLRRuntimeReaderKind.Mono);
             var moduleDefMD = ModuleDefMD.Load(m_ModuleBytes, moduleCreationOptions);
 
-            var moduleDefMDWriterOptions = await new ModuleDefMDWriterOptionsCreator().CreateAsync(moduleDefMD);
+            var moduleDefMDWriterOptions = new ModuleDefMDWriterOptionsCreator().Create(moduleDefMD);
             return new ModuleDefMDCreationResult
             {
                 AssemblyResolver = moduleContext.AssemblyResolver,

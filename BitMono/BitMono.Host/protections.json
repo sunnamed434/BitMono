@@ -8,6 +8,12 @@
       "Name": "AntiDe4dot",
       "Enabled": true
     },
+    // Doesn`t gives something like incredible protection, but, use it not too much
+    // because deobfuscators/unpackers for bitmono could use it as such thing for detecting bitmono
+    {
+      "Name": "InvalidMetadata",
+      "Enabled": false
+    },
     {
       "Name": "ObjectReturnType",
       "Enabled": true
@@ -21,6 +27,10 @@
       "Enabled": true
     },
     {
+      "Name": "StringsEncryption",
+      "Enabled": true
+    },
+    {
       "Name": "DotNetHook",
       "Enabled": true
     },
@@ -28,11 +38,7 @@
       "Name": "CallToCalli",
       "Enabled": true
     },
-    {
-      "Name": "StringsEncryption",
-      "Enabled": true
-    },
-    // Currently should be disabled, because of deprecation
+    // Currently should not be used anymore - because of deprecation
     {
       "Name": "FieldsHiding",
       "Enabled": false

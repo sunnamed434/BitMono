@@ -1,29 +1,30 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Contexts;
+using BitMono.Obfuscation.API;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BitMono.Obfuscation
 {
     public class BitMonoContextCreator
     {
+        private readonly IDependenciesDataResolver m_DependenciesDataResolver;
         private readonly IConfiguration m_Configuration;
 
-        public BitMonoContextCreator(IBitMonoObfuscationConfiguration configuration)
+        public BitMonoContextCreator(IDependenciesDataResolver dependenciesDataResolver, IBitMonoObfuscationConfiguration configuration)
         {
+            m_DependenciesDataResolver = dependenciesDataResolver;
             m_Configuration = configuration.Configuration;
         }
 
-        public Task<BitMonoContext> CreateAsync(string outputDirectoryName, IEnumerable<byte[]> dependeciesData)
+        public BitMonoContext Create(string outputDirectoryName)
         {
-            var bitMonoContext = new BitMonoContext
+            return new BitMonoContext
             {
                 OutputPath = outputDirectoryName,
-                DependenciesData = dependeciesData,
+                DependenciesData = m_DependenciesDataResolver.Resolve(),
                 Watermark = m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.Watermark)),
             };
-            return Task.FromResult(bitMonoContext);
         }
     }
 }

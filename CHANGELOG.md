@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.3.3-alpha](#v033-alpha8) |
 | [v0.3.2-alpha](#v032-alpha7) |
 | [v0.3.1-alpha](#v031-alpha6) |
 | [v0.3.0-alpha](#v030-alpha5) |
@@ -10,6 +11,13 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.3.3-alpha.8:
+#### Changed:
+* BitDotNet protection greatly improved
+
+#### Fixed:
+* Obfuscation process
 
 ### v0.3.2-alpha.7:
 #### Fixed:

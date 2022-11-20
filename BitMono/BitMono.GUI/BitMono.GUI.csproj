@@ -78,6 +78,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="dnlib" Version="3.6.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
 		<PackageReference Include="morelinq" Version="3.3.2" />
 		<PackageReference Include="NullGuard.Fody" Version="3.1.0" />
@@ -95,12 +96,6 @@
 		<ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
 		<ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
 		<ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="dnlib">
-			<HintPath>..\lib\dnlib.dll</HintPath>
-		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>

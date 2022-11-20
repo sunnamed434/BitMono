@@ -16,15 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="dnlib" Version="3.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0-rc.2.22472.3" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\lib\dnlib.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

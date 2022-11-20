@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 
 namespace BitMono.Obfuscation
@@ -29,7 +28,7 @@ namespace BitMono.Obfuscation
             m_Logger = logger;
         }
 
-        public Task<ProtectionsSortingResult> SortAsync(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
+        public ProtectionsSortingResult Sort(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
         {
             protections = new DependencyResolver(protections, protectionSettings, m_Logger)
                 .Sort(out List<string> skipped);
@@ -41,7 +40,7 @@ namespace BitMono.Obfuscation
 
             protections = protections.Except(obfuscationAttributeExcludingProtections).ToList();
 
-            return Task.FromResult(new ProtectionsSortingResult
+            return new ProtectionsSortingResult
             {
                 Protections = protections,
                 DeprecatedProtections = deprecatedProtections,
@@ -49,7 +48,7 @@ namespace BitMono.Obfuscation
                 StageProtections = stageProtections,
                 PipelineProtections = pipelineProtections,
                 ObfuscationAttributeExcludingProtections = obfuscationAttributeExcludingProtections
-            });
+            };
         }
     }
 }

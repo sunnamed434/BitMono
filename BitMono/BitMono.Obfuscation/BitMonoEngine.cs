@@ -39,12 +39,12 @@ namespace BitMono.Obfuscation
 
         public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
         {
-            var moduleDefMDCreationResult = await m_ModuleDefMDCreator.CreateAsync();
-            var protectionContext = await new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).CreateAsync();
+            var moduleDefMDCreationResult = m_ModuleDefMDCreator.Create();
+            var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).Create();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
-            var protectionsSortingResult = await new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
-                .SortAsync(protections, protectionSettings);
+            var protectionsSortingResult = new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
+                .Sort(protections, protectionSettings);
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
 

@@ -15,9 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\lib\dnlib.dll</HintPath>
-    </Reference>
+    <PackageReference Include="dnlib" Version="3.6.0" />
   </ItemGroup>
 
 </Project>

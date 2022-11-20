@@ -58,8 +58,9 @@ namespace BitMono.GUI.Pages.Obfuscation
                     {
                         dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
                     }
-
-                    var bitMonoContext = await new BitMonoContextCreator(obfuscationConfiguration).CreateAsync(_outputDirectoryName, dependeciesData);
+                    
+                    var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
+                        .Create(_outputDirectoryName);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
                     await new BitMonoEngine(new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), dnlibDefFeatureObfuscationAttributeHavingResolver, obfuscationConfiguration, Logger)
                         .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections.ToList(), StoringProtections.Protections);
