@@ -17,6 +17,11 @@ namespace BitMono.Protections
             using (var reader = new BinaryReader(stream))
             using (var writer = new BinaryWriter(stream))
             {
+                var numberOfRvaAndSizes = 0xF4;
+                stream.Position = numberOfRvaAndSizes;
+                writer.Write(0xD);
+                writer.Write(0x1);
+
                 var dotnetSize = 0x16C;
                 stream.Position = dotnetSize;
                 writer.Write(0);
@@ -67,7 +72,8 @@ namespace BitMono.Protections
 
                 stream.Position = dotNetPointerRaw;
                 writer.Write(0);
-                stream.Position += 0x8;
+                writer.Write(0);
+                stream.Position += 0x4;
                 writer.Write(0);
             }
             return Task.CompletedTask;
