@@ -59,7 +59,7 @@ namespace BitMono.GUI.Pages.Obfuscation
                         dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
                     }
                     
-                    var bitMonoContext = await new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
+                    var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
                         .Create(_outputDirectoryName);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
                     await new BitMonoEngine(new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), dnlibDefFeatureObfuscationAttributeHavingResolver, obfuscationConfiguration, Logger)
