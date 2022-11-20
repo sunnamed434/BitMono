@@ -38,7 +38,7 @@
       "Name": "CallToCalli",
       "Enabled": true
     },
-    // Currently should be not used - because of deprecation
+    // Currently should not be used anymore - because of deprecation
     {
       "Name": "FieldsHiding",
       "Enabled": false
