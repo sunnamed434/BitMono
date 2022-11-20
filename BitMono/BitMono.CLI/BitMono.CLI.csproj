@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="dnlib" Version="3.6.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
@@ -35,11 +36,5 @@
     <ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
     <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
   </ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="dnlib">
-	    <HintPath>..\lib\dnlib.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
 
 </Project>

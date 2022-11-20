@@ -18,6 +18,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.4.0" />
     <PackageReference Include="Autofac.Configuration" Version="6.0.0" />
+    <PackageReference Include="dnlib" Version="3.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-rc.2.22472.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.2.22472.3" />
     <PackageReference Include="morelinq" Version="3.3.2" />
@@ -31,12 +32,6 @@
     <ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
     <ProjectReference Include="..\BitMono.ExternalComponents\BitMono.ExternalComponents.csproj" />
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\lib\dnlib.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
