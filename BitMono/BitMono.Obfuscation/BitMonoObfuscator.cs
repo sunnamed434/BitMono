@@ -57,40 +57,11 @@ namespace BitMono.Obfuscation
 
                 try
                 {
-                    if (protection is IPipelineStage stage)
-                    {
-                        if (stage.Stage == PipelineStages.Begin)
-                        {
-                            m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
-                            await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
-                            m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                        }
-                    }
-                    else
+                    if ((protection is IPipelineStage) == false)
                     {
                         m_Logger.Information("{0} -> Executing..", protection.GetType().FullName);
                         await protection.ExecuteAsync(m_ProtectionContext, cancellationToken);
                         m_Logger.Information("{0} -> Executed!", protection.GetType().FullName);
-                    }
-
-                    try
-                    {
-                        if (protection is IPipelineProtection pipelineProtection)
-                        {
-                            foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
-                            {
-                                if (protectionPhase.Item2 == PipelineStages.Begin)
-                                {
-                                    m_Logger.Information("Executing.. phase protection!");
-                                    await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, cancellationToken);
-                                    m_Logger.Information("Executed phase protection!");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        m_Logger.Error(ex, "Error while executing protection pipelines!");
                     }
                 }
                 catch (Exception ex)
