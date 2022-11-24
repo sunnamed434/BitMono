@@ -1,8 +1,10 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/logo/BitMonoLogo.png" alt="BitMono logo" width="180" /><br>
-  Free open-source protector for Mono, empty decompilers? bits? crashes?!<br>
-  All this and even more is right here
+  Free open-source obfuscator for Mono<br>
 </p>
+
+## BitMono
+BitMono is an free open-source C# obfuscator which in mostly cases works **only** with Mono - well known as fork of .NET Framework but with custom bugs or Unity. Which uses its own fork of **[dnlib](https://github.com/sunnamed434/dnlib)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install lastest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
