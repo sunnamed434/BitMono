@@ -44,9 +44,9 @@ namespace BitMono.Protections
             context.ModuleDefMD = moduleDefMD;
             var importer = new Importer(context.ModuleDefMD);
 
-            var moduleTypeDef = context.Importer.ImportDeclaringType(typeof(Module));
+            var moduleTypeDef = context.Importer.Import(typeof(Module));
 
-            var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
+            var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
             {
                 typeof(Array),
                 typeof(RuntimeFieldHandle)
