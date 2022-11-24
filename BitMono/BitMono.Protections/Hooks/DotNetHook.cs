@@ -56,7 +56,7 @@ namespace BitMono.Protections.Hooks
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile);
             context.ModuleDefMD = moduleDefMD;
-            context.Importer = new Importer(moduleDefMD);
+            context.Importer = new Importer(context.ModuleDefMD);
 
             var virtualProtectMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.VirtualProtect), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow();
             virtualProtectMethodDef.Access = MethodAttributes.Assembly;
