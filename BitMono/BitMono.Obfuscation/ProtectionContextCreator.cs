@@ -9,7 +9,10 @@ namespace BitMono.Obfuscation
         private readonly ModuleDefMD m_ExternalComponentsModuleDefMD;
         private readonly BitMonoContext m_Context;
 
-        public ProtectionContextCreator(ModuleDefMDCreationResult moduleDefMDCreationResult, ModuleDefMD externalComponentsModuleDefMD, BitMonoContext context)
+        public ProtectionContextCreator(
+            ModuleDefMDCreationResult moduleDefMDCreationResult, 
+            ModuleDefMD externalComponentsModuleDefMD, 
+            BitMonoContext context)
         {
             m_ModuleDefMDCreationResult = moduleDefMDCreationResult;
             m_ExternalComponentsModuleDefMD = externalComponentsModuleDefMD;
@@ -25,7 +28,7 @@ namespace BitMono.Obfuscation
                 ModuleWriterOptions = m_ModuleDefMDCreationResult.ModuleWriterOptions,
                 ExternalComponentsModuleDefMD = m_ExternalComponentsModuleDefMD,
                 Importer = new Importer(m_ModuleDefMDCreationResult.ModuleDefMD),
-                ExternalComponentsImporter = new Importer(m_ExternalComponentsModuleDefMD, ImporterOptions.TryToUseMethodDefs),
+                ExternalComponentsImporter = new Importer(m_ExternalComponentsModuleDefMD, ImporterOptions.TryToUseDefs),
                 BitMonoContext = m_Context,
             };
         }
