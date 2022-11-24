@@ -8,11 +8,11 @@ namespace BitMono.Obfuscation
     {
         public ModuleWriterOptions Create(ModuleDefMD moduleDefMD)
         {
-            var moduleDefMDWriterOptions = new ModuleWriterOptions(moduleDefMD);
-            moduleDefMDWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-            moduleDefMDWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
-            moduleDefMDWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
-            return moduleDefMDWriterOptions;
+            var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
+            moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
+            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
+            moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
+            return moduleWriterOptions;
         }
     }
 }
