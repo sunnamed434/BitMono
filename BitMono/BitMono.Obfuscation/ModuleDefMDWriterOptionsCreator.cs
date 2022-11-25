@@ -10,7 +10,7 @@ namespace BitMono.Obfuscation
         {
             var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
             moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack | MetadataFlags.PreserveAll;
+            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.PreserveStringsOffsets | MetadataFlags.PreserveUSOffsets | MetadataFlags.PreserveBlobOffsets | MetadataFlags.PreserveExtraSignatureData;
             moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
             return moduleWriterOptions;
         }
