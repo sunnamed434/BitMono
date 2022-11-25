@@ -45,7 +45,7 @@ namespace BitMono.Obfuscation
                 var resolvingSucceed = await new BitMonoAssemblyResolver(m_BitMonoContext.DependenciesData, m_ProtectionContext, m_Logger).ResolveAsync();
                 if (resolvingSucceed == false)
                 {
-                    m_Logger.Fatal("Drop dependencies in 'libs' directory with the same path as your module has, or set in config FailOnNoRequiredDependency to false");
+                    m_Logger.Fatal("Drop dependencies in 'libs' directory with the same path as your module has, or set in obfuscation.json FailOnNoRequiredDependency to false");
                     Console.ReadLine();
                     return;
                 }
