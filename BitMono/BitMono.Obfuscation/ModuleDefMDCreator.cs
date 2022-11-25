@@ -17,7 +17,6 @@ namespace BitMono.Obfuscation
             var moduleContext = ModuleDefMD.CreateModuleContext();
             var moduleCreationOptions = new ModuleCreationOptions(moduleContext, CLRRuntimeReaderKind.Mono);
             var moduleDefMD = ModuleDefMD.Load(m_ModuleBytes, moduleCreationOptions);
-
             var moduleDefMDWriterOptions = new ModuleDefMDWriterOptionsCreator().Create(moduleDefMD);
             return new ModuleDefMDCreationResult
             {
