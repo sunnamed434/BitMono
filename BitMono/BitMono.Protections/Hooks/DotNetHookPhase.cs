@@ -30,7 +30,6 @@ namespace BitMono.Protections.Hooks
                 var initializatorMethodDef = m_MethodDefSearcher.Find(instructionTokensUpdate.InitializatorMethodDef.Name, context.ModuleDefMD);
                 var fromMethodDef = m_MethodDefSearcher.Find(instructionTokensUpdate.FromMethodDef.Name, context.ModuleDefMD);
                 var toMethodDef = m_MethodDefSearcher.Find(instructionTokensUpdate.ToMethodDef.Name, context.ModuleDefMD);
-
                 if (initializatorMethodDef != null && fromMethodDef != null && toMethodDef != null)
                 {
                     initializatorMethodDef.Body.Instructions[instructionTokensUpdate.Index] = new Instruction(OpCodes.Ldc_I4, toMethodDef.MDToken.ToInt32());
