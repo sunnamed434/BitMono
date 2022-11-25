@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace BitMono.ExternalComponents
 {
-    public static class Hooking
+    internal static class Hooking
     {
         public static void RedirectStub(int from, int to)
         {
