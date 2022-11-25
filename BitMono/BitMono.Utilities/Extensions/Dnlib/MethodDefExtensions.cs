@@ -45,5 +45,10 @@ namespace BitMono.Utilities.Extensions.dnlib
         {
             return source.Parameters.Any();
         }
+        public static MethodDef SetDeclaringTypeToNull(this MethodDef source)
+        {
+            source.DeclaringType = null;
+            return source;
+        }
     }
 }
