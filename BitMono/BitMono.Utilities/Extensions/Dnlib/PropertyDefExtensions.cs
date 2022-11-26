@@ -9,5 +9,10 @@ namespace BitMono.Utilities.Extensions.dnlib
             return (source.GetMethod != null && source.GetMethod.IsVirtual
                 || source.SetMethod != null && source.SetMethod.IsVirtual) == true;
         }
+        public static PropertyDef SetDeclaringTypeToNull(this PropertyDef source)
+        {
+            source.DeclaringType = null;
+            return source;
+        }
     }
 }

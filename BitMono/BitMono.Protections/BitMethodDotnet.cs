@@ -106,10 +106,10 @@ namespace BitMono.Protections
                 }
             }
 
-            using (moduleDefMD)
+            using (context.ModuleDefMD)
             using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                moduleDefMD.Write(fileStream, context.ModuleWriterOptions);
+                context.ModuleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
             return Task.CompletedTask;
         }

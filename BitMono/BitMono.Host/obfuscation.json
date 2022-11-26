@@ -1,5 +1,5 @@
 {
-  // Adding visible things that shows you have been used BitMono to protect your app
+  // Adding visible things that shows you have been used BitMono to protect app
   "Watermark": true,
 
   // Excluding from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute

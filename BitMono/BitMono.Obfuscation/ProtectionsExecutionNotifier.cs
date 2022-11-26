@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using BitMono.API.Protecting.Pipeline;
+using Serilog;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,7 +34,16 @@ namespace BitMono.Obfuscation
             }
             if (protectionsSortingResult.StageProtections.Any())
             {
-                m_Logger.Information("Execute only at the end: {0}", string.Join(", ", protectionsSortingResult.StageProtections.Select(p => p?.GetType()?.Name ?? "NULL")));
+                var moduleWriteStageProtections = protectionsSortingResult.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWrite);
+                if (moduleWriteStageProtections.Any())
+                {
+                    m_Logger.Information("Execute only when module is writing: {0}", string.Join(", ", moduleWriteStageProtections.Select(p => p?.GetType()?.Name ?? "NULL")));
+                }
+                var moduleWrittenStageProtections = protectionsSortingResult.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWritten);
+                if (moduleWrittenStageProtections.Any())
+                {
+                    m_Logger.Information("Execute only at the end: {0}", string.Join(", ", moduleWrittenStageProtections.Select(p => p?.GetType()?.Name ?? "NULL")));
+                }
             }
             return Task.CompletedTask;
         }

@@ -78,7 +78,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
-		<PackageReference Include="dnlib" Version="3.6.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
 		<PackageReference Include="morelinq" Version="3.3.2" />
 		<PackageReference Include="NullGuard.Fody" Version="3.1.0" />
@@ -2231,6 +2230,12 @@
 		<None Include="wwwroot\vendor\fontawesome\webfonts\fa-regular-400.woff2" />
 		<None Include="wwwroot\vendor\fontawesome\webfonts\fa-solid-900.woff2" />
 		<None Include="wwwroot\vendor\fontawesome\webfonts\fa-v4compatibility.woff2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="dnlib">
+	    <HintPath>..\..\lib\dnlib.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

@@ -5,9 +5,9 @@ using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.ExternalComponents;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using dnlib.DotNet.Writer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,28 +54,25 @@ namespace BitMono.Protections.Hooks
         }
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile);
+            var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
             context.ModuleDefMD = moduleDefMD;
-            context.Importer = new Importer(moduleDefMD);
+            context.Importer = new Importer(context.ModuleDefMD);
 
-            var virtualProtectMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.VirtualProtect), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow();
+            var virtualProtectMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.VirtualProtect), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow().SetDeclaringTypeToNull();
             virtualProtectMethodDef.Access = MethodAttributes.Assembly;
 
-            var managedHookTypeDef = new TypeDefUser(m_Renamer.RenameUnsafely(), context.ModuleDefMD.CorLibTypes.Object.TypeDefOrRef);
-
-            var redirectStubMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.RedirectStub), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow();
+            var redirectStubMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.RedirectStub), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow().SetDeclaringTypeToNull();
             redirectStubMethodDef.Name = m_Renamer.RenameUnsafely();
             redirectStubMethodDef.Access = MethodAttributes.Assembly;
-            virtualProtectMethodDef.DeclaringType = null;
             redirectStubMethodDef.Body.Instructions[0].Operand = context.ModuleDefMD.GlobalType;
             redirectStubMethodDef.Body.Instructions[7].Operand = context.ModuleDefMD.GlobalType;
 
+            var managedHookTypeDef = new TypeDefUser(m_Renamer.RenameUnsafely(), context.ModuleDefMD.CorLibTypes.Object.TypeDefOrRef);
             managedHookTypeDef.Methods.Add(virtualProtectMethodDef);
-            redirectStubMethodDef.DeclaringType = null;
             managedHookTypeDef.Methods.Add(redirectStubMethodDef);
             context.ModuleDefMD.Types.Add(managedHookTypeDef);
 
-            var writeLineMethod = context.Importer.Import(typeof(Console).GetMethod(nameof(Console.WriteLine), new Type[0]));
+            var writeLineMethod = context.Importer.Import(typeof(Console).GetMethod(nameof(Console.WriteLine), Type.EmptyTypes));
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
@@ -161,15 +158,10 @@ namespace BitMono.Protections.Hooks
                     }
                 }
             }
-
-            var moduleWriterOptions = new ModuleWriterOptions(context.ModuleDefMD);
-            moduleWriterOptions.Logger = DummyLogger.NoThrowInstance;
-            moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.KeepOldMaxStack;
-
             using (context.ModuleDefMD)
             using (var fileStream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
-                context.ModuleDefMD.Write(fileStream, moduleWriterOptions);
+                context.ModuleDefMD.Write(fileStream, context.ModuleWriterOptions);
             }
             return Task.CompletedTask;
         }

@@ -12,5 +12,10 @@ namespace BitMono.Utilities.Extensions.dnlib
         {
             return UTF8String.IsNullOrEmpty(source.Namespace) == false;
         }
+        public static TypeDef SetDeclaringTypeToNull(this TypeDef source)
+        {
+            source.DeclaringType = null;
+            return source;
+        }
     }
 }
