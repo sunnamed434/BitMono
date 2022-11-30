@@ -3,7 +3,7 @@ using BitMono.API.Configuration;
 using BitMono.API.Protecting;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.CLI.Modules;
-using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Extensions.Configuration;
 using BitMono.Host;
 using BitMono.Host.Modules;
 using BitMono.Obfuscation;
