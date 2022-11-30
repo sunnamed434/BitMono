@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Analyzing;
-using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Extensions.Configuration;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
