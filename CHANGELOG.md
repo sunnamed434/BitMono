@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.4.0-alpha](#v040-alpha9) |
 | [v0.3.3-alpha](#v033-alpha8) |
 | [v0.3.2-alpha](#v032-alpha7) |
 | [v0.3.1-alpha](#v031-alpha6) |
@@ -11,6 +12,13 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.4.0-alpha.9:
+#### Added:
+* BitDateTimeStamp Protection
+
+#### Fixed:
+* Obfuscation process*
 
 ### v0.3.3-alpha.8:
 #### Changed:
