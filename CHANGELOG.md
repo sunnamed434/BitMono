@@ -18,7 +18,7 @@
 * BitDateTimeStamp Protection
 
 #### Fixed:
-* Obfuscation process*
+* Obfuscation process
 
 ### v0.3.3-alpha.8:
 #### Changed:
