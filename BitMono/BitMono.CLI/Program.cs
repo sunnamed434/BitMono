@@ -39,7 +39,7 @@ public class Program
 
                 if (string.IsNullOrWhiteSpace(moduleFileName))
                 {
-                    Console.WriteLine("Please, specify file, drag-and-drop it in BitMono CLI");
+                    Console.WriteLine("Please, specify file or drag-and-drop in BitMono CLI");
                     Console.ReadLine();
                     return;
                 }
