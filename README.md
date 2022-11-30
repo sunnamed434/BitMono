@@ -48,18 +48,19 @@ Open **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections
 * NoNamespaces
 * FullRenamer
 * AntiDebugBreakpoints
+* BitDateTimeStamp
 
 ## Quick Start
 `BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`
 
-Dont forget to drop dependencies in `libs` directory in the same path where obfuscation `file` is located
+Always drop dependencies in `libs` directory in the same path where is obfuscation `file` located
 
 ## Configuring Protections
 Use `protections.json` - by default all protections are configured as it should, if something works not as it intentional you always may disable something or enable or even remove.
 
 _Executing of protections depends how they are located in `protections.json` (protections order is up-to-down, sometimes order may ignored by special protection executing order eg `IStageProtection` as well as `BitDotNet`, `FieldsHiding`, `CallToCalli` and `DotNetHook` - they are executing always at their own order)._
 
-Lets look at this example, first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `BitDotNet` and `FieldsHiding`.
+Lets look at this example - first will be executed `AntiILdasm` then `AntiDe4dot` and `ControlFlow` and `BitDotNet` and `FieldsHiding`.
 Always you could write in `protections.json` - protections which are doesnt mentioned here or if you create protection by yourself.
 
 How to **[edit](https://github.com/sunnamed434/BitMono/tree/main/BitMono/BitMono.Host#imporving-obfuscation-process-for-everyone)**
