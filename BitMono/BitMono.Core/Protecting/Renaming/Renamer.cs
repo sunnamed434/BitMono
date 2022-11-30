@@ -1,6 +1,6 @@
 ﻿using BitMono.API.Configuration;
 using BitMono.API.Protecting.Renaming;
-using BitMono.Core.Configuration.Extensions;
+using BitMono.Core.Extensions.Configuration;
 using BitMono.Core.Protecting.Analyzing.Naming;
 using dnlib.DotNet;
 using Microsoft.Extensions.Configuration;
