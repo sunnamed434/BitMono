@@ -20,7 +20,7 @@ namespace BitMono.Protections.Testing
                 stream.Position = 0x3C;
                 var peHeader = reader.ReadUInt32();
                 stream.Position = peHeader;
-                var timeDateStamp = stream.Position + 8;
+                var timeDateStamp = stream.Position + 0x8;
                 stream.Position = timeDateStamp;
                 writer.Write(0);
             }
