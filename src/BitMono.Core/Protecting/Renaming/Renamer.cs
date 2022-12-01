@@ -23,9 +23,9 @@ namespace BitMono.Core.Protecting.Renaming
         public string RenameUnsafely()
         {
             var strings = m_Configuration.GetRandomStrings();
-            string randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
-            string randomStringTwo = strings[random.Next(0, strings.Length - 1)];
-            string randomStringThree = strings[random.Next(0, strings.Length - 1)];
+            var randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
+            var randomStringTwo = strings[random.Next(0, strings.Length - 1)];
+            var randomStringThree = strings[random.Next(0, strings.Length - 1)];
             return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
         }
         public void Rename(IDnlibDef dnlibDef)

@@ -2,7 +2,6 @@
 using BitMono.API.Protecting.Contexts;
 using BitMono.Obfuscation.API;
 using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
 
 namespace BitMono.Obfuscation
 {
