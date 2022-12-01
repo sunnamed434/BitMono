@@ -24,10 +24,4 @@
     <ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\..\lib\dnlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

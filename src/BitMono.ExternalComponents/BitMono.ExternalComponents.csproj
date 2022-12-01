@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -14,11 +14,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\..\lib\dnlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
 </Project>

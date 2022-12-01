@@ -14,10 +14,4 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\..\lib\dnlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

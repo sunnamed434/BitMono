@@ -21,10 +21,4 @@
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="dnlib">
-      <HintPath>..\..\lib\dnlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
