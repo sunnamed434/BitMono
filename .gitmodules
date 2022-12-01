@@ -1,0 +1,3 @@
+[submodule "src/dnlib"]
+	path = src/dnlib
+	url = https://github.com/sunnamed434/dnlib

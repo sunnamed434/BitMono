@@ -36,7 +36,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Obfuscation.API", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standalone", "standalone", "{76169FB9-B5F2-44B3-BF48-CCF10C3F9341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Standalone", "src\BitMono.Standalone\BitMono.Standalone.csproj", "{FE748DBC-2CE5-42D6-B192-D8222B103E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitMono.Standalone", "src\BitMono.Standalone\BitMono.Standalone.csproj", "{FE748DBC-2CE5-42D6-B192-D8222B103E0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{627F81D7-6C42-4AE8-9D96-A7F1BB3B2475}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dnlib", "src\dnlib\src\dnlib.csproj", "{5D328071-AD33-4577-8B2B-BF75DF8AA9ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,12 +106,17 @@ Global
 		{FE748DBC-2CE5-42D6-B192-D8222B103E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE748DBC-2CE5-42D6-B192-D8222B103E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE748DBC-2CE5-42D6-B192-D8222B103E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D328071-AD33-4577-8B2B-BF75DF8AA9ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D328071-AD33-4577-8B2B-BF75DF8AA9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D328071-AD33-4577-8B2B-BF75DF8AA9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D328071-AD33-4577-8B2B-BF75DF8AA9ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FE748DBC-2CE5-42D6-B192-D8222B103E0F} = {76169FB9-B5F2-44B3-BF48-CCF10C3F9341}
+		{5D328071-AD33-4577-8B2B-BF75DF8AA9ED} = {627F81D7-6C42-4AE8-9D96-A7F1BB3B2475}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA0BB43-C1D4-4688-BE43-A9ED2D6F78EE}
