@@ -47,7 +47,7 @@ public class Program
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
-            var externalComponentsModuleDefMD = ModuleDefMD.Load(typeof(BitMono.ExternalComponents.Hooking).Module);
+            var externalComponentsModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
             var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
