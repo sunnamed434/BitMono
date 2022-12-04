@@ -35,6 +35,7 @@
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
     <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
+    <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,4 +14,8 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
+  </ItemGroup>
+
 </Project>

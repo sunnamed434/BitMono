@@ -1,7 +1,6 @@
 ﻿using BitMono.API.Protecting.Writers;
 using dnlib.DotNet;
 using dnlib.DotNet.Writer;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace BitMono.CLI.Modules
@@ -11,9 +10,8 @@ namespace BitMono.CLI.Modules
         public Task WriteAsync(string outputFile, ModuleDefMD moduleDefMD, ModuleWriterOptions moduleWriterOptions)
         {
             using (moduleDefMD)
-            using (var fileStream = File.Create(outputFile))
             {
-                moduleDefMD.Write(fileStream, moduleWriterOptions);
+                moduleDefMD.Write(outputFile, moduleWriterOptions);
             }
             return Task.CompletedTask;
         }
