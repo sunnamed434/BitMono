@@ -33,7 +33,7 @@ namespace BitMono.GUI.Pages.Obfuscation
             return Task.CompletedTask;
         }
 
-        const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(ExternalComponents) + ".dll";
+        const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(Runtime) + ".dll";
         public async Task ObfuscateAsync()
         {
             if (ObfuscationInProcess == false)
