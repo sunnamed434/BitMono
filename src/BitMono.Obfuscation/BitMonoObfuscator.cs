@@ -19,7 +19,7 @@ namespace BitMono.Obfuscation
         private readonly ICollection<IProtection> m_Protections;
         private readonly BitMonoContext m_BitMonoContext;
         private readonly ProtectionContext m_ProtectionContext;
-        private readonly IModuleDefMDWriter m_ModuleWriter;
+        private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
         private readonly ILogger m_Logger;
 
         public BitMonoObfuscator(
@@ -34,7 +34,7 @@ namespace BitMono.Obfuscation
             m_Protections = protections;
             m_BitMonoContext = bitMonoContext;
             m_ProtectionContext = protectionContext;
-            m_ModuleWriter = moduleWriter;
+            m_ModuleDefMDWriter = moduleWriter;
             m_Logger = logger.ForContext<BitMonoObfuscator>();
         }
 
@@ -114,7 +114,7 @@ namespace BitMono.Obfuscation
 
             try
             {
-                await m_ModuleWriter.WriteAsync(m_BitMonoContext.OutputModuleFile, m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
+                await m_ModuleDefMDWriter.WriteAsync(m_BitMonoContext.OutputModuleFile, m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
             }
             catch (Exception ex)
             {
