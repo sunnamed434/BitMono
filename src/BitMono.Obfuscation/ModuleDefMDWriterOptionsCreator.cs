@@ -1,4 +1,5 @@
-﻿using dnlib.DotNet;
+﻿using BitMono.Utilities.Extensions.dnlib;
+using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.DotNet.Writer;
 
@@ -12,6 +13,7 @@ namespace BitMono.Obfuscation
             moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
             moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.PreserveStringsOffsets | MetadataFlags.PreserveUSOffsets | MetadataFlags.PreserveBlobOffsets | MetadataFlags.PreserveExtraSignatureData;
             moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
+            moduleWriterOptions.PEHeadersOptions.CopyPEHeaders(moduleDefMD);
             return moduleWriterOptions;
         }
     }
