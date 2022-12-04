@@ -14,14 +14,14 @@ namespace BitMono.Obfuscation
 
         public ModuleDefMDCreationResult Create()
         {
-            var moduleContext = ModuleDefMD.CreateModuleContext();
-            var moduleCreationOptions = new ModuleCreationOptions(moduleContext, CLRRuntimeReaderKind.Mono);
+            var moduleContext = new ModuleContextCreator().Create();
+            var moduleCreationOptions = new ModuleCreationOptionsCreator().Create(moduleContext);
             var moduleDefMD = ModuleDefMD.Load(m_ModuleBytes, moduleCreationOptions);
             var moduleDefMDWriterOptions = new ModuleDefMDWriterOptionsCreator().Create(moduleDefMD);
             return new ModuleDefMDCreationResult
             {
-                AssemblyResolver = moduleContext.AssemblyResolver,
                 ModuleContext = moduleContext,
+                AssemblyResolver = moduleContext.AssemblyResolver,
                 ModuleCreationOptions = moduleCreationOptions,
                 ModuleDefMD = moduleDefMD,
                 ModuleWriterOptions = moduleDefMDWriterOptions,
