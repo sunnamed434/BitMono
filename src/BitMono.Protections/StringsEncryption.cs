@@ -6,9 +6,10 @@ using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
-using BitMono.Encryption;
+using BitMono.Runtime;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -55,8 +56,8 @@ namespace BitMono.Protections
 
             var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, m_Renamer.RenameUnsafely());
 
-            var saltBytes = new byte[] { 0x1, 0x3, 0x2, 0x3, 0x3, 0x4, 0x5, 0x10, 0x10 };
-            var cryptKeyBytes = new byte[] { 0x1, 0x3, 0x10, 0x15, 0x20, 0x50, 0x5, 0x10, 0x10 };
+            var saltBytes = Guid.NewGuid().ToByteArray();
+            var cryptKeyBytes = Guid.NewGuid().ToByteArray();
             var saltBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, saltBytes, "saltBytes");
             var cryptKeyBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, cryptKeyBytes, "cryptKeyBytes");
 
@@ -73,14 +74,12 @@ namespace BitMono.Protections
                     {
                         break;
                     }
-
                     if (saltBytesInjected == false)
                     {
                         decryptorMethodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, saltBytesFieldDef);
                         saltBytesInjected = true;
                         continue;
                     }
-
                     if (cryptKeyBytesInjected == false)
                     {
                         decryptorMethodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, cryptKeyBytesFieldDef);
