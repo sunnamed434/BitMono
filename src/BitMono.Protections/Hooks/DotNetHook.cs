@@ -4,7 +4,7 @@ using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
-using BitMono.ExternalComponents;
+using BitMono.Runtime;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
