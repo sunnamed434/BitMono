@@ -1,4 +1,4 @@
-﻿namespace BitMono.Core.Extensions.Hex
+﻿namespace BitMono.Utilities.Extensions.Hex
 {
     public static class ValueToHexExtensions
     {
