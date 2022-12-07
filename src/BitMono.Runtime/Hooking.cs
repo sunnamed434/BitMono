@@ -5,17 +5,17 @@ using System.Runtime.InteropServices;
 
 namespace BitMono.Runtime
 {
-    internal static class Hooking
+    internal class Hooking
     {
         public static void RedirectStub(int from, int to)
         {
-            var fromHandle = typeof(Module).Module.ResolveMethod(from).MethodHandle;
-            var toHandle = typeof(Module).Module.ResolveMethod(to).MethodHandle;
-            RuntimeHelpers.PrepareMethod(fromHandle);
-            RuntimeHelpers.PrepareMethod(toHandle);
+            var fromMethodHandle = typeof(Module).Module.ResolveMethod(from).MethodHandle;
+            var toMethodHandle = typeof(Module).Module.ResolveMethod(to).MethodHandle;
+            RuntimeHelpers.PrepareMethod(fromMethodHandle);
+            RuntimeHelpers.PrepareMethod(toMethodHandle);
 
-            var fromPtr = fromHandle.GetFunctionPointer();
-            var toPtr = toHandle.GetFunctionPointer();
+            var fromPtr = fromMethodHandle.GetFunctionPointer();
+            var toPtr = toMethodHandle.GetFunctionPointer();
 
             VirtualProtect(fromPtr, (IntPtr)5, 0x40, out uint oldProtect);
 
@@ -41,6 +41,6 @@ namespace BitMono.Runtime
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
-        public static extern bool VirtualProtect(IntPtr address, IntPtr size, uint newProtect, out uint oldProtect);
+        internal static extern bool VirtualProtect(IntPtr address, IntPtr size, uint newProtect, out uint oldProtect);
     }
 }
