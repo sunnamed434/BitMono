@@ -16,13 +16,10 @@ namespace BitMono.Core.Protecting.Resolvers
 
         public bool Resolve(IDnlibDef dnlibDef, string feature)
         {
-            if (m_ObfuscationAttributeExcludingResolver.TryResolve(dnlibDef, feature: feature,
-                out ObfuscationAttribute typeDefObfuscationAttribute))
+            if (m_ObfuscationAttributeExcludingResolver.TryResolve(dnlibDef, feature,
+                out ObfuscationAttribute typeDefObfuscationAttribute) && typeDefObfuscationAttribute.Exclude)
             {
-                if (typeDefObfuscationAttribute.Exclude)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
