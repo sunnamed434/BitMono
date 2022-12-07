@@ -1,9 +1,11 @@
 ﻿using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Injection;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Helpers;
 using BitMono.Runtime;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
@@ -24,6 +26,7 @@ namespace BitMono.Protections.Hooks
     {
         private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+        private readonly IInjector m_Injector;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
         private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
@@ -33,12 +36,14 @@ namespace BitMono.Protections.Hooks
         public DotNetHook(
             IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
+            IInjector injector,
             IMethodDefSearcher methodDefSearcher,
             IRenamer renamer,
             ILogger logger)
         {
             m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+            m_Injector = injector;
             m_MethodDefSearcher = methodDefSearcher;
             m_Renamer = renamer;
             m_Logger = logger.ForContext<DotNetHook>();
@@ -58,21 +63,12 @@ namespace BitMono.Protections.Hooks
             context.ModuleDefMD = moduleDefMD;
             context.Importer = new Importer(context.ModuleDefMD);
 
-            var virtualProtectMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.VirtualProtect), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow().SetDeclaringTypeToNull();
-            virtualProtectMethodDef.Access = MethodAttributes.Assembly;
+            var runtimeHookingTypeDef = context.RuntimeModuleDefMD.ResolveTypeDefOrThrow<Hooking>();
 
-            var redirectStubMethodDef = context.ExternalComponentsImporter.Import(typeof(Hooking).GetMethod(nameof(Hooking.RedirectStub), BindingFlags.Public | BindingFlags.Static)).ResolveMethodDefThrow().SetDeclaringTypeToNull();
-            redirectStubMethodDef.Name = m_Renamer.RenameUnsafely();
-            redirectStubMethodDef.Access = MethodAttributes.Assembly;
-            redirectStubMethodDef.Body.Instructions[0].Operand = context.ModuleDefMD.GlobalType;
-            redirectStubMethodDef.Body.Instructions[7].Operand = context.ModuleDefMD.GlobalType;
+            var hookingTypeDef = m_Injector.InjectInvisibleValueType(context.ModuleDefMD, context.ModuleDefMD.GlobalType, m_Renamer.RenameUnsafely()).ResolveTypeDefThrow();
 
-            var managedHookTypeDef = new TypeDefUser(m_Renamer.RenameUnsafely(), context.ModuleDefMD.CorLibTypes.Object.TypeDefOrRef);
-            managedHookTypeDef.Methods.Add(virtualProtectMethodDef);
-            managedHookTypeDef.Methods.Add(redirectStubMethodDef);
-            context.ModuleDefMD.Types.Add(managedHookTypeDef);
-
-            var writeLineMethod = context.Importer.Import(typeof(Console).GetMethod(nameof(Console.WriteLine), Type.EmptyTypes));
+            var injectedHookingDnlibDefs = InjectHelper.Inject(runtimeHookingTypeDef, hookingTypeDef, context.ModuleDefMD);
+            var redirectStubMethodDef = injectedHookingDnlibDefs.FirstOrDefault(i => i.Name.String.Equals(nameof(Hooking.RedirectStub))).ResolveMethodDefOrThrow();
 
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
@@ -81,7 +77,6 @@ namespace BitMono.Protections.Hooks
                     m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
-
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
                     m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
@@ -97,7 +92,6 @@ namespace BitMono.Protections.Hooks
                             m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
-
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
                             m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
@@ -114,39 +108,33 @@ namespace BitMono.Protections.Hooks
                                     callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
                                 dummyMethod.IsStatic = true;
                                 dummyMethod.Access = MethodAttributes.Assembly;
-                                dummyMethod.Body = new CilBody();
+                                context.ModuleDefMD.GlobalType.Methods.Add(dummyMethod);
                                 foreach (var paramDef in callingMethodDef.ParamDefs)
                                 {
                                     dummyMethod.ParamDefs.Add(new ParamDefUser(paramDef.Name, paramDef.Sequence, paramDef.Attributes));
                                 }
-
-                                var initializatorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(),
-                                    MethodSig.CreateStatic(context.ModuleDefMD.CorLibTypes.Void), MethodAttributes.Assembly | MethodAttributes.Static);
-
-                                initializatorMethodDef.Body = new CilBody();
-
-                                var index = initializatorMethodDef.Body.Instructions.Count;
-                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Nop));
-                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
-                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ret));
-
-                                context.ModuleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
-
-                                dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Call, writeLineMethod));
+                                dummyMethod.Body = new CilBody();
                                 if (callingMethodDef.HasReturnType)
                                 {
                                     dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldnull));
                                 }
                                 dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ret));
 
-                                context.ModuleDefMD.GlobalType.Methods.Add(dummyMethod);
+                                var initializatorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(),
+                                    MethodSig.CreateStatic(context.ModuleDefMD.CorLibTypes.Void), MethodAttributes.Assembly | MethodAttributes.Static);
+                                initializatorMethodDef.Body = new CilBody();
+                                initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Nop));
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
+                                initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+                                context.ModuleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
 
+                                const int StartMethodDefIndex = 0;
                                 m_InstructionsToBeTokensUpdated.Add(new InstructionTokensUpdate
                                 {
                                     InitializatorMethodDef = initializatorMethodDef,
                                     FromMethodDef = callingMethodDef,
                                     ToMethodDef = dummyMethod,
-                                    Index = index,
+                                    Index = StartMethodDefIndex,
                                 });
 
                                 methodDef.Body.Instructions[i].Operand = dummyMethod;
