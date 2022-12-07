@@ -39,7 +39,6 @@ namespace BitMono.Protections
                     m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
-
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
                     m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
@@ -55,7 +54,6 @@ namespace BitMono.Protections
                             m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
-
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
                             m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
