@@ -96,7 +96,6 @@ namespace BitMono.Protections
 
                                 methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex, new Instruction(OpCodes.Nop));
                                 methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex + 1, randomPrefixInstruction);
-
                                 methodDef.Body.Instructions[randomMethodDefBodyIndex] = new Instruction(OpCodes.Br_S, methodDef.Body.Instructions[randomMethodDefBodyIndex + 2]);
                             }
                         }
