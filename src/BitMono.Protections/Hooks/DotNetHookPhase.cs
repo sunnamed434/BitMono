@@ -1,10 +1,8 @@
-﻿using BitMono.API.Protecting;
-using BitMono.API.Protecting.Contexts;
+﻿using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
