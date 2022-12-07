@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
     <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
   </ItemGroup>
 
