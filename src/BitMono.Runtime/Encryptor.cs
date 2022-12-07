@@ -4,12 +4,20 @@ using System.Text;
 
 namespace BitMono.Runtime
 {
-    public static class Encryptor
+    public struct Data
     {
-        private static byte[] cryptKeyBytes = new byte[8];
-        private static byte[] saltBytes = new byte[8];
+        internal readonly static byte[] CryptKeyBytes = new byte[8];
+        internal readonly static byte[] SaltBytes = new byte[8];
 
-        internal static string Decrypt(byte[] bytes)
+        static Data()
+        {
+            CryptKeyBytes = new byte[8];
+            SaltBytes = new byte[8];
+        }
+    }
+    public struct Decryptor
+    {
+        internal static string Decrypt(byte[] bytes, byte[] saltBytes, byte[] cryptKeyBytes)
         {
             byte[] decryptedBytes = null;
             using (var memoryStream = new MemoryStream())
@@ -35,7 +43,10 @@ namespace BitMono.Runtime
 
             return Encoding.UTF8.GetString(decryptedBytes);
         }
-        public static byte[] EncryptContent(string text, byte[] saltBytes, byte[] cryptKeyBytes)
+    }
+    public struct Encryptor
+    {
+        internal static byte[] EncryptContent(string text, byte[] saltBytes, byte[] cryptKeyBytes)
         {
             var decryptBytes = Encoding.UTF8.GetBytes(text);
             byte[] encryptedBytes = null;
