@@ -37,10 +37,10 @@ namespace BitMono.Obfuscation
             m_Logger = logger.ForContext<BitMonoEngine>();
         }
 
-        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD externalComponentsModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
+        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
         {
             var moduleDefMDCreationResult = m_ModuleDefMDCreator.Create();
-            var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, externalComponentsModuleDefMD, context).Create();
+            var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefMD, context).Create();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
             var protectionsSortingResult = new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
