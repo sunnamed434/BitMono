@@ -25,6 +25,8 @@ namespace BitMono.Core.Protecting.Resolvers
             var resolvingSucceed = true;
             foreach (var dependencyData in m_DependenciesData)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 m_ProtectionContext.AssemblyResolver.AddToCache(AssemblyDef.Load(dependencyData));
             }
 
