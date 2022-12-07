@@ -47,7 +47,7 @@ public class Program
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
-            var externalComponentsModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
+            var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
             var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
@@ -80,7 +80,7 @@ public class Program
                 dnlibDefFeatureObfuscationAttributeHavingResolver,
                 obfuscationConfiguration,
                 logger)
-                .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, protections, protectionSettings, CancellationToken.Token);
+                .ObfuscateAsync(bitMonoContext, runtimeModuleDefMD, protections, protectionSettings, CancellationToken.Token);
 
             if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
             {
