@@ -9,24 +9,24 @@ namespace BitMono.Core.Protecting.Injection
 {
     public class Injector : IInjector
     {
-        public FieldDef InjectArrayInGlobalNestedTypes(ModuleDefMD moduleDefMD, byte[] injectedData, string injectedName)
+        public FieldDef InjectInvisibleArray(ModuleDefMD moduleDefMD, TypeDef typeDef, byte[] data, string name)
         {
             var importer = new Importer(moduleDefMD);
             var valueTypeRef = importer.Import(typeof(ValueType));
             var classWithLayout = new TypeDefUser("<>c", valueTypeRef);
             classWithLayout.Attributes |= TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
-            classWithLayout.ClassLayout = new ClassLayoutUser(1, (uint)injectedData.Length);
+            classWithLayout.ClassLayout = new ClassLayoutUser(1, (uint)data.Length);
             var compilerGeneratedAttribute = InjectCompilerGeneratedAttribute(moduleDefMD);
             classWithLayout.CustomAttributes.Add(compilerGeneratedAttribute);
 
-            moduleDefMD.GlobalType.NestedTypes.Add(classWithLayout);
+            typeDef.NestedTypes.Add(classWithLayout);
 
             var fieldWithRVA = new FieldDefUser("dummy", new FieldSig(classWithLayout.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly | FieldAttributes.HasFieldRVA);
-            fieldWithRVA.InitialValue = injectedData;
+            fieldWithRVA.InitialValue = data;
             classWithLayout.Fields.Add(fieldWithRVA);
 
             var byteArrayRef = importer.Import(typeof(byte[]));
-            var fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
+            var fieldInjectedArray = new FieldDefUser(name, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
             classWithLayout.Fields.Add(fieldInjectedArray);
 
             var systemByte = importer.Import(typeof(byte));
@@ -38,53 +38,12 @@ namespace BitMono.Core.Protecting.Injection
 
             var cctor = classWithLayout.FindOrCreateStaticConstructor();
             var cctorBodyInstructions = cctor.Body.Instructions;
-            var index = 0;
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Newarr, systemByte));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Dup));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Call, initializeArrayMethod));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
-
-            cctor.Body.SimplifyAndOptimizeBranches();
-            return fieldInjectedArray;
-        }
-        public FieldDef InjectArray(ModuleDefMD moduleDefMD, TypeDef target, byte[] injectedData, string injectedName)
-        {
-            var importer = new Importer(moduleDefMD);
-            var valueTypeRef = importer.Import(typeof(ValueType));
-            var classWithLayout = new TypeDefUser("<>c", valueTypeRef);
-            classWithLayout.Attributes |= TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
-            classWithLayout.ClassLayout = new ClassLayoutUser(1, (uint)injectedData.Length);
-            var compilerGeneratedAttribute = InjectCompilerGeneratedAttribute(moduleDefMD);
-            classWithLayout.CustomAttributes.Add(compilerGeneratedAttribute);
-
-            target.NestedTypes.Add(classWithLayout);
-
-            var fieldWithRVA = new FieldDefUser("dummy", new FieldSig(classWithLayout.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly | FieldAttributes.HasFieldRVA);
-            fieldWithRVA.InitialValue = injectedData;
-            classWithLayout.Fields.Add(fieldWithRVA);
-
-            var byteArrayRef = importer.Import(typeof(byte[]));
-            FieldDef fieldInjectedArray = new FieldDefUser(injectedName, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
-            classWithLayout.Fields.Add(fieldInjectedArray);
-
-            var systemByte = importer.Import(typeof(byte));
-            var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
-            {
-                typeof(Array),
-                typeof(RuntimeFieldHandle)
-            }));
-
-            var cctor = classWithLayout.FindOrCreateStaticConstructor();
-            var cctorBodyInstructions = cctor.Body.Instructions;
-            var index = 0;
-            cctorBodyInstructions.Insert(index, new Instruction(OpCodes.Ldc_I4, injectedData.Length));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Newarr, systemByte));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Dup));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Call, initializeArrayMethod));
-            cctorBodyInstructions.Insert(index++, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
+            cctorBodyInstructions.Insert(0, new Instruction(OpCodes.Ldc_I4, data.Length));
+            cctorBodyInstructions.Insert(1, new Instruction(OpCodes.Newarr, systemByte));
+            cctorBodyInstructions.Insert(2, new Instruction(OpCodes.Dup));
+            cctorBodyInstructions.Insert(3, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
+            cctorBodyInstructions.Insert(4, new Instruction(OpCodes.Call, initializeArrayMethod));
+            cctorBodyInstructions.Insert(5, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
 
             cctor.Body.SimplifyAndOptimizeBranches();
             return fieldInjectedArray;
@@ -105,6 +64,12 @@ namespace BitMono.Core.Protecting.Injection
             invislbeTypeDef.IsSealed = false;
             invislbeTypeDef.IsBeforeFieldInit = false;
             return invislbeTypeDef;
+        }
+        public TypeDef InjectInvisibleValueType(ModuleDefMD moduleDefMD, TypeDef typeDef, string name = null)
+        {
+            var result = CreateInvisibleValueType(moduleDefMD, name);
+            typeDef.NestedTypes.Add(result);
+            return result;
         }
         public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null)
         {
