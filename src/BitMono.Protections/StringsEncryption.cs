@@ -6,16 +6,16 @@ using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Helpers;
 using BitMono.Runtime;
+using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
-using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
-using MethodAttributes = dnlib.DotNet.MethodAttributes;
 
 namespace BitMono.Protections
 {
@@ -52,49 +52,15 @@ namespace BitMono.Protections
 
         public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
         {
-            context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
+            var runtimeDecryptorTypeDef = context.RuntimeModuleDefMD.ResolveTypeDefOrThrow<Decryptor>();
 
-            var encryptorTypeDef = m_Injector.CreateInvisibleValueType(context.ModuleDefMD, m_Renamer.RenameUnsafely());
+            var decryptorTypeDef = m_Injector.InjectInvisibleValueType(context.ModuleDefMD, context.ModuleDefMD.GlobalType, m_Renamer.RenameUnsafely()).ResolveTypeDefThrow();
+            var cryptKeyFieldDef = m_Injector.InjectInvisibleArray(context.ModuleDefMD, context.ModuleDefMD.GlobalType, Data.CryptKeyBytes, m_Renamer.RenameUnsafely()).ResolveFieldDefThrow();
+            var saltBytesFieldDef = m_Injector.InjectInvisibleArray(context.ModuleDefMD, context.ModuleDefMD.GlobalType, Data.SaltBytes, m_Renamer.RenameUnsafely()).ResolveFieldDefThrow();
 
-            var saltBytes = Guid.NewGuid().ToByteArray();
-            var cryptKeyBytes = Guid.NewGuid().ToByteArray();
-            var saltBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, saltBytes, "saltBytes");
-            var cryptKeyBytesFieldDef = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, cryptKeyBytes, "cryptKeyBytes");
-
-            var decryptMethodDefFromEncryptionModule = m_MethodSearcher.Find("Decrypt", context.ExternalComponentsModuleDefMD);
-            var decryptorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(), decryptMethodDefFromEncryptionModule.MethodSig, MethodAttributes.Static | MethodAttributes.Assembly);
-            decryptorMethodDef.Body = decryptMethodDefFromEncryptionModule.Body;
-            var saltBytesInjected = false;
-            var cryptKeyBytesInjected = false;
-            for (int i = 0; i < decryptorMethodDef.Body.Instructions.Count; i++)
-            {
-                if (decryptorMethodDef.Body.Instructions[i].OpCode == OpCodes.Ldsfld)
-                {
-                    if (saltBytesInjected && cryptKeyBytesInjected)
-                    {
-                        break;
-                    }
-                    if (saltBytesInjected == false)
-                    {
-                        decryptorMethodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, saltBytesFieldDef);
-                        saltBytesInjected = true;
-                        continue;
-                    }
-                    if (cryptKeyBytesInjected == false)
-                    {
-                        decryptorMethodDef.Body.Instructions[i] = new Instruction(OpCodes.Ldsfld, cryptKeyBytesFieldDef);
-                        cryptKeyBytesInjected = true;
-                        continue;
-                    }
-                }
-            }
-            encryptorTypeDef.Methods.Add(decryptorMethodDef);
-            context.ModuleDefMD.GlobalType.NestedTypes.Add(encryptorTypeDef);
-
-            var saltBytesField = m_FieldSearcher.FindInGlobalNestedTypes("saltBytes", context.ModuleDefMD);
-            var cryptKeyBytesField = m_FieldSearcher.FindInGlobalNestedTypes("cryptKeyBytes", context.ModuleDefMD);
-            m_Renamer.Rename(saltBytesField, cryptKeyBytesField);
-
+            var injectedDecryptorDnlibDefs = InjectHelper.Inject(runtimeDecryptorTypeDef, decryptorTypeDef, context.ModuleDefMD);
+            var decryptMethodDef = injectedDecryptorDnlibDefs.FirstOrDefault(i => i.Name.String.Equals(nameof(Decryptor.Decrypt))).ResolveMethodDefOrThrow();
+            
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
                 if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(typeDef))
@@ -102,7 +68,6 @@ namespace BitMono.Protections
                     m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
-
                 if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
                     m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
@@ -118,7 +83,6 @@ namespace BitMono.Protections
                             m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                             continue;
                         }
-
                         if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                         {
                             m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
@@ -132,13 +96,15 @@ namespace BitMono.Protections
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
                                     && methodDef.Body.Instructions[i].Operand is string content)
                                 {
-                                    var encryptedContentBytes = Encryptor.EncryptContent(content, saltBytes, cryptKeyBytes);
-                                    var injectedEncryptedArrayBytes = m_Injector.InjectArrayInGlobalNestedTypes(context.ModuleDefMD, encryptedContentBytes, m_Renamer.RenameUnsafely());
+                                    var encryptedContentBytes = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
+                                    var encryptedDataFieldDef = m_Injector.InjectInvisibleArray(context.ModuleDefMD, context.ModuleDefMD.GlobalType, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
                                     methodDef.Body.Instructions[i] = new Instruction(OpCodes.Nop);
-                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, injectedEncryptedArrayBytes));
-                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, decryptorMethodDef));
-                                    i += 2;
+                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, encryptedDataFieldDef));
+                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Ldsfld, saltBytesFieldDef));
+                                    methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Ldsfld, cryptKeyFieldDef));
+                                    methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Call, decryptMethodDef));
+                                    i += 4;
                                 }
                             }
                         }
