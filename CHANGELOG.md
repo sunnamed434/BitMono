@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.4.1-alpha](#v041-alpha10) |
 | [v0.4.0-alpha](#v040-alpha9) |
 | [v0.3.3-alpha](#v033-alpha8) |
 | [v0.3.2-alpha](#v032-alpha7) |
@@ -12,6 +13,14 @@
 | [v0.1.0](#v010) |
 
 ---
+
+### v0.4.1-alpha.10:
+#### Changed:
+* DotNetHook Protection workflow 
+* StringsEncryption Protection workflow as well as data encrypting
+
+#### Fixed:
+* Obfuscation process
 
 ### v0.4.0-alpha.9:
 #### Added:
