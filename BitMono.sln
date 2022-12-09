@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A2890DD6-805E-4952-9E84-3F001E1829C4}"
 	ProjectSection(SolutionItems) = preProject
 		.formatconfig = .formatconfig
+		CHANGELOG.md = CHANGELOG.md
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "standalone", "standalone", "{76169FB9-B5F2-44B3-BF48-CCF10C3F9341}"
