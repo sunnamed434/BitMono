@@ -4,6 +4,9 @@
 </p>
 
 ## BitMono
+
+[![Join the chat at https://gitter.im/BitMonoSpeech/community](https://badges.gitter.im/BitMonoSpeech/community.svg)](https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 BitMono is an free open-source C# obfuscator which in mostly cases works **only** with Mono - well known as fork of .NET Framework but with custom bugs or Unity. Which uses its own fork of **[dnlib](https://github.com/sunnamed434/dnlib)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install lastest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
 
 <p align="center">
@@ -65,4 +68,4 @@ Credits
 
 **[Weka]**(https://github.com/sasharumega) for his advices, help and motivation 
 
-**[ConfuserEx and their Forks]**(https://github.com/yck1509/ConfuserEx) for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono.
+**[ConfuserEx and their Forks]**(https://github.com/yck1509/ConfuserEx) for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
