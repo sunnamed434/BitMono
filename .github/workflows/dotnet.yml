@@ -29,4 +29,3 @@ jobs:
     - name: Build BitMono GUI project
       run: dotnet build --configuration release
       working-directory: src/BitMono/BitMono.GUI
-
