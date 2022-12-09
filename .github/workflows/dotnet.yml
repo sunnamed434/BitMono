@@ -20,12 +20,12 @@ jobs:
         
     - name: Install workloads needed for a solution
       run: dotnet workload restore
-      working-directory: BitMono
+      working-directory: src/BitMono
     
     - name: Install maui-windows workload needed for a solution
       run: dotnet workload install maui-windows
-      working-directory: BitMono
+      working-directory: src/BitMono
       
     - name: Build BitMono GUI project
       run: dotnet build --configuration release
-      working-directory: BitMono/BitMono.GUI
+      working-directory: src/BitMono/BitMono.GUI
