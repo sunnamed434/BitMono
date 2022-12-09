@@ -64,9 +64,7 @@ namespace BitMono.Protections.Hooks
             context.Importer = new Importer(context.ModuleDefMD);
 
             var runtimeHookingTypeDef = context.RuntimeModuleDefMD.ResolveTypeDefOrThrow<Hooking>();
-
-            var hookingTypeDef = m_Injector.InjectInvisibleValueType(context.ModuleDefMD, context.ModuleDefMD.GlobalType, m_Renamer.RenameUnsafely()).ResolveTypeDefThrow();
-
+            var hookingTypeDef = m_Injector.InjectInvisibleValueType(context.ModuleDefMD, context.ModuleDefMD.GlobalType, m_Renamer.RenameUnsafely());
             var injectedHookingDnlibDefs = InjectHelper.Inject(runtimeHookingTypeDef, hookingTypeDef, context.ModuleDefMD);
             var redirectStubMethodDef = injectedHookingDnlibDefs.FirstOrDefault(i => i.Name.String.Equals(nameof(Hooking.RedirectStub))).ResolveMethodDefOrThrow();
 
@@ -102,6 +100,7 @@ namespace BitMono.Protections.Hooks
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                 && methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef
+                                && callingMethodDef.HasBody
                                 && callingMethodDef.ParamDefs.Any(p => p.IsIn || p.IsOut) == false)
                             {
                                 var dummyMethod = new MethodDefUser(m_Renamer.RenameUnsafely(),
@@ -119,13 +118,12 @@ namespace BitMono.Protections.Hooks
                                     dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ldnull));
                                 }
                                 dummyMethod.Body.Instructions.Add(new Instruction(OpCodes.Ret));
-
                                 var initializatorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(),
                                     MethodSig.CreateStatic(context.ModuleDefMD.CorLibTypes.Void), MethodAttributes.Assembly | MethodAttributes.Static);
                                 initializatorMethodDef.Body = new CilBody();
-                                initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Nop));
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Nop));
                                 initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
-                                initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+                                initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ret));
                                 context.ModuleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
 
                                 const int StartMethodDefIndex = 0;
