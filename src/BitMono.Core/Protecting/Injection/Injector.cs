@@ -30,7 +30,7 @@ namespace BitMono.Core.Protecting.Injection
             classWithLayout.Fields.Add(fieldInjectedArray);
 
             var systemByte = importer.Import(typeof(byte));
-            var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod("InitializeArray", new Type[]
+            var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
             {
                 typeof(Array),
                 typeof(RuntimeFieldHandle)
