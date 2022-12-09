@@ -2,15 +2,15 @@
   "Protections": [
     {
       "Name": "AntiILdasm",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "FullRenamer",
