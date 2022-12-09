@@ -4,7 +4,6 @@
 </p>
 
 ## BitMono
-
 [![Build status](https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true)](https://ci.appveyor.com/project/sunnamed434/bitmono)
 [![Join the chat at https://gitter.im/BitMonoSpeech/community](https://badges.gitter.im/BitMonoSpeech/community.svg)](https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
