@@ -18,7 +18,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         
       - name: restore dotnet of BitMono solution
-        run: dotnet restore src\BitMono\BitMono.sln 
+        run: dotnet restore BitMono.sln 
         
       - name: build the BitMono.Host project
         run: msbuild src\BitMono\BitMono.Host\BitMono.Host.csproj /p:Configuration=Release
