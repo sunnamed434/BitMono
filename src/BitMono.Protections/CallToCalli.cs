@@ -1,6 +1,8 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
+using BitMono.API.Protecting.Injection;
 using BitMono.API.Protecting.Pipeline;
+using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Utilities.Extensions.dnlib;
@@ -18,17 +20,23 @@ namespace BitMono.Protections
 {
     public class CallToCalli : IStageProtection
     {
+        private readonly IInjector m_Injector;
+        private readonly IRenamer m_Renamer;
         private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public CallToCalli(
+            IInjector injector,
+            IRenamer renamer,
             IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
+            m_Injector = injector;
+            m_Renamer = renamer;
             m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
@@ -94,24 +102,18 @@ namespace BitMono.Protections
                             {
                                 if (methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef && callingMethodDef.HasBody)
                                 {
-                                    var locals = methodDef.Body.Variables;
-                                    var local = locals.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
-
+                                    var local = methodDef.Body.Variables.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
                                     if (methodDef.Body.HasExceptionHandlers == false)
                                     {
                                         methodDef.Body.Instructions[i].OpCode = OpCodes.Nop;
-
                                         methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType));
                                         methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
                                         methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Callvirt, getModuleMethod));
-
                                         methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Ldc_I4, callingMethodDef.MDToken.ToInt32()));
                                         methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Call, resolveMethodMethod));
                                         methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
-
                                         methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Stloc, local));
                                         methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Ldloca, local));
-
                                         methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Call, getFunctionPointerMethod));
                                         methodDef.Body.Instructions.Insert(i + 10, new Instruction(OpCodes.Calli, callingMethodDef.MethodSig));
                                         i += 10;
