@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace BitMono.Runtime
 {
-    internal class Hooking
+    internal struct Hooking
     {
         public static void RedirectStub(int from, int to)
         {
-            var fromMethodHandle = typeof(Module).Module.ResolveMethod(from).MethodHandle;
-            var toMethodHandle = typeof(Module).Module.ResolveMethod(to).MethodHandle;
+            var fromMethodHandle = typeof(Hooking).Module.ResolveMethod(from).MethodHandle;
+            var toMethodHandle = typeof(Hooking).Module.ResolveMethod(to).MethodHandle;
             RuntimeHelpers.PrepareMethod(fromMethodHandle);
             RuntimeHelpers.PrepareMethod(toMethodHandle);
 
