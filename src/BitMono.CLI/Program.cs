@@ -34,15 +34,21 @@ public class Program
             var moduleFileName = await new CLIBitMonoModuleFileResolver(args).ResolveAsync();
             if (string.IsNullOrWhiteSpace(moduleFileName))
             {
-                Console.WriteLine("File not specified, please specify path to the file here: ");
-                moduleFileName = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(moduleFileName))
+                while (string.IsNullOrWhiteSpace(moduleFileName))
                 {
+                    Console.Clear();
                     Console.WriteLine("Please, specify file or drag-and-drop in BitMono CLI");
-                    Console.ReadLine();
-                    return;
+                    Console.WriteLine("File not specified, please specify path to the file here: ");
+                    moduleFileName = Console.ReadLine();
                 }
+            }
+
+            var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
+            var dependenciesDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
+            if (Directory.Exists(dependenciesDirectoryName) == false)
+            {
+                Console.WriteLine("Please, specify dependencies (libs) path: ");
+                dependenciesDirectoryName = Console.ReadLine();
             }
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -50,8 +56,6 @@ public class Program
             var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
-            var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
-            var dependenciesDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
             var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
             Directory.CreateDirectory(dependenciesDirectoryName);
             Directory.CreateDirectory(outputDirectoryName);
@@ -59,7 +63,7 @@ public class Program
             var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
             {
                 configureLogger.WriteTo.Async(configure => configure.Console(
-                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
+                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
             })).Build();
 
             var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
