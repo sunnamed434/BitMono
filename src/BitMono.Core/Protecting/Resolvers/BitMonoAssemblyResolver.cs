@@ -37,7 +37,7 @@ namespace BitMono.Core.Protecting.Resolvers
 
                 try
                 {
-                    m_Logger.Debug("Resolving assembly: " + assemblyRef.Name);
+                    m_Logger.Information("Resolving assembly: " + assemblyRef.Name);
                     m_ProtectionContext.ModuleCreationOptions.Context.AssemblyResolver.ResolveThrow(assemblyRef, m_ProtectionContext.ModuleDefMD);
                 }
                 catch (Exception ex)
