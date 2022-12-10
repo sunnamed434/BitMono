@@ -42,13 +42,20 @@ public class Program
                     moduleFileName = Console.ReadLine();
                 }
             }
-
             var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
             var dependenciesDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
             if (Directory.Exists(dependenciesDirectoryName) == false)
             {
-                Console.WriteLine("Please, specify dependencies (libs) path: ");
-                dependenciesDirectoryName = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(dependenciesDirectoryName))
+                {
+                    Console.Clear();
+                    Console.WriteLine("Please, specify dependencies (libs) path: ");
+                    dependenciesDirectoryName = Console.ReadLine();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Dependencies (libs) directory was automatically found {0}!", dependenciesDirectoryName);
             }
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
