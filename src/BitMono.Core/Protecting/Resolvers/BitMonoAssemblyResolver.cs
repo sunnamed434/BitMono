@@ -1,5 +1,6 @@
 ﻿using BitMono.API.Protecting.Contexts;
 using dnlib.DotNet;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,12 +37,13 @@ namespace BitMono.Core.Protecting.Resolvers
 
                 try
                 {
+                    m_Logger.Information("Resolving assembly: " + assemblyRef.Name);
                     m_ProtectionContext.ModuleCreationOptions.Context.AssemblyResolver.ResolveThrow(assemblyRef, m_ProtectionContext.ModuleDefMD);
                 }
-                catch (AssemblyResolveException)
+                catch (Exception ex)
                 {
                     resolvingSucceed = false;
-                    m_Logger.Error("Failed to resolve dependency {0}", assemblyRef.FullName);
+                    m_Logger.Error("Failed to resolve dependency {0}, message: ", assemblyRef.FullName, ex.Message);
                 }
             }
             return Task.FromResult(resolvingSucceed);
