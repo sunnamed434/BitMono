@@ -39,6 +39,8 @@ namespace BitMono.Obfuscation
 
         public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var moduleDefMDCreationResult = m_ModuleDefMDCreator.Create();
             var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefMD, context).Create();
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
