@@ -3,9 +3,7 @@ using BitMono.API.Protecting.Injection;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting;
-using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Attributes;
 using BitMono.Core.Protecting.Helpers;
 using BitMono.Runtime;
@@ -25,8 +23,6 @@ namespace BitMono.Protections
     [ProtectionName(nameof(DotNetHook))]
     public class DotNetHook : IPipelineProtection, IPipelineStage
     {
-        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
-        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
         private readonly IInjector m_Injector;
         private readonly IMethodDefSearcher m_MethodDefSearcher;
         private readonly IRenamer m_Renamer;
@@ -35,15 +31,11 @@ namespace BitMono.Protections
         private readonly Random m_Random;
 
         public DotNetHook(
-            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             IInjector injector,
             IMethodDefSearcher methodDefSearcher,
             IRenamer renamer,
             ILogger logger)
         {
-            m_DnlibDefObfuscationAttributeResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
-            m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Injector = injector;
             m_MethodDefSearcher = methodDefSearcher;
             m_Renamer = renamer;
