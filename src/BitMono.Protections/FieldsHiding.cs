@@ -1,7 +1,6 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Attributes;
@@ -22,19 +21,13 @@ namespace BitMono.Protections
     [ProtectionName(nameof(FieldsHiding))]
     public class FieldsHiding : IStageProtection
     {
-        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeResolver;
-        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public FieldsHiding(
-            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
-            m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<FieldsHiding>();
         }
@@ -65,36 +58,12 @@ namespace BitMono.Protections
             }));
             var getFieldHandleMethod = importer.Import(typeof(FieldInfo).GetProperty(nameof(FieldInfo.FieldHandle)).GetMethod);
 
-            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeResolver.Resolve<FieldsHiding>(typeDef))
-                {
-                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                    continue;
-                }
-
-                if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-                {
-                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                    continue;
-                }
-
                 if (typeDef.HasFields)
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeResolver.Resolve<FieldsHiding>(fieldDef))
-                        {
-                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                            continue;
-                        }
-
-                        if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef) == false)
-                        {
-                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                            continue;
-                        }
-
                         if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef)
                             && fieldDef.HasFieldRVA)
                         {
