@@ -1,11 +1,14 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Injection;
+using BitMono.Core.Protecting;
+using BitMono.Core.Protecting.Attributes;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(AntiDe4dot))]
     public class AntiDe4dot : IProtection
     {
         private readonly IInjector m_Injector;
@@ -15,7 +18,7 @@ namespace BitMono.Protections
             m_Injector = injector;
         }
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             m_Injector.InjectAttributeWithContent(context.ModuleDefMD, "SmartAssembly.Attributes", "PoweredBy", string.Empty);
             m_Injector.InjectAttributeWithContent(context.ModuleDefMD, "Xenocode.Client.Attributes.AssemblyAttributes", "PoweredBy", string.Empty);
