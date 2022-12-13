@@ -1,17 +1,20 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
+using BitMono.Core.Protecting;
+using BitMono.Core.Protecting.Attributes;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(BitTimeDateStamp))]
     public class BitTimeDateStamp : IStageProtection
     {
         public PipelineStages Stage => PipelineStages.ModuleWritten;
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             using (var stream = File.Open(context.BitMonoContext.OutputModuleFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             using (var reader = new BinaryReader(stream))
