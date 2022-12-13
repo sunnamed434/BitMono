@@ -6,7 +6,7 @@ namespace BitMono.Runtime
 {
     internal struct Hooking
     {
-        internal void RedirectStub(int from, int to)
+        internal static void RedirectStub(int from, int to)
         {
             var fromMethodHandle = typeof(Hooking).Module.ResolveMethod(from).MethodHandle;
             var toMethodHandle = typeof(Hooking).Module.ResolveMethod(to).MethodHandle;
