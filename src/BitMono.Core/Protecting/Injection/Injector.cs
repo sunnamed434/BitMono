@@ -82,21 +82,22 @@ namespace BitMono.Core.Protecting.Injection
             }
             return compilerGeneratedAttribute;
         }
-        public void InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text)
+        public CustomAttribute InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text)
         {
             var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
-
-            MemberRefUser attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void, moduleDefMD.CorLibTypes.String), attributeRef);
-            CustomAttribute customAttribute = new CustomAttribute(attributeCtor);
+            var attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void, moduleDefMD.CorLibTypes.String), attributeRef);
+            var customAttribute = new CustomAttribute(attributeCtor);
             customAttribute.ConstructorArguments.Add(new CAArgument(moduleDefMD.CorLibTypes.String, text));
             moduleDefMD.CustomAttributes.Add(customAttribute);
+            return customAttribute;
         }
-        public void InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name)
+        public CustomAttribute InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name)
         {
             var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
-
-            MemberRefUser attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), attributeRef);
-            moduleDefMD.CustomAttributes.Add(new CustomAttribute(attributeCtor));
+            var attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), attributeRef);
+            var customAttribute = new CustomAttribute(attributeCtor);
+            moduleDefMD.CustomAttributes.Add(customAttribute);
+            return customAttribute;
         }
     }
 }
