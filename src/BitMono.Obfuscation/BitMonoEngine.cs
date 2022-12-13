@@ -19,25 +19,34 @@ namespace BitMono.Obfuscation
     {
         private readonly IModuleDefMDWriter m_ModuleDefMDWriter;
         private readonly IModuleDefMDCreator m_ModuleDefMDCreator;
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
+        private readonly List<IDnlibDefResolver> m_DnlibDefResolvers;
+        private readonly List<IProtection> m_Protections;
+        private readonly List<ProtectionSettings> m_ProtectionSettings;
         private readonly ILogger m_Logger;
 
         public BitMonoEngine(
             IModuleDefMDWriter moduleDefMDWriter,
             IModuleDefMDCreator moduleDefMDCreator,
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             IBitMonoObfuscationConfiguration obfuscationConfiguration,
+            List<IDnlibDefResolver> dnlibDefResolvers,
+            List<IProtection> protections,
+            List<ProtectionSettings> protectionSettings,
             ILogger logger)
         {
             m_ModuleDefMDWriter = moduleDefMDWriter;
             m_ModuleDefMDCreator = moduleDefMDCreator;
             m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_ObfuscationConfiguratin = obfuscationConfiguration;
+            m_DnlibDefResolvers = dnlibDefResolvers;
+            m_Protections = protections;
+            m_ProtectionSettings = protectionSettings;
             m_Logger = logger.ForContext<BitMonoEngine>();
         }
 
-        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, List<IProtection> protections, List<ProtectionSettings> protectionSettings, CancellationToken cancellationToken = default)
+        public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -46,7 +55,7 @@ namespace BitMono.Obfuscation
             m_Logger.Information("Loaded Module {0}", moduleDefMDCreationResult.ModuleDefMD.Name);
 
             var protectionsSortingResult = new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, moduleDefMDCreationResult.ModuleDefMD.Assembly, m_Logger)
-                .Sort(protections, protectionSettings);
+                .Sort(m_Protections, m_ProtectionSettings);
 
             await new ProtectionsExecutionNotifier(m_Logger).NotifyAsync(protectionsSortingResult);
 
@@ -62,7 +71,14 @@ namespace BitMono.Obfuscation
             context.OutputModuleFile = outputFile;
 
             m_Logger.Information("Preparing to protect module: {0}", context.ModuleFileName);
-            await new BitMonoObfuscator(m_ObfuscationConfiguratin, protectionsSortingResult.Protections, context, protectionContext, m_ModuleDefMDWriter, m_Logger)
+            await new BitMonoObfuscator(
+                m_ObfuscationConfiguratin, 
+                m_DnlibDefResolvers, 
+                protectionsSortingResult.Protections, 
+                protectionsSortingResult.Packers,
+                protectionContext, 
+                m_ModuleDefMDWriter, 
+                m_Logger)
                 .StartAsync(cancellationToken);
             m_Logger.Information("Protected module`s saved in {0}", context.OutputPath);
         }
