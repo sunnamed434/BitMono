@@ -1,6 +1,8 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.Core.Models;
+using BitMono.Utilities.Extensions;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,7 +28,7 @@ namespace BitMono.Core.Protecting.Resolvers
             disabled = new List<string>();
             foreach (var protectionSettings in m_ProtectionSettings.Where(p => p.Enabled))
             {
-                var protection = cachedProtections.FirstOrDefault(p => p.GetType().Name.Equals(protectionSettings.Name));
+                var protection = cachedProtections.FirstOrDefault(p => p.GetName().Equals(protectionSettings.Name, StringComparison.OrdinalIgnoreCase));
                 if (protection != null)
                 {
                     foundProtections.Add(protection);
