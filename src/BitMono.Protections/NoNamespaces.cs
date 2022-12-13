@@ -1,7 +1,9 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Attributes;
 using BitMono.Utilities.Extensions.dnlib;
 using System.Linq;
 using System.Reflection;
@@ -11,16 +13,17 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(NoNamespaces))]
     public class NoNamespaces : IProtection
     {
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public NoNamespaces(
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
+            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer typeDefCriticalAnalyzer, 
             ILogger logger)
         {
@@ -30,7 +33,7 @@ namespace BitMono.Protections
             m_Logger = logger.ForContext<NoNamespaces>();
         }
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
             {
