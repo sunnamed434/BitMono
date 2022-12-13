@@ -3,7 +3,6 @@ using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Injection;
 using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Renaming;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Attributes;
@@ -23,23 +22,17 @@ namespace BitMono.Protections
     {
         private readonly IInjector m_Injector;
         private readonly IRenamer m_Renamer;
-        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
-        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public CallToCalli(
             IInjector injector,
             IRenamer renamer,
-            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
             m_Injector = injector;
             m_Renamer = renamer;
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
-            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<CallToCalli>();
         }
