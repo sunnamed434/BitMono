@@ -1,7 +1,9 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Attributes;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
@@ -15,26 +17,27 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(AntiDebugBreakpoints))]
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public AntiDebugBreakpoints(
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
+            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
             ILogger logger)
         {
             m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+            m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             var threadSleepMethods = new List<IMethod>
             {
@@ -85,7 +88,7 @@ namespace BitMono.Protections
                     m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                     continue;
                 }
-                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+                if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
                 {
                     m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                     continue;
@@ -98,7 +101,7 @@ namespace BitMono.Protections
                         m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
                         continue;
                     }
-                    if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
+                    if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
                     {
                         m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
                         continue;
