@@ -3,6 +3,7 @@ using BitMono.API.Protecting.Pipeline;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Models;
 using BitMono.Core.Protecting.Resolvers;
+using BitMono.Utilities.Extensions;
 using dnlib.DotNet;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,12 @@ namespace BitMono.Obfuscation
 {
     public class ProtectionsSorter
     {
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly AssemblyDef m_ModuleDefMDAssembly;
         private readonly ILogger m_Logger;
 
         public ProtectionsSorter(
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
             AssemblyDef moduleDefMDAssembly,
             ILogger logger)
         {
@@ -32,17 +33,19 @@ namespace BitMono.Obfuscation
         {
             protections = new DependencyResolver(protections, protectionSettings, m_Logger)
                 .Sort(out List<string> skipped);
+            var packers = protections.Where(p => p is IPacker).Cast<IPacker>().ToList();
             var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
             var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
             var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
             var obfuscationAttributeExcludingProtections = protections.Where(p =>
-                m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(m_ModuleDefMDAssembly, p.GetType().Name));
+                m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(p.GetName(), m_ModuleDefMDAssembly));
 
             protections = protections.Except(obfuscationAttributeExcludingProtections).ToList();
 
             return new ProtectionsSortingResult
             {
                 Protections = protections,
+                Packers = packers,
                 DeprecatedProtections = deprecatedProtections,
                 Skipped = skipped,
                 StageProtections = stageProtections,
