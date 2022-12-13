@@ -1,10 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>BitMono.Unturned_RocketMod_Crackme</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="ShimmyMySherbet.RocketExtensions.RocketMod.Redist">
+      <Version>4.9.3.5</Version>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>
