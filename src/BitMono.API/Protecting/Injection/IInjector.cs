@@ -9,7 +9,7 @@ namespace BitMono.API.Protecting.Injection
         TypeDef CreateInvisibleValueType(ModuleDefMD moduleDefMD, string name = null);
         TypeDef InjectInvisibleValueType(ModuleDefMD moduleDefMD, TypeDef typeDef, string name = null);
         CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null);
-        void InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text);
-        void InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name);
+        CustomAttribute InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text);
+        CustomAttribute InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name);
     }
 }
