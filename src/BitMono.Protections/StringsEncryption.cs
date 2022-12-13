@@ -5,7 +5,9 @@ using BitMono.API.Protecting.Injection.FieldDefs;
 using BitMono.API.Protecting.Injection.MethodDefs;
 using BitMono.API.Protecting.Renaming;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Attributes;
 using BitMono.Core.Protecting.Helpers;
 using BitMono.Runtime;
 using BitMono.Utilities.Extensions.dnlib;
@@ -19,13 +21,14 @@ using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(StringsEncryption))]
     public class StringsEncryption : IProtection
     {
         private readonly IInjector m_Injector;
         private readonly IFieldSearcher m_FieldSearcher;
         private readonly IMethodDefSearcher m_MethodSearcher;
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
+        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly IRenamer m_Renamer;
         private readonly ILogger m_Logger;
@@ -34,8 +37,8 @@ namespace BitMono.Protections
             IInjector injector,
             IFieldSearcher fieldSearcher,
             IMethodDefSearcher methodSearcher,
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
+            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             IRenamer renamer,
             ILogger logger)
@@ -50,7 +53,7 @@ namespace BitMono.Protections
             m_Logger = logger.ForContext<StringsEncryption>();
         }
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             var runtimeDecryptorTypeDef = context.RuntimeModuleDefMD.ResolveTypeDefOrThrow<Decryptor>();
 
@@ -61,7 +64,7 @@ namespace BitMono.Protections
             var injectedDecryptorDnlibDefs = InjectHelper.Inject(runtimeDecryptorTypeDef, decryptorTypeDef, context.ModuleDefMD);
             var decryptMethodDef = injectedDecryptorDnlibDefs.FirstOrDefault(i => i.Name.String.Equals(nameof(Decryptor.Decrypt))).ResolveMethodDefOrThrow();
             
-            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
             {
                 if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<StringsEncryption>(typeDef))
                 {
@@ -91,7 +94,7 @@ namespace BitMono.Protections
 
                         if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                         {
-                            for (int i = 0; i < methodDef.Body.Instructions.Count(); i++)
+                            for (var i = 0; i < methodDef.Body.Instructions.Count(); i++)
                             {
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
                                     && methodDef.Body.Instructions[i].Operand is string content)
