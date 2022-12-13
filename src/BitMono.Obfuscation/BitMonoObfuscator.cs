@@ -109,7 +109,7 @@ namespace BitMono.Obfuscation
                                     var protectionName = protection.GetName();
                                     var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.ModuleDefMD);
                                     await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                                    m_Logger.Information("{0} -> OK!", protectionName);
+                                    m_Logger.Information("{0} -> Pipeline OK!", protectionName);
                                 }
                             }
                         }
@@ -165,7 +165,7 @@ namespace BitMono.Obfuscation
                                     m_ProtectionContext.ReloadModule();
                                     var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.ModuleDefMD);
                                     await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                                    m_Logger.Information("{0} -> OK!", protectionName);
+                                    m_Logger.Information("{0} -> Pipeline OK!", protectionName);
                                     await WriteAsync(m_ProtectionContext.BitMonoContext.OutputModuleFile, m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
                                 }
                             }
@@ -206,7 +206,6 @@ namespace BitMono.Obfuscation
             {
                 m_Logger.Error(ex, "Error while executing packer!");
             }
-
             Dispose();
         }
 
