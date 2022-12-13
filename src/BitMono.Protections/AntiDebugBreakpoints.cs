@@ -10,7 +10,6 @@ using dnlib.DotNet.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
@@ -81,32 +80,10 @@ namespace BitMono.Protections
                 typeof(string)
             }));
 
-            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(typeDef))
-                {
-                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                    continue;
-                }
-                if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-                {
-                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                    continue;
-                }
-
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(methodDef))
-                    {
-                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
-                    if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
-                    {
-                        m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                        continue;
-                    }
-
                     if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
                         && methodDef.NotGetterAndSetter()
                         && methodDef.IsConstructor == false)
@@ -118,7 +95,7 @@ namespace BitMono.Protections
                             var endIndex = methodDef.Body.Instructions.Count - 1;
                             var methodShouldBeIgnored = false;
 
-                            for (int i = startIndex; i < endIndex; i++)
+                            for (var i = startIndex; i < endIndex; i++)
                             {
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                     && methodDef.Body.Instructions[i].Operand is MemberRef methodRef)
