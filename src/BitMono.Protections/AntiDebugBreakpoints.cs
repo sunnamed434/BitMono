@@ -1,6 +1,5 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
-using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
 using BitMono.Core.Protecting.Attributes;
@@ -19,20 +18,14 @@ namespace BitMono.Protections
     [ProtectionName(nameof(AntiDebugBreakpoints))]
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public AntiDebugBreakpoints(
-            IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
