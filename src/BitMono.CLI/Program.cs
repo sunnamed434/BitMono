@@ -76,22 +76,29 @@ public class Program
             var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-            var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
+            var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefObfuscationAttributeResolver>();
 
             var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(dependenciesDirectoryName), obfuscationConfiguration).Create(outputDirectoryName);
             bitMonoContext.ModuleFileName = moduleFileName;
 
-            var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
-            var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
+
+            var moduleDefMDWriter = new CLIModuleDefMDWriter();
+            var moduleDefMDCreator = new ModuleDefMDCreator(moduleFileBytes);
+            var dnlibDefResolvers = serviceProvider.LifetimeScope.Resolve<ICollection<IDnlibDefResolver>>().ToList();
+            var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
+            var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
             await new BitMonoEngine(
-                new CLIModuleDefMDWriter(),
-                new ModuleDefMDCreator(moduleFileBytes),
+                moduleDefMDWriter,
+                moduleDefMDCreator,
                 dnlibDefFeatureObfuscationAttributeHavingResolver,
                 obfuscationConfiguration,
+                dnlibDefResolvers,
+                protections,
+                protectionSettings,
                 logger)
-                .ObfuscateAsync(bitMonoContext, runtimeModuleDefMD, protections, protectionSettings, CancellationToken.Token);
+                .ObfuscateAsync(bitMonoContext, runtimeModuleDefMD, CancellationToken.Token);
 
             if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
             {
@@ -99,7 +106,6 @@ public class Program
             }
 
             await new TipsNotifier(appSettingsConfiguration, logger).NotifyAsync();
-
             await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)
