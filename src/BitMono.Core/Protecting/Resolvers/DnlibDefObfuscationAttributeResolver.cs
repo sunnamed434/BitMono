@@ -1,22 +1,23 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Resolvers;
+using BitMono.Utilities.Extensions;
 using dnlib.DotNet;
 using System.Reflection;
 
 namespace BitMono.Core.Protecting.Resolvers
 {
-    public class DnlibDefFeatureObfuscationAttributeHavingResolver : IDnlibDefFeatureObfuscationAttributeHavingResolver
+    public class DnlibDefObfuscationAttributeResolver : IDnlibDefObfuscationAttributeResolver
     {
         private readonly IObfuscationAttributeExcludingResolver m_ObfuscationAttributeExcludingResolver;
 
-        public DnlibDefFeatureObfuscationAttributeHavingResolver(IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver)
+        public DnlibDefObfuscationAttributeResolver(IObfuscationAttributeExcludingResolver obfuscationAttributeExcludingResolver)
         {
             m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
         }
 
-        public bool Resolve(IDnlibDef dnlibDef, string feature)
+        public bool Resolve(string feature, IDnlibDef dnlibDef)
         {
-            if (m_ObfuscationAttributeExcludingResolver.TryResolve(dnlibDef, feature,
+            if (m_ObfuscationAttributeExcludingResolver.TryResolve(feature, dnlibDef,
                 out ObfuscationAttribute typeDefObfuscationAttribute) && typeDefObfuscationAttribute.Exclude)
             {
                 return true;
@@ -25,7 +26,7 @@ namespace BitMono.Core.Protecting.Resolvers
         }
         public bool Resolve<TFeature>(IDnlibDef dnlibDef) where TFeature : IProtection
         {
-            return Resolve(dnlibDef, typeof(TFeature).Name);
+            return Resolve(typeof(TFeature).GetName(), dnlibDef);
         }
     }
 }

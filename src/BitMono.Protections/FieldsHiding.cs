@@ -1,8 +1,9 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
 using BitMono.API.Protecting.Pipeline;
-using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Attributes;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
@@ -17,28 +18,23 @@ using ILogger = Serilog.ILogger;
 namespace BitMono.Protections
 {
     [Obsolete]
+    [ProtectionName(nameof(FieldsHiding))]
     public class FieldsHiding : IStageProtection
     {
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public FieldsHiding(
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
-            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
             m_Logger = logger.ForContext<FieldsHiding>();
         }
 
         public PipelineStages Stage => PipelineStages.ModuleWritten;
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             var moduleDefMD = ModuleDefMD.Load(context.BitMonoContext.OutputModuleFile, context.ModuleCreationOptions);
             context.ModuleDefMD = moduleDefMD;
@@ -62,36 +58,12 @@ namespace BitMono.Protections
             }));
             var getFieldHandleMethod = importer.Import(typeof(FieldInfo).GetProperty(nameof(FieldInfo.FieldHandle)).GetMethod);
 
-            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(typeDef))
-                {
-                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                    continue;
-                }
-
-                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-                {
-                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                    continue;
-                }
-
                 if (typeDef.HasFields)
                 {
                     foreach (var fieldDef in typeDef.Fields.ToArray())
                     {
-                        if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<FieldsHiding>(fieldDef))
-                        {
-                            m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                            continue;
-                        }
-
-                        if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef) == false)
-                        {
-                            m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                            continue;
-                        }
-
                         if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef)
                             && fieldDef.HasFieldRVA)
                         {

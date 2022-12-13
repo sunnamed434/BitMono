@@ -20,7 +20,7 @@ namespace BitMono.Core.Protecting.Resolvers
             m_Configuration = configuration.Configuration;
         }
 
-        public bool TryResolve(IHasCustomAttribute from, string feature, [AllowNull] out ObfuscationAttribute obfuscationAttribute)
+        public bool TryResolve(string feature, IHasCustomAttribute from, [AllowNull] out ObfuscationAttribute obfuscationAttribute)
         {
             obfuscationAttribute = null;
             if (m_Configuration.GetValue<bool>(nameof(Obfuscation.ObfuscationAttributeObfuscationExcluding)) == false)

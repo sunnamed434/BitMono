@@ -21,6 +21,7 @@ namespace BitMono.GUI.Pages.Obfuscation
 
         [Inject] public ILogger Logger { get; set; }
         [Inject] public IBitMonoAppSettingsConfiguration Configuration { get; set; }
+        [Inject] public ICollection<IDnlibDefResolver> DnlibDefResolvers { get; set; }
         [Inject] public ICollection<IProtection> Protections { get; set; }
         [Inject] public IStoringProtections StoringProtections { get; set; }
         [Inject] public IServiceProvider ServiceProvider { get; set; }
@@ -50,11 +51,11 @@ namespace BitMono.GUI.Pages.Obfuscation
 
                     var obfuscationConfiguration = ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
                     var appSettingsConfiguration = ServiceProvider.GetRequiredService<IBitMonoAppSettingsConfiguration>();
-                    var dnlibDefFeatureObfuscationAttributeHavingResolver = ServiceProvider.GetRequiredService<IDnlibDefFeatureObfuscationAttributeHavingResolver>();
+                    var dnlibDefFeatureObfuscationAttributeHavingResolver = ServiceProvider.GetRequiredService<IDnlibDefObfuscationAttributeResolver>();
 
                     var dependencies = Directory.GetFiles(_dependenciesDirectoryName);
                     var dependeciesData = new List<byte[]>();
-                    for (int i = 0; i < dependencies.Length; i++)
+                    for (var i = 0; i < dependencies.Length; i++)
                     {
                         dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
                     }
@@ -62,8 +63,18 @@ namespace BitMono.GUI.Pages.Obfuscation
                     var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
                         .Create(_outputDirectoryName);
                     bitMonoContext.ModuleFileName = _obfuscationFile.Name;
-                    await new BitMonoEngine(new GUIModuleDefMDWriter(), new ModuleDefMDCreator(moduleBytes), dnlibDefFeatureObfuscationAttributeHavingResolver, obfuscationConfiguration, Logger)
-                        .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD, Protections.ToList(), StoringProtections.Protections);
+                    var moduleDefMDWriter = new GUIModuleDefMDWriter();
+                    var moduleDefMDCreator = new ModuleDefMDCreator(moduleBytes);
+                    await new BitMonoEngine(
+                        moduleDefMDWriter, 
+                        moduleDefMDCreator, 
+                        dnlibDefFeatureObfuscationAttributeHavingResolver, 
+                        obfuscationConfiguration, 
+                        DnlibDefResolvers.ToList(), 
+                        Protections.ToList(), 
+                        StoringProtections.Protections, 
+                        Logger)
+                        .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD);
 
                     await new TipsNotifier(appSettingsConfiguration, Logger).NotifyAsync();
                 }

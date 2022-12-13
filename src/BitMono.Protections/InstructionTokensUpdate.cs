@@ -1,6 +1,6 @@
 ﻿using dnlib.DotNet;
 
-namespace BitMono.Protections.Hooks
+namespace BitMono.Protections
 {
     public class InstructionTokensUpdate
     {

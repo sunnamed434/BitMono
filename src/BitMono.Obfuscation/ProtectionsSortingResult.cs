@@ -7,6 +7,7 @@ namespace BitMono.Obfuscation
     public class ProtectionsSortingResult
     {
         public ICollection<IProtection> Protections { get; set; }
+        public ICollection<IPacker> Packers { get; set; }
         public IEnumerable<IProtection> DeprecatedProtections { get; set; }
         public ICollection<string> Skipped { get; set; }
         public IEnumerable<IStageProtection> StageProtections { get; set; }

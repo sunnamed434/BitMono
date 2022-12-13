@@ -129,8 +129,8 @@ namespace BitMono.Host.Modules
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
-            containerBuilder.RegisterType<DnlibDefFeatureObfuscationAttributeHavingResolver>()
-                .As<IDnlibDefFeatureObfuscationAttributeHavingResolver>()
+            containerBuilder.RegisterType<DnlibDefObfuscationAttributeResolver>()
+                .As<IDnlibDefObfuscationAttributeResolver>()
                 .OwnedByLifetimeScope()
                 .SingleInstance();
 
@@ -174,6 +174,14 @@ namespace BitMono.Host.Modules
                 .Where(t => 
                     t.GetInterface(nameof(IProtection)) != null 
                     && t.GetInterface(nameof(IPhaseProtection)) == null)
+                .OwnedByLifetimeScope()
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
+            containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+                .PublicOnly()
+                .Where(t =>
+                    t.GetInterface(nameof(IDnlibDefResolver)) != null)
                 .OwnedByLifetimeScope()
                 .AsImplementedInterfaces()
                 .SingleInstance();

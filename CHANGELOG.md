@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.4.3-alpha](#v043-alpha12) |
 | [v0.4.2-alpha](#v042-alpha11) |
 | [v0.4.1-alpha](#v041-alpha10) |
 | [v0.4.0-alpha](#v040-alpha9) |
@@ -14,6 +15,15 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.4.3-alpha.12:
+#### Changed:
+* Protections are looks more cleaner than before, no code duplication
+* Now BitDotNet is not an protection but packer
+
+#### Fixed:
+* Obfuscation process
+* Manipulations and saving of Module optimized, most of things store in memory then writes in file instead of every time writing in file and loading module 
+
 ### v0.4.2-alpha.11:
 #### Fixed:
 * Assembly resolving information and exceptions handling

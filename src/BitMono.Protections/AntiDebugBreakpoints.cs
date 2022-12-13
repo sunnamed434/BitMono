@@ -1,40 +1,35 @@
 ﻿using BitMono.API.Protecting;
 using BitMono.API.Protecting.Contexts;
-using BitMono.API.Protecting.Resolvers;
+using BitMono.Core.Protecting;
 using BitMono.Core.Protecting.Analyzing.DnlibDefs;
+using BitMono.Core.Protecting.Attributes;
 using BitMono.Utilities.Extensions.dnlib;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 
 namespace BitMono.Protections
 {
+    [ProtectionName(nameof(AntiDebugBreakpoints))]
     public class AntiDebugBreakpoints : IProtection
     {
-        private readonly IDnlibDefFeatureObfuscationAttributeHavingResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
         private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-        private readonly DnlibDefSpecificNamespaceHavingCriticalAnalyzer m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer;
         private readonly ILogger m_Logger;
 
         public AntiDebugBreakpoints(
-            IDnlibDefFeatureObfuscationAttributeHavingResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
-            DnlibDefSpecificNamespaceHavingCriticalAnalyzer dnlibDefSpecificNamespaceHavingCriticalAnalyzer,
             DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer, 
             ILogger logger)
         {
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
             m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-            m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer = dnlibDefSpecificNamespaceHavingCriticalAnalyzer;
             m_Logger = logger.ForContext<AntiDebugBreakpoints>();
         }
 
-        public Task ExecuteAsync(ProtectionContext context, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
         {
             var threadSleepMethods = new List<IMethod>
             {
@@ -78,32 +73,10 @@ namespace BitMono.Protections
                 typeof(string)
             }));
 
-            foreach (var typeDef in context.ModuleDefMD.GetTypes().ToArray())
+            foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
             {
-                if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(typeDef))
-                {
-                    m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                    continue;
-                }
-                if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-                {
-                    m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                    continue;
-                }
-
                 foreach (var methodDef in typeDef.Methods.ToArray())
                 {
-                    if (m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve<AntiDebugBreakpoints>(methodDef))
-                    {
-                        m_Logger.Information("Found {0}, skipping.", nameof(ObfuscationAttribute));
-                        continue;
-                    }
-                    if (m_DnlibDefSpecificNamespaceHavingCriticalAnalyzer.NotCriticalToMakeChanges(methodDef) == false)
-                    {
-                        m_Logger.Information("Not able to make changes because of specific namespace was found, skipping.");
-                        continue;
-                    }
-
                     if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
                         && methodDef.NotGetterAndSetter()
                         && methodDef.IsConstructor == false)
@@ -115,7 +88,7 @@ namespace BitMono.Protections
                             var endIndex = methodDef.Body.Instructions.Count - 1;
                             var methodShouldBeIgnored = false;
 
-                            for (int i = startIndex; i < endIndex; i++)
+                            for (var i = startIndex; i < endIndex; i++)
                             {
                                 if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call
                                     && methodDef.Body.Instructions[i].Operand is MemberRef methodRef)

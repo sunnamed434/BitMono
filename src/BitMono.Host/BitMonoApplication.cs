@@ -10,7 +10,7 @@ namespace BitMono.Host
     public class BitMonoApplication : IApplication
     {
         private readonly ContainerBuilder m_ContainerBuilder;
-        private readonly IList<IModule> m_Modules;
+        private readonly List<IModule> m_Modules;
 
         public BitMonoApplication()
         {

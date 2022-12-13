@@ -2,9 +2,9 @@
 
 namespace BitMono.API.Protecting.Resolvers
 {
-    public interface IDnlibDefFeatureObfuscationAttributeHavingResolver
+    public interface IDnlibDefObfuscationAttributeResolver
     {
-        bool Resolve(IDnlibDef dnlibDef, string feature);
+        bool Resolve(string feature, IDnlibDef dnlibDef);
         bool Resolve<TFeature>(IDnlibDef dnlibDef) where TFeature : IProtection;
     }
 }
