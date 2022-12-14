@@ -62,6 +62,7 @@ namespace BitMono.Protections
                 {
                     if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                     {
+                        methodDef.Body.KeepOldMaxStack = true;
                         for (var i = 0; i < methodDef.Body.Instructions.Count(); i++)
                         {
                             if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
@@ -70,12 +71,11 @@ namespace BitMono.Protections
                                 var encryptedContentBytes = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
                                 var encryptedDataFieldDef = m_Injector.InjectInvisibleArray(context.ModuleDefMD, context.ModuleDefMD.GlobalType, encryptedContentBytes, m_Renamer.RenameUnsafely());
 
-                                methodDef.Body.Instructions[i] = new Instruction(OpCodes.Nop);
-                                methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, encryptedDataFieldDef));
-                                methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Ldsfld, saltBytesFieldDef));
-                                methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Ldsfld, cryptKeyFieldDef));
-                                methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Call, decryptMethodDef));
-                                i += 4;
+                                methodDef.Body.Instructions[i].ReplaceWith(OpCodes.Ldsfld, encryptedDataFieldDef);
+                                methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Ldsfld, saltBytesFieldDef));
+                                methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Ldsfld, cryptKeyFieldDef));
+                                methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Call, decryptMethodDef));
+                                i += 3;
                             }
                         }
                     }
