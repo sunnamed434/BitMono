@@ -1,51 +1,41 @@
-﻿using BitMono.API.Configuration;
-using BitMono.API.Protecting.Analyzing;
-using BitMono.Core.Extensions.Configuration;
-using BitMono.Core.Protecting.Analyzing.TypeDefs;
-using dnlib.DotNet;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
-
-namespace BitMono.Core.Protecting.Analyzing.Naming
+﻿namespace BitMono.Core.Protecting.Analyzing.Naming;
+public class NameCriticalAnalyzer :
+    ICriticalAnalyzer<TypeDef>,
+    ICriticalAnalyzer<MethodDef>
 {
-    public class NameCriticalAnalyzer :
-        ICriticalAnalyzer<TypeDef>,
-        ICriticalAnalyzer<MethodDef>
+    private readonly TypeDefCriticalInterfacesCriticalAnalyzer m_TypeDefCriticalInterfacesCriticalAnalyzer;
+    private readonly TypeDefCriticalBaseTypesCriticalAnalyzer m_TypeDefCriticalBaseTypesCriticalAnalyzer;
+    private readonly IConfiguration m_Configuration;
+
+    public NameCriticalAnalyzer(
+        TypeDefCriticalInterfacesCriticalAnalyzer typeDefCriticalInterfacesCriticalAnalyzer,
+        TypeDefCriticalBaseTypesCriticalAnalyzer typeDefCriticalBaseTypesCriticalAnalyzer,
+        IBitMonoCriticalsConfiguration configuration)
     {
-        private readonly TypeDefCriticalInterfacesCriticalAnalyzer m_TypeDefCriticalInterfacesCriticalAnalyzer;
-        private readonly TypeDefCriticalBaseTypesCriticalAnalyzer m_TypeDefCriticalBaseTypesCriticalAnalyzer;
-        private readonly IConfiguration m_Configuration;
+        m_TypeDefCriticalInterfacesCriticalAnalyzer = typeDefCriticalInterfacesCriticalAnalyzer;
+        m_TypeDefCriticalBaseTypesCriticalAnalyzer = typeDefCriticalBaseTypesCriticalAnalyzer;
+        m_Configuration = configuration.Configuration;
+    }
 
-        public NameCriticalAnalyzer(
-            TypeDefCriticalInterfacesCriticalAnalyzer typeDefCriticalInterfacesCriticalAnalyzer,
-            TypeDefCriticalBaseTypesCriticalAnalyzer typeDefCriticalBaseTypesCriticalAnalyzer,
-            IBitMonoCriticalsConfiguration configuration)
+    public bool NotCriticalToMakeChanges(TypeDef typeDef)
+    {
+        if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
         {
-            m_TypeDefCriticalInterfacesCriticalAnalyzer = typeDefCriticalInterfacesCriticalAnalyzer;
-            m_TypeDefCriticalBaseTypesCriticalAnalyzer = typeDefCriticalBaseTypesCriticalAnalyzer;
-            m_Configuration = configuration.Configuration;
+            return false;
         }
-
-        public bool NotCriticalToMakeChanges(TypeDef typeDef)
+        if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
         {
-            if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-            {
-                return false;
-            }
-            if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
-            {
-                return false;
-            }
-            return true;
+            return false;
         }
-        public bool NotCriticalToMakeChanges(MethodDef methodDef)
+        return true;
+    }
+    public bool NotCriticalToMakeChanges(MethodDef methodDef)
+    {
+        var criticalMethodNames = m_Configuration.GetCriticalMethods();
+        if (criticalMethodNames.Any(c => c.Equals(methodDef.Name)))
         {
-            var criticalMethodNames = m_Configuration.GetCriticalMethods();
-            if (criticalMethodNames.Any(c => c.Equals(methodDef.Name)))
-            {
-                return false;
-            }
-            return true;
+            return false;
         }
+        return true;
     }
 }
