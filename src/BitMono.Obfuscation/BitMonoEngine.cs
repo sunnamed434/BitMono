@@ -3,7 +3,7 @@
 public class BitMonoEngine
 {
     private readonly IDataWriter m_DataWriter;
-    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
     private readonly List<IDnlibDefResolver> m_DnlibDefResolvers;
     private readonly List<IProtection> m_Protections;
@@ -12,7 +12,7 @@ public class BitMonoEngine
 
     public BitMonoEngine(
         IDataWriter dataWriter,
-        IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+        IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
         List<IDnlibDefResolver> dnlibDefResolvers,
         List<IProtection> protections,
@@ -20,7 +20,7 @@ public class BitMonoEngine
         ILogger logger)
     {
         m_DataWriter = dataWriter;
-        m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
+        m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
         m_ObfuscationConfiguratin = obfuscationConfiguration;
         m_DnlibDefResolvers = dnlibDefResolvers;
         m_Protections = protections;
@@ -37,7 +37,7 @@ public class BitMonoEngine
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.ModuleDefMD.Name);
 
-        var protectionsSortResult = new ProtectionsSorter(m_DnlibDefFeatureObfuscationAttributeHavingResolver, protectionContext.ModuleDefMD.Assembly, m_Logger)
+        var protectionsSortResult = new ProtectionsSorter(m_DnlibDefObfuscationAttributeResolver, protectionContext.ModuleDefMD.Assembly, m_Logger)
             .Sort(m_Protections, m_ProtectionSettings);
 
         if (protectionsSortResult.HasProtections == false)
