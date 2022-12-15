@@ -1,16 +1,10 @@
-﻿using BitMono.API.Protecting.Writers;
-using dnlib.DotNet;
-using dnlib.DotNet.Writer;
-using System.Threading.Tasks;
+﻿namespace BitMono.CLI.Modules;
 
-namespace BitMono.CLI.Modules
+internal class CLIModuleDefMDWriter : IDataWriter
 {
-    internal class CLIModuleDefMDWriter : IModuleDefMDWriter
+    public Task WriteAsync(string outputFile, byte[] outputBuffer)
     {
-        public Task WriteAsync(string outputFile, ModuleDefMD moduleDefMD, ModuleWriterOptions moduleWriterOptions)
-        {
-            moduleDefMD.Write(outputFile, moduleWriterOptions);
-            return Task.CompletedTask;
-        }
+        File.WriteAllBytes(outputFile, outputBuffer);
+        return Task.CompletedTask;
     }
 }
