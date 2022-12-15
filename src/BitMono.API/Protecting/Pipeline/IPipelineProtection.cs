@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BitMono.API.Protecting.Pipeline;
 
-namespace BitMono.API.Protecting.Pipeline
+public interface IPipelineProtection : IProtection
 {
-    public interface IPipelineProtection : IProtection
-    {
-        IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline();
-    }
+    IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline();
 }
