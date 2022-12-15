@@ -1,7 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [ProtectionName(nameof(DotNetHook))]
-public class DotNetHook : IPipelineProtection, IPipelineStage
+public class DotNetHook : IStageProtection
 {
     private readonly IInjector m_Injector;
     private readonly IMethodDefSearcher m_MethodDefSearcher;
@@ -26,14 +26,10 @@ public class DotNetHook : IPipelineProtection, IPipelineStage
 
     public PipelineStages Stage => PipelineStages.ModuleWritten;
 
-    public IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline()
-    {
-        yield return (new DotNetHookPhase(m_InstructionsToBeTokensUpdated, m_MethodDefSearcher), PipelineStages.ModuleWritten);
-    }
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
         var runtimeHookingTypeDef = context.RuntimeModuleDefMD.ResolveTypeDefOrThrow<Hooking>();
-        var injectedHookingDnlibDefs = InjectHelper.Inject(runtimeHookingTypeDef, context.ModuleDefMD.GlobalType, context.ModuleDefMD);
+        var injectedHookingDnlibDefs = InjectHelper.Inject(runtimeHookingTypeDef, context.ModuleDefMD.GlobalType, context.ModuleDefMD).UpdateRowIds(context.ModuleDefMD);
         var redirectStubMethodDef = injectedHookingDnlibDefs.Single(i => i.Name.String.Equals(nameof(Hooking.RedirectStub))).ResolveMethodDefOrThrow();
 
         foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
@@ -53,6 +49,7 @@ public class DotNetHook : IPipelineProtection, IPipelineStage
                                 callingMethodDef.MethodSig, callingMethodDef.ImplAttributes, callingMethodDef.Attributes);
                             dummyMethod.IsStatic = true;
                             dummyMethod.Access = MethodAttributes.Assembly;
+                            dummyMethod.UpdateRowId(context.ModuleDefMD);
                             context.ModuleDefMD.GlobalType.Methods.Add(dummyMethod);
                             foreach (var paramDef in callingMethodDef.ParamDefs)
                             {
@@ -64,26 +61,19 @@ public class DotNetHook : IPipelineProtection, IPipelineStage
                                 dummyMethod.Body.Instructions.Add(Instruction.Create(OpCodes.Ldnull));
                             }
                             dummyMethod.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+
                             var initializatorMethodDef = new MethodDefUser(m_Renamer.RenameUnsafely(),
                                 MethodSig.CreateStatic(context.ModuleDefMD.CorLibTypes.Void), MethodAttributes.Assembly | MethodAttributes.Static);
                             initializatorMethodDef.Body = new CilBody();
-                            initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Nop));  
+                            initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ldc_I4, dummyMethod.MDToken.ToInt32()));
+                            initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Ldc_I4, callingMethodDef.MDToken.ToInt32()));
                             initializatorMethodDef.Body.Instructions.Add(new Instruction(OpCodes.Call, redirectStubMethodDef));
                             initializatorMethodDef.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
                             context.ModuleDefMD.GlobalType.Methods.Add(initializatorMethodDef);
 
-                            const int StartInitializatiorMethodDefBodyIndex = 0;
-                            m_InstructionsToBeTokensUpdated.Add(new InstructionTokensUpdate
-                            {
-                                InitializatorMethodDef = initializatorMethodDef,
-                                FromMethodDef = dummyMethod,
-                                ToMethodDef = callingMethodDef,
-                                Index = StartInitializatiorMethodDefBodyIndex,
-                            });
-
                             methodDef.Body.Instructions[i].Operand = dummyMethod;
                             var globalTypeCctor = context.ModuleDefMD.GlobalType.FindOrCreateStaticConstructor();
-                            var randomIndex = m_Random.Next(0, globalTypeCctor.Body.Instructions.Count - 1);
+                            var randomIndex = m_Random.Next(0, globalTypeCctor.Body.Instructions.CountWithoutRet());
                             globalTypeCctor.Body.Instructions.Insert(randomIndex, new Instruction(OpCodes.Call, initializatorMethodDef));
                         }
                     }
