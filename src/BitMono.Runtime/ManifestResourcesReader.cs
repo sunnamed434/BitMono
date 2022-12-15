@@ -1,19 +1,15 @@
-﻿using System.IO;
-using System.Reflection;
+﻿namespace BitMono.Runtime;
 
-namespace BitMono.Runtime
+public static class ManifestResourcesReader
 {
-    public static class ManifestResourcesReader
+    public static byte[] Read(string name)
     {
-        public static byte[] Read(string name)
+        var assembly = Assembly.GetExecutingAssembly();
+        using (var stream = assembly.GetManifestResourceStream(name))
+        using (var memoryStream = new MemoryStream())
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream(name))
-            using (var memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
         }
     }
 }
