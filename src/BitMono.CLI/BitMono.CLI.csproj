@@ -2,19 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-	<TargetFramework>net472</TargetFramework>
-	<ImplicitUsings>disable</ImplicitUsings>
-	<Nullable>disable</Nullable>
-	<PackageIcon></PackageIcon>
+	<TargetFramework>net461</TargetFramework>
+	<LangVersion>10.0</LangVersion>
 	<ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,10 +19,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
     <ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
+    <ProjectReference Include="..\BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj" />
     <ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
     <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
-    <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
+    <ProjectReference Include="..\BitMono.Runtime\BitMono.Runtime.csproj" />
+    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
+    <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Me\Github\BitMono\src\BitMono.CLI\.editorconfig" />
   </ItemGroup>
 
 </Project>
