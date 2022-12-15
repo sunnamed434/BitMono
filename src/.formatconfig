@@ -1,7 +1,0 @@
-root = true
-
-[*.*]
-enable = true
-command = Edit.FormatDocument
-allowed_extensions = 
-denied_extensions = .js .html .razor .razor.css .css
