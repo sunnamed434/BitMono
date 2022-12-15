@@ -1,24 +1,20 @@
-﻿using BitMono.API.Protecting.Injection.FieldDefs;
-using dnlib.DotNet;
+﻿namespace BitMono.Core.Protecting.Injection.FieldDefs;
 
-namespace BitMono.Core.Protecting.Injection.FieldDefs
+public class FieldDefRemover : IFieldRemover
 {
-    public class FieldDefRemover : IFieldRemover
+    public bool Remove(string name, ModuleDefMD module)
     {
-        public bool Remove(string name, ModuleDefMD module)
+        foreach (TypeDef typeDef in module.Types)
         {
-            foreach (TypeDef typeDef in module.Types)
+            foreach (var fieldDef in typeDef.Fields)
             {
-                foreach (var fieldDef in typeDef.Fields)
+                if (fieldDef.Name.Equals(name))
                 {
-                    if (fieldDef.Name.Equals(name))
-                    {
-                        typeDef.Fields.Remove(fieldDef);
-                        return true;
-                    }
+                    typeDef.Fields.Remove(fieldDef);
+                    return true;
                 }
             }
-            return false;
         }
+        return false;
     }
 }
