@@ -61,10 +61,9 @@ namespace BitMono.GUI.Pages.Obfuscation
                     }
                     
                     var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
-                        .Create(_outputDirectoryName);
-                    bitMonoContext.ModuleFileName = _obfuscationFile.Name;
+                        .Create(_outputDirectoryName, _obfuscationFile.Name);
                     var moduleDefMDWriter = new GUIModuleDefMDWriter();
-                    var moduleDefMDCreator = new ModuleDefMDCreator(moduleBytes);
+                    var moduleDefMDCreator = new ModuleCreator(moduleBytes);
                     await new BitMonoEngine(
                         moduleDefMDWriter, 
                         moduleDefMDCreator, 
@@ -76,7 +75,7 @@ namespace BitMono.GUI.Pages.Obfuscation
                         Logger)
                         .ObfuscateAsync(bitMonoContext, externalComponentsModuleDefMD);
 
-                    await new TipsNotifier(appSettingsConfiguration, Logger).NotifyAsync();
+                    new TipsNotifier(appSettingsConfiguration, Logger).Notify();
                 }
                 catch (Exception ex)
                 {
