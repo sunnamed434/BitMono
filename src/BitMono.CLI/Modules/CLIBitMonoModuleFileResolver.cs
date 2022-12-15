@@ -1,28 +1,22 @@
-﻿using BitMono.API.Protecting.Resolvers;
-using NullGuard;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace BitMono.CLI.Modules;
 
-namespace BitMono.CLI.Modules
+internal class CLIBitMonoModuleFileResolver : IBitMonoModuleFileResolver
 {
-    internal class CLIBitMonoModuleFileResolver : IBitMonoModuleFileResolver
+    private readonly string[] m_Args;
+
+    public CLIBitMonoModuleFileResolver(string[] args)
     {
-        private readonly string[] m_Args;
+        m_Args = args;
+    }
 
-        public CLIBitMonoModuleFileResolver(string[] args)
+    [return: AllowNull]
+    public Task<string> ResolveAsync()
+    {
+        string file = null;
+        if (m_Args?.Any() == true)
         {
-            m_Args = args;
+            file = m_Args[0];
         }
-
-        [return: AllowNull]
-        public Task<string> ResolveAsync()
-        {
-            string file = null;
-            if (m_Args?.Any() == true)
-            {
-                file = m_Args[0];
-            }
-            return Task.FromResult(file);
-        }
+        return Task.FromResult(file);
     }
 }
