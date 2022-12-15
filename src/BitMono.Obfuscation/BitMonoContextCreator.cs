@@ -1,29 +1,24 @@
-﻿using BitMono.API.Configuration;
-using BitMono.API.Protecting.Contexts;
-using BitMono.Obfuscation.API;
-using Microsoft.Extensions.Configuration;
+﻿namespace BitMono.Obfuscation;
 
-namespace BitMono.Obfuscation
+public class BitMonoContextCreator
 {
-    public class BitMonoContextCreator
+    private readonly IDependenciesDataResolver m_DependenciesDataResolver;
+    private readonly IConfiguration m_Configuration;
+
+    public BitMonoContextCreator(IDependenciesDataResolver dependenciesDataResolver, IBitMonoObfuscationConfiguration configuration)
     {
-        private readonly IDependenciesDataResolver m_DependenciesDataResolver;
-        private readonly IConfiguration m_Configuration;
+        m_DependenciesDataResolver = dependenciesDataResolver;
+        m_Configuration = configuration.Configuration;
+    }
 
-        public BitMonoContextCreator(IDependenciesDataResolver dependenciesDataResolver, IBitMonoObfuscationConfiguration configuration)
+    public BitMonoContext Create(string outputDirectoryName, string fileName)
+    {
+        return new BitMonoContext
         {
-            m_DependenciesDataResolver = dependenciesDataResolver;
-            m_Configuration = configuration.Configuration;
-        }
-
-        public BitMonoContext Create(string outputDirectoryName)
-        {
-            return new BitMonoContext
-            {
-                OutputPath = outputDirectoryName,
-                DependenciesData = m_DependenciesDataResolver.Resolve(),
-                Watermark = m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.Watermark)),
-            };
-        }
+            OutputDirectoryName = outputDirectoryName,
+            DependenciesData = m_DependenciesDataResolver.Resolve(),
+            Watermark = m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.Watermark)),
+            FileName = fileName,
+        };
     }
 }
