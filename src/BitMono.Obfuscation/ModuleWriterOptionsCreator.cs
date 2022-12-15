@@ -6,11 +6,7 @@ public class ModuleWriterOptionsCreator
     {
         var moduleWriterOptions = new ModuleWriterOptions(moduleDefMD);
         moduleWriterOptions.MetadataLogger = DummyLogger.NoThrowInstance;
-        moduleWriterOptions.MetadataOptions.Flags |= 
-              MetadataFlags.PreserveStringsOffsets 
-            | MetadataFlags.PreserveUSOffsets 
-            | MetadataFlags.PreserveBlobOffsets 
-            | MetadataFlags.PreserveExtraSignatureData;
+        moduleWriterOptions.MetadataOptions.Flags |= MetadataFlags.PreserveAll;
         moduleWriterOptions.Cor20HeaderOptions.Flags = ComImageFlags.ILOnly;
         moduleWriterOptions.PEHeadersOptions.CopyPEHeaders(moduleDefMD);
         return moduleWriterOptions;
