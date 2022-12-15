@@ -1,0 +1,15 @@
+﻿global using Autofac.Extensions.DependencyInjection;
+global using BitMono.API.Protecting.Contexts;
+global using BitMono.API.Protecting.Pipeline;
+global using dnlib.DotNet;
+global using dnlib.DotNet.Writer;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using NullGuard;
+global using System;
+global using System.Collections.Generic;
+global using System.Reflection;
+global using System.Runtime.CompilerServices;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using IModule = Autofac.Core.IModule;
