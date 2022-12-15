@@ -1,10 +1,7 @@
-﻿using dnlib.DotNet;
+﻿namespace BitMono.API.Protecting.Injection.MethodDefs;
 
-namespace BitMono.API.Protecting.Injection.MethodDefs
+public interface IMethodDefRemover
 {
-    public interface IMethodDefRemover
-    {
-        bool Remove(ModuleDefMD moduleDefMD, string name);
-        bool Remove(TypeDef typeDef, string name);
-    }
+    bool Remove(ModuleDefMD moduleDefMD, string name);
+    bool Remove(TypeDef typeDef, string name);
 }
