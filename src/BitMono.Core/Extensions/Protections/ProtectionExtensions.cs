@@ -1,42 +1,36 @@
-﻿using BitMono.API.Protecting;
-using BitMono.Core.Protecting.Attributes;
-using System;
-using System.Reflection;
+﻿namespace BitMono.Core.Extensions.Protections;
 
-namespace BitMono.Utilities.Extensions
+public static class ProtectionExtensions
 {
-    public static class ProtectionExtensions
+    public static string GetName(this Type source, bool inherit = false)
     {
-        public static string GetName(this Type source, bool inherit = false)
+        var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);
+        if (protectionNameAttribute != null)
         {
-            var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);
-            if (protectionNameAttribute != null)
+            if (string.IsNullOrWhiteSpace(protectionNameAttribute.Name) == false)
             {
-                if (string.IsNullOrWhiteSpace(protectionNameAttribute.Name) == false)
-                {
-                    return protectionNameAttribute.Name;
-                }
-                else
-                {
-                    return source.Name;
-                }
+                return protectionNameAttribute.Name;
             }
             else
             {
                 return source.Name;
             }
         }
-        public static string GetName(this IProtection source, bool inherit = false)
+        else
         {
-            return GetName(source.GetType(), inherit);
+            return source.Name;
         }
-        public static string GetName(this IPacker source,  bool inherit = false)
-        {
-            return GetName(source.GetType(), inherit);
-        }
-        public static string GetName<TProtection>(bool inherit = false) where TProtection : IProtection
-        {
-            return GetName(typeof(TProtection), inherit);
-        }
+    }
+    public static string GetName(this IProtection source)
+    {
+        return source.GetType().GetName(false);
+    }
+    public static string GetName(this IPacker source)
+    {
+        return source.GetType().GetName(false);
+    }
+    public static string GetName<TProtection>() where TProtection : IProtection
+    {
+        return typeof(TProtection).GetName(false);
     }
 }
