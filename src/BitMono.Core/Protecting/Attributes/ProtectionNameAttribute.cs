@@ -1,15 +1,12 @@
-﻿using System;
+﻿namespace BitMono.Core.Protecting.Attributes;
 
-namespace BitMono.Core.Protecting.Attributes
+[AttributeUsage(AttributeTargets.Class)]
+public class ProtectionNameAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ProtectionNameAttribute : Attribute
+    public ProtectionNameAttribute(string name)
     {
-        public ProtectionNameAttribute(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
+        Name = name;
     }
+
+    public string Name { get; }
 }
