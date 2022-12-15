@@ -22,34 +22,31 @@ public class BitMethodDotnet : IStageProtection
     {
         foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
         {
-            if (typeDef.HasMethods)
+            foreach (var methodDef in typeDef.Methods)
             {
-                foreach (var methodDef in typeDef.Methods)
+                if (methodDef.HasBody && methodDef.IsConstructor == false
+                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                 {
-                    if (methodDef.HasBody && methodDef.IsConstructor == false
-                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+                    var randomMethodDefBodyIndex = 0;
+                    if (methodDef.Body.Instructions.Count >= 3)
                     {
-                        var randomMethodDefBodyIndex = 0;
-                        if (methodDef.Body.Instructions.Count >= 3)
-                        {
-                            randomMethodDefBodyIndex = m_Random.Next(0, methodDef.Body.Instructions.Count);
-                        }
-
-                        var randomValue = m_Random.Next(0, 3);
-                        var randomPrefixInstruction = new Instruction();
-                        randomPrefixInstruction.OpCode = randomValue switch
-                        {
-                            0 => OpCodes.Readonly,
-                            1 => OpCodes.Unaligned,
-                            2 => OpCodes.Volatile,
-                            3 => OpCodes.Constrained,
-                            _ => throw new ArgumentOutOfRangeException(),
-                        };
-
-                        methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex, new Instruction(OpCodes.Nop));
-                        methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex + 1, randomPrefixInstruction);
-                        methodDef.Body.Instructions[randomMethodDefBodyIndex] = new Instruction(OpCodes.Br_S, methodDef.Body.Instructions[randomMethodDefBodyIndex + 2]);
+                        randomMethodDefBodyIndex = m_Random.Next(0, methodDef.Body.Instructions.Count);
                     }
+
+                    var randomValue = m_Random.Next(0, 3);
+                    var randomPrefixInstruction = new Instruction();
+                    randomPrefixInstruction.OpCode = randomValue switch
+                    {
+                        0 => OpCodes.Readonly,
+                        1 => OpCodes.Unaligned,
+                        2 => OpCodes.Volatile,
+                        3 => OpCodes.Constrained,
+                        _ => throw new ArgumentOutOfRangeException(),
+                    };
+
+                    methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex, new Instruction(OpCodes.Nop));
+                    methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex + 1, randomPrefixInstruction);
+                    methodDef.Body.Instructions[randomMethodDefBodyIndex] = new Instruction(OpCodes.Br_S, methodDef.Body.Instructions[randomMethodDefBodyIndex + 2]);
                 }
             }
         }
