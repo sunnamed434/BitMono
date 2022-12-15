@@ -1,7 +1,4 @@
-﻿using dnlib.DotNet;
-using System.Collections.Generic;
-
-namespace BitMono.Core.Protecting
+﻿namespace BitMono.API.Protecting.Contexts
 {
     public class ProtectionParameters
     {
