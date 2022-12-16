@@ -18,7 +18,7 @@ public class ObfuscationAttributeExcludingResolver : IObfuscationAttributeExclud
         {
             return false;
         }
-        return m_AttemptAttributeResolver.TryResolve(from, o => o.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase),
-            strip => strip.StripAfterObfuscation, out obfuscationAttribute);
+        return m_AttemptAttributeResolver.TryResolve(from, o => o?.Feature.Equals(feature, StringComparison.OrdinalIgnoreCase) == true,
+            strip => strip.StripAfterObfuscation == true, out obfuscationAttribute);
     }
 }
