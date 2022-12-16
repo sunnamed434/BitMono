@@ -12,7 +12,7 @@ public class DnlibDefObfuscationAttributeResolver : IDnlibDefObfuscationAttribut
     public bool Resolve(string feature, IDnlibDef dnlibDef)
     {
         if (m_ObfuscationAttributeExcludingResolver.TryResolve(feature, dnlibDef,
-            out ObfuscationAttribute typeDefObfuscationAttribute) && typeDefObfuscationAttribute.Exclude)
+            out ObfuscationAttribute obfuscationAttribute) && obfuscationAttribute.Exclude)
         {
             return true;
         }
