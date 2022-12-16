@@ -1,4 +1,14 @@
-﻿global using BitMono.API.Protecting.Writers;
+﻿global using BitMono.API.Configuration;
+global using BitMono.API.Protecting;
+global using BitMono.API.Protecting.Resolvers;
+global using BitMono.API.Protecting.Writers;
+global using BitMono.GUI.API;
+global using BitMono.GUI.Modules;
+global using BitMono.GUI.Shared.Alerting;
+global using BitMono.GUI.Shared.Inputs;
+global using BitMono.Obfuscation;
 global using dnlib.DotNet;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Forms;
 global using Serilog;
-global using ILogger = dnlib.DotNet.ILogger;
+global using ILogger = Serilog.ILogger;
