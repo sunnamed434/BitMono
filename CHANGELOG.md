@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.4.4-alpha](#v044-alpha13) |
 | [v0.4.3-alpha](#v043-alpha12) |
 | [v0.4.2-alpha](#v042-alpha11) |
 | [v0.4.1-alpha](#v041-alpha10) |
@@ -15,6 +16,14 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.4.4-alpha.13:
+#### Fixed:
+* DotNetHook Protection
+* StringsEncryption Protection
+* CallToCalli Protection
+* Obfuscation doesn't saves assembly information such as assembly attributes [#36](https://github.com/sunnamed434/BitMono/issues/36)
+* No more module reloading (Module now loads once and writes once)
+
 ### v0.4.3-alpha.12:
 #### Changed:
 * Protections are looks more cleaner than before, no code duplication
