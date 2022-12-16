@@ -28,7 +28,7 @@ public class BitMonoEngine
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
-    public async Task ObfuscateAsync(BitMonoContext context, IModuleCreator moduleCreator, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, IModuleCreator moduleCreator, CancellationTokenSource cancellationTokenSource)
     {
         cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
@@ -71,11 +71,11 @@ public class BitMonoEngine
             .StartAsync(cancellationTokenSource);
         m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectoryName);
     }
-    public async Task ObfuscateAsync(BitMonoContext context, byte[] data, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, byte[] data, CancellationTokenSource cancellationTokenSource)
     {
         await ObfuscateAsync(context, new ModuleCreator(data), cancellationTokenSource);
     }
-    public async Task ObfuscateAsync(BitMonoContext context, string fileName, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, string fileName, CancellationTokenSource cancellationTokenSource)
     {
         await ObfuscateAsync(context, new ModuleCreator(File.ReadAllBytes(fileName)), cancellationTokenSource);
     }
