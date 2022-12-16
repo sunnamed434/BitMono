@@ -13,7 +13,7 @@ public class AttemptAttributeResolver : IAttemptAttributeResolver
         where TAttribute : Attribute
     {
         attribute = predicate != null
-            ? m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault(predicate)
+            ? m_CustomAttributesResolver.Resolve(from, strip).Where(a => a != null)?.FirstOrDefault(predicate)
             : m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault();
         if (attribute == null)
         {
