@@ -65,11 +65,9 @@ public class BitMonoObfuscator : IDisposable
                 if (stage.Stage == PipelineStages.ModuleWritten)
                 {
                     var protectionName = protection.GetName();
-                    m_ProtectionContext.ReloadModule();
                     var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.ModuleDefMD);
                     await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
                     m_Logger.Information("{0} -> OK!", protectionName);
-                    Write(m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
                 }
             }
 
@@ -80,11 +78,9 @@ public class BitMonoObfuscator : IDisposable
                     if (protectionPhase.Item2 == PipelineStages.ModuleWritten)
                     {
                         var protectionName = protection.GetName();
-                        m_ProtectionContext.ReloadModule();
                         var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.ModuleDefMD);
                         await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
                         m_Logger.Information("{0} -> Pipeline OK!", protectionName);
-                        Write(m_ProtectionContext.ModuleDefMD, m_ProtectionContext.ModuleWriterOptions);
                     }
                 }
             }
@@ -92,6 +88,9 @@ public class BitMonoObfuscator : IDisposable
 
         try
         {
+            var memoryStream = new MemoryStream();
+            m_ProtectionContext.ModuleDefMD.Write(memoryStream, m_ProtectionContext.ModuleWriterOptions);
+            m_ProtectionContext.ModuleDefMDOutput = memoryStream.ToArray();
             await m_DataWriter.WriteAsync(m_ProtectionContext.BitMonoContext.OutputFile, m_ProtectionContext.ModuleDefMDOutput);
         }
         catch (Exception ex)
