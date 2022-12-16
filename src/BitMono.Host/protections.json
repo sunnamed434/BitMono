@@ -2,15 +2,15 @@
   "Protections": [
     {
       "Name": "AntiILdasm",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "FullRenamer",
@@ -42,7 +42,7 @@
     },
     {
       "Name": "BitDotNet",
-      "Enabled": true
+      "Enabled": false
     }
   ]
 }
