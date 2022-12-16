@@ -6,14 +6,15 @@ public class CustomAttributesResolver : ICustomAttributesResolver
     public IEnumerable<TAttribute> Resolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> strip)
         where TAttribute : Attribute
     {
-        for (int i = 0; i < from.CustomAttributes.Count; i++)
+        for (var i = 0; i < from.CustomAttributes.Count; i++)
         {
-            var attribute = Activator.CreateInstance<TAttribute>();
+            TAttribute attribute = null;
             var customAttribute = from.CustomAttributes[i];
             foreach (var customAttributeProperty in customAttribute.Properties)
             {
                 if (customAttribute.TypeFullName.Equals(typeof(TAttribute).FullName))
                 {
+                    attribute = Activator.CreateInstance<TAttribute>();
                     var propertyInfo = typeof(TAttribute).GetProperty(customAttributeProperty.Name);
                     if (customAttributeProperty.Value is UTF8String utf8String)
                     {
@@ -23,12 +24,11 @@ public class CustomAttributesResolver : ICustomAttributesResolver
                     {
                         propertyInfo.SetValue(attribute, customAttributeProperty.Value);
                     }
+                    if (strip?.Invoke(attribute) == true)
+                    {
+                        from.CustomAttributes.RemoveAt(i);
+                    }
                 }
-            }
-
-            if (strip?.Invoke(attribute) == true)
-            {
-                from.CustomAttributes.RemoveAt(i);
             }
             yield return attribute;
         }
