@@ -1,10 +1,6 @@
-﻿using BitMono.Core.Models;
-using System.Collections.Generic;
+﻿namespace BitMono.GUI.API;
 
-namespace BitMono.GUI.API
+public interface IStoringProtections
 {
-    public interface IStoringProtections
-    {
-        List<ProtectionSettings> Protections { get; }
-    }
+    List<ProtectionSettings> Protections { get; }
 }

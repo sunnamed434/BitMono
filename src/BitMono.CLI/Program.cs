@@ -1,30 +1,6 @@
-﻿using Autofac;
-using BitMono.API.Configuration;
-using BitMono.API.Protecting;
-using BitMono.API.Protecting.Resolvers;
-using BitMono.CLI.Modules;
-using BitMono.Core.Extensions.Configuration;
-using BitMono.Host;
-using BitMono.Host.Modules;
-using BitMono.Obfuscation;
-using BitMono.Shared.Models;
-using dnlib.DotNet;
-using Microsoft.Extensions.Configuration;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using ILogger = Serilog.ILogger;
-
-public class Program
+﻿public class Program
 {
     const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-
     static CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
     private static async Task Main(string[] args)
@@ -38,7 +14,6 @@ public class Program
                 {
                     Console.Clear();
                     Console.WriteLine("Please, specify file or drag-and-drop in BitMono CLI");
-                    Console.WriteLine("File not specified, please specify path to the file here: ");
                     moduleFileName = Console.ReadLine();
                 }
             }
@@ -55,12 +30,12 @@ public class Program
             }
             else
             {
-                Console.WriteLine("Dependencies (libs) directory was automatically found {0}!", dependenciesDirectoryName);
+                Console.Clear();
+                Console.WriteLine("Dependencies (libs) directory was automatically found in: {0}!", dependenciesDirectoryName);
             }
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
-            var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
             var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
@@ -76,37 +51,39 @@ public class Program
             var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-            var dnlibDefFeatureObfuscationAttributeHavingResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefObfuscationAttributeResolver>();
-
-            var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(dependenciesDirectoryName), obfuscationConfiguration).Create(outputDirectoryName);
-            bitMonoContext.ModuleFileName = moduleFileName;
-
-            var moduleFileBytes = File.ReadAllBytes(bitMonoContext.ModuleFileName);
-
-            var moduleDefMDWriter = new CLIModuleDefMDWriter();
-            var moduleDefMDCreator = new ModuleDefMDCreator(moduleFileBytes);
+            var dnlibDefObfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefObfuscationAttributeResolver>();
             var dnlibDefResolvers = serviceProvider.LifetimeScope.Resolve<ICollection<IDnlibDefResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
+
+            var moduleDefMDWriter = new CLIDataWriter();
+            var dependenciesDataResolver = new DependenciesDataResolver(dependenciesDirectoryName);
+            var bitMonoContext = new BitMonoContextCreator(dependenciesDataResolver, obfuscationConfiguration).Create(outputDirectoryName, moduleFileName);
+
             await new BitMonoEngine(
                 moduleDefMDWriter,
-                moduleDefMDCreator,
-                dnlibDefFeatureObfuscationAttributeHavingResolver,
+                dnlibDefObfuscationAttributeResolver,
                 obfuscationConfiguration,
                 dnlibDefResolvers,
                 protections,
                 protectionSettings,
                 logger)
-                .ObfuscateAsync(bitMonoContext, runtimeModuleDefMD, CancellationToken.Token);
+                .ObfuscateAsync(bitMonoContext, bitMonoContext.FileName, CancellationToken);
 
+            if (CancellationToken.IsCancellationRequested)
+            {
+                logger.Fatal("Operation cancelled!");
+                Console.ReadLine();
+                return;
+            }
             if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
             {
-                Process.Start(bitMonoContext.OutputPath);
+                Process.Start(bitMonoContext.OutputDirectoryName);
             }
 
-            await new TipsNotifier(appSettingsConfiguration, logger).NotifyAsync();
-            await serviceProvider.DisposeAsync();
+            new TipsNotifier(appSettingsConfiguration, logger).Notify();
+            //await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)
         {

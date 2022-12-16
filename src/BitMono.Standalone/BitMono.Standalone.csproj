@@ -5,14 +5,4 @@
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>none</DebugType>
-    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
-  </PropertyGroup>
-
 </Project>

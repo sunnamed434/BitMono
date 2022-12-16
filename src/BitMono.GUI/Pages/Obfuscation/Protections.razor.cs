@@ -1,7 +1,7 @@
 using BitMono.API.Protecting;
-using BitMono.Core.Models;
 using BitMono.GUI.API;
 using BitMono.GUI.Utilities.Extensions;
+using BitMono.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using static BitMono.Utilities.Extensions.Collections.CollectionExtensions;

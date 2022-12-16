@@ -1,17 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-	<LangVersion>9.0</LangVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+	<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+	<LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
     <DebugType>none</DebugType>
   </PropertyGroup>
 
@@ -47,7 +53,6 @@
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.0" />
     <PackageReference Include="Serilog.Enrichers.WithCaller" Version="1.2.0" />
     <PackageReference Include="Serilog.Extensions.Autofac.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.1-dev-00077" />

@@ -1,19 +1,16 @@
-﻿using dnlib.DotNet;
+﻿namespace BitMono.Runtime;
 
-namespace BitMono.Runtime
+public static class MetadataCustomStreamsResolver
 {
-    public static class MetadataCustomStreamsResolver
+    private static readonly ModuleDefMD m_SelfModuleDefMD;
+
+    static MetadataCustomStreamsResolver()
     {
-        private static readonly ModuleDefMD m_SelfModuleDefMD;
+        m_SelfModuleDefMD = ModuleDefMD.Load(typeof(MetadataCustomStreamsResolver).Module);
+    }
 
-        static MetadataCustomStreamsResolver()
-        {
-            m_SelfModuleDefMD = ModuleDefMD.Load(typeof(MetadataCustomStreamsResolver).Module);
-        }
-
-        public static byte[] Resolve(int index)
-        {
-            return m_SelfModuleDefMD.Metadata.AllStreams[index].CreateReader().ReadRemainingBytes();
-        }
+    public static byte[] Resolve(int index)
+    {
+        return m_SelfModuleDefMD.Metadata.AllStreams[index].CreateReader().ReadRemainingBytes();
     }
 }

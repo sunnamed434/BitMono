@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿namespace BitMono.GUI.API;
 
-namespace BitMono.GUI.API
+public interface IFolderPicker
 {
-    public interface IFolderPicker
-    {
-        Task<string> PickAsync();
-    }
+    Task<string> PickAsync();
 }

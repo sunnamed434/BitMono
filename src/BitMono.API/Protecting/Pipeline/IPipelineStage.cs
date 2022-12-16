@@ -1,7 +1,6 @@
-﻿namespace BitMono.API.Protecting.Pipeline
+﻿namespace BitMono.API.Protecting.Pipeline;
+
+public interface IPipelineStage
 {
-    public interface IPipelineStage
-    {
-        PipelineStages Stage { get; }
-    }
+    PipelineStages Stage { get; }
 }

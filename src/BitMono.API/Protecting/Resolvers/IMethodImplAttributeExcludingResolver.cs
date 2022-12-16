@@ -1,10 +1,6 @@
-﻿using dnlib.DotNet;
-using System.Runtime.CompilerServices;
+﻿namespace BitMono.API.Protecting.Resolvers;
 
-namespace BitMono.API.Protecting.Resolvers
+public interface IMethodImplAttributeExcludingResolver
 {
-    public interface IMethodImplAttributeExcludingResolver
-    {
-        bool TryResolve(IHasCustomAttribute from, out MethodImplAttribute obfuscationAttribute);
-    }
+    bool TryResolve(IHasCustomAttribute from, out MethodImplAttribute obfuscationAttribute);
 }

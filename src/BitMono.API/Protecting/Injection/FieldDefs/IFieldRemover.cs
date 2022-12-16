@@ -1,9 +1,6 @@
-﻿using dnlib.DotNet;
+﻿namespace BitMono.API.Protecting.Injection.FieldDefs;
 
-namespace BitMono.API.Protecting.Injection.FieldDefs
+public interface IFieldRemover
 {
-    public interface IFieldRemover
-    {
-        bool Remove(string name, ModuleDefMD moduleDefMD);
-    }
+    bool Remove(string name, ModuleDefMD moduleDefMD);
 }

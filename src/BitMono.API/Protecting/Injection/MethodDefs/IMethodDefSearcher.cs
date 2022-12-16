@@ -1,9 +1,6 @@
-﻿using dnlib.DotNet;
+﻿namespace BitMono.API.Protecting.Injection.MethodDefs;
 
-namespace BitMono.API.Protecting.Injection.MethodDefs
+public interface IMethodDefSearcher
 {
-    public interface IMethodDefSearcher
-    {
-        MethodDef Find(string name, ModuleDefMD moduleDefMD);
-    }
+    MethodDef Find(string name, ModuleDefMD moduleDefMD);
 }

@@ -1,9 +1,6 @@
-﻿using dnlib.DotNet;
+﻿namespace BitMono.API.Protecting.Resolvers;
 
-namespace BitMono.API.Protecting.Resolvers
+public interface IDnlibDefResolver
 {
-    public interface IDnlibDefResolver
-    {
-        bool Resolve(string feature, IDnlibDef dnlibDef);
-    }
+    bool Resolve(string feature, IDnlibDef dnlibDef);
 }

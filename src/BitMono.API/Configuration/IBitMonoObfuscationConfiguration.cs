@@ -1,6 +1,5 @@
-﻿namespace BitMono.API.Configuration
+﻿namespace BitMono.API.Configuration;
+
+public interface IBitMonoObfuscationConfiguration : IConfigurationAccessor
 {
-    public interface IBitMonoObfuscationConfiguration : IConfigurationAccessor
-    {
-    }
 }

@@ -1,9 +1,6 @@
-﻿using System.IO;
+﻿namespace BitMono.GUI.API;
 
-namespace BitMono.GUI.API
+public interface ILogTextContainer
 {
-    public interface ILogTextContainer
-    {
-        StringWriter StringWriter { get; }
-    }
+    StringWriter StringWriter { get; }
 }

@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿namespace BitMono.API.Configuration;
 
-namespace BitMono.API.Configuration
+public interface IConfigurationAccessor
 {
-    public interface IConfigurationAccessor
-    {
-        IConfiguration Configuration { get; }
-    }
+    IConfiguration Configuration { get; }
 }

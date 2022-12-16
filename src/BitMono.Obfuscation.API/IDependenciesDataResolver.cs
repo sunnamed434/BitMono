@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BitMono.Obfuscation.API;
 
-namespace BitMono.Obfuscation.API
+public interface IDependenciesDataResolver
 {
-    public interface IDependenciesDataResolver
-    {
-        IEnumerable<byte[]> Resolve();
-    }
+    IEnumerable<byte[]> Resolve();
 }

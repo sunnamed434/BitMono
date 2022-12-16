@@ -1,33 +1,28 @@
-﻿using BitMono.API.Protecting.Resolvers;
-using BitMono.Core.Protecting.Analyzing.DnlibDefs;
-using dnlib.DotNet;
+﻿namespace BitMono.Core.Protecting.Resolvers;
 
-namespace BitMono.Core.Protecting.Resolvers
+public class SafeDnlibDefResolver : IDnlibDefResolver
 {
-    public class SafeDnlibDefResolver : IDnlibDefResolver
+    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
+    private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
+
+    public SafeDnlibDefResolver(
+        IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
+        DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceCriticalAnalyzer)
     {
-        private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
-        private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
+        m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
+        m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceCriticalAnalyzer;
+    }
 
-        public SafeDnlibDefResolver(
-            IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
-            DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceCriticalAnalyzer)
+    public bool Resolve(string feature, IDnlibDef dnlibDef)
+    {
+        if (m_DnlibDefObfuscationAttributeResolver.Resolve(feature, dnlibDef))
         {
-            m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
-            m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceCriticalAnalyzer;
+            return false;
         }
-
-        public bool Resolve(string feature, IDnlibDef dnlibDef)
+        if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(dnlibDef) == false)
         {
-            if (m_DnlibDefObfuscationAttributeResolver.Resolve(feature, dnlibDef))
-            {
-                return false;
-            }
-            if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(dnlibDef) == false)
-            {
-                return false;
-            }
-            return true;
+            return false;
         }
+        return true;
     }
 }

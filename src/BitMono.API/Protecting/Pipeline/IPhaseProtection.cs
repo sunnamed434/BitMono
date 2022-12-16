@@ -1,6 +1,5 @@
-﻿namespace BitMono.API.Protecting.Pipeline
+﻿namespace BitMono.API.Protecting.Pipeline;
+
+public interface IPhaseProtection : IProtection
 {
-    public interface IPhaseProtection : IProtection
-    {
-    }
 }

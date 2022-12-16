@@ -1,7 +1,6 @@
-﻿namespace BitMono.API.Protecting.Analyzing
+﻿namespace BitMono.API.Protecting.Analyzing;
+
+public interface ICriticalAnalyzer<in TObject>
 {
-    public interface ICriticalAnalyzer<in TObject>
-    {
-        bool NotCriticalToMakeChanges(TObject @object);
-    }
+    bool NotCriticalToMakeChanges(TObject @object);
 }

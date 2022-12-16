@@ -1,8 +1,5 @@
-﻿using BitMono.API.Protecting.Pipeline;
+﻿namespace BitMono.API.Protecting;
 
-namespace BitMono.API.Protecting
+public interface IStageProtection : IProtection, IPipelineStage
 {
-    public interface IStageProtection : IProtection, IPipelineStage
-    {
-    }
 }

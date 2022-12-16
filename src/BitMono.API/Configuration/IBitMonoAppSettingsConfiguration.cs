@@ -1,6 +1,5 @@
-﻿namespace BitMono.API.Configuration
+﻿namespace BitMono.API.Configuration;
+
+public interface IBitMonoAppSettingsConfiguration : IConfigurationAccessor
 {
-    public interface IBitMonoAppSettingsConfiguration : IConfigurationAccessor
-    {
-    }
 }

@@ -1,52 +1,41 @@
-﻿using BitMono.API.Protecting.Contexts;
-using dnlib.DotNet;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ILogger = Serilog.ILogger;
+﻿namespace BitMono.Core.Protecting.Resolvers;
 
-namespace BitMono.Core.Protecting.Resolvers
+public class BitMonoAssemblyResolver
 {
-    public class BitMonoAssemblyResolver
+    private readonly ILogger m_Logger;
+
+    public BitMonoAssemblyResolver(ILogger logger)
     {
-        private readonly IEnumerable<byte[]> m_DependenciesData;
-        private readonly ProtectionContext m_ProtectionContext;
-        private readonly ILogger m_Logger;
+        m_Logger = logger.ForContext<BitMonoAssemblyResolver>();
+    }
 
-        public BitMonoAssemblyResolver(IEnumerable<byte[]> dependenciesData, ProtectionContext protectionContext, ILogger logger)
+    public bool Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var resolvingSucceed = true;
+        foreach (var dependencyData in dependenciesData)
         {
-            m_DependenciesData = dependenciesData;
-            m_ProtectionContext = protectionContext;
-            m_Logger = logger.ForContext<BitMonoAssemblyResolver>();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            context.AssemblyResolver.AddToCache(AssemblyDef.Load(dependencyData));
         }
 
-        public Task<bool> ResolveAsync(CancellationToken cancellationToken = default)
+        foreach (var assemblyRef in context.ModuleDefMD.GetAssemblyRefs())
         {
-            var resolvingSucceed = true;
-            foreach (var dependencyData in m_DependenciesData)
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                m_ProtectionContext.AssemblyResolver.AddToCache(AssemblyDef.Load(dependencyData));
+                m_Logger.Information("Resolving assembly: " + assemblyRef.Name);
+                context.ModuleCreationOptions.Context.AssemblyResolver.ResolveThrow(assemblyRef, context.ModuleDefMD);
             }
-
-            foreach (var assemblyRef in m_ProtectionContext.ModuleDefMD.GetAssemblyRefs())
+            catch (Exception ex)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                try
-                {
-                    m_Logger.Information("Resolving assembly: " + assemblyRef.Name);
-                    m_ProtectionContext.ModuleCreationOptions.Context.AssemblyResolver.ResolveThrow(assemblyRef, m_ProtectionContext.ModuleDefMD);
-                }
-                catch (Exception ex)
-                {
-                    resolvingSucceed = false;
-                    m_Logger.Error("Failed to resolve dependency {0}, message: ", assemblyRef.FullName, ex.Message);
-                }
+                resolvingSucceed = false;
+                m_Logger.Error("Failed to resolve dependency {0}, message: ", assemblyRef.FullName, ex.Message);
             }
-            return Task.FromResult(resolvingSucceed);
         }
+        return resolvingSucceed;
     }
 }

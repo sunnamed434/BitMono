@@ -1,41 +1,32 @@
-﻿using BitMono.API.Protecting.Analyzing;
-using BitMono.API.Protecting.Contexts;
-using BitMono.API.Protecting.Resolvers;
-using dnlib.DotNet;
-using Newtonsoft.Json;
-using System;
-using System.Xml.Serialization;
+﻿namespace BitMono.Core.Protecting.Analyzing.TypeDefs;
 
-namespace BitMono.Core.Protecting.Analyzing.TypeDefs
+public class TypeDefModelCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
-    public class TypeDefModelCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
+    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+
+    public TypeDefModelCriticalAnalyzer(IAttemptAttributeResolver attemptAttributeResolver)
     {
-        private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+        m_AttemptAttributeResolver = attemptAttributeResolver;
+    }
 
-        public TypeDefModelCriticalAnalyzer(IAttemptAttributeResolver attemptAttributeResolver)
+    public bool NotCriticalToMakeChanges(IHasCustomAttribute from)
+    {
+        if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(from, null, null, out _))
         {
-            m_AttemptAttributeResolver = attemptAttributeResolver;
-        }
-
-        public bool NotCriticalToMakeChanges(IHasCustomAttribute from)
-        {
-            if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(from, null, null, out _))
-            {
-                return false;
-            }
-            if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(from, null, null, out _))
-            {
-                return false;
-            }
-            if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(from, null, null, out _))
-            {
-                return false;
-            }
-            if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(from, null, null, out _))
-            {
-                return false;
-            }
             return false;
         }
+        if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(from, null, null, out _))
+        {
+            return false;
+        }
+        if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(from, null, null, out _))
+        {
+            return false;
+        }
+        if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(from, null, null, out _))
+        {
+            return false;
+        }
+        return false;
     }
 }

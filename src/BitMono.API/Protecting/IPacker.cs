@@ -1,6 +1,5 @@
-﻿namespace BitMono.API.Protecting
+﻿namespace BitMono.API.Protecting;
+
+public interface IPacker : IProtection
 {
-    public interface IPacker : IProtection
-    {
-    }
 }

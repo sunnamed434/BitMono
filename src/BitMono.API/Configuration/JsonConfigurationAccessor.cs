@@ -1,16 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿namespace BitMono.API.Configuration;
 
-namespace BitMono.API.Configuration
+public class JsonConfigurationAccessor : IConfigurationAccessor
 {
-    public class JsonConfigurationAccessor : IConfigurationAccessor
+    public JsonConfigurationAccessor(string file)
     {
-        public JsonConfigurationAccessor(string file)
-        {
-            Configuration = new ConfigurationBuilder()
-                .AddJsonFile(file, true, true)
-                .Build();
-        }
-
-        public IConfiguration Configuration { get; }
+        Configuration = new ConfigurationBuilder()
+            .AddJsonFile(file, true, true)
+            .Build();
     }
+
+    public IConfiguration Configuration { get; }
 }
