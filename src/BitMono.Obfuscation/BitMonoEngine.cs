@@ -28,11 +28,12 @@ public class BitMonoEngine
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
-    public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, IModuleCreator moduleCreator, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, IModuleCreator moduleCreator, CancellationTokenSource cancellationTokenSource = default)
     {
         cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         var moduleDefMDCreationResult = moduleCreator.Create();
+        var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Data).Module);
         var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefMD, context).Create();
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.ModuleDefMD.Name);
@@ -56,9 +57,9 @@ public class BitMonoEngine
                 return;
             }
         }
-
+        
         new ProtectionsExecutionNotifier(m_Logger).Notify(protectionsSortResult);
-
+        
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
             m_DnlibDefResolvers,
@@ -70,12 +71,12 @@ public class BitMonoEngine
             .StartAsync(cancellationTokenSource);
         m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectoryName);
     }
-    public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, byte[] data, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, byte[] data, CancellationTokenSource cancellationTokenSource = default)
     {
-        await ObfuscateAsync(context, runtimeModuleDefMD, new ModuleCreator(data), cancellationTokenSource);
+        await ObfuscateAsync(context, new ModuleCreator(data), cancellationTokenSource);
     }
-    public async Task ObfuscateAsync(BitMonoContext context, ModuleDefMD runtimeModuleDefMD, string fileName, CancellationTokenSource cancellationTokenSource = default)
+    public async Task ObfuscateAsync(BitMonoContext context, string fileName, CancellationTokenSource cancellationTokenSource = default)
     {
-        await ObfuscateAsync(context, runtimeModuleDefMD, new ModuleCreator(File.ReadAllBytes(fileName)), cancellationTokenSource);
+        await ObfuscateAsync(context, new ModuleCreator(File.ReadAllBytes(fileName)), cancellationTokenSource);
     }
 }
