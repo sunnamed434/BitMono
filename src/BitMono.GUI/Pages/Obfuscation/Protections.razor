@@ -37,7 +37,7 @@
 							@if (protectionSetting.AsProtection(RegisteredProtections, out IProtection protection)
 								&& protection is IPipelineStage callingCondition)
 							{
-								if (callingCondition.Stage == PipelineStages.ModuleWrite)
+								if (callingCondition.Stage == PipelineStages.ModuleWritten)
 								{
 									<div class="ms-2">
 										<a class="btn btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="top" title="This protection ignoring order and always executing at the end">
