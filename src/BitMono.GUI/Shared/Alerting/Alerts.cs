@@ -1,11 +1,10 @@
-﻿namespace BitMono.GUI.Shared.Alerting
+﻿namespace BitMono.GUI.Shared.Alerting;
+
+public enum Alerts
 {
-    public enum Alerts
-    {
-        Primary,
-        Danger,
-        Warning,
-        Success,
-        Info
-    }
+    Primary,
+    Danger,
+    Warning,
+    Success,
+    Info
 }
