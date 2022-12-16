@@ -2,16 +2,16 @@
 
 public class ProtectionsSorter
 {
-    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefFeatureObfuscationAttributeHavingResolver;
+    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly AssemblyDef m_ModuleDefMDAssemblyDef;
     private readonly ILogger m_Logger;
 
     public ProtectionsSorter(
-        IDnlibDefObfuscationAttributeResolver dnlibDefFeatureObfuscationAttributeHavingResolver,
+        IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         AssemblyDef moduleDefMDAssemblyDef,
         ILogger logger)
     {
-        m_DnlibDefFeatureObfuscationAttributeHavingResolver = dnlibDefFeatureObfuscationAttributeHavingResolver;
+        m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
         m_ModuleDefMDAssemblyDef = moduleDefMDAssemblyDef;
         m_Logger = logger.ForContext<ProtectionsSorter>();
     }
@@ -26,7 +26,7 @@ public class ProtectionsSorter
         var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
         var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
         var obfuscationAttributeExcludingProtections = protections.Where(p =>
-            m_DnlibDefFeatureObfuscationAttributeHavingResolver.Resolve(p.GetName(), m_ModuleDefMDAssemblyDef));
+            m_DnlibDefObfuscationAttributeResolver.Resolve(p.GetName(), m_ModuleDefMDAssemblyDef));
 
         protections = protections.Except(obfuscationAttributeExcludingProtections).ToList();
         var hasProtections = protections.Any();
