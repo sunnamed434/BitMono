@@ -36,7 +36,6 @@
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
-            var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Hooking).Module);
             Assembly.LoadFrom(protectionsFile);
 
             var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
@@ -58,7 +57,7 @@
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
 
-            var moduleDefMDWriter = new CLIModuleDefMDWriter();
+            var moduleDefMDWriter = new CLIDataWriter();
             var dependenciesDataResolver = new DependenciesDataResolver(dependenciesDirectoryName);
             var bitMonoContext = new BitMonoContextCreator(dependenciesDataResolver, obfuscationConfiguration).Create(outputDirectoryName, moduleFileName);
 
@@ -70,7 +69,7 @@
                 protections,
                 protectionSettings,
                 logger)
-                .ObfuscateAsync(bitMonoContext, runtimeModuleDefMD, bitMonoContext.FileName, CancellationToken);
+                .ObfuscateAsync(bitMonoContext, bitMonoContext.FileName, CancellationToken);
 
             if (CancellationToken.IsCancellationRequested)
             {
@@ -84,7 +83,7 @@
             }
 
             new TipsNotifier(appSettingsConfiguration, logger).Notify();
-            await serviceProvider.DisposeAsync();
+            //await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)
         {
