@@ -4,23 +4,18 @@
 public class DotNetHook : IStageProtection
 {
     private readonly IInjector m_Injector;
-    private readonly IMethodDefSearcher m_MethodDefSearcher;
     private readonly IRenamer m_Renamer;
     private readonly ILogger m_Logger;
-    private readonly List<InstructionTokensUpdate> m_InstructionsToBeTokensUpdated;
     private readonly Random m_Random;
 
     public DotNetHook(
         IInjector injector,
-        IMethodDefSearcher methodDefSearcher,
         IRenamer renamer,
         ILogger logger)
     {
         m_Injector = injector;
-        m_MethodDefSearcher = methodDefSearcher;
         m_Renamer = renamer;
         m_Logger = logger.ForContext<DotNetHook>();
-        m_InstructionsToBeTokensUpdated = new List<InstructionTokensUpdate>();
         m_Random = new Random();
     }
 
