@@ -2,14 +2,12 @@
 global using BitMono.API.Configuration;
 global using BitMono.API.Protecting;
 global using BitMono.API.Protecting.Resolvers;
-global using BitMono.API.Protecting.Writers;
 global using BitMono.CLI.Modules;
 global using BitMono.Core.Extensions.Configuration;
 global using BitMono.Host;
 global using BitMono.Host.Modules;
 global using BitMono.Obfuscation;
 global using BitMono.Shared.Models;
-global using dnlib.DotNet;
 global using Microsoft.Extensions.Configuration;
 global using NullGuard;
 global using Serilog;
