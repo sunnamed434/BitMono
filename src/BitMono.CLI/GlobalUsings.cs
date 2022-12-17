@@ -7,6 +7,7 @@ global using BitMono.Core.Extensions.Configuration;
 global using BitMono.Host;
 global using BitMono.Host.Modules;
 global using BitMono.Obfuscation;
+global using BitMono.Obfuscation.API;
 global using BitMono.Shared.Models;
 global using Microsoft.Extensions.Configuration;
 global using NullGuard;
