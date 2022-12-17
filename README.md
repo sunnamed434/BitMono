@@ -69,3 +69,5 @@ Credits
 **[Weka](https://github.com/sasharumega)** for his advices, help and motivation 
 
 **[ConfuserEx and their Forks](https://github.com/yck1509/ConfuserEx)** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
+
+**[Kao and his blogs](https://lifeinhex.com/) thanks a lot of these blogs
