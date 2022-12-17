@@ -6,18 +6,15 @@ public class StringsEncryption : IProtection
     private readonly IInjector m_Injector;
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
-    private readonly ILogger m_Logger;
 
     public StringsEncryption(
         IInjector injector,
         DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        IRenamer renamer,
-        ILogger logger)
+        IRenamer renamer)
     {
         m_Injector = injector;
         m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
         m_Renamer = renamer;
-        m_Logger = logger.ForContext<StringsEncryption>();
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
@@ -37,7 +34,6 @@ public class StringsEncryption : IProtection
             {
                 if (methodDef.HasBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
                 {
-                    methodDef.Body.KeepOldMaxStack = true;
                     for (var i = 0; i < methodDef.Body.Instructions.Count(); i++)
                     {
                         if (methodDef.Body.Instructions[i].OpCode == OpCodes.Ldstr
