@@ -4,13 +4,13 @@
 public class FullRenamer : IProtection
 {
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly TypeDefModelCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
+    private readonly TypeDefAttributeCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
     private readonly ILogger m_Logger;
 
     public FullRenamer(
         DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        TypeDefModelCriticalAnalyzer typeDefModelCriticalAnalyzer,
+        TypeDefAttributeCriticalAnalyzer typeDefModelCriticalAnalyzer,
         IRenamer renamer,
         ILogger logger)
     {

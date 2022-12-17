@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.5.0-alpha](#v050-alpha14) |
 | [v0.4.4-alpha](#v044-alpha13) |
 | [v0.4.3-alpha](#v043-alpha12) |
 | [v0.4.2-alpha](#v042-alpha11) |
@@ -16,6 +17,15 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.5.0-alpha.14:
+#### Added:
+* Before obfuscation optmizes all method bodies (macros)
+
+#### Fixed: 
+* BitMethodDotnet Protection
+* StringsEncryption Protection
+
+
 ### v0.4.4-alpha.13:
 #### Fixed:
 * DotNetHook Protection

@@ -83,7 +83,7 @@
             }
 
             new TipsNotifier(appSettingsConfiguration, logger).Notify();
-            //await serviceProvider.DisposeAsync();
+            await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)
         {

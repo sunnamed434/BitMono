@@ -68,36 +68,6 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<TypeDefSearcher>()
-            .As<ITypeDefSearcher>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<TypeDefRemover>()
-            .As<ITypeDefRemover>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<MethodDefsSearcher>()
-            .As<IMethodDefSearcher>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<MethodDefsRemover>()
-            .As<IMethodDefRemover>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<FieldDefSearcher>()
-            .As<IFieldSearcher>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<FieldDefRemover>()
-            .As<IFieldRemover>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
         containerBuilder.RegisterType<Injector>()
             .As<IInjector>()
             .OwnedByLifetimeScope()

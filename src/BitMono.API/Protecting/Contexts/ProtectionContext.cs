@@ -13,10 +13,4 @@ public class ProtectionContext
 
     [AllowNull] public ModuleContext ModuleContext => ModuleCreationOptions.Context;
     [AllowNull] public AssemblyResolver AssemblyResolver => (AssemblyResolver)ModuleContext.AssemblyResolver;
-
-    public void ReloadModule()
-    {
-        ModuleDefMD = ModuleDefMD.Load(ModuleDefMDOutput);
-        Importer = new Importer(ModuleDefMD);
-    }
 }

@@ -1,48 +1,39 @@
-using BitMono.API.Protecting;
-using BitMono.GUI.API;
-using BitMono.GUI.Utilities.Extensions;
-using BitMono.Shared.Models;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using static BitMono.Utilities.Extensions.Collections.CollectionExtensions;
+namespace BitMono.GUI.Pages.Obfuscation;
 
-namespace BitMono.GUI.Pages.Obfuscation
+public partial class Protections
 {
-    public partial class Protections
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+    [Inject] public ICollection<IProtection> RegisteredProtections { get; set; }
+    [Inject] public IStoringProtections StoringProtections { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        [Inject] public IJSRuntime JSRuntime { get; set; }
-        [Inject] public ICollection<IProtection> RegisteredProtections { get; set; }
-        [Inject] public IStoringProtections StoringProtections { get; set; }
+        await JSRuntime.AddTooltipsAsync();
+    }
 
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+    public void EnableAll()
+    {
+        foreach (var protectionSettings in StoringProtections.Protections)
         {
-            await JSRuntime.AddTooltipsAsync();
+            protectionSettings.Enable();
         }
-
-        public void EnableAll()
+    }
+    public void DisableAll()
+    {
+        foreach (var protectionSettings in StoringProtections.Protections)
         {
-            foreach (var protectionSettings in StoringProtections.Protections)
-            {
-                protectionSettings.Enable();
-            }
+            protectionSettings.Disable();
         }
-        public void DisableAll()
-        {
-            foreach (var protectionSettings in StoringProtections.Protections)
-            {
-                protectionSettings.Disable();
-            }
-        }
-        public void MoveUp(ProtectionSettings protectionSetting)
-        {
-            var index = StoringProtections.Protections.IndexOf(protectionSetting);
-            StoringProtections.Protections.Swap(index, index - 1);
-        }
-        public void MoveDown(ProtectionSettings protectionSetting)
-        {
-            var index = StoringProtections.Protections.IndexOf(protectionSetting);
-            StoringProtections.Protections.Swap(index, index + 1);
-        }
+    }
+    public void MoveUp(ProtectionSettings protectionSetting)
+    {
+        var index = StoringProtections.Protections.IndexOf(protectionSetting);
+        StoringProtections.Protections.Swap(index, index - 1);
+    }
+    public void MoveDown(ProtectionSettings protectionSetting)
+    {
+        var index = StoringProtections.Protections.IndexOf(protectionSetting);
+        StoringProtections.Protections.Swap(index, index + 1);
     }
 }

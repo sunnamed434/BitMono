@@ -32,6 +32,13 @@ public class BitMonoObfuscator : IDisposable
         var cancellationToken = cancellationTokenSource.Token;
         cancellationToken.ThrowIfCancellationRequested();
 
+        foreach (var methodDef in m_ProtectionContext.ModuleDefMD.FindDefinitions().OfType<MethodDef>())
+        {
+            methodDef.Body.Instructions.SimplifyMacros(methodDef.Body.Variables, methodDef.Parameters);
+            methodDef.Body.Instructions.OptimizeMacros();
+
+        }
+
         foreach (var protection in m_Protections)
         {
             cancellationToken.ThrowIfCancellationRequested();
