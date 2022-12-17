@@ -3,7 +3,6 @@ global using Autofac.Extensions.DependencyInjection;
 global using BitMono.API.Configuration;
 global using BitMono.API.Protecting;
 global using BitMono.API.Protecting.Resolvers;
-global using BitMono.API.Protecting.Writers;
 global using BitMono.Core.Extensions.Configuration;
 global using BitMono.GUI.API;
 global using BitMono.GUI.Data;
