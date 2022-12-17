@@ -1,4 +1,6 @@
-﻿namespace BitMono.CLI.Modules;
+﻿using BitMono.Obfuscation.API;
+
+namespace BitMono.CLI.Modules;
 
 internal class CLIDataWriter : IDataWriter
 {
