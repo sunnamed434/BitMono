@@ -4,23 +4,17 @@
 public class StringsEncryption : IProtection
 {
     private readonly IInjector m_Injector;
-    private readonly IFieldSearcher m_FieldSearcher;
-    private readonly IMethodDefSearcher m_MethodSearcher;
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
     private readonly ILogger m_Logger;
 
     public StringsEncryption(
         IInjector injector,
-        IFieldSearcher fieldSearcher,
-        IMethodDefSearcher methodSearcher,
         DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
         IRenamer renamer,
         ILogger logger)
     {
         m_Injector = injector;
-        m_FieldSearcher = fieldSearcher;
-        m_MethodSearcher = methodSearcher;
         m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
         m_Renamer = renamer;
         m_Logger = logger.ForContext<StringsEncryption>();

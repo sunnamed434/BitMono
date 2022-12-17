@@ -1,31 +1,24 @@
-﻿using Serilog.Core;
-using Serilog.Events;
-using Serilog.Formatting;
-using Serilog.Formatting.Display;
-using System.Collections.Concurrent;
+﻿namespace BitMono.GUI.Data;
 
-namespace BitMono.GUI.Data
+internal class HandlerLogEventSink : ILogEventSink
 {
-    internal class HandlerLogEventSink : ILogEventSink
+    public event Action OnEnqueued;
+    private readonly ITextFormatter m_TextFormatter;
+
+    public HandlerLogEventSink()
     {
-        public event Action OnEnqueued;
-        private readonly ITextFormatter m_TextFormatter;
+        m_TextFormatter = new MessageTemplateTextFormatter("{Timestamp} [{Level}] {Message}{Exception}");
+        Queue = new ConcurrentQueue<string>();
+    }
 
-        public HandlerLogEventSink()
-        {
-            m_TextFormatter = new MessageTemplateTextFormatter("{Timestamp} [{Level}] {Message}{Exception}");
-            Queue = new ConcurrentQueue<string>();
-        }
-
-        public ConcurrentQueue<string> Queue { get; }
+    public ConcurrentQueue<string> Queue { get; }
 
 
-        void ILogEventSink.Emit(LogEvent logEvent)
-        {
-            var renderSpace = new StringWriter();
-            m_TextFormatter.Format(logEvent, renderSpace);
-            Queue.Enqueue(renderSpace.ToString());
-            OnEnqueued?.Invoke();
-        }
+    void ILogEventSink.Emit(LogEvent logEvent)
+    {
+        var renderSpace = new StringWriter();
+        m_TextFormatter.Format(logEvent, renderSpace);
+        Queue.Enqueue(renderSpace.ToString());
+        OnEnqueued?.Invoke();
     }
 }

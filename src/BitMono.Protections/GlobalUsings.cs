@@ -1,8 +1,6 @@
 ﻿global using BitMono.API.Protecting;
 global using BitMono.API.Protecting.Contexts;
 global using BitMono.API.Protecting.Injection;
-global using BitMono.API.Protecting.Injection.FieldDefs;
-global using BitMono.API.Protecting.Injection.MethodDefs;
 global using BitMono.API.Protecting.Pipeline;
 global using BitMono.API.Protecting.Renaming;
 global using BitMono.Core.Protecting.Analyzing.DnlibDefs;

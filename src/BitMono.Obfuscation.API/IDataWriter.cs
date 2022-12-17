@@ -1,4 +1,4 @@
-﻿namespace BitMono.API.Protecting.Writers;
+﻿namespace BitMono.Obfuscation.API;
 
 public interface IDataWriter
 {

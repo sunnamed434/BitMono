@@ -3,7 +3,6 @@ global using BitMono.API.Protecting;
 global using BitMono.API.Protecting.Contexts;
 global using BitMono.API.Protecting.Pipeline;
 global using BitMono.API.Protecting.Resolvers;
-global using BitMono.API.Protecting.Writers;
 global using BitMono.Core.Extensions.Protections;
 global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Obfuscation.API;
