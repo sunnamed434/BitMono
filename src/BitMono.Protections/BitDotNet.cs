@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(BitDotNet))]
 public class BitDotNet : IPacker
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
