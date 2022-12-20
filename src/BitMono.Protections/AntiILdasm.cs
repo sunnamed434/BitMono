@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(AntiILdasm))]
 public class AntiILdasm : IProtection
 {
     private readonly IInjector m_Injector;
@@ -12,7 +11,7 @@ public class AntiILdasm : IProtection
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
-        m_Injector.InjectAttribute(context.ModuleDefMD, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute));
+        m_Injector.InjectAttribute(context.Module, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute));
         return Task.CompletedTask;
     }
 }
