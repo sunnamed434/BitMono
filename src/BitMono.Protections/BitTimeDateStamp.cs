@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(BitTimeDateStamp))]
 public class BitTimeDateStamp : IPacker
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
