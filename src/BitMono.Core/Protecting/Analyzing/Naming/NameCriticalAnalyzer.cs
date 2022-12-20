@@ -1,7 +1,7 @@
 ﻿namespace BitMono.Core.Protecting.Analyzing.Naming;
 public class NameCriticalAnalyzer :
-    ICriticalAnalyzer<TypeDef>,
-    ICriticalAnalyzer<MethodDef>
+    ICriticalAnalyzer<TypeDefinition>,
+    ICriticalAnalyzer<MethodDefinition>
 {
     private readonly TypeDefCriticalInterfacesCriticalAnalyzer m_TypeDefCriticalInterfacesCriticalAnalyzer;
     private readonly TypeDefCriticalBaseTypesCriticalAnalyzer m_TypeDefCriticalBaseTypesCriticalAnalyzer;
@@ -17,22 +17,22 @@ public class NameCriticalAnalyzer :
         m_Configuration = configuration.Configuration;
     }
 
-    public bool NotCriticalToMakeChanges(TypeDef typeDef)
+    public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
-        if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+        if (m_TypeDefCriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) == false)
         {
             return false;
         }
-        if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(typeDef) == false)
+        if (m_TypeDefCriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) == false)
         {
             return false;
         }
         return true;
     }
-    public bool NotCriticalToMakeChanges(MethodDef methodDef)
+    public bool NotCriticalToMakeChanges(MethodDefinition methodDefinition)
     {
         var criticalMethodNames = m_Configuration.GetCriticalMethods();
-        if (criticalMethodNames.Any(c => c.Equals(methodDef.Name)))
+        if (criticalMethodNames.Any(c => c.Equals(methodDefinition.Name)))
         {
             return false;
         }
