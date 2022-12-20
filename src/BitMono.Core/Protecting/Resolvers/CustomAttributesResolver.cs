@@ -10,20 +10,13 @@ public class CustomAttributesResolver : ICustomAttributesResolver
         {
             TAttribute attribute = null;
             var customAttribute = from.CustomAttributes[i];
-            foreach (var customAttributeProperty in customAttribute.Properties)
+            foreach (var customAttributeNamedArgument in customAttribute.Signature.NamedArguments)
             {
-                if (customAttribute.TypeFullName.Equals(typeof(TAttribute).FullName))
+                if (customAttribute.Constructor.DeclaringType.Equals(typeof(TAttribute).FullName))
                 {
                     attribute = Activator.CreateInstance<TAttribute>();
-                    var propertyInfo = typeof(TAttribute).GetProperty(customAttributeProperty.Name);
-                    if (customAttributeProperty.Value is UTF8String utf8String)
-                    {
-                        propertyInfo.SetValue(attribute, utf8String.String);
-                    }
-                    else
-                    {
-                        propertyInfo.SetValue(attribute, customAttributeProperty.Value);
-                    }
+                    var propertyInfo = typeof(TAttribute).GetProperty(customAttributeNamedArgument.MemberName);
+                    propertyInfo.SetValue(attribute, customAttributeNamedArgument.Argument.Element);
                     if (strip?.Invoke(attribute) == true)
                     {
                         from.CustomAttributes.RemoveAt(i);
