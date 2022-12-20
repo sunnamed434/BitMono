@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Core.Protecting.Analyzing.TypeDefs;
 
-public class TypeDefCriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDef>
+public class TypeDefCriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly IConfiguration m_Configuration;
 
@@ -9,10 +9,10 @@ public class TypeDefCriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeD
         m_Configuration = configuration.Configuration;
     }
 
-    public bool NotCriticalToMakeChanges(TypeDef typeDef)
+    public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
         var criticalInterfaces = m_Configuration.GetCriticalInterfaces();
-        if (typeDef.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
+        if (typeDefinition.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
         {
             return false;
         }
