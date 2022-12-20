@@ -93,7 +93,6 @@
 		<ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
 		<ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
 		<ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
-		<ProjectReference Include="..\dnlib\src\dnlib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
