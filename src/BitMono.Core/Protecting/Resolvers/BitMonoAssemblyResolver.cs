@@ -18,22 +18,21 @@ public class BitMonoAssemblyResolver
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            context.AssemblyResolver.AddToCache(AssemblyDef.Load(dependencyData));
+            //context.AssemblyResolver.AddToCache(AssemblyDefinition.FromBytes(dependencyData), context.Module.Assembly);
         }
-
-        foreach (var assemblyRef in context.ModuleDefMD.GetAssemblyRefs())
+        foreach (var assemblyReference in context.Module.AssemblyReferences)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             try
             {
-                m_Logger.Information("Resolving assembly: " + assemblyRef.Name);
-                context.ModuleCreationOptions.Context.AssemblyResolver.ResolveThrow(assemblyRef, context.ModuleDefMD);
+                m_Logger.Information("Resolving assembly: " + assemblyReference.Name);
+                context.AssemblyResolver.Resolve(assemblyReference);
             }
             catch (Exception ex)
             {
                 resolvingSucceed = false;
-                m_Logger.Error("Failed to resolve dependency {0}, message: ", assemblyRef.FullName, ex.Message);
+                m_Logger.Error("Failed to resolve dependency {0}, message: ", assemblyReference.FullName, ex.Message);
             }
         }
         return resolvingSucceed;
