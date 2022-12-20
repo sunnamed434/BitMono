@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(AntiDebugBreakpoints))]
 public class AntiDebugBreakpoints : IProtection
 {
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
@@ -16,7 +15,7 @@ public class AntiDebugBreakpoints : IProtection
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
-        var threadSleepMethods = new List<IMethod>
+        /*var threadSleepMethods = new List<IMethod>
         {
             context.Importer.Import(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
             {
@@ -121,7 +120,7 @@ public class AntiDebugBreakpoints : IProtection
                     }
                 }
             }
-        }
+        }*/
         return Task.CompletedTask;
     }
 }
