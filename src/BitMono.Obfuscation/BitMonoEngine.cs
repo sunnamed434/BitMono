@@ -3,18 +3,18 @@
 public class BitMonoEngine
 {
     private readonly IDataWriter m_DataWriter;
-    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
+    private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
-    private readonly List<IDnlibDefResolver> m_DnlibDefResolvers;
+    private readonly List<IMemberDefinitionfResolver> m_DnlibDefResolvers;
     private readonly List<IProtection> m_Protections;
     private readonly List<ProtectionSettings> m_ProtectionSettings;
     private readonly ILogger m_Logger;
 
     public BitMonoEngine(
         IDataWriter dataWriter,
-        IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
+        IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
-        List<IDnlibDefResolver> dnlibDefResolvers,
+        List<IMemberDefinitionfResolver> dnlibDefResolvers,
         List<IProtection> protections,
         List<ProtectionSettings> protectionSettings,
         ILogger logger)
@@ -33,12 +33,12 @@ public class BitMonoEngine
         cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         var moduleDefMDCreationResult = moduleCreator.Create();
-        var runtimeModuleDefMD = ModuleDefMD.Load(typeof(BitMono.Runtime.Data).Module);
-        var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefMD, context).Create();
+        var runtimeModuleDefinition = ModuleDefinition.FromModule(typeof(BitMono.Runtime.Data).Module);
+        var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefinition, context).Create();
         new OutputFilePathCreator().Create(context);
-        m_Logger.Information("Loaded Module {0}", protectionContext.ModuleDefMD.Name);
+        m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name);
 
-        var protectionsSortResult = new ProtectionsSorter(m_DnlibDefObfuscationAttributeResolver, protectionContext.ModuleDefMD.Assembly, m_Logger)
+        var protectionsSortResult = new ProtectionsSorter(m_DnlibDefObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
             .Sort(m_Protections, m_ProtectionSettings);
 
         if (protectionsSortResult.HasProtections == false)
