@@ -1,25 +1,28 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class SafeDnlibDefResolver : IDnlibDefResolver
+public class SafeDnlibDefResolver : IMemberDefinitionfResolver
 {
-    private readonly IDnlibDefObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
+    private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
 
     public SafeDnlibDefResolver(
-        IDnlibDefObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
+        IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceCriticalAnalyzer)
     {
         m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
         m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceCriticalAnalyzer;
     }
 
-    public bool Resolve(string feature, IDnlibDef dnlibDef)
+    public bool Resolve(string feature, IMemberDefinition memberDefenition)
     {
-        if (m_DnlibDefObfuscationAttributeResolver.Resolve(feature, dnlibDef))
+        if (memberDefenition is IHasCustomAttribute from)
         {
-            return false;
+            if (m_DnlibDefObfuscationAttributeResolver.Resolve(feature, from))
+            {
+                return false;
+            }
         }
-        if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(dnlibDef) == false)
+        if (m_DnlibDefSpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(memberDefenition) == false)
         {
             return false;
         }
