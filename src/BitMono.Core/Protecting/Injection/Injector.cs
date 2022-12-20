@@ -2,92 +2,89 @@
 
 public class Injector : IInjector
 {
-    public FieldDef InjectInvisibleArray(ModuleDefMD moduleDefMD, TypeDef typeDef, byte[] data, string name)
+    public FieldDefinition InjectInvisibleArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
     {
-        var importer = new Importer(moduleDefMD);
-        var valueTypeRef = importer.Import(typeof(ValueType));
-        var classWithLayout = new TypeDefUser("<>c", valueTypeRef);
-        classWithLayout.Attributes |= TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
-        classWithLayout.ClassLayout = new ClassLayoutUser(1, (uint)data.Length);
-        var compilerGeneratedAttribute = InjectCompilerGeneratedAttribute(moduleDefMD);
+        var valueTypeRef = module.DefaultImporter.ImportType(typeof(ValueType));
+        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.Sealed | TypeAttributes.ExplicitLayout, valueTypeRef);
+        classWithLayout.ClassLayout = new AsmResolver.DotNet.ClassLayout(1, (uint)data.Length);
+        var compilerGeneratedAttribute = InjectCompilerGeneratedAttribute(module);
         classWithLayout.CustomAttributes.Add(compilerGeneratedAttribute);
 
-        typeDef.NestedTypes.Add(classWithLayout);
+        type.NestedTypes.Add(classWithLayout);
 
-        var fieldWithRVA = new FieldDefUser("dummy", new FieldSig(classWithLayout.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly | FieldAttributes.HasFieldRVA);
-        fieldWithRVA.InitialValue = data;
+        var fieldWithRVA = new FieldDefinition("dummy", FieldAttributes.Static | FieldAttributes.Assembly | FieldAttributes.HasFieldRva, new FieldSignature(classWithLayout.ToTypeSignature()));
+        //fieldWithRVA.InitialValue = data;
         classWithLayout.Fields.Add(fieldWithRVA);
 
-        var byteArrayRef = importer.Import(typeof(byte[]));
-        var fieldInjectedArray = new FieldDefUser(name, new FieldSig(byteArrayRef.ToTypeSig()), FieldAttributes.Static | FieldAttributes.Assembly);
+        var byteArrayRef = module.DefaultImporter.ImportType(typeof(byte[]));
+        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Static | FieldAttributes.Assembly, new FieldSignature(byteArrayRef.ToTypeSignature()));
         classWithLayout.Fields.Add(fieldInjectedArray);
 
-        var systemByte = importer.Import(typeof(byte));
-        var initializeArrayMethod = importer.Import(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
+        var systemByte = module.DefaultImporter.ImportType(typeof(byte));
+        var initializeArrayMethod = module.DefaultImporter.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
         {
             typeof(Array),
             typeof(RuntimeFieldHandle)
         }));
 
-        var cctor = classWithLayout.FindOrCreateStaticConstructor();
-        var cctorBodyInstructions = cctor.Body.Instructions;
-        cctorBodyInstructions.Insert(0, new Instruction(OpCodes.Ldc_I4, data.Length));
-        cctorBodyInstructions.Insert(1, new Instruction(OpCodes.Newarr, systemByte));
-        cctorBodyInstructions.Insert(2, new Instruction(OpCodes.Dup));
-        cctorBodyInstructions.Insert(3, new Instruction(OpCodes.Ldtoken, fieldWithRVA));
-        cctorBodyInstructions.Insert(4, new Instruction(OpCodes.Call, initializeArrayMethod));
-        cctorBodyInstructions.Insert(5, new Instruction(OpCodes.Stsfld, fieldInjectedArray));
+        var cctor = classWithLayout.GetOrCreateStaticConstructor();
+        var cctorBodyInstructions = cctor.CilMethodBody.Instructions;
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Ldc_I4, data.Length));
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Newarr, systemByte));
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Dup));
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Ldtoken, fieldWithRVA));
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Call, initializeArrayMethod));
+        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray));
         return fieldInjectedArray;
     }
-    public TypeDef CreateInvisibleType(ModuleDefMD moduleDefMD, string name = null)
+    public TypeDefinition CreateInvisibleType(ModuleDefinition module, string name = null)
     {
-        var invislbeTypeDef = new TypeDefUser(name ?? "<PrivateImplementationDetails>", moduleDefMD.CorLibTypes.Object.ToTypeDefOrRef());
-        InjectCompilerGeneratedAttribute(moduleDefMD, invislbeTypeDef);
+        var invislbeTypeDef = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, module.CorLibTypeFactory.Object.ToTypeDefOrRef());
+        InjectCompilerGeneratedAttribute(module, invislbeTypeDef);
         invislbeTypeDef.Attributes |= TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
         return invislbeTypeDef;
     }
-    public TypeDef CreateInvisibleValueType(ModuleDefMD moduleDefMD, string name = null)
+    public TypeDefinition CreateInvisibleValueType(ModuleDefinition module, string name = null)
     {
-        var importer = new Importer(moduleDefMD);
-        var invislbeTypeDef = new TypeDefUser(name ?? "<PrivateImplementationDetails>", importer.Import(typeof(ValueType)));
-        InjectCompilerGeneratedAttribute(moduleDefMD, invislbeTypeDef);
+        var invislbeTypeDef = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedAssembly, module.DefaultImporter.ImportType(typeof(ValueType)));
+        InjectCompilerGeneratedAttribute(module, invislbeTypeDef);
         invislbeTypeDef.IsAbstract = false;
         invislbeTypeDef.IsSealed = false;
         invislbeTypeDef.IsBeforeFieldInit = false;
         return invislbeTypeDef;
     }
-    public TypeDef InjectInvisibleValueType(ModuleDefMD moduleDefMD, TypeDef typeDef, string name = null)
+    public TypeDefinition InjectInvisibleValueType(ModuleDefinition module, TypeDefinition type, string name = null)
     {
-        var result = CreateInvisibleValueType(moduleDefMD, name);
-        typeDef.NestedTypes.Add(result);
+        var result = CreateInvisibleValueType(module, name);
+        type.NestedTypes.Add(result);
         return result;
     }
-    public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null)
+    public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefinition module, TypeDefinition type = null)
     {
-        var compilerGeneratedAttributeType = moduleDefMD.CorLibTypes.GetTypeRef("System.Runtime.CompilerServices", nameof(CompilerGeneratedAttribute));
-        var compilerGeneratedCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), compilerGeneratedAttributeType);
+        var compilerGeneratedAttributeType = module.DefaultImporter.ImportType(typeof(CompilerGeneratedAttribute));
+        var compilerGeneratedCtor = new MemberReference(compilerGeneratedAttributeType, ".ctor", MethodSignature.CreateInstance(module.CorLibTypeFactory.Void));
         var compilerGeneratedAttribute = new CustomAttribute(compilerGeneratedCtor);
-        if (typeDef != null)
+        if (type != null)
         {
-            typeDef.CustomAttributes.Add(compilerGeneratedAttribute);
+            type.CustomAttributes.Add(compilerGeneratedAttribute);
         }
         return compilerGeneratedAttribute;
     }
-    public CustomAttribute InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text)
+    public CustomAttribute InjectAttributeWithContent(ModuleDefinition module, string @namespace, string @name, string text)
     {
-        var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
-        var attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void, moduleDefMD.CorLibTypes.String), attributeRef);
+        var attributeTypeReference = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name);
+        var attributeCtor = new MemberReference(attributeTypeReference, null, MethodSignature.CreateInstance(module.CorLibTypeFactory.Void));
         var customAttribute = new CustomAttribute(attributeCtor);
-        customAttribute.ConstructorArguments.Add(new CAArgument(moduleDefMD.CorLibTypes.String, text));
-        moduleDefMD.CustomAttributes.Add(customAttribute);
+        customAttribute.Signature.FixedArguments.Add(new CustomAttributeArgument(module.CorLibTypeFactory.String, text));
+        module.CustomAttributes.Add(customAttribute);
         return customAttribute;
     }
-    public CustomAttribute InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name)
+    public CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string @name)
     {
-        var attributeRef = moduleDefMD.CorLibTypes.GetTypeRef(@namespace, @name);
-        var attributeCtor = new MemberRefUser(moduleDefMD, ".ctor", MethodSig.CreateInstance(moduleDefMD.CorLibTypes.Void), attributeRef);
+        var attributeTypeReference = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name);
+        var attributeCtor = new MemberReference(attributeTypeReference, null, MethodSignature.CreateInstance(module.CorLibTypeFactory.Void));
         var customAttribute = new CustomAttribute(attributeCtor);
-        moduleDefMD.CustomAttributes.Add(customAttribute);
+        module.CustomAttributes.Add(customAttribute);
         return customAttribute;
     }
 }
