@@ -2,7 +2,7 @@
 
 public class DnlibDefsResolver
 {
-    public IEnumerable<IDnlibDef> Resolve(string feature, IEnumerable<IDnlibDef> definitions, IEnumerable<IDnlibDefResolver> resolvers)
+    public IEnumerable<IMemberDefinition> Resolve(string feature, IEnumerable<IMemberDefinition> definitions, IEnumerable<IMemberDefinitionfResolver> resolvers)
     {
         foreach (var definition in definitions) 
         {
