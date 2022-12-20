@@ -3,16 +3,16 @@
 public class ProtectionContextCreator
 {
     private readonly ModuleCreationResult m_ModuleCreationResult;
-    private readonly ModuleDefMD m_RuntimeModuleDefMD;
+    private readonly ModuleDefinition m_RuntimeModuleDefinition;
     private readonly BitMonoContext m_Context;
 
     public ProtectionContextCreator(
         ModuleCreationResult moduleCreationResult, 
-        ModuleDefMD runtimeModuleDefMD, 
+        ModuleDefinition runtimeModuleDefinition, 
         BitMonoContext context)
     {
         m_ModuleCreationResult = moduleCreationResult;
-        m_RuntimeModuleDefMD = runtimeModuleDefMD;
+        m_RuntimeModuleDefinition = runtimeModuleDefinition;
         m_Context = context;
     }
 
@@ -20,12 +20,11 @@ public class ProtectionContextCreator
     {
         return new ProtectionContext
         {
-            ModuleDefMD = m_ModuleCreationResult.ModuleDefMD,
-            ModuleCreationOptions = m_ModuleCreationResult.ModuleCreationOptions,
-            ModuleWriterOptions = m_ModuleCreationResult.ModuleWriterOptions,
-            RuntimeModuleDefMD = m_RuntimeModuleDefMD,
-            Importer = new Importer(m_ModuleCreationResult.ModuleDefMD),
-            RuntimeImporter = new Importer(m_RuntimeModuleDefMD, ImporterOptions.TryToUseDefs),
+            Module = m_ModuleCreationResult.Module,
+            RuntimeModule = m_RuntimeModuleDefinition,
+            ModuleReaderParameters = m_ModuleCreationResult.ModuleReaderParameters,
+            PEImageBuilder = m_ModuleCreationResult.PEImageBuilder,
+            RuntimeImporter = new ReferenceImporter(m_RuntimeModuleDefinition),
             BitMonoContext = m_Context,
         };
     }
