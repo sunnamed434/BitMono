@@ -51,8 +51,8 @@
             var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-            var dnlibDefObfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefObfuscationAttributeResolver>();
-            var dnlibDefResolvers = serviceProvider.LifetimeScope.Resolve<ICollection<IDnlibDefResolver>>().ToList();
+            var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeResolver>();
+            var memberDefinitionResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberDefinitionfResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
@@ -63,9 +63,9 @@
 
             await new BitMonoEngine(
                 moduleDefMDWriter,
-                dnlibDefObfuscationAttributeResolver,
+                obfuscationAttributeResolver,
                 obfuscationConfiguration,
-                dnlibDefResolvers,
+                memberDefinitionResolver,
                 protections,
                 protectionSettings,
                 logger)
