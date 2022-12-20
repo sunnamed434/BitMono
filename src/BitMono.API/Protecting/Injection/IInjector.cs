@@ -2,11 +2,11 @@
 
 public interface IInjector
 {
-    FieldDef InjectInvisibleArray(ModuleDefMD moduleDefMD, TypeDef typeDef, byte[] data, string name);
-    TypeDef CreateInvisibleType(ModuleDefMD moduleDefMD, string name = null);
-    TypeDef CreateInvisibleValueType(ModuleDefMD moduleDefMD, string name = null);
-    TypeDef InjectInvisibleValueType(ModuleDefMD moduleDefMD, TypeDef typeDef, string name = null);
-    CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefMD moduleDefMD, TypeDef typeDef = null);
-    CustomAttribute InjectAttributeWithContent(ModuleDefMD moduleDefMD, string @namespace, string @name, string text);
-    CustomAttribute InjectAttribute(ModuleDefMD moduleDefMD, string @namespace, string @name);
+    FieldDefinition InjectInvisibleArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name);
+    TypeDefinition CreateInvisibleType(ModuleDefinition module, string name = null);
+    TypeDefinition CreateInvisibleValueType(ModuleDefinition module, string name = null);
+    TypeDefinition InjectInvisibleValueType(ModuleDefinition module, TypeDefinition type, string name = null);
+    CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefinition module, TypeDefinition type = null);
+    CustomAttribute InjectAttributeWithContent(ModuleDefinition module, string @namespace, string @name, string text);
+    CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string @name);
 }
