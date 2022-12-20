@@ -22,7 +22,7 @@ public class FullRenamer : IProtection
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
-        foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
+        /*foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
         {
             if (typeDef.IsGlobalModuleType == false
                 && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
@@ -55,7 +55,7 @@ public class FullRenamer : IProtection
                     }
                 }
             }
-        }
+        }*/
         return Task.CompletedTask;
     }
 }
