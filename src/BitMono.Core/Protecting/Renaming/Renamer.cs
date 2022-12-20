@@ -20,47 +20,32 @@ public class Renamer : IRenamer
         var randomStringThree = strings[random.Next(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
-    public void Rename(IDnlibDef dnlibDef)
+    public void Rename(IMemberDefinition memberDefinition)
     {
-        if (dnlibDef is TypeDef typeDef)
+        if (memberDefinition is TypeDefinition typeDefinition)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition))
             {
-                typeDef.Name = RenameUnsafely();
+                typeDefinition.Name = RenameUnsafely();
             }
         }
-        if (dnlibDef is MethodDef methodDef)
+        if (memberDefinition is MethodDefinition methodDefinition)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(methodDefinition))
             {
-                methodDef.Name = RenameUnsafely();
+                methodDefinition.Name = RenameUnsafely();
             }
         }
-        if (dnlibDef is FieldDef fieldDef)
+        if (memberDefinition is FieldDefinition fieldDefinition)
         {
-            fieldDef.Name = RenameUnsafely();
+            fieldDefinition.Name = RenameUnsafely();
         }
     }
-    public void Rename(IFullName fullName)
+    public void Rename(params IMemberDefinition[] memberDefinitions)
     {
-        fullName.Name = RenameUnsafely();
-    }
-    public void Rename(params IFullName[] fullNames)
-    {
-        for (int i = 0; i < fullNames.Length; i++)
+        for (int i = 0; i < memberDefinitions.Length; i++)
         {
-            Rename(fullNames[i]);
+            Rename(memberDefinitions[i]);
         }
-    }
-    public void Rename(params IDnlibDef[] dnlibDefs)
-    {
-        for (int i = 0; i < dnlibDefs.Length; i++)
-        {
-            Rename(dnlibDefs[i]);
-        }
-    }
-    public void Rename(IVariable variable)
-    {
-        variable.Name = RenameUnsafely();
     }
 }
