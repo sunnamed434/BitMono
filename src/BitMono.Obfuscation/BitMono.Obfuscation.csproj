@@ -34,7 +34,6 @@
     <ProjectReference Include="..\BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj" />
     <ProjectReference Include="..\BitMono.Runtime\BitMono.Runtime.csproj" />
     <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
-    <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
   </ItemGroup>
 
 </Project>
