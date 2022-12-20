@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Core.Protecting.Analyzing.DnlibDefs;
 
-public class DnlibDefSpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IDnlibDef>
+public class DnlibDefSpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMemberDefinition>
 {
     private readonly IConfiguration m_Configuration;
 
@@ -9,7 +9,7 @@ public class DnlibDefSpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IDnli
         m_Configuration = configuration.Configuration;
     }
 
-    public bool NotCriticalToMakeChanges(IDnlibDef dnlibDef)
+    public bool NotCriticalToMakeChanges(IMemberDefinition memberDefinition)
     {
         if (m_Configuration.GetValue<bool>(nameof(Obfuscation.SpecificNamespacesObfuscationOnly)) == false)
         {
@@ -17,23 +17,23 @@ public class DnlibDefSpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IDnli
         }
 
         var specificNamespaces = m_Configuration.GetSpecificNamespaces();
-        if (dnlibDef is TypeDef typeDef && typeDef.HasNamespace()) 
+        if (memberDefinition is TypeDefinition typeDefinition && typeDefinition.HasNamespace()) 
         {
-            if (specificNamespaces.Any(s => s.Equals(typeDef.Namespace.String)) == false)
+            if (specificNamespaces.Any(s => s.Equals(typeDefinition.Namespace.Value)) == false)
             {
                 return false;
             }
         }
-        if (dnlibDef is MethodDef methodDef && methodDef.DeclaringType.HasNamespace())
+        if (memberDefinition is MethodDefinition methodDefinition && methodDefinition.DeclaringType.HasNamespace())
         {
-            if (specificNamespaces.Any(s => s.Equals(methodDef.DeclaringType.Namespace.String)) == false)
+            if (specificNamespaces.Any(s => s.Equals(methodDefinition.DeclaringType.Namespace.Value)) == false)
             {
                 return false;
             }
         }
-        if (dnlibDef is FieldDef fieldDef && fieldDef.DeclaringType.HasNamespace())
+        if (memberDefinition is FieldDefinition fieldDefinition && fieldDefinition.DeclaringType.HasNamespace())
         {
-            if (specificNamespaces.Any(s => s.Equals(fieldDef.DeclaringType.Namespace.String)) == false)
+            if (specificNamespaces.Any(s => s.Equals(fieldDefinition.DeclaringType.Namespace.Value)) == false)
             {
                 return false;
             }
