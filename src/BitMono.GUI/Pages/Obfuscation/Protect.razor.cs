@@ -8,7 +8,7 @@ public partial class Protect
 
     [Inject] public ILogger Logger { get; set; }
     [Inject] public IBitMonoAppSettingsConfiguration Configuration { get; set; }
-    [Inject] public ICollection<IDnlibDefResolver> DnlibDefResolvers { get; set; }
+    [Inject] public ICollection<IMemberDefinitionfResolver> DnlibDefResolvers { get; set; }
     [Inject] public ICollection<IProtection> Protections { get; set; }
     [Inject] public IStoringProtections StoringProtections { get; set; }
     [Inject] public IServiceProvider ServiceProvider { get; set; }
@@ -38,7 +38,7 @@ public partial class Protect
 
                 var obfuscationConfiguration = ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
                 var appSettingsConfiguration = ServiceProvider.GetRequiredService<IBitMonoAppSettingsConfiguration>();
-                var dnlibDefObfuscationAttributeResolver = ServiceProvider.GetRequiredService<IDnlibDefObfuscationAttributeResolver>();
+                var dnlibDefObfuscationAttributeResolver = ServiceProvider.GetRequiredService<IObfuscationAttributeResolver>();
 
                 var dependencies = Directory.GetFiles(_dependenciesDirectoryName);
                 var dependeciesData = new List<byte[]>();
