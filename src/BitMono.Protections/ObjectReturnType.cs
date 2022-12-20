@@ -1,38 +1,31 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(ObjectReturnType))]
 public class ObjectReturnType : IProtection
 {
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly ILogger m_Logger;
 
-    public ObjectReturnType(
-        DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer,
-        ILogger logger)
+    public ObjectReturnType(DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer)
     {
         m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
-        m_Logger = logger.ForContext<ObjectReturnType>();
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
-        foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
+        var boolean = context.Module.CorLibTypeFactory.Boolean;
+        var @object = context.Module.CorLibTypeFactory.Object;
+        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            foreach (var methodDef in typeDef.Methods.ToArray())
+            if (method.Signature.ReturnsValue && method.Signature.ReturnType != boolean)
             {
-                if (methodDef.HasReturnType
-                    && methodDef.ReturnType != context.ModuleDefMD.CorLibTypes.Boolean)
+                if (method.IsConstructor == false && method.IsVirtual == false
+                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method)
+                    && method.NotAsync())
                 {
-                    if (methodDef.IsConstructor == false && methodDef.IsVirtual == false
-                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef)
-                        && methodDef.NotAsync())
+                    if (method.IsSetMethod == false && method.IsGetMethod == false)
                     {
-                        if (methodDef.IsSetter == false && methodDef.IsGetter == false)
+                        if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn) == false)
                         {
-                            if (methodDef.Parameters.Any(p => p.HasParamDef && (p.ParamDef.IsOut || p.ParamDef.IsIn)) == false)
-                            {
-                                methodDef.ReturnType = context.ModuleDefMD.CorLibTypes.Object;
-                            }
+                            method.Signature.ReturnType = @object;
                         }
                     }
                 }
