@@ -73,8 +73,8 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<DnlibDefObfuscationAttributeResolver>()
-            .As<IDnlibDefObfuscationAttributeResolver>()
+        containerBuilder.RegisterType<ObfuscationAttributeResolver>()
+            .As<IObfuscationAttributeResolver>()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
@@ -88,14 +88,14 @@ public class BitMonoModule : Module
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IObfuscationAttributeExcludingResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IObfuscationAttributeExcludeResolver)) != null)
             .AsImplementedInterfaces()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMethodImplAttributeExcludingResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IMethodImplAttributeExcludeResolver)) != null)
             .AsImplementedInterfaces()
             .OwnedByLifetimeScope()
             .SingleInstance();
@@ -125,7 +125,7 @@ public class BitMonoModule : Module
         containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
             .PublicOnly()
             .Where(t =>
-                t.GetInterface(nameof(IDnlibDefResolver)) != null)
+                t.GetInterface(nameof(IMemberDefinitionfResolver)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
