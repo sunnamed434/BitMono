@@ -7,7 +7,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true)](https://ci.appveyor.com/project/sunnamed434/bitmono)
 [![Join the chat at https://gitter.im/BitMonoSpeech/community](https://badges.gitter.im/BitMonoSpeech/community.svg)](https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as fork of .NET Framework but with custom bugs or Unity. Which uses its own fork of **[dnlib](https://github.com/sunnamed434/dnlib)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install the lastest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
+BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as fork of .NET Framework but with custom bugs or Unity. Which uses its own fork of **[dnlib](https://github.com/sunnamed434/dnlib)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install the latest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
