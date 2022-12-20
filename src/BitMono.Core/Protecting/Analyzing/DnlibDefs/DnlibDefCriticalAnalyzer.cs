@@ -1,28 +1,28 @@
 ﻿namespace BitMono.Core.Protecting.Analyzing.DnlibDefs;
 
-public class DnlibDefCriticalAnalyzer : ICriticalAnalyzer<IDnlibDef>
+public class DnlibDefCriticalAnalyzer : ICriticalAnalyzer<IMemberDefinition>
 {
-    public bool NotCriticalToMakeChanges(IDnlibDef dnlibDef)
+    public bool NotCriticalToMakeChanges(IMemberDefinition memberDefinition)
     {
-        if (dnlibDef is TypeDef typeDef)
+        if (memberDefinition is TypeDefinition typeDef)
         {
             return typeDef.IsRuntimeSpecialName == false;
         }
-        if (dnlibDef is FieldDef fieldDef)
+        if (memberDefinition is FieldDefinition fieldDef)
         {
             return fieldDef.IsRuntimeSpecialName == false
                 && fieldDef.IsLiteral == false
                 && fieldDef.DeclaringType.IsEnum == false;
         }
-        if (dnlibDef is MethodDef methodDef)
+        if (memberDefinition is MethodDefinition methodDefinition)
         {
-            return methodDef.IsRuntimeSpecialName && methodDef.DeclaringType.IsForwarder
+            return methodDefinition.IsRuntimeSpecialName && methodDefinition.DeclaringType.IsForwarder
                 ? false
                 : true;
         }
-        if (dnlibDef is EventDef eventDef)
+        if (memberDefinition is EventDefinition eventDefinition)
         {
-            return eventDef.IsRuntimeSpecialName == false;
+            return eventDefinition.IsRuntimeSpecialName == false;
         }
         return true;
     }
