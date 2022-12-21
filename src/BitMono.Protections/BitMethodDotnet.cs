@@ -36,9 +36,10 @@ public class BitMethodDotnet : IStageProtection
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                method.CilMethodBody.Instructions.Insert(0, new CilInstruction(CilOpCodes.Br_S));
-                method.CilMethodBody.Instructions.Insert(1, new CilInstruction(CilOpCodes.Constrained));
-                method.CilMethodBody.Instructions[0].Operand = method.CilMethodBody.Instructions[3];
+                var label = method.CilMethodBody.Instructions[randomMethodBodyIndex].CreateLabel();
+                method.CilMethodBody.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
+                method.CilMethodBody.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
+                method.CilMethodBody.Instructions[randomMethodBodyIndex].Operand = label;
             }
         }
         return Task.CompletedTask;
