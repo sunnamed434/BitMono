@@ -2,12 +2,12 @@
 
 public class ProtectionsSorter
 {
-    private readonly BitMono.API.Protecting.Resolvers.IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
+    private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly AssemblyDefinition m_AssemblyDefenition;
     private readonly ILogger m_Logger;
 
     public ProtectionsSorter(
-        BitMono.API.Protecting.Resolvers.IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
+        IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         AssemblyDefinition assemblyDefenition,
         ILogger logger)
     {
@@ -28,7 +28,7 @@ public class ProtectionsSorter
         var obfuscationAttributeExcludingProtections = protections.Where(p =>
             m_DnlibDefObfuscationAttributeResolver.Resolve(p.GetName(), m_AssemblyDefenition));
 
-        protections = protections.Except(obfuscationAttributeExcludingProtections).ToList();
+        protections = protections.Except(obfuscationAttributeExcludingProtections).Except(packers).ToList();
         var hasProtections = protections.Any();
         return new ProtectionsSortResult
         {
