@@ -8,26 +8,28 @@ public class BitDotNet : IPacker
         using (var reader = new BinaryReader(stream))
         using (var writer = new BinaryWriter(stream))
         {
-            var numberOfRvaAndSizes = 0xF4;
-            stream.Position = numberOfRvaAndSizes;
-            writer.Write(0xD);
-            writer.Write(0x1);
 
-            var dotnetSize = 0x16C;
-            stream.Position = dotnetSize;
-            writer.Write(0);
-
-            var debugVirtualAddress = 0x128;
-            stream.Position = debugVirtualAddress;
-            writer.Write(0);
-
-            var debugSize = 0x12C;
-            stream.Position = debugSize;
-            writer.Write(0);
-
-            var importSize = 0x104;
-            stream.Position = importSize;
-            writer.Write(0);
+            // Rewrite it by getting the real offsets instead of "const" usage
+            //var numberOfRvaAndSizes = 0xF4;
+            //stream.Position = numberOfRvaAndSizes;
+            //writer.Write(0xD);
+            //writer.Write(0x1);
+            //
+            //var dotnetSize = 0x16C;
+            //stream.Position = dotnetSize;
+            //writer.Write(0);
+            //
+            //var debugVirtualAddress = 0x128;
+            //stream.Position = debugVirtualAddress;
+            //writer.Write(0);
+            //
+            //var debugSize = 0x12C;
+            //stream.Position = debugSize;
+            //writer.Write(0);
+            //
+            //var importSize = 0x104;
+            //stream.Position = importSize;
+            //writer.Write(0);
 
             stream.Position = 0x3C;
             var peHeader = reader.ReadUInt32();
