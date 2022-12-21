@@ -56,10 +56,13 @@ public class DotNetHook : IStageProtection
                             var initializatorMethodDef = new MethodDefinition(m_Renamer.RenameUnsafely(), MethodAttributes.Assembly | MethodAttributes.Static,
                                 MethodSignature.CreateStatic(context.Module.CorLibTypeFactory.Void));
                             initializatorMethodDef.CilMethodBody = new CilMethodBody(initializatorMethodDef);
-                            initializatorMethodDef.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()));
-                            initializatorMethodDef.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldc_I4, callingMethod.MetadataToken.ToInt32()));
-                            initializatorMethodDef.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Call, redirectStubMethod));
-                            initializatorMethodDef.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
+                            initializatorMethodDef.CilMethodBody.Instructions.InsertRange(0, new CilInstruction[]
+                            {
+                                new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
+                                new CilInstruction(CilOpCodes.Ldc_I4, callingMethod.MetadataToken.ToInt32()),
+                                new CilInstruction(CilOpCodes.Call, redirectStubMethod),
+                                new CilInstruction(CilOpCodes.Ret),
+                            });
                             moduleType.Methods.Add(initializatorMethodDef);
 
                             method.CilMethodBody.Instructions[i].Operand = dummyMethod;
