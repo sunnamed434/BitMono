@@ -1,26 +1,29 @@
-﻿namespace BitMono.Core.Protecting.Injection;
+﻿using AsmResolver;
+
+namespace BitMono.Core.Protecting.Injection;
 
 public class Injector : IInjector
 {
     public FieldDefinition InjectInvisibleArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
     {
-        var valueTypeRef = module.DefaultImporter.ImportType(typeof(ValueType));
-        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.Sealed | TypeAttributes.ExplicitLayout, valueTypeRef);
-        classWithLayout.ClassLayout = new AsmResolver.DotNet.ClassLayout(1, (uint)data.Length);
+        var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
+        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.Sealed | TypeAttributes.ExplicitLayout, module.DefaultImporter.ImportType(valueType))
+        {
+            ClassLayout = new ClassLayout(0, (uint)data.Length),
+        };
         var compilerGeneratedAttribute = InjectCompilerGeneratedAttribute(module);
         classWithLayout.CustomAttributes.Add(compilerGeneratedAttribute);
-
         type.NestedTypes.Add(classWithLayout);
 
-        var fieldWithRVA = new FieldDefinition("dummy", FieldAttributes.Static | FieldAttributes.Assembly | FieldAttributes.HasFieldRva, new FieldSignature(classWithLayout.ToTypeSignature()));
-        //fieldWithRVA.InitialValue = data;
+        var fieldWithRVA = new FieldDefinition("<>c", FieldAttributes.Assembly | FieldAttributes.Static | FieldAttributes.HasFieldRva | FieldAttributes.InitOnly, new FieldSignature(classWithLayout.ToTypeSignature()));
+        fieldWithRVA.FieldRva = new DataSegment(data);
         classWithLayout.Fields.Add(fieldWithRVA);
 
-        var byteArrayRef = module.DefaultImporter.ImportType(typeof(byte[]));
-        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Static | FieldAttributes.Assembly, new FieldSignature(byteArrayRef.ToTypeSignature()));
+        var byteArray = module.DefaultImporter.ImportType(typeof(byte[]));
+        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Assembly | FieldAttributes.Static, new FieldSignature(byteArray.ToTypeSignature()));
         classWithLayout.Fields.Add(fieldInjectedArray);
 
-        var systemByte = module.DefaultImporter.ImportType(typeof(byte));
+        var systemByte = module.DefaultImporter.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
         var initializeArrayMethod = module.DefaultImporter.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
         {
             typeof(Array),
@@ -28,13 +31,16 @@ public class Injector : IInjector
         }));
 
         var cctor = classWithLayout.GetOrCreateStaticConstructor();
-        var cctorBodyInstructions = cctor.CilMethodBody.Instructions;
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Ldc_I4, data.Length));
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Newarr, systemByte));
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Dup));
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Ldtoken, fieldWithRVA));
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Call, initializeArrayMethod));
-        cctorBodyInstructions.Add(new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray));
+        var instructions = cctor.CilMethodBody.Instructions;
+        instructions.InsertRange(0, new CilInstruction[]
+        {
+            new CilInstruction(CilOpCodes.Ldc_I4, data.Length),
+            new CilInstruction(CilOpCodes.Newarr, systemByte),
+            new CilInstruction(CilOpCodes.Dup),
+            new CilInstruction(CilOpCodes.Ldtoken, module.DefaultImporter.ImportField(fieldWithRVA)),
+            new CilInstruction(CilOpCodes.Call, initializeArrayMethod),
+            new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray),
+        });
         return fieldInjectedArray;
     }
     public TypeDefinition CreateInvisibleType(ModuleDefinition module, string name = null)
