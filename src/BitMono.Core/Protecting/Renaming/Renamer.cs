@@ -20,32 +20,36 @@ public class Renamer : IRenamer
         var randomStringThree = strings[random.Next(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
-    public void Rename(IMemberDefinition memberDefinition)
+    public void Rename(IMetadataMember metadataMember)
     {
-        if (memberDefinition is TypeDefinition typeDefinition)
+        if (metadataMember is TypeDefinition type)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
-                typeDefinition.Name = RenameUnsafely();
+                type.Name = RenameUnsafely();
             }
         }
-        if (memberDefinition is MethodDefinition methodDefinition)
+        if (metadataMember is MethodDefinition method)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(methodDefinition))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                methodDefinition.Name = RenameUnsafely();
+                method.Name = RenameUnsafely();
             }
         }
-        if (memberDefinition is FieldDefinition fieldDefinition)
+        if (metadataMember is FieldDefinition field)
         {
-            fieldDefinition.Name = RenameUnsafely();
+            field.Name = RenameUnsafely();
+        }
+        if (metadataMember is ParameterDefinition parameter)
+        {
+            parameter.Name = RenameUnsafely();
         }
     }
-    public void Rename(params IMemberDefinition[] memberDefinitions)
+    public void Rename(params IMetadataMember[] metadataMembers)
     {
-        for (int i = 0; i < memberDefinitions.Length; i++)
+        for (int i = 0; i < metadataMembers.Length; i++)
         {
-            Rename(memberDefinitions[i]);
+            Rename(metadataMembers[i]);
         }
     }
 }
