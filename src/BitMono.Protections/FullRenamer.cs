@@ -31,7 +31,6 @@ public class FullRenamer : IProtection
                         m_Renamer.Rename(field);
                     }
                 }
-
                 foreach (var method in type.Methods.ToArray())
                 {
                     if (method.IsConstructor == false
