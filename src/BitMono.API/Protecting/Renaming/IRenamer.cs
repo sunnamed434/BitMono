@@ -3,6 +3,6 @@
 public interface IRenamer
 {
     string RenameUnsafely();
-    void Rename(IMemberDefinition memberDefinition);
-    void Rename(params IMemberDefinition[] memberDefinitions);
+    void Rename(IMetadataMember metadataMember);
+    void Rename(params IMetadataMember[] metadataMembers);
 }
