@@ -1,22 +1,20 @@
-﻿using AsmResolver.PE.DotNet.Builder;
-
-namespace BitMono.Obfuscation;
+﻿namespace BitMono.Obfuscation;
 
 public class BitMonoObfuscator
 {
-    private readonly ICollection<IProtection> m_Protections;
-    private readonly ICollection<IPacker> m_Packers;
-    private IEnumerable<IMemberDefinitionfResolver> m_DnlibDefResolvers;
     private readonly ProtectionContext m_ProtectionContext;
+    private IEnumerable<IMemberDefinitionfResolver> m_DnlibDefResolvers;
+    private readonly ICollection<IPacker> m_Packers;
+    private readonly ICollection<IProtection> m_Protections;
     private readonly IDataWriter m_DataWriter;
     private DnlibDefsResolver m_DnlibDefsResolver;
     private readonly ILogger m_Logger;
 
     public BitMonoObfuscator(
+        ProtectionContext protectionContext,
         IEnumerable<IMemberDefinitionfResolver> dnlibDefResolvers,
         ICollection<IProtection> protections,
         ICollection<IPacker> packers,
-        ProtectionContext protectionContext,
         IDataWriter dataWriter,
         ILogger logger)
     {
@@ -38,7 +36,6 @@ public class BitMonoObfuscator
         {
             methodDefinition.CilMethodBody.Instructions.ExpandMacros();
             methodDefinition.CilMethodBody.Instructions.OptimizeMacros();
-
         }
 
         foreach (var protection in m_Protections)
@@ -50,20 +47,9 @@ public class BitMonoObfuscator
                 var protectionName = protection.GetName();
                 var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.Module);
                 await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                m_Logger.Information("{0} -> OK!", protectionName);
+                m_Logger.Information("{0} -> OK", protectionName);
             }
         }
-
-        /*try
-        {
-            Write(m_ProtectionContext.Module, m_ProtectionContext.PEImageBuilder);
-        }
-        catch (Exception ex)
-        {
-            m_Logger.Fatal(ex, "Failed to write module!");
-            cancellationTokenSource.Cancel();
-            return;
-        }*/
 
         foreach (var protection in m_Protections)
         {
@@ -76,7 +62,7 @@ public class BitMonoObfuscator
                     var protectionName = protection.GetName();
                     var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.Module);
                     await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                    m_Logger.Information("{0} -> OK!", protectionName);
+                    m_Logger.Information("{0} -> OK", protectionName);
                 }
             }
 
@@ -89,7 +75,7 @@ public class BitMonoObfuscator
                         var protectionName = protection.GetName();
                         var protectionParameters = new ProtectionParametersCreator(m_DnlibDefsResolver, m_DnlibDefResolvers).Create(protectionName, m_ProtectionContext.Module);
                         await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                        m_Logger.Information("{0} -> Pipeline OK!", protectionName);
+                        m_Logger.Information("{0} -> Pipeline OK", protectionName);
                     }
                 }
             }
@@ -119,12 +105,5 @@ public class BitMonoObfuscator
             await packer.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
             m_Logger.Information("{0} -> Packer OK", packerName);
         }
-    }
-
-    public void Write(ModuleDefinition moduleDefinition, IPEImageBuilder peImageBuilder)
-    {
-        var memoryStream = new MemoryStream();
-        moduleDefinition.Write(memoryStream, peImageBuilder);
-        m_ProtectionContext.ModuleOutput = memoryStream.ToArray();
     }
 }
