@@ -32,10 +32,11 @@ public class CallToCalli : IStageProtection
         var getMethodHandleMethod = context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
         var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
-        var globalType = context.Module.GetOrCreateModuleType(); 
+        var moduleType = context.Module.GetOrCreateModuleType(); 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.HasMethodBody)
+            if (method.HasMethodBody && method.DeclaringType != moduleType
+                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 for (var i = 0; i < method.CilMethodBody.Instructions.Count; i++)
                 {
@@ -47,7 +48,7 @@ public class CallToCalli : IStageProtection
                         {
                             var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
                             method.CilMethodBody.LocalVariables.Add(runtimeMethodHandleLocal);
-                            method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, globalType);
+                            method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, moduleType);
                             method.CilMethodBody.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod));
                             method.CilMethodBody.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Callvirt, getModuleMethod));
                             method.CilMethodBody.Instructions.Insert(i + 3, new CilInstruction(CilOpCodes.Ldc_I4, methodDefinition.MetadataToken.ToInt32()));
