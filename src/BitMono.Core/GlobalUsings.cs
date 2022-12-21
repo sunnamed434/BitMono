@@ -1,4 +1,5 @@
-﻿global using AsmResolver.DotNet;
+﻿global using AsmResolver;
+global using AsmResolver.DotNet;
 global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.PE.DotNet.Cil;
 global using BitMono.API.Configuration;
