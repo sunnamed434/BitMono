@@ -7,18 +7,12 @@ public class CallToCalli : IStageProtection
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
     private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly ILogger m_Logger;
 
-    public CallToCalli(
-        IInjector injector,
-        IRenamer renamer,
-        DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        ILogger logger)
+    public CallToCalli(IInjector injector, IRenamer renamer, DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer)
     {
         m_Injector = injector;
         m_Renamer = renamer;
         m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-        m_Logger = logger.ForContext<CallToCalli>();
     }
 
     public PipelineStages Stage => PipelineStages.ModuleWritten;
@@ -39,7 +33,7 @@ public class CallToCalli : IStageProtection
         var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
         var globalType = context.Module.GetOrCreateModuleType(); 
-        foreach (var method in parameters.Targets.OfType<MethodDefinition>()) // Gets all of the sorted MethodDefinitions from the custom context (Targets are implements the IMemberDefinition)
+        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
             if (method.HasMethodBody)
             {
