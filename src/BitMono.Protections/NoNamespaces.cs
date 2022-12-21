@@ -11,13 +11,11 @@ public class NoNamespaces : IProtection
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
-        foreach (var typeDef in parameters.Targets.OfType<TypeDefinition>())
+        foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
-            if (typeDef.IsGlobalModuleType == false
-                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
-                && typeDef.HasNamespace())
+            if (type.HasNamespace() && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
-                typeDef.Namespace = string.Empty;
+                type.Namespace = string.Empty;
             }
         }
         return Task.CompletedTask;
