@@ -2,6 +2,7 @@
 global using AsmResolver.DotNet;
 global using AsmResolver.DotNet.Builder;
 global using AsmResolver.DotNet.Serialized;
+global using AsmResolver.PE.DotNet.Builder;
 global using AsmResolver.PE.File.Headers;
 global using BitMono.API.Configuration;
 global using BitMono.API.Protecting;
