@@ -1,6 +1,4 @@
-﻿using AsmResolver;
-
-namespace BitMono.Core.Protecting.Injection;
+﻿namespace BitMono.Core.Protecting.Injection;
 
 public class Injector : IInjector
 {
