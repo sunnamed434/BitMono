@@ -62,10 +62,10 @@ public class BitMonoEngine
         
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
+            protectionContext,
             m_DnlibDefResolvers,
             protectionsSortResult.Protections,
             protectionsSortResult.Packers,
-            protectionContext,
             m_DataWriter,
             m_Logger)
             .StartAsync(cancellationTokenSource);
