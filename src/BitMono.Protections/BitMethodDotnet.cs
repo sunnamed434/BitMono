@@ -2,10 +2,10 @@
 
 public class BitMethodDotnet : IStageProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
     private readonly Random m_Random;
 
-    public BitMethodDotnet(DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer)
+    public BitMethodDotnet(CriticalAnalyzer dnlibDefCriticalAnalyzer)
     {
         m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
         m_Random = new Random();
