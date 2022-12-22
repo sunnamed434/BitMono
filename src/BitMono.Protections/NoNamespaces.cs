@@ -2,9 +2,9 @@
 
 public class NoNamespaces : IProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
 
-    public NoNamespaces(DnlibDefCriticalAnalyzer typeDefCriticalAnalyzer)
+    public NoNamespaces(CriticalAnalyzer typeDefCriticalAnalyzer)
     {
         m_DnlibDefCriticalAnalyzer = typeDefCriticalAnalyzer;
     }
