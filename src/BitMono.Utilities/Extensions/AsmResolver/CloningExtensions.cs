@@ -9,7 +9,7 @@ public static class CloningExtensions
     }
     public static MemberCloneResult RemoveNamespaceOfClonedMembers(this MemberCloneResult source, IRenamer renamer)
     {
-        source.ClonedMembers.ForEach(member => renamer.RemoveNamespace(member));
+        source.ClonedTopLevelTypes.ForEach(defenition => renamer.RemoveNamespace(defenition));
         return source;
     }
 }
