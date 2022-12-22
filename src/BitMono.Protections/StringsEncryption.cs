@@ -3,16 +3,16 @@
 public class StringsEncryption : IProtection
 {
     private readonly IInjector m_Injector;
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_CriticalAnalyzer;
     private readonly IRenamer m_Renamer;
 
     public StringsEncryption(
         IInjector injector,
-        DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
+        CriticalAnalyzer criticalAnalyzer,
         IRenamer renamer)
     {
         m_Injector = injector;
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+        m_CriticalAnalyzer = criticalAnalyzer;
         m_Renamer = renamer;
     }
 
@@ -28,11 +28,15 @@ public class StringsEncryption : IProtection
             .Include(runtimeDecryptorType)
             .Clone();
 
-        var decryptMethod = memberCloneResult.ClonedMembers.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt))) as MethodDefinition;
-        
+        var decryptMethod = memberCloneResult.ClonedMembers.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
+
+        memberCloneResult
+            .RenameClonedMembers(m_Renamer)
+            .RemoveNamespaceOfClonedMembers(m_Renamer);
+
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.HasMethodBody && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.HasMethodBody && m_CriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 for (var i = 0; i < method.CilMethodBody.Instructions.Count(); i++)
                 {
