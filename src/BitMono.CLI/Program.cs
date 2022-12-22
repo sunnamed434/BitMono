@@ -10,9 +10,9 @@
             var neededForObfuscation = await specifyNeededForObfuscationAsync(args);
 
             Console.Clear();
-            Console.WriteLine("Everything is good, starting obfuscation..");
             Console.WriteLine("File: {0}", neededForObfuscation.FileName);
             Console.WriteLine("Dependencies (libs): {0}", neededForObfuscation.DependenciesDirectoryPath);
+            Console.WriteLine("Everything is good, starting obfuscation..");
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
