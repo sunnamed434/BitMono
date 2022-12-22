@@ -23,7 +23,6 @@ public class FullRenamer : IProtection
                 && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 m_Renamer.Rename(type);
-
                 foreach (var field in type.Fields.ToArray())
                 {
                     if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(field))
