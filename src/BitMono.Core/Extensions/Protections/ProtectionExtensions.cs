@@ -23,14 +23,14 @@ public static class ProtectionExtensions
     }
     public static string GetName(this IProtection source)
     {
-        return source.GetType().GetName(false);
+        return source.GetType().GetName(inherit: false);
     }
     public static string GetName(this IPacker source)
     {
-        return source.GetType().GetName(false);
+        return source.GetType().GetName(inherit: false);
     }
     public static string GetName<TProtection>() where TProtection : IProtection
     {
-        return typeof(TProtection).GetName(false);
+        return typeof(TProtection).GetName(inherit: false);
     }
 }
