@@ -14,12 +14,12 @@ public class BitMonoAssemblyResolver
         cancellationToken.ThrowIfCancellationRequested();
 
         var resolvingSucceed = true;
-        foreach (var dependencyData in dependenciesData)
+        /*foreach (var dependencyData in dependenciesData)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            //context.AssemblyResolver.AddToCache(AssemblyDefinition.FromBytes(dependencyData), context.Module.Assembly);
-        }
+            context.AssemblyResolver.AddToCache(AssemblyDefinition.FromBytes(dependencyData), context.Module.Assembly);
+        }*/
         foreach (var assemblyReference in context.Module.AssemblyReferences)
         {
             cancellationToken.ThrowIfCancellationRequested();
