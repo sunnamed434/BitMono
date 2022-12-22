@@ -49,7 +49,7 @@ public class BitDotNet : IPacker
 
             uint dotNetPointerRaw = 0;
             stream.Position += 0xC;
-            for (int i = 0; i < numberOfSections; i++)
+            for (var i = 0; i < numberOfSections; i++)
             {
                 stream.Position += 0xC;
                 var virtualAddress = reader.ReadUInt32();
