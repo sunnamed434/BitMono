@@ -40,19 +40,17 @@ public class AntiDebugBreakpoints : IProtection
                 typeof(CancellationToken),
             })),
         };
-
-        var dateTimeUtcNowMethod = context.Importer.ImportMethod(typeof(DateTime).GetMethod("get_UtcNow"));
+        var dateTimeUtcNowMethod = context.Importer.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
         var dateTimeSubtractionMethod = context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
         {
             typeof(DateTime),
             typeof(DateTime)
         }));
-        var timeSpanTotalMillisecondsMethod = context.Importer.ImportMethod(typeof(TimeSpan).GetMethod("get_TotalMilliseconds"));
+        var timeSpanTotalMillisecondsMethod = context.Importer.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
         var environmentFailFast = context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
         {
             typeof(string)
         }));
-
         var dateTime = context.Importer.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
         var timeSpan = context.Importer.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
         var @int = context.Importer.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
@@ -97,28 +95,32 @@ public class AntiDebugBreakpoints : IProtection
                     method.CilMethodBody.LocalVariables.Add(timeSpanLocal);
                     method.CilMethodBody.LocalVariables.Add(intLocal);
 
-                    method.CilMethodBody.Instructions.Insert(startIndex++, new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod));
-                    method.CilMethodBody.Instructions.Insert(startIndex++, new CilInstruction(CilOpCodes.Stloc_S, dateTimeLocal));
-
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldloc_S, dateTimeLocal));
-
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Call, dateTimeSubtractionMethod));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Stloc_S, timeSpanLocal));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldloca_S, timeSpanLocal));
-
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Call, timeSpanTotalMillisecondsMethod));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldc_R8, 5000.0));
+                    method.CilMethodBody.Instructions.InsertRange(startIndex, new CilInstruction[]
+                    {
+                        new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
+                        new CilInstruction(CilOpCodes.Stloc_S, dateTimeLocal)
+                    });
 
                     var nopInstruction = new CilInstruction(CilOpCodes.Nop);
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ble_Un_S, nopInstruction));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldc_I4_1));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldc_I4_0));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Stloc_S, intLocal));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Ldloc_S, intLocal));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Div));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, new CilInstruction(CilOpCodes.Pop));
-                    method.CilMethodBody.Instructions.Insert(endIndex++, nopInstruction);
+                    var nopLabel = nopInstruction.CreateLabel();
+                    method.CilMethodBody.Instructions.InsertRange(endIndex, new CilInstruction[]
+                    {
+                        new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
+                        new CilInstruction(CilOpCodes.Ldloc_S, dateTimeLocal),
+                        new CilInstruction(CilOpCodes.Call, dateTimeSubtractionMethod),
+                        new CilInstruction(CilOpCodes.Stloc_S, timeSpanLocal),
+                        new CilInstruction(CilOpCodes.Ldloca_S, timeSpanLocal),
+                        new CilInstruction(CilOpCodes.Call, timeSpanTotalMillisecondsMethod),
+                        new CilInstruction(CilOpCodes.Ldc_R8, 5000.0),
+                        new CilInstruction(CilOpCodes.Ble_Un_S, nopLabel),
+                        new CilInstruction(CilOpCodes.Ldc_I4_1),
+                        new CilInstruction(CilOpCodes.Ldc_I4_0),
+                        new CilInstruction(CilOpCodes.Stloc_S, intLocal),
+                        new CilInstruction(CilOpCodes.Ldloc_S, intLocal),
+                        new CilInstruction(CilOpCodes.Div),
+                        new CilInstruction(CilOpCodes.Pop),
+                        nopInstruction
+                    });
                 }
             }
         }
