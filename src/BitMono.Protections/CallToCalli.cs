@@ -4,16 +4,16 @@ public class CallToCalli : IStageProtection
 {
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_CriticalAnalyzer;
 
-    public CallToCalli(IInjector injector, IRenamer renamer, CriticalAnalyzer dnlibDefCriticalAnalyzer)
+    public CallToCalli(IInjector injector, IRenamer renamer, CriticalAnalyzer criticalAnalyzer)
     {
         m_Injector = injector;
         m_Renamer = renamer;
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+        m_CriticalAnalyzer = criticalAnalyzer;
     }
 
-    public PipelineStages Stage => PipelineStages.ModuleWritten;
+    public PipelineStages Stage => PipelineStages.ModuleWrite;
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
@@ -33,8 +33,8 @@ public class CallToCalli : IStageProtection
         var moduleType = context.Module.GetOrCreateModuleType(); 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.HasMethodBody && method.DeclaringType != moduleType
-                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.CilMethodBody != null && method.DeclaringType != moduleType
+                && m_CriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 for (var i = 0; i < method.CilMethodBody.Instructions.Count; i++)
                 {
