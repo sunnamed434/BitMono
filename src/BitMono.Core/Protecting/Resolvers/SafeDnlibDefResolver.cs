@@ -3,11 +3,11 @@
 public class SafeDnlibDefResolver : IMemberDefinitionfResolver
 {
     private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
-    private readonly DnlibDefSpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
+    private readonly SpecificNamespaceCriticalAnalyzer m_DnlibDefSpecificNamespaceCriticalAnalyzer;
 
     public SafeDnlibDefResolver(
         IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
-        DnlibDefSpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceCriticalAnalyzer)
+        SpecificNamespaceCriticalAnalyzer dnlibDefSpecificNamespaceCriticalAnalyzer)
     {
         m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
         m_DnlibDefSpecificNamespaceCriticalAnalyzer = dnlibDefSpecificNamespaceCriticalAnalyzer;
