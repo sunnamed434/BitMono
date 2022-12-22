@@ -61,7 +61,7 @@ public class AntiDebugBreakpoints : IProtection
                 && method.NotGetterAndSetter()
                 && method.IsConstructor == false)
             {
-                if (method.HasMethodBody
+                if (method.CilMethodBody != null
                     && method.CilMethodBody.Instructions.Count >= 5)
                 {
                     var startIndex = 0;
