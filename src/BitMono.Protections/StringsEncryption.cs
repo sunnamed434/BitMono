@@ -47,10 +47,12 @@ public class StringsEncryption : IProtection
                         var encryptedDataFieldDef = m_Injector.InjectInvisibleArray(context.Module, globalModuleType, data, m_Renamer.RenameUnsafely());
 
                         method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
-                        method.CilMethodBody.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Ldsfld, saltBytesField));
-                        method.CilMethodBody.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Ldsfld, cryptKeyField));
-                        method.CilMethodBody.Instructions.Insert(i + 3, new CilInstruction(CilOpCodes.Call, decryptMethod));
-                        i += 3;
+                        method.CilMethodBody.Instructions.InsertRange(i + 1, new CilInstruction[]
+                        {
+                            new CilInstruction(CilOpCodes.Ldsfld, saltBytesField),
+                            new CilInstruction(CilOpCodes.Ldsfld, cryptKeyField),
+                            new CilInstruction(CilOpCodes.Call, decryptMethod),
+                        });
                     }
                 }
             }
