@@ -2,6 +2,7 @@
 
 public static class ModuleDefinitionExtensions
 {
+    [return: AllowNull]
     public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type)
     {
         if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out IMetadataMember metadataMember))
