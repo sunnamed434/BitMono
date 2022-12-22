@@ -4,15 +4,14 @@ public static class MethodDefinitionExtensions
 {
     public static bool IsAsync(this MethodDefinition source)
     {
-        foreach (var typeDef in source.Module.GetAllTypes())
+        foreach (var type in source.Module.GetAllTypes())
         {
-            foreach (var nestedTypeDef in typeDef.NestedTypes.Where(n => n.Name.StartsWith("<")))
+            foreach (var nestedType in type.NestedTypes.Where(n => n.Name.StartsWith("<")))
             {
-                if (nestedTypeDef.IsValueType
-                    && nestedTypeDef.Interfaces.Any()
-                    && nestedTypeDef.Attributes == TypeAttributes.AutoLayout
-                    && nestedTypeDef.Interfaces.Any(i => i.Interface.Name.Equals(nameof(IAsyncStateMachine)))
-                    && nestedTypeDef.Name.Contains(source.Name))
+                if (nestedType.IsValueType
+                    && nestedType.Attributes == TypeAttributes.AutoLayout
+                    && nestedType.Interfaces.Any(i => i.Interface.Name.Equals(nameof(IAsyncStateMachine)))
+                    && nestedType.Name.Contains(source.Name))
                 {
                     return true;
                 }
