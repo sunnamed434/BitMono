@@ -2,6 +2,6 @@
 {
     public enum PipelineStages
     {
-        ModuleWritten,
+        ModuleWrite,
     }
 }
