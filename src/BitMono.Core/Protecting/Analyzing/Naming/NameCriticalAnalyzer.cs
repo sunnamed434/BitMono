@@ -1,15 +1,16 @@
 ﻿namespace BitMono.Core.Protecting.Analyzing.Naming;
+
 public class NameCriticalAnalyzer :
     ICriticalAnalyzer<TypeDefinition>,
     ICriticalAnalyzer<MethodDefinition>
 {
-    private readonly TypeDefCriticalInterfacesCriticalAnalyzer m_TypeDefCriticalInterfacesCriticalAnalyzer;
-    private readonly TypeDefCriticalBaseTypesCriticalAnalyzer m_TypeDefCriticalBaseTypesCriticalAnalyzer;
+    private readonly CriticalInterfacesCriticalAnalyzer m_TypeDefCriticalInterfacesCriticalAnalyzer;
+    private readonly CriticalBaseTypesCriticalAnalyzer m_TypeDefCriticalBaseTypesCriticalAnalyzer;
     private readonly IConfiguration m_Configuration;
 
     public NameCriticalAnalyzer(
-        TypeDefCriticalInterfacesCriticalAnalyzer typeDefCriticalInterfacesCriticalAnalyzer,
-        TypeDefCriticalBaseTypesCriticalAnalyzer typeDefCriticalBaseTypesCriticalAnalyzer,
+        CriticalInterfacesCriticalAnalyzer typeDefCriticalInterfacesCriticalAnalyzer,
+        CriticalBaseTypesCriticalAnalyzer typeDefCriticalBaseTypesCriticalAnalyzer,
         IBitMonoCriticalsConfiguration configuration)
     {
         m_TypeDefCriticalInterfacesCriticalAnalyzer = typeDefCriticalInterfacesCriticalAnalyzer;
