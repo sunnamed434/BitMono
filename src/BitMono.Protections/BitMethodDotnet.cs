@@ -11,13 +11,13 @@ public class BitMethodDotnet : IStageProtection
         m_Random = new Random();
     }
 
-    public PipelineStages Stage => PipelineStages.ModuleWritten;
+    public PipelineStages Stage => PipelineStages.ModuleWrite;
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.HasMethodBody && method.IsConstructor == false
+            if (method.CilMethodBody != null && method.IsConstructor == false
                 && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 var randomMethodBodyIndex = 0;
