@@ -2,9 +2,9 @@
 
 public class AntiDebugBreakpoints : IProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
 
-    public AntiDebugBreakpoints(DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer)
+    public AntiDebugBreakpoints(CriticalAnalyzer methodDefCriticalAnalyzer)
     {
         m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
     }
