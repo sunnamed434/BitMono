@@ -36,7 +36,7 @@ public class StringsEncryption : IProtection
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.HasMethodBody && m_CriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.CilMethodBody != null && m_CriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 for (var i = 0; i < method.CilMethodBody.Instructions.Count(); i++)
                 {
