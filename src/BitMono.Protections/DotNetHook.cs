@@ -24,6 +24,10 @@ public class DotNetHook : IStageProtection
         var hookingType = memberCloneResult.GetClonedMember(runtimeHookingType);
         var redirectStubMethod = memberCloneResult.ClonedMembers.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
 
+        memberCloneResult
+            .RenameClonedMembers(m_Renamer)
+            .RemoveNamespaceOfClonedMembers(m_Renamer);
+
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
@@ -35,40 +39,44 @@ public class DotNetHook : IStageProtection
                         && method.CilMethodBody.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
-                        if (callingMethod != null && callingMethod.HasMethodBody && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
+                        if (callingMethod != null && callingMethod.HasMethodBody 
+                            && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
                         {
-                            var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature);
-                            dummyMethod.ImplAttributes = callingMethod.ImplAttributes;
-                            dummyMethod.IsStatic = true;
-                            dummyMethod.AssignNextAvaliableToken(context.Module);
-                            moduleType.Methods.Add(dummyMethod);
-                            foreach (var parameterDefinition in callingMethod.ParameterDefinitions)
+                            if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
-                                dummyMethod.ParameterDefinitions.Add(new ParameterDefinition(parameterDefinition.Sequence, parameterDefinition.Name, parameterDefinition.Attributes));
-                            }
-                            dummyMethod.MethodBody = new CilMethodBody(dummyMethod);
-                            if (callingMethod.Signature.ReturnsValue)
-                            {
-                                dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
-                            }
-                            dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
+                                var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature);
+                                dummyMethod.ImplAttributes = callingMethod.ImplAttributes;
+                                dummyMethod.IsStatic = true;
+                                dummyMethod.AssignNextAvaliableToken(context.Module);
+                                moduleType.Methods.Add(dummyMethod);
+                                foreach (var parameterDefinition in callingMethod.ParameterDefinitions)
+                                {
+                                    dummyMethod.ParameterDefinitions.Add(new ParameterDefinition(parameterDefinition.Sequence, parameterDefinition.Name, parameterDefinition.Attributes));
+                                }
+                                dummyMethod.MethodBody = new CilMethodBody(dummyMethod);
+                                if (callingMethod.Signature.ReturnsValue)
+                                {
+                                    dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
+                                }
+                                dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
 
-                            var initializatorMethodDef = new MethodDefinition(m_Renamer.RenameUnsafely(), MethodAttributes.Assembly | MethodAttributes.Static,
-                                MethodSignature.CreateStatic(context.Module.CorLibTypeFactory.Void));
-                            initializatorMethodDef.CilMethodBody = new CilMethodBody(initializatorMethodDef);
-                            initializatorMethodDef.CilMethodBody.Instructions.InsertRange(0, new CilInstruction[]
-                            {
-                                new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
-                                new CilInstruction(CilOpCodes.Ldc_I4, callingMethod.MetadataToken.ToInt32()),
-                                new CilInstruction(CilOpCodes.Call, redirectStubMethod),
-                                new CilInstruction(CilOpCodes.Ret),
-                            });
-                            moduleType.Methods.Add(initializatorMethodDef);
+                                var initializatorMethodDef = new MethodDefinition(m_Renamer.RenameUnsafely(), MethodAttributes.Assembly | MethodAttributes.Static,
+                                    MethodSignature.CreateStatic(context.Module.CorLibTypeFactory.Void));
+                                initializatorMethodDef.CilMethodBody = new CilMethodBody(initializatorMethodDef);
+                                initializatorMethodDef.CilMethodBody.Instructions.InsertRange(0, new CilInstruction[]
+                                {
+                                    new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
+                                    new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
+                                    new CilInstruction(CilOpCodes.Call, redirectStubMethod),
+                                    new CilInstruction(CilOpCodes.Ret),
+                                });
+                                moduleType.Methods.Add(initializatorMethodDef);
 
-                            method.CilMethodBody.Instructions[i].Operand = dummyMethod;
-                            var globalTypeCctor = moduleType.GetOrCreateStaticConstructor();
-                            var randomIndex = m_Random.Next(0, globalTypeCctor.CilMethodBody.Instructions.CountWithoutRet());
-                            globalTypeCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializatorMethodDef));
+                                method.CilMethodBody.Instructions[i].Operand = dummyMethod;
+                                var globalTypeCctor = moduleType.GetOrCreateStaticConstructor();
+                                var randomIndex = m_Random.Next(0, globalTypeCctor.CilMethodBody.Instructions.CountWithoutRet());
+                                globalTypeCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializatorMethodDef));
+                            }
                         }
                     }
                 }
