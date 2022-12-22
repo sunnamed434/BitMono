@@ -49,16 +49,18 @@ public class CallToCalli : IStageProtection
                                 var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
                                 method.CilMethodBody.LocalVariables.Add(runtimeMethodHandleLocal);
                                 method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, moduleType);
-                                method.CilMethodBody.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod));
-                                method.CilMethodBody.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Callvirt, getModuleMethod));
-                                method.CilMethodBody.Instructions.Insert(i + 3, new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()));
-                                method.CilMethodBody.Instructions.Insert(i + 4, new CilInstruction(CilOpCodes.Call, resolveMethodMethod));
-                                method.CilMethodBody.Instructions.Insert(i + 5, new CilInstruction(CilOpCodes.Callvirt, getMethodHandleMethod));
-                                method.CilMethodBody.Instructions.Insert(i + 6, new CilInstruction(CilOpCodes.Stloc, runtimeMethodHandleLocal));
-                                method.CilMethodBody.Instructions.Insert(i + 7, new CilInstruction(CilOpCodes.Ldloca, runtimeMethodHandleLocal));
-                                method.CilMethodBody.Instructions.Insert(i + 8, new CilInstruction(CilOpCodes.Call, getFunctionPointerMethod));
-                                method.CilMethodBody.Instructions.Insert(i + 9, new CilInstruction(CilOpCodes.Calli, callingMethod.Signature.MakeStandAloneSignature()));
-                                i += 9;
+                                method.CilMethodBody.Instructions.InsertRange(i + 1, new CilInstruction[]
+                                {
+                                    new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod),
+                                    new CilInstruction(CilOpCodes.Callvirt, getModuleMethod),
+                                    new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
+                                    new CilInstruction(CilOpCodes.Call, resolveMethodMethod),
+                                    new CilInstruction(CilOpCodes.Callvirt, getMethodHandleMethod),
+                                    new CilInstruction(CilOpCodes.Stloc, runtimeMethodHandleLocal),
+                                    new CilInstruction(CilOpCodes.Ldloca, runtimeMethodHandleLocal),
+                                    new CilInstruction(CilOpCodes.Call, getFunctionPointerMethod),
+                                    new CilInstruction(CilOpCodes.Calli, callingMethod.Signature.MakeStandAloneSignature())
+                                });
                             }
                         }
                     }
