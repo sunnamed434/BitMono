@@ -50,12 +50,12 @@ public class Injector : IInjector
     }
     public TypeDefinition CreateInvisibleValueType(ModuleDefinition module, string name = null)
     {
-        var invislbeTypeDef = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedAssembly, module.DefaultImporter.ImportType(typeof(ValueType)));
-        InjectCompilerGeneratedAttribute(module, invislbeTypeDef);
-        invislbeTypeDef.IsAbstract = false;
-        invislbeTypeDef.IsSealed = false;
-        invislbeTypeDef.IsBeforeFieldInit = false;
-        return invislbeTypeDef;
+        var invislbeValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedAssembly, module.DefaultImporter.ImportType(typeof(ValueType)));
+        InjectCompilerGeneratedAttribute(module, invislbeValueType);
+        invislbeValueType.IsAbstract = false;
+        invislbeValueType.IsSealed = false;
+        invislbeValueType.IsBeforeFieldInit = false;
+        return invislbeValueType;
     }
     public TypeDefinition InjectInvisibleValueType(ModuleDefinition module, TypeDefinition type, string name = null)
     {
@@ -76,17 +76,19 @@ public class Injector : IInjector
     }
     public CustomAttribute InjectAttributeWithContent(ModuleDefinition module, string @namespace, string @name, string text)
     {
-        var attributeTypeReference = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name);
-        var attributeCtor = new MemberReference(attributeTypeReference, null, MethodSignature.CreateInstance(module.CorLibTypeFactory.Void));
-        var customAttribute = new CustomAttribute(attributeCtor);
-        customAttribute.Signature.FixedArguments.Add(new CustomAttributeArgument(module.CorLibTypeFactory.String, text));
+        var signature = MethodSignature.CreateInstance(module.CorLibTypeFactory.Void);
+        var attributeCtor = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name)
+            .CreateMemberReference(".ctor", signature);
+        var customAttributeSignature = new CustomAttributeSignature(new CustomAttributeArgument(module.CorLibTypeFactory.String, text));
+        var customAttribute = new CustomAttribute(attributeCtor, customAttributeSignature);
         module.CustomAttributes.Add(customAttribute);
         return customAttribute;
     }
     public CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string @name)
     {
-        var attributeTypeReference = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name);
-        var attributeCtor = new MemberReference(attributeTypeReference, null, MethodSignature.CreateInstance(module.CorLibTypeFactory.Void));
+        var signature = MethodSignature.CreateInstance(module.CorLibTypeFactory.Void);
+        var attributeCtor = module.CorLibTypeFactory.CorLibScope.CreateTypeReference(@namespace, @name)
+            .CreateMemberReference(".ctor", signature);
         var customAttribute = new CustomAttribute(attributeCtor);
         module.CustomAttributes.Add(customAttribute);
         return customAttribute;
