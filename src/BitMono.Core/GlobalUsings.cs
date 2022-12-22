@@ -18,6 +18,7 @@ global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Extensions.AsmResolver;
 global using Microsoft.Extensions.Configuration;
+global using MoreLinq;
 global using Newtonsoft.Json;
 global using NullGuard;
 global using System;
