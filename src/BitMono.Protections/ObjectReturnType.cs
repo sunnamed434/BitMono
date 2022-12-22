@@ -2,9 +2,9 @@
 
 public class ObjectReturnType : IProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
 
-    public ObjectReturnType(DnlibDefCriticalAnalyzer methodDefCriticalAnalyzer)
+    public ObjectReturnType(CriticalAnalyzer methodDefCriticalAnalyzer)
     {
         m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
     }
