@@ -11,7 +11,7 @@ public static class GenericExtensions
     public static IEnumerable<TMetadataMember> AssingNextAvaliableTokens<TMetadataMember>(this IEnumerable<TMetadataMember> source, ModuleDefinition moduleDefinition)
         where TMetadataMember : MetadataMember
     {
-        source.ForEach((d) => AssignNextAvaliableToken(d, moduleDefinition));
+        source.ForEach((m) => AssignNextAvaliableToken(m, moduleDefinition));
         return source;
     }
 }
