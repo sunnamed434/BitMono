@@ -31,7 +31,7 @@ public class ProtectionsExecutionNotifier
         }
         if (protectionsSortResult.StageProtections.Any())
         {
-            var moduleWrittenStageProtections = protectionsSortResult.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWritten);
+            var moduleWrittenStageProtections = protectionsSortResult.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWrite);
             if (moduleWrittenStageProtections.Any())
             {
                 m_Logger.Information("Execute only at the end: {0}", string.Join(", ", moduleWrittenStageProtections.Select(p => p?.GetName())));
