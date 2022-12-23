@@ -32,7 +32,7 @@
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
             var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<IObfuscationAttributeResolver>();
-            var memberDefinitionResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberDefinitionfResolver>>().ToList();
+            var memberDefinitionResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
