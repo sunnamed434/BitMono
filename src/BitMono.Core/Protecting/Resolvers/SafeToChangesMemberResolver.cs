@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class SafeToChangesMemberResolver : IMemberDefinitionfResolver
+public class SafeToChangesMemberResolver : IMemberResolver
 {
     private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
