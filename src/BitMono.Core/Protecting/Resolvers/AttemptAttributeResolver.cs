@@ -9,16 +9,16 @@ public class AttemptAttributeResolver : IAttemptAttributeResolver
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] Func<TAttribute, bool> strip, [AllowNull] out TAttribute attribute)
+    public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] out TAttribute attribute)
         where TAttribute : Attribute
     {
         attribute = predicate != null
-            ? m_CustomAttributesResolver.Resolve(from, strip).Where(a => a != null)?.FirstOrDefault(predicate)
-            : m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault();
-        if (attribute == null)
+            ? m_CustomAttributesResolver.Resolve<TAttribute>(from).Where(a => a != null)?.FirstOrDefault(predicate)
+            : m_CustomAttributesResolver.Resolve<TAttribute>(from).FirstOrDefault();
+        if (attribute != null)
         {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
