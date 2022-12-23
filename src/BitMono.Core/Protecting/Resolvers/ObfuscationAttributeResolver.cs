@@ -2,16 +2,16 @@
 
 public class ObfuscationAttributeResolver : IObfuscationAttributeResolver
 {
-    private readonly IObfuscationAttributeExcludeResolver m_ObfuscationAttributeExcludingResolver;
+    private readonly IObfuscationAttributeExcludeResolver m_ObfuscationAttributeResolver;
 
-    public ObfuscationAttributeResolver(IObfuscationAttributeExcludeResolver obfuscationAttributeExcludingResolver)
+    public ObfuscationAttributeResolver(IObfuscationAttributeExcludeResolver obfuscationAttributeResolver)
     {
-        m_ObfuscationAttributeExcludingResolver = obfuscationAttributeExcludingResolver;
+        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
     }
 
     public bool Resolve(string feature, IHasCustomAttribute from)
     {
-        if (m_ObfuscationAttributeExcludingResolver.TryResolve(feature, from,
+        if (m_ObfuscationAttributeResolver.TryResolve(feature, from,
             out ObfuscationAttribute obfuscationAttribute) && obfuscationAttribute.Exclude)
         {
             return true;
