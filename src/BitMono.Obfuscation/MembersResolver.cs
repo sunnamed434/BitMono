@@ -2,7 +2,7 @@
 
 public class MembersResolver
 {
-    public IEnumerable<IMemberDefinition> Resolve(string feature, IEnumerable<IMemberDefinition> definitions, IEnumerable<IMemberDefinitionfResolver> resolvers)
+    public IEnumerable<IMemberDefinition> Resolve(string feature, IEnumerable<IMemberDefinition> definitions, IEnumerable<IMemberResolver> resolvers)
     {
         foreach (var definition in definitions) 
         {
@@ -11,6 +11,10 @@ public class MembersResolver
                 if (resolver.Resolve(feature, definition))
                 {
                     yield return definition;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to resolve MemberDef!");
                 }
             }
         }
