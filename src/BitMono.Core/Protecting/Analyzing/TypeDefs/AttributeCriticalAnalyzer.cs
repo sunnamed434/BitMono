@@ -11,19 +11,19 @@ public class AttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(customAttribute, null, null, out _))
+        if (m_AttemptAttributeResolver.TryResolve<SerializableAttribute>(customAttribute, null, out _))
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(customAttribute, null, null, out _))
+        if (m_AttemptAttributeResolver.TryResolve<XmlAttributeAttribute>(customAttribute, null, out _))
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(customAttribute, null, null, out _))
+        if (m_AttemptAttributeResolver.TryResolve<XmlArrayItemAttribute>(customAttribute, null, out _))
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(customAttribute, null, null, out _))
+        if (m_AttemptAttributeResolver.TryResolve<JsonPropertyAttribute>(customAttribute, null, out _))
         {
             return false;
         }
