@@ -3,9 +3,9 @@
 public class ProtectionParametersCreator
 {
     private readonly MembersResolver m_DnlibDefsResolver;
-    private readonly IEnumerable<IMemberDefinitionfResolver> m_Resolvers;
+    private readonly IEnumerable<IMemberResolver> m_Resolvers;
 
-    public ProtectionParametersCreator(MembersResolver dnlibDefsResolver, IEnumerable<IMemberDefinitionfResolver> resolvers)
+    public ProtectionParametersCreator(MembersResolver dnlibDefsResolver, IEnumerable<IMemberResolver> resolvers)
     {
         m_DnlibDefsResolver = dnlibDefsResolver;
         m_Resolvers = resolvers;
