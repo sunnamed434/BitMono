@@ -18,7 +18,7 @@ public class MethodImplAttributeExcludeResolver : IMethodImplAttributeExcludeRes
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, null, null, out methodImplAttribute) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, null, out methodImplAttribute) == false)
         {
             return false;
         }
