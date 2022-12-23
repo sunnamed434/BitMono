@@ -3,7 +3,7 @@
 public class BitMonoObfuscator
 {
     private readonly ProtectionContext m_ProtectionContext;
-    private IEnumerable<IMemberDefinitionfResolver> m_MemberDefinitionResolvers;
+    private IEnumerable<IMemberResolver> m_MemberDefinitionResolvers;
     private readonly ICollection<IPacker> m_Packers;
     private readonly ICollection<IProtection> m_Protections;
     private readonly IDataWriter m_DataWriter;
@@ -12,7 +12,7 @@ public class BitMonoObfuscator
 
     public BitMonoObfuscator(
         ProtectionContext protectionContext,
-        IEnumerable<IMemberDefinitionfResolver> memberDefinitionResolvers,
+        IEnumerable<IMemberResolver> memberDefinitionResolvers,
         ICollection<IProtection> protections,
         ICollection<IPacker> packers,
         IDataWriter dataWriter,
