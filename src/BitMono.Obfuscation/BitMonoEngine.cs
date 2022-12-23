@@ -5,7 +5,7 @@ public class BitMonoEngine
     private readonly IDataWriter m_DataWriter;
     private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
-    private readonly List<IMemberDefinitionfResolver> m_DnlibDefResolvers;
+    private readonly List<IMemberResolver> m_DnlibDefResolvers;
     private readonly List<IProtection> m_Protections;
     private readonly List<ProtectionSettings> m_ProtectionSettings;
     private readonly ILogger m_Logger;
@@ -14,7 +14,7 @@ public class BitMonoEngine
         IDataWriter dataWriter,
         IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
-        List<IMemberDefinitionfResolver> dnlibDefResolvers,
+        List<IMemberResolver> dnlibDefResolvers,
         List<IProtection> protections,
         List<ProtectionSettings> protectionSettings,
         ILogger logger)
