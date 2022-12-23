@@ -2,17 +2,17 @@
 
 public class ProtectionsSorter
 {
-    private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
-    private readonly AssemblyDefinition m_AssemblyDefenition;
+    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly AssemblyDefinition m_Assembly;
     private readonly ILogger m_Logger;
 
     public ProtectionsSorter(
-        IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
-        AssemblyDefinition assemblyDefenition,
+        IObfuscationAttributeResolver obfuscationAttributeResolver,
+        AssemblyDefinition assembly,
         ILogger logger)
     {
-        m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
-        m_AssemblyDefenition = assemblyDefenition;
+        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
+        m_Assembly = assembly;
         m_Logger = logger.ForContext<ProtectionsSorter>();
     }
 
@@ -25,10 +25,10 @@ public class ProtectionsSorter
         var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
         var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
         var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
-        var obfuscationAttributeExcludingProtections = protections.Where(p =>
-            m_DnlibDefObfuscationAttributeResolver.Resolve(p.GetName(), m_AssemblyDefenition));
+        var obfuscationAttributeProtections = protections.Where(p =>
+            m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
 
-        protections = protections.Except(obfuscationAttributeExcludingProtections).Except(packers).ToList();
+        protections = protections.Except(obfuscationAttributeProtections).Except(packers).ToList();
         var hasProtections = protections.Any();
         return new ProtectionsSortResult
         {
@@ -38,7 +38,7 @@ public class ProtectionsSorter
             DisabledProtections = protectionsResolveResult.DisabledProtections,
             StageProtections = stageProtections,
             PipelineProtections = pipelineProtections,
-            ObfuscationAttributeExcludingProtections = obfuscationAttributeExcludingProtections,
+            ObfuscationAttributeExcludingProtections = obfuscationAttributeProtections,
             HasProtections = hasProtections
         };
     }
