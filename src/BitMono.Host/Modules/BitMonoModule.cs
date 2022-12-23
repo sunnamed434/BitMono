@@ -125,7 +125,7 @@ public class BitMonoModule : Module
         containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
             .PublicOnly()
             .Where(t =>
-                t.GetInterface(nameof(IMemberDefinitionfResolver)) != null)
+                t.GetInterface(nameof(IMemberResolver)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
