@@ -13,7 +13,7 @@ public class ProtectionsResolver
         m_Logger = logger.ForContext<ProtectionsResolver>();
     }
 
-    public ProtectionsResolveResult Sort()
+    public ProtectionsResolve Sort()
     {
         var foundProtections = new List<IProtection>();
         var cachedProtections = m_Protections.ToArray().ToList();
@@ -28,14 +28,14 @@ public class ProtectionsResolver
             }
             else
             {
-                m_Logger.Warning("Protection: {0}, does not exsist in context!", protectionSettings.Name);
+                m_Logger.Warning("Protection: {0}, does not exist in current context!", protectionSettings.Name);
             }
         }
         foreach (var protection in cachedProtections)
         {
             disabledProtections.Add(protection.GetName());
         }
-        return new ProtectionsResolveResult
+        return new ProtectionsResolve
         {
             FoundProtections = foundProtections,
             DisabledProtections = disabledProtections,
