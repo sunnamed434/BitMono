@@ -2,11 +2,11 @@
 
 public class ObjectReturnType : IProtection
 {
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
 
-    public ObjectReturnType(CriticalAnalyzer methodDefCriticalAnalyzer)
+    public ObjectReturnType(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
     {
-        m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
@@ -18,7 +18,7 @@ public class ObjectReturnType : IProtection
             if (method.Signature.ReturnsValue && method.Signature.ReturnType != boolean)
             {
                 if (method.IsConstructor == false && method.IsVirtual == false
-                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method)
+                    && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method)
                     && method.NotAsync())
                 {
                     if (method.IsSetMethod == false && method.IsGetMethod == false)
