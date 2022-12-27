@@ -4,25 +4,29 @@ public class BitMonoObfuscator
 {
     private readonly ProtectionContext m_ProtectionContext;
     private IEnumerable<IMemberResolver> m_MemberDefinitionResolvers;
+    private readonly ProtectionsSortResult m_ProtectionsSortResult;
     private readonly ICollection<IPacker> m_Packers;
     private readonly ICollection<IProtection> m_Protections;
     private readonly IDataWriter m_DataWriter;
+    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private MembersResolver m_MemberResolver;
     private readonly ILogger m_Logger;
 
     public BitMonoObfuscator(
         ProtectionContext protectionContext,
         IEnumerable<IMemberResolver> memberDefinitionResolvers,
-        ICollection<IProtection> protections,
-        ICollection<IPacker> packers,
+        ProtectionsSortResult protectionsSortResult,
         IDataWriter dataWriter,
+        IObfuscationAttributeResolver obfuscationAttributeResolver,
         ILogger logger)
     {
         m_MemberDefinitionResolvers = memberDefinitionResolvers;
-        m_Protections = protections;
-        m_Packers = packers;
+        m_ProtectionsSortResult = protectionsSortResult;
+        m_Protections = m_ProtectionsSortResult.Protections;
+        m_Packers = m_ProtectionsSortResult.Packers;
         m_ProtectionContext = protectionContext;
         m_DataWriter = dataWriter;
+        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_MemberResolver = new MembersResolver();
         m_Logger = logger.ForContext<BitMonoObfuscator>();
     }
@@ -81,6 +85,21 @@ public class BitMonoObfuscator
                 }
             }
         }
+
+
+        foreach (var customAttribute in m_ProtectionContext.Module.CustomAttributes.ToArray())
+        {
+            await Console.Out.WriteLineAsync("remove");
+            m_ProtectionContext.Module.CustomAttributes.Remove(customAttribute);
+            await Console.Out.WriteLineAsync("removed");
+        }
+        /*foreach (var customAttribute in m_ProtectionContext.Module.FindDefinitions().OfType<IHasCustomAttribute>())
+        {
+            if (m_ObfuscationAttributeResolver.Resolve(, customAttribute))
+            {
+
+            }
+        }*/
 
         try
         {
