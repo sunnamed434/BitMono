@@ -34,18 +34,18 @@ public class StringsEncryption : IProtection
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody != null && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.CilMethodBody is { } body && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                for (var i = 0; i < method.CilMethodBody.Instructions.Count(); i++)
+                for (var i = 0; i < body.Instructions.Count(); i++)
                 {
-                    if (method.CilMethodBody.Instructions[i].OpCode == CilOpCodes.Ldstr
-                        && method.CilMethodBody.Instructions[i].Operand is string content)
+                    if (body.Instructions[i].OpCode == CilOpCodes.Ldstr
+                        && body.Instructions[i].Operand is string content)
                     {
                         var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
                         var encryptedDataFieldDef = m_Injector.InjectInvisibleArray(context.Module, globalModuleType, data, m_Renamer.RenameUnsafely());
 
-                        method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
-                        method.CilMethodBody.Instructions.InsertRange(i + 1, new CilInstruction[]
+                        body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
+                        body.Instructions.InsertRange(i + 1, new CilInstruction[]
                         {
                             new CilInstruction(CilOpCodes.Ldsfld, saltBytesField),
                             new CilInstruction(CilOpCodes.Ldsfld, cryptKeyField),
