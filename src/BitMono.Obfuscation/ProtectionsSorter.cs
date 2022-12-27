@@ -21,14 +21,19 @@ public class ProtectionsSorter
         var protectionsResolveResult = new ProtectionsResolver(protections, protectionSettings, m_Logger).Sort();
         protections = protectionsResolveResult.FoundProtections;
 
-        var packers = protections.Where(p => p is IPacker).Cast<IPacker>().ToList();
+        var packers = protections.Where(p => p is IPacker)
+            .Cast<IPacker>()
+            .ToList();
         var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
-        var stageProtections = protections.Where(p => p is IStageProtection).Cast<IStageProtection>();
-        var pipelineProtections = protections.Where(p => p is IPipelineProtection).Cast<IPipelineProtection>();
-        var obfuscationAttributeProtections = protections.Where(p =>
-            m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
+        var stageProtections = protections.Where(p => p is IStageProtection)
+            .Cast<IStageProtection>();
+        var pipelineProtections = protections.Where(p => p is IPipelineProtection)
+            .Cast<IPipelineProtection>();
+        var obfuscationAttributeProtections = protections.Where(p =>m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
 
-        protections = protections.Except(obfuscationAttributeProtections).Except(packers).ToList();
+        protections = protections.Except(obfuscationAttributeProtections)
+            .Except(packers)
+            .ToList();
         var hasProtections = protections.Any();
         return new ProtectionsSortResult
         {
