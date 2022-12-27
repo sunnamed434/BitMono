@@ -1,7 +1,4 @@
-﻿using AsmResolver.DotNet.Builder;
-using IAssemblyResolver = AsmResolver.DotNet.IAssemblyResolver;
-
-namespace BitMono.API.Protecting.Contexts;
+﻿namespace BitMono.API.Protecting.Contexts;
 
 public class ProtectionContext
 {
