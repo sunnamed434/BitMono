@@ -29,12 +29,12 @@ public class DotNetHook : IStageProtection
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody != null)
+            if (method.CilMethodBody is { } body)
             {
-                for (var i = 0; i < method.CilMethodBody.Instructions.Count; i++)
+                for (var i = 0; i < body.Instructions.Count; i++)
                 {
-                    if (method.CilMethodBody.Instructions[i].OpCode == CilOpCodes.Call
-                        && method.CilMethodBody.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
+                    if (body.Instructions[i].OpCode == CilOpCodes.Call
+                        && body.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null && callingMethod.CilMethodBody != null
@@ -72,7 +72,7 @@ public class DotNetHook : IStageProtection
                                 };
                                 moduleType.Methods.Add(initializatorMethodDef);
 
-                                method.CilMethodBody.Instructions[i].Operand = dummyMethod;
+                                body.Instructions[i].Operand = dummyMethod;
                                 var globalTypeCctor = moduleType.GetOrCreateStaticConstructor();
                                 var randomIndex = m_Random.Next(0, globalTypeCctor.CilMethodBody.Instructions.CountWithoutRet());
                                 globalTypeCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializatorMethodDef));
