@@ -2,14 +2,14 @@
 
 public class FullRenamer : IProtection
 {
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly AttributeCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
+    private readonly ModelAttributeCriticalAnalyzer m_ModelAttributelCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
 
-    public FullRenamer(CriticalAnalyzer dnlibDefCriticalAnalyzer, AttributeCriticalAnalyzer typeDefModelCriticalAnalyzer, IRenamer renamer)
+    public FullRenamer(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer, ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer, IRenamer renamer)
     {
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-        m_TypeDefModelCriticalAnalyzer = typeDefModelCriticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
+        m_ModelAttributelCriticalAnalyzer = modelAttributeCriticalAnalyzer;
         m_Renamer = renamer;
     }
 
@@ -19,13 +19,13 @@ public class FullRenamer : IProtection
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
             if (type != moduleType
-                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(type)
-                && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(type))
+                && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(type)
+                && m_ModelAttributelCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 m_Renamer.Rename(type);
                 foreach (var field in type.Fields.ToArray())
                 {
-                    if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(field))
+                    if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(field))
                     {
                         m_Renamer.Rename(field);
                     }
@@ -34,7 +34,7 @@ public class FullRenamer : IProtection
                 {
                     if (method.IsConstructor == false
                         && method.IsVirtual == false
-                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
+                        && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
                     {
                         m_Renamer.Rename(method);
                         if (method.HasParameters())
