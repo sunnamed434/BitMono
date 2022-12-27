@@ -3,26 +3,26 @@
 public class BitMonoEngine
 {
     private readonly IDataWriter m_DataWriter;
-    private readonly IObfuscationAttributeResolver m_DnlibDefObfuscationAttributeResolver;
+    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
-    private readonly List<IMemberResolver> m_DnlibDefResolvers;
+    private readonly List<IMemberResolver> m_MemberResolvers;
     private readonly List<IProtection> m_Protections;
     private readonly List<ProtectionSettings> m_ProtectionSettings;
     private readonly ILogger m_Logger;
 
     public BitMonoEngine(
         IDataWriter dataWriter,
-        IObfuscationAttributeResolver dnlibDefObfuscationAttributeResolver,
+        IObfuscationAttributeResolver obfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
-        List<IMemberResolver> dnlibDefResolvers,
+        List<IMemberResolver> memberResolvers,
         List<IProtection> protections,
         List<ProtectionSettings> protectionSettings,
         ILogger logger)
     {
         m_DataWriter = dataWriter;
-        m_DnlibDefObfuscationAttributeResolver = dnlibDefObfuscationAttributeResolver;
+        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscationConfiguratin = obfuscationConfiguration;
-        m_DnlibDefResolvers = dnlibDefResolvers;
+        m_MemberResolvers = memberResolvers;
         m_Protections = protections;
         m_ProtectionSettings = protectionSettings;
         m_Logger = logger.ForContext<BitMonoEngine>();
@@ -38,7 +38,7 @@ public class BitMonoEngine
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name);
 
-        var protectionsSortResult = new ProtectionsSorter(m_DnlibDefObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
+        var protectionsSortResult = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
             .Sort(m_Protections, m_ProtectionSettings);
 
         if (protectionsSortResult.HasProtections == false)
@@ -63,10 +63,10 @@ public class BitMonoEngine
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
             protectionContext,
-            m_DnlibDefResolvers,
-            protectionsSortResult.Protections,
-            protectionsSortResult.Packers,
+            m_MemberResolvers,
+            protectionsSortResult,
             m_DataWriter,
+            m_ObfuscationAttributeResolver,
             m_Logger)
             .StartAsync(cancellationTokenSource);
         m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectoryName);
