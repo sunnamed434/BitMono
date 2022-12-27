@@ -2,6 +2,5 @@
 
 public interface IAttemptAttributeResolver
 {
-    bool TryResolve<TAttribute>(IHasCustomAttribute from, Func<TAttribute, bool> predicate, out TAttribute attribute)
-        where TAttribute : Attribute;
+    bool TryResolve(IHasCustomAttribute from, Type attributeType, out Dictionary<string, CustomAttributesResolve> keyValuePairs);
 }
