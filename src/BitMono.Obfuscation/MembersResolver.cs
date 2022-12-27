@@ -2,9 +2,9 @@
 
 public class MembersResolver
 {
-    public IEnumerable<IMemberDefinition> Resolve(string feature, IEnumerable<IMemberDefinition> definitions, IEnumerable<IMemberResolver> resolvers)
+    public IEnumerable<IMetadataMember> Resolve(string feature, IEnumerable<IMetadataMember> members, IEnumerable<IMemberResolver> resolvers)
     {
-        foreach (var definition in definitions) 
+        foreach (var definition in members) 
         {
             foreach (var resolver in resolvers)
             {
