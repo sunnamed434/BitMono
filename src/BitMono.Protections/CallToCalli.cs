@@ -33,13 +33,13 @@ public class CallToCalli : IStageProtection
         var moduleType = context.Module.GetOrCreateModuleType(); 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody != null && method.DeclaringType != moduleType
+            if (method.CilMethodBody is { } body && method.DeclaringType != moduleType
                 && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                for (var i = 0; i < method.CilMethodBody.Instructions.Count; i++)
+                for (var i = 0; i < body.Instructions.Count; i++)
                 {
-                    if (method.CilMethodBody.Instructions[i].OpCode == CilOpCodes.Call
-                        && method.CilMethodBody.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
+                    if (body.Instructions[i].OpCode == CilOpCodes.Call
+                        && body.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null)
@@ -47,9 +47,9 @@ public class CallToCalli : IStageProtection
                             if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
                                 var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
-                                method.CilMethodBody.LocalVariables.Add(runtimeMethodHandleLocal);
-                                method.CilMethodBody.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, moduleType);
-                                method.CilMethodBody.Instructions.InsertRange(i + 1, new CilInstruction[]
+                                body.LocalVariables.Add(runtimeMethodHandleLocal);
+                                body.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, moduleType);
+                                body.Instructions.InsertRange(i + 1, new CilInstruction[]
                                 {
                                     new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod),
                                     new CilInstruction(CilOpCodes.Callvirt, getModuleMethod),
