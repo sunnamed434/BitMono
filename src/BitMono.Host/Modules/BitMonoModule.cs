@@ -81,7 +81,7 @@ public class BitMonoModule : Module
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(ICustomAttributesResolver)) != null)
+            .Where(t => t.GetInterface(nameof(ICustomAttributeResolver)) != null)
             .AsImplementedInterfaces()
             .OwnedByLifetimeScope()
             .SingleInstance();
