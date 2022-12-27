@@ -2,5 +2,5 @@
 
 public interface IObfuscationAttributeExcludeResolver
 {
-    bool TryResolve(string feature, IHasCustomAttribute from, out ObfuscationAttribute obfuscationAttribute);
+    bool TryResolve(string feature, IHasCustomAttribute from, out Dictionary<string, CustomAttributesResolve> keyValuePairs);
 }
