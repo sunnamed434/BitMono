@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Protecting.Analyzing;
-
-namespace BitMono.Protections;
+﻿namespace BitMono.Protections;
 
 public class AntiDebugBreakpoints : IProtection
 {
@@ -63,17 +61,17 @@ public class AntiDebugBreakpoints : IProtection
                 && method.NotGetterAndSetter()
                 && method.IsConstructor == false)
             {
-                if (method.CilMethodBody != null
-                    && method.CilMethodBody.Instructions.Count >= 5)
+                if (method.CilMethodBody is { } body
+                    && body.Instructions.Count >= 5)
                 {
                     var startIndex = 0;
-                    var endIndex = method.CilMethodBody.Instructions.Count - 1;
+                    var endIndex = body.Instructions.Count - 1;
                     var methodShouldBeIgnored = false;
 
                     for (var i = startIndex; i < endIndex; i++)
                     {
-                        if (method.CilMethodBody.Instructions[i].OpCode == CilOpCodes.Call
-                            && method.CilMethodBody.Instructions[i].Operand is MemberReference member)
+                        if (body.Instructions[i].OpCode == CilOpCodes.Call
+                            && body.Instructions[i].Operand is MemberReference member)
                         {
                             if (threadSleepMethods.Any(t => new SignatureComparer().Equals(member, t)))
                             {
@@ -93,11 +91,11 @@ public class AntiDebugBreakpoints : IProtection
                     var timeSpanLocal = new CilLocalVariable(timeSpan);
                     var intLocal = new CilLocalVariable(@int);
 
-                    method.CilMethodBody.LocalVariables.Add(dateTimeLocal);
-                    method.CilMethodBody.LocalVariables.Add(timeSpanLocal);
-                    method.CilMethodBody.LocalVariables.Add(intLocal);
+                    body.LocalVariables.Add(dateTimeLocal);
+                    body.LocalVariables.Add(timeSpanLocal);
+                    body.LocalVariables.Add(intLocal);
 
-                    method.CilMethodBody.Instructions.InsertRange(startIndex, new CilInstruction[]
+                    body.Instructions.InsertRange(startIndex, new CilInstruction[]
                     {
                         new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
                         new CilInstruction(CilOpCodes.Stloc_S, dateTimeLocal)
@@ -105,7 +103,7 @@ public class AntiDebugBreakpoints : IProtection
 
                     var nopInstruction = new CilInstruction(CilOpCodes.Nop);
                     var nopLabel = nopInstruction.CreateLabel();
-                    method.CilMethodBody.Instructions.InsertRange(endIndex, new CilInstruction[]
+                    body.Instructions.InsertRange(endIndex, new CilInstruction[]
                     {
                         new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
                         new CilInstruction(CilOpCodes.Ldloc_S, dateTimeLocal),
