@@ -1,19 +1,21 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.Core.Protecting.Analyzing;
+
+namespace BitMono.Protections;
 
 public class NoNamespaces : IProtection
 {
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
 
-    public NoNamespaces(CriticalAnalyzer typeDefCriticalAnalyzer)
+    public NoNamespaces(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
     {
-        m_DnlibDefCriticalAnalyzer = typeDefCriticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
-            if (type.HasNamespace() && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (type.HasNamespace() && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 type.Namespace = string.Empty;
             }
