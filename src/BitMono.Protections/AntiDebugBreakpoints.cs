@@ -1,12 +1,14 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.Core.Protecting.Analyzing;
+
+namespace BitMono.Protections;
 
 public class AntiDebugBreakpoints : IProtection
 {
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
 
-    public AntiDebugBreakpoints(CriticalAnalyzer methodDefCriticalAnalyzer)
+    public AntiDebugBreakpoints(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
     {
-        m_DnlibDefCriticalAnalyzer = methodDefCriticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
@@ -57,7 +59,7 @@ public class AntiDebugBreakpoints : IProtection
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method)
+            if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method)
                 && method.NotGetterAndSetter()
                 && method.IsConstructor == false)
             {
