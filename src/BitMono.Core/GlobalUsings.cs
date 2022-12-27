@@ -1,5 +1,6 @@
 ﻿global using AsmResolver;
 global using AsmResolver.DotNet;
+global using AsmResolver.DotNet.Cloning;
 global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.PE.DotNet.Cil;
 global using BitMono.API.Configuration;
@@ -11,9 +12,6 @@ global using BitMono.API.Protecting.Renaming;
 global using BitMono.API.Protecting.Resolvers;
 global using BitMono.Core.Extensions.Configuration;
 global using BitMono.Core.Extensions.Protections;
-global using BitMono.Core.Protecting.Analyzing.DnlibDefs;
-global using BitMono.Core.Protecting.Analyzing.Naming;
-global using BitMono.Core.Protecting.Analyzing.TypeDefs;
 global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Extensions.AsmResolver;
