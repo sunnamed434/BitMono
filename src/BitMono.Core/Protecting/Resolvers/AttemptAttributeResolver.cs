@@ -2,20 +2,17 @@
 
 public class AttemptAttributeResolver : IAttemptAttributeResolver
 {
-    private readonly ICustomAttributesResolver m_CustomAttributesResolver;
+    private readonly ICustomAttributeResolver m_CustomAttributesResolver;
 
-    public AttemptAttributeResolver(ICustomAttributesResolver customAttributesResolver)
+    public AttemptAttributeResolver(ICustomAttributeResolver customAttributesResolver)
     {
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] out TAttribute attribute)
-        where TAttribute : Attribute
+    public bool TryResolve(IHasCustomAttribute from, Type attributeType, [AllowNull] out Dictionary<string, CustomAttributesResolve> keyValuePairs)
     {
-        attribute = predicate != null
-            ? m_CustomAttributesResolver.Resolve<TAttribute>(from).Where(a => a != null)?.FirstOrDefault(predicate)
-            : m_CustomAttributesResolver.Resolve<TAttribute>(from).FirstOrDefault();
-        if (attribute != null)
+        keyValuePairs = m_CustomAttributesResolver.Resolve(from, attributeType);
+        if (keyValuePairs != null && keyValuePairs.Any())
         {
             return true;
         }
