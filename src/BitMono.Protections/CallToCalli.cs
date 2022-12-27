@@ -1,16 +1,18 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.Core.Protecting.Analyzing;
+
+namespace BitMono.Protections;
 
 public class CallToCalli : IStageProtection
 {
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
-    private readonly CriticalAnalyzer m_CriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_CriticalAnalyzer;
 
-    public CallToCalli(IInjector injector, IRenamer renamer, CriticalAnalyzer criticalAnalyzer)
+    public CallToCalli(IInjector injector, IRenamer renamer, RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
     {
         m_Injector = injector;
         m_Renamer = renamer;
-        m_CriticalAnalyzer = criticalAnalyzer;
+        m_CriticalAnalyzer = runtimeCriticalAnalyzer;
     }
 
     public PipelineStages Stage => PipelineStages.ModuleWrite;
