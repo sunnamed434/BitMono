@@ -2,5 +2,5 @@
 
 public interface IMemberResolver
 {
-    bool Resolve(string feature, IMemberDefinition memberDefenition);
+    bool Resolve(string feature, IMetadataMember member);
 }
