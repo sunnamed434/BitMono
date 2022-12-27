@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Protecting.Analyzing;
-
-namespace BitMono.Protections;
+﻿namespace BitMono.Protections;
 
 public class BitMethodDotnet : IStageProtection
 {
@@ -19,13 +17,13 @@ public class BitMethodDotnet : IStageProtection
     {
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody != null && method.IsConstructor == false
+            if (method.CilMethodBody is { } body && method.IsConstructor == false
                 && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 var randomMethodBodyIndex = 0;
-                if (method.CilMethodBody.Instructions.Count >= 3)
+                if (body.Instructions.Count >= 3)
                 {
-                    randomMethodBodyIndex = m_Random.Next(0, method.CilMethodBody.Instructions.Count);
+                    randomMethodBodyIndex = m_Random.Next(0, body.Instructions.Count);
                 }
 
                 var randomValue = m_Random.Next(0, 3);
@@ -38,10 +36,10 @@ public class BitMethodDotnet : IStageProtection
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
-                var label = method.CilMethodBody.Instructions[randomMethodBodyIndex].CreateLabel();
-                method.CilMethodBody.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
-                method.CilMethodBody.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
-                method.CilMethodBody.Instructions[randomMethodBodyIndex].Operand = label;
+                var label = body.Instructions[randomMethodBodyIndex].CreateLabel();
+                body.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
+                body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
+                body.Instructions[randomMethodBodyIndex].Operand = label;
             }
         }
         return Task.CompletedTask;
