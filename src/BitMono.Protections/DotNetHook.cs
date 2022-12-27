@@ -18,15 +18,13 @@ public class DotNetHook : IStageProtection
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
         var runtimeHookingType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
-        var memberCloneResult = new MemberCloner(context.Module, new InjectTypeClonerListener(context.Module))
+        var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
+        var listener = new ModifyInjectTypeClonerListener(Modifies.RenameAndRemoveNamespace, m_Renamer, context.Module);
+        var memberCloneResult = new MemberCloner(context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();
         var hookingType = memberCloneResult.GetClonedMember(runtimeHookingType);
-        var redirectStubMethod = memberCloneResult.ClonedMembers.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
-
-        memberCloneResult
-            .RenameClonedMembers(m_Renamer)
-            .RemoveNamespaceOfClonedMembers(m_Renamer);
+        var redirectStubMethod = memberCloneResult.GetClonedMember(runtimeRedirectStubMethod);
 
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
