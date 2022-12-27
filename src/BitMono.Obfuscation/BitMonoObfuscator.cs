@@ -38,10 +38,10 @@ public class BitMonoObfuscator
 
         foreach (var methodDefinition in m_ProtectionContext.Module.FindDefinitions().OfType<MethodDefinition>())
         {
-            if (methodDefinition.CilMethodBody != null)
+            if (methodDefinition.CilMethodBody is { } body)
             {
-                methodDefinition.CilMethodBody.Instructions.ExpandMacros();
-                methodDefinition.CilMethodBody.Instructions.OptimizeMacros();
+                body.Instructions.ExpandMacros();
+                body.Instructions.OptimizeMacros();
             }
         }
         foreach (var protection in m_Protections)
