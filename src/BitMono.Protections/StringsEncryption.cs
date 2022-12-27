@@ -3,16 +3,16 @@
 public class StringsEncryption : IProtection
 {
     private readonly IInjector m_Injector;
-    private readonly CriticalAnalyzer m_CriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
 
     public StringsEncryption(
         IInjector injector,
-        CriticalAnalyzer criticalAnalyzer,
+        RuntimeCriticalAnalyzer runtimeCriticalAnalyzer,
         IRenamer renamer)
     {
         m_Injector = injector;
-        m_CriticalAnalyzer = criticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
         m_Renamer = renamer;
     }
 
@@ -24,19 +24,17 @@ public class StringsEncryption : IProtection
         var saltBytesField = m_Injector.InjectInvisibleArray(context.Module, globalModuleType, Data.SaltBytes, m_Renamer.RenameUnsafely());
 
         var runtimeDecryptorType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
-        var memberCloneResult = new MemberCloner(context.Module, new InjectTypeClonerListener(context.Module))
+        var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
+        var listener = new ModifyInjectTypeClonerListener(Modifies.RenameAndRemoveNamespace, m_Renamer, context.Module);
+        var memberCloneResult = new MemberCloner(context.Module, listener)
             .Include(runtimeDecryptorType)
             .Clone();
 
-        var decryptMethod = memberCloneResult.ClonedMembers.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
-
-        memberCloneResult
-            .RenameClonedMembers(m_Renamer)
-            .RemoveNamespaceOfClonedMembers(m_Renamer);
+        var decryptMethod = memberCloneResult.GetClonedMember(runtimeDecryptMethod);
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody != null && m_CriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.CilMethodBody != null && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 for (var i = 0; i < method.CilMethodBody.Instructions.Count(); i++)
                 {
