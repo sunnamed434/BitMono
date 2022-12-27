@@ -3,8 +3,8 @@
 public interface IRenamer
 {
     string RenameUnsafely();
-    void Rename(object @object);
-    void Rename(params object[] objects);
-    void RemoveNamespace(object @object);
-    void RemoveNamespace(params object[] objects);
+    void Rename(IMetadataMember member);
+    void Rename(params IMetadataMember[] members);
+    void RemoveNamespace(IMetadataMember member);
+    void RemoveNamespace(params IMetadataMember[] members);
 }
