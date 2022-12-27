@@ -36,9 +36,9 @@ public class BitMonoObfuscator
         var cancellationToken = cancellationTokenSource.Token;
         cancellationToken.ThrowIfCancellationRequested();
 
-        foreach (var methodDefinition in m_ProtectionContext.Module.FindDefinitions().OfType<MethodDefinition>())
+        foreach (var method in m_ProtectionContext.Module.FindDefinitions().OfType<MethodDefinition>())
         {
-            if (methodDefinition.CilMethodBody is { } body)
+            if (method.CilMethodBody is { } body)
             {
                 body.Instructions.ExpandMacros();
                 body.Instructions.OptimizeMacros();
