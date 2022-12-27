@@ -11,25 +11,25 @@ public class MethodImplAttributeExcludeResolver : IMethodImplAttributeExcludeRes
         m_Configuration = configuration.Configuration;
     }
 
-    public bool TryResolve(IHasCustomAttribute from, [AllowNull] out MethodImplAttribute methodImplAttribute)
+    public bool TryResolve(IHasCustomAttribute from, [AllowNull] out Dictionary<string, CustomAttributesResolve> keyValuePairs)
     {
-        methodImplAttribute = null;
+        keyValuePairs = null;
         if (m_Configuration.GetValue<bool>(nameof(Obfuscation.NoInliningMethodObfuscationExcluding)) == false)
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, null, out methodImplAttribute) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, typeof(MethodImplAttribute), out keyValuePairs) == false)
         {
             return false;
         }
-        if (methodImplAttribute == null)
+        if (keyValuePairs.TryGetValue(nameof(MethodImplAttribute.Value), out CustomAttributesResolve resolve) 
+            && resolve.Value is MethodImplOptions options)
         {
-            return false;
+            if (options.HasFlag(MethodImplOptions.NoInlining))
+            {
+                return true;
+            }
         }
-        if (methodImplAttribute.Value == MethodImplOptions.NoInlining)
-        {
-            return false;
-        }
-        return true;
+        return false;
     }
 }
