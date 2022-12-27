@@ -1,13 +1,15 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.Core.Protecting.Analyzing;
+
+namespace BitMono.Protections;
 
 public class BitMethodDotnet : IStageProtection
 {
-    private readonly CriticalAnalyzer m_DnlibDefCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
     private readonly Random m_Random;
 
-    public BitMethodDotnet(CriticalAnalyzer dnlibDefCriticalAnalyzer)
+    public BitMethodDotnet(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
     {
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
+        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
         m_Random = new Random();
     }
 
@@ -18,7 +20,7 @@ public class BitMethodDotnet : IStageProtection
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody != null && method.IsConstructor == false
-                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(method))
+                && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 var randomMethodBodyIndex = 0;
                 if (method.CilMethodBody.Instructions.Count >= 3)
