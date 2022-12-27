@@ -1,4 +1,6 @@
-﻿namespace BitMono.Core.Protecting.Renaming;
+﻿using BitMono.Core.Protecting.Analyzing;
+
+namespace BitMono.Core.Protecting.Renaming;
 
 public class Renamer : IRenamer
 {
@@ -25,65 +27,61 @@ public class Renamer : IRenamer
         var randomStringThree = strings[random.Next(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
-    public void Rename(object @object)
+    public void Rename(IMetadataMember member)
     {
-        if (@object is TypeDefinition type)
+        if (member is TypeDefinition type)
         {
             if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 type.Name = RenameUnsafely();
             }
         }
-        if (@object is MethodDefinition method)
+        if (member is MethodDefinition method)
         {
             if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 method.Name = RenameUnsafely();
             }
         }
-        if (@object is FieldDefinition field)
+        if (member is FieldDefinition field)
         {
             field.Name = RenameUnsafely();
         }
-        if (@object is ParameterDefinition parameter)
+        if (member is ParameterDefinition parameter)
         {
             parameter.Name = RenameUnsafely();
         }
     }
-    public void Rename(params object[] objects)
+    public void Rename(params IMetadataMember[] members)
     {
-        for (int i = 0; i < objects.Length; i++)
+        for (int i = 0; i < members.Length; i++)
         {
-            Rename(objects[i]);
+            Rename(members[i]);
         }
     }
-    public void RemoveNamespace(object @object)
+    public void RemoveNamespace(IMetadataMember member)
     {
-        if (@object is TypeDefinition type)
+        if (member is TypeDefinition type)
         {
             if (m_SpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 type.Namespace = string.Empty;
             }
         }
-        if (@object is MethodDefinition method)
+        if (member is MethodDefinition method)
         {
             if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                method.Name = RenameUnsafely();
+                method.DeclaringType.Namespace = string.Empty;
             }
         }
-        if (@object is FieldDefinition field)
+        if (member is FieldDefinition field)
         {
-            field.Name = RenameUnsafely();
-        }
-        if (@object is ParameterDefinition parameter)
-        {
-            parameter.Name = RenameUnsafely();
+            field.DeclaringType.Namespace = string.Empty;
         }
     }
-    public void RemoveNamespace(params object[] objects)
+    public void RemoveNamespace(params IMetadataMember[] members)
     {
-        objects.ForEach(@object => RemoveNamespace(@object));
+        members.ForEach(member => RemoveNamespace(member));
     }
 }
