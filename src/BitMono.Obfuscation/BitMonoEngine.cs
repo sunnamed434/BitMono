@@ -3,7 +3,7 @@
 public class BitMonoEngine
 {
     private readonly IDataWriter m_DataWriter;
-    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
     private readonly List<IMemberResolver> m_MemberResolvers;
     private readonly List<IProtection> m_Protections;
@@ -12,7 +12,7 @@ public class BitMonoEngine
 
     public BitMonoEngine(
         IDataWriter dataWriter,
-        IObfuscationAttributeResolver obfuscationAttributeResolver,
+        ObfuscationAttributeResolver obfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
         List<IMemberResolver> memberResolvers,
         List<IProtection> protections,
@@ -38,10 +38,10 @@ public class BitMonoEngine
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name);
 
-        var protectionsSortResult = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
+        var protectionsSort = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
             .Sort(m_Protections, m_ProtectionSettings);
 
-        if (protectionsSortResult.HasProtections == false)
+        if (protectionsSort.HasProtections == false)
         {
             m_Logger.Fatal("No one protection were detected!");
             cancellationTokenSource.Cancel();
@@ -58,13 +58,13 @@ public class BitMonoEngine
             }
         }
         
-        new ProtectionsExecutionNotifier(m_Logger).Notify(protectionsSortResult);
+        new ProtectionsExecutionNotifier(m_Logger).Notify(protectionsSort);
         
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
             protectionContext,
             m_MemberResolvers,
-            protectionsSortResult,
+            protectionsSort,
             m_DataWriter,
             m_ObfuscationAttributeResolver,
             m_Logger)
