@@ -11,7 +11,6 @@ global using BitMono.API.Protecting.Renaming;
 global using BitMono.API.Protecting.Resolvers;
 global using BitMono.Core.Protecting.Injection;
 global using BitMono.Core.Protecting.Renaming;
-global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Host.Configuration;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
