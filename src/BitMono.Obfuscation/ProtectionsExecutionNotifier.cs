@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Extensions.Protections;
-
-namespace BitMono.Obfuscation;
+﻿namespace BitMono.Obfuscation;
 
 public class ProtectionsExecutionNotifier
 {
@@ -11,35 +9,35 @@ public class ProtectionsExecutionNotifier
         m_Logger = logger.ForContext<ProtectionsExecutionNotifier>();
     }
 
-    public void Notify(ProtectionsSortResult protectionsSortResult)
+    public void Notify(ProtectionsSort protectionsSort)
     {
-        if (protectionsSortResult.DeprecatedProtections.Any())
+        if (protectionsSort.DeprecatedProtections.Any())
         {
-            m_Logger.Warning("Deprecated protections which are deprecated: {0}", string.Join(", ", protectionsSortResult.DeprecatedProtections.Select(p => p?.GetName())));
+            m_Logger.Warning("Skip deprecated protections: {0}", string.Join(", ", protectionsSort.DeprecatedProtections.Select(p => p?.GetName())));
         }
-        if (protectionsSortResult.DisabledProtections.Any())
+        if (protectionsSort.DisabledProtections.Any())
         {
-            m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSortResult.DisabledProtections.Select(p => p ?? "NULL")));
+            m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSort.DisabledProtections.Select(p => p ?? "Unknown Protection")));
         }
-        if (protectionsSortResult.ObfuscationAttributeExcludingProtections.Any())
+        if (protectionsSort.ObfuscationAttributeExcludingProtections.Any())
         {
-            m_Logger.Warning("Skip protections with obfuscation attribute excluding: {0}", string.Join(", ", protectionsSortResult.ObfuscationAttributeExcludingProtections.Select(p => p?.GetName())));
+            m_Logger.Warning("Skip protections with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludingProtections.Select(p => p?.GetName())));
         }
-        if (protectionsSortResult.Protections.Any())
+        if (protectionsSort.SortedProtections.Any())
         {
-            m_Logger.Information("Execute protections: {0}", string.Join(", ", protectionsSortResult.Protections.Select(p => p?.GetName())));
+            m_Logger.Information("Execute protections: {0}", string.Join(", ", protectionsSort.SortedProtections.Select(p => p?.GetName())));
         }
-        if (protectionsSortResult.StageProtections.Any())
+        if (protectionsSort.StageProtections.Any())
         {
-            var moduleWrittenStageProtections = protectionsSortResult.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWrite);
+            var moduleWrittenStageProtections = protectionsSort.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWrite);
             if (moduleWrittenStageProtections.Any())
             {
                 m_Logger.Information("Execute only at the end: {0}", string.Join(", ", moduleWrittenStageProtections.Select(p => p?.GetName())));
             }
         }
-        if (protectionsSortResult.Packers.Any())
+        if (protectionsSort.Packers.Any())
         {
-            m_Logger.Information("Execute packers: {0}", string.Join(", ", protectionsSortResult.Packers.Select(p => p?.GetName())));
+            m_Logger.Information("Execute packers: {0}", string.Join(", ", protectionsSort.Packers.Select(p => p?.GetName())));
         }
     }
 }
