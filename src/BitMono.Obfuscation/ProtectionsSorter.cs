@@ -2,12 +2,12 @@
 
 public class ProtectionsSorter
 {
-    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly AssemblyDefinition m_Assembly;
     private readonly ILogger m_Logger;
 
     public ProtectionsSorter(
-        IObfuscationAttributeResolver obfuscationAttributeResolver,
+        ObfuscationAttributeResolver obfuscationAttributeResolver,
         AssemblyDefinition assembly,
         ILogger logger)
     {
@@ -16,31 +16,36 @@ public class ProtectionsSorter
         m_Logger = logger.ForContext<ProtectionsSorter>();
     }
 
-    public ProtectionsSortResult Sort(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
+    public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
     {
-        var protectionsResolveResult = new ProtectionsResolver(protections, protectionSettings, m_Logger).Sort();
-        protections = protectionsResolveResult.FoundProtections;
+        var protectionsResolve = new ProtectionsResolver(protections, protectionSettings, m_Logger).Sort();
+        protections = protectionsResolve.FoundProtections;
+        var obfuscationAttributeProtections = protections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
+        var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
+        var sortedProtections = protections
+            .Except(obfuscationAttributeProtections)
+            .Except(deprecatedProtections)
+            .ToList();
 
-        var packers = protections.Where(p => p is IPacker)
+        var packers = sortedProtections.Where(p => p is IPacker)
             .Cast<IPacker>()
             .ToList();
-        var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
-        var stageProtections = protections.Where(p => p is IStageProtection)
+        var stageProtections = sortedProtections.Where(p => p is IStageProtection)
             .Cast<IStageProtection>();
-        var pipelineProtections = protections.Where(p => p is IPipelineProtection)
+        var pipelineProtections = sortedProtections.Where(p => p is IPipelineProtection)
             .Cast<IPipelineProtection>();
-        var obfuscationAttributeProtections = protections.Where(p =>m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
 
-        protections = protections.Except(obfuscationAttributeProtections)
+        sortedProtections = sortedProtections
             .Except(packers)
             .ToList();
         var hasProtections = protections.Any();
-        return new ProtectionsSortResult
+        return new ProtectionsSort
         {
-            Protections = protections,
+            FoundProtections = protectionsResolve.FoundProtections,
+            SortedProtections = sortedProtections,
             Packers = packers,
             DeprecatedProtections = deprecatedProtections,
-            DisabledProtections = protectionsResolveResult.DisabledProtections,
+            DisabledProtections = protectionsResolve.DisabledProtections,
             StageProtections = stageProtections,
             PipelineProtections = pipelineProtections,
             ObfuscationAttributeExcludingProtections = obfuscationAttributeProtections,
