@@ -2,5 +2,5 @@
 
 public interface ICustomAttributeResolver
 {
-    Dictionary<string, CustomAttributesResolve> Resolve(IHasCustomAttribute from, Type attributeType);
+    Dictionary<string, CustomAttributeResolve> Resolve(IHasCustomAttribute from, Type attributeType);
 }
