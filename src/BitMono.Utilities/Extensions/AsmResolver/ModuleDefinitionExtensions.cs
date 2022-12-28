@@ -16,6 +16,7 @@ public static class ModuleDefinitionExtensions
     }
     public static IEnumerable<IMetadataMember> FindDefinitions(this ModuleDefinition source)
     {
+        yield return source.Assembly;
         yield return source;
         foreach (var type in source.GetAllTypes())     
         {
