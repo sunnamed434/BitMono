@@ -3,19 +3,19 @@
 public class CustomAttributeResolver : ICustomAttributeResolver
 {
     [return: AllowNull]
-    public Dictionary<string, CustomAttributesResolve> Resolve(IHasCustomAttribute from, Type attributeType)
+    public Dictionary<string, CustomAttributeResolve> Resolve(IHasCustomAttribute from, Type attributeType)
     {
-        var keyValuePairs = new Dictionary<string, CustomAttributesResolve>();
+        var keyValuePairs = new Dictionary<string, CustomAttributeResolve>();
         for (var i = 0; i < from.CustomAttributes.Count; i++)
         {
             var customAttribute = from.CustomAttributes[i];
-            foreach (var customAttributeNamedArgument in customAttribute.Signature.NamedArguments)
+            foreach (var namedArgument in customAttribute.Signature.NamedArguments)
             {
-                if (customAttribute.Constructor.DeclaringType.FullName.Equals(attributeType.FullName))
+                if (customAttribute.Constructor.DeclaringType.Name.Value.Equals(attributeType.Name))
                 {
-                    if (customAttributeNamedArgument.Argument.Element is Utf8String utf8String)
+                    if (namedArgument.Argument.Element is Utf8String utf8String)
                     {
-                        keyValuePairs.Add(customAttributeNamedArgument.MemberName.Value, new CustomAttributesResolve
+                        keyValuePairs.Add(namedArgument.MemberName.Value, new CustomAttributeResolve
                         {
                             Value = utf8String.Value,
                             CustomAttribute = customAttribute
@@ -23,47 +23,16 @@ public class CustomAttributeResolver : ICustomAttributeResolver
                     }
                     else
                     {
-                        keyValuePairs.Add(customAttributeNamedArgument.MemberName.Value, new CustomAttributesResolve
+                        keyValuePairs.Add(namedArgument.MemberName.Value, new CustomAttributeResolve
                         {
-                            Value = customAttributeNamedArgument.Argument.Element,
+                            Value = namedArgument.Argument.Element,
                             CustomAttribute = customAttribute
                         });
                     }
                 }
             }
         }
-        Console.WriteLine(string.Join("\n", keyValuePairs.Select(k => $"Property: {k.Key}, Type: {k.Value.GetType()}")));
+        //Console.WriteLine(string.Join("\n", keyValuePairs.Select(k => $"Property: {k.Key}, Type: {k.Value.Value.GetType()}")));
         return keyValuePairs;
     }
 }
-/*
-public class CustomAttributesResolver : ICustomAttributesResolver
-{
-    [return: AllowNull]
-    public IEnumerable<TAttribute> Resolve<TAttribute>(IHasCustomAttribute from)
-        where TAttribute : Attribute
-    {
-        for (var i = 0; i < from.CustomAttributes.Count; i++)
-        {
-            TAttribute attribute = null;
-            var customAttribute = from.CustomAttributes[i];
-            foreach (var customAttributeNamedArgument in customAttribute.Signature.NamedArguments)
-            {
-                if (customAttribute.Constructor.DeclaringType.FullName.Equals(typeof(TAttribute).FullName))
-                {
-                    attribute = Activator.CreateInstance<TAttribute>();
-                    var propertyInfo = typeof(TAttribute).GetProperty(customAttributeNamedArgument.MemberName);
-                    if (customAttributeNamedArgument.Argument.Element is Utf8String utf8String)
-                    {
-                        propertyInfo.SetValue(attribute, utf8String.Value);
-                    }
-                    else
-                    {
-                        propertyInfo.SetValue(attribute, customAttributeNamedArgument.Argument.Element);
-                    }
-                }
-            }
-            yield return attribute;
-        }
-    }
-}*/
