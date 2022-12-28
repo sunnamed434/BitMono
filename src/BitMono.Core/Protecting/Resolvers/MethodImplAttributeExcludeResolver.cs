@@ -1,29 +1,32 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class MethodImplAttributeExcludeResolver : IMethodImplAttributeExcludeResolver
+public class MethodImplAttributeExcludeResolver : AttributeResolver
 {
-    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly IConfiguration m_Configuration;
+    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public MethodImplAttributeExcludeResolver(IAttemptAttributeResolver attemptAttributeResolver, IBitMonoObfuscationConfiguration configuration)
+    public MethodImplAttributeExcludeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver) 
     {
-        m_AttemptAttributeResolver = attemptAttributeResolver;
         m_Configuration = configuration.Configuration;
+        m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
-    public bool TryResolve(IHasCustomAttribute from, [AllowNull] out Dictionary<string, CustomAttributesResolve> keyValuePairs)
+    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
     {
-        keyValuePairs = null;
+        attributeResolve = null;
         if (m_Configuration.GetValue<bool>(nameof(Obfuscation.NoInliningMethodObfuscationExcluding)) == false)
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, typeof(MethodImplAttribute), out keyValuePairs) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, typeof(MethodImplAttribute), out Dictionary<string, CustomAttributeResolve> keyValuePairs) == false)
         {
             return false;
         }
-        if (keyValuePairs.TryGetValue(nameof(MethodImplAttribute.Value), out CustomAttributesResolve resolve) 
-            && resolve.Value is MethodImplOptions options)
+        if (keyValuePairs.TryGetValue(nameof(MethodImplAttribute.Value), out attributeResolve) == false)
+        {
+            return false;
+        }
+        if (attributeResolve.Value is MethodImplOptions options)
         {
             if (options.HasFlag(MethodImplOptions.NoInlining))
             {
