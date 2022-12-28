@@ -4,11 +4,11 @@ namespace BitMono.Core.Protecting.Resolvers;
 
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
-    private readonly IObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
 
     public SafeToMakeChangesMemberResolver(
-        IObfuscationAttributeResolver obfuscationAttributeResolver,
+        ObfuscationAttributeResolver obfuscationAttributeResolver,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer)
     {
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
