@@ -9,6 +9,7 @@ global using BitMono.API.Protecting.Injection;
 global using BitMono.API.Protecting.Pipeline;
 global using BitMono.API.Protecting.Renaming;
 global using BitMono.Core.Protecting.Analyzing;
+global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Core.Protecting.Injection;
 global using BitMono.Runtime;
 global using BitMono.Utilities.Extensions.AsmResolver;
