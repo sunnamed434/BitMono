@@ -2,6 +2,27 @@
 
 public static class ProtectionExtensions
 {
+    public static bool TryGetDoNotResolveAttribute(this Type source, [AllowNull] out DoNotResolveAttribute attribute, bool inherit = false)
+    {
+        attribute = source.GetCustomAttribute<DoNotResolveAttribute>(inherit);
+        if (attribute == null) 
+        {
+            return false;
+        }
+        return true;
+    }
+    public static bool TryGetDoNotResolveAttribute(this IProtection source, [AllowNull] out DoNotResolveAttribute attribute)
+    {
+        return TryGetDoNotResolveAttribute(source.GetType(), out attribute);
+    }
+    public static bool TryGetDoNotResolveAttribute(this IPacker source, [AllowNull] out DoNotResolveAttribute attribute)
+    {
+        return TryGetDoNotResolveAttribute(source.GetType(), out attribute);
+    }
+    public static bool TryGetDoNotResolveAttribute<TProtection>([AllowNull] out DoNotResolveAttribute attribute) where TProtection : IProtection
+    {
+        return TryGetDoNotResolveAttribute(typeof(TProtection), out attribute);
+    }
     public static string GetName(this Type source, bool inherit = false)
     {
         var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);
@@ -31,6 +52,6 @@ public static class ProtectionExtensions
     }
     public static string GetName<TProtection>() where TProtection : IProtection
     {
-        return typeof(TProtection).GetName(inherit: false);
+        return GetName(typeof(TProtection), inherit: false);
     }
 }
