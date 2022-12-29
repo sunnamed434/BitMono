@@ -9,6 +9,6 @@ public class ProtectionsSort
     public ICollection<string> DisabledProtections { get; set; }
     public IEnumerable<IStageProtection> StageProtections { get; set; }
     public IEnumerable<IPipelineProtection> PipelineProtections { get; set; }
-    public IEnumerable<IProtection> ObfuscationAttributeExcludingProtections { get; set; }
+    public IEnumerable<IProtection> ObfuscationAttributeExcludeProtections { get; set; }
     public bool HasProtections { get; set; }
 }
