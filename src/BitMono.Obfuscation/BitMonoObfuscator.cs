@@ -51,7 +51,7 @@ public class BitMonoObfuscator
             if ((protection is IPipelineStage) == false)
             {
                 var protectionName = protection.GetName();
-                var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protectionName, m_ProtectionContext.Module);
+                var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
                 await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
                 m_Logger.Information("{0} -> OK", protectionName);
             }
@@ -65,7 +65,7 @@ public class BitMonoObfuscator
                 if (stage.Stage == PipelineStages.ModuleWrite)
                 {
                     var protectionName = protection.GetName();
-                    var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protectionName, m_ProtectionContext.Module);
+                    var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
                     await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
                     m_Logger.Information("{0} -> OK", protectionName);
                 }
@@ -78,7 +78,7 @@ public class BitMonoObfuscator
                     if (protectionPhase.Item2 == PipelineStages.ModuleWrite)
                     {
                         var protectionName = protection.GetName();
-                        var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protectionName, m_ProtectionContext.Module);
+                        var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
                         await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
                         m_Logger.Information("{0} -> Pipeline OK", protectionName);
                     }
@@ -94,11 +94,11 @@ public class BitMonoObfuscator
                 {
                     if (customAttribute.CustomAttributes.Remove(attributeResolve.CustomAttribute))
                     {
-                        m_Logger.Information("Successfully removed obfuscation attribute");
+                        m_Logger.Information("Successfully stripped obfuscation attribute");
                     }
                     else
                     {
-                        m_Logger.Warning("Failed to remove obfuscation attribute");
+                        m_Logger.Warning("Failed to stip obfuscation attribute");
                     }
                 }
             }
@@ -124,7 +124,7 @@ public class BitMonoObfuscator
             cancellationToken.ThrowIfCancellationRequested();
 
             var packerName = packer.GetName();
-            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(packerName, m_ProtectionContext.Module);
+            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(packer, m_ProtectionContext.Module);
             await packer.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
             m_Logger.Information("{0} -> Packer OK", packerName);
         }
