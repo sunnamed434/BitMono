@@ -48,7 +48,7 @@ public class ProtectionsSorter
             DisabledProtections = protectionsResolve.DisabledProtections,
             StageProtections = stageProtections,
             PipelineProtections = pipelineProtections,
-            ObfuscationAttributeExcludingProtections = obfuscationAttributeProtections,
+            ObfuscationAttributeExcludeProtections = obfuscationAttributeProtections,
             HasProtections = hasProtections
         };
     }
