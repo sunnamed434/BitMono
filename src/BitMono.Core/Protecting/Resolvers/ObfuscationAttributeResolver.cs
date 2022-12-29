@@ -14,7 +14,7 @@ public class ObfuscationAttributeResolver : AttributeResolver
     public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
     {
         attributeResolve = null;
-        if (m_Configuration.GetValue<bool>(nameof(Obfuscation.ObfuscationAttributeObfuscationExcluding)) == false)
+        if (m_Configuration.GetValue<bool>(nameof(Obfuscation.ObfuscationAttributeObfuscationExclude)) == false)
         {
             return false;
         }
@@ -34,7 +34,7 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
             {
-                var exclude = keyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), out attributeResolve, defaultValue: true);
+                var exclude = keyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
                 if (exclude)
                 {
                     return true;
