@@ -19,9 +19,9 @@ public class ProtectionsExecutionNotifier
         {
             m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSort.DisabledProtections.Select(p => p ?? "Unknown Protection")));
         }
-        if (protectionsSort.ObfuscationAttributeExcludingProtections.Any())
+        if (protectionsSort.ObfuscationAttributeExcludeProtections.Any())
         {
-            m_Logger.Warning("Skip protections with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludingProtections.Select(p => p?.GetName())));
+            m_Logger.Warning("Skip protections with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludeProtections.Select(p => p?.GetName())));
         }
         if (protectionsSort.SortedProtections.Any())
         {
