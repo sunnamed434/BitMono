@@ -1,14 +1,8 @@
 ﻿namespace BitMono.Protections;
 
+[DoNotResolve(Members.SpecialRuntime)]
 public class AntiDebugBreakpoints : IProtection
 {
-    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
-
-    public AntiDebugBreakpoints(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer)
-    {
-        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
-    }
-
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
         var threadSleepMethods = new List<IMethodDescriptor>
@@ -57,9 +51,7 @@ public class AntiDebugBreakpoints : IProtection
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method)
-                && method.NotGetterAndSetter()
-                && method.IsConstructor == false)
+            if (method.NotGetterAndSetter() && method.IsConstructor == false)
             {
                 if (method.CilMethodBody is { } body
                     && body.Instructions.Count >= 5)
