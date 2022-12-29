@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[DoNotResolve(Members.SpecialRuntime)]
 public class StringsEncryption : IProtection
 {
     private readonly IInjector m_Injector;
