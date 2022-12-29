@@ -33,7 +33,7 @@ public class BitMonoEngine
         cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
         var moduleDefMDCreationResult = moduleCreator.Create();
-        var runtimeModuleDefinition = ModuleDefinition.FromModule(typeof(BitMono.Runtime.Data).Module);
+        var runtimeModuleDefinition = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
         var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefinition, context).Create();
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name);
