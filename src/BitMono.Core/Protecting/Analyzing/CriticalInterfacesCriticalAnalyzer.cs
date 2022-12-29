@@ -11,6 +11,10 @@ public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefiniti
 
     public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
+        if (m_Configuration.GetValue<bool>("UseCriticalInterfaces") == false)
+        {
+            return true;
+        }
         var criticalInterfaces = m_Configuration.GetCriticalInterfaces();
         if (typeDefinition.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
         {
