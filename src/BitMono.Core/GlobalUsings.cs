@@ -12,6 +12,7 @@ global using BitMono.API.Protecting.Renaming;
 global using BitMono.API.Protecting.Resolvers;
 global using BitMono.Core.Extensions.Configuration;
 global using BitMono.Core.Extensions.Protections;
+global using BitMono.Core.Protecting.Analyzing;
 global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Extensions.AsmResolver;
