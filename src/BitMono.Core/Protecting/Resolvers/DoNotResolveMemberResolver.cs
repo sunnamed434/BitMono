@@ -17,7 +17,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             return true;
         }
-        if (doNotResolveAttribute.Resolves.HasFlag(Members.SpecialRuntime))
+        if (doNotResolveAttribute.Members.HasFlag(Members.SpecialRuntime))
         {
             if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
             {
@@ -26,7 +26,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
         }
         if (member is IHasCustomAttribute customAttribute)
         {
-            if (doNotResolveAttribute.Resolves.HasFlag(Members.Model))
+            if (doNotResolveAttribute.Members.HasFlag(Members.Model))
             {
                 if (m_ModelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute) == false)
                 {
