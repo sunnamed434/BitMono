@@ -2,30 +2,34 @@
 
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
+    private readonly IConfiguration m_Configuration;
     private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
-
-    public ModelAttributeCriticalAnalyzer(IAttemptAttributeResolver attemptAttributeResolver)
+    private readonly Dictionary<string, string> m_Attributes = new Dictionary<string, string>
     {
+        { nameof(SerializableAttribute), typeof(SerializableAttribute).Namespace },
+        { nameof(XmlAttributeAttribute), typeof(XmlAttributeAttribute).Namespace },
+        { nameof(XmlArrayItemAttribute), typeof(XmlArrayItemAttribute).Namespace },
+        { nameof(JsonPropertyAttribute), typeof(JsonPropertyAttribute).Namespace },
+    };
+
+    public ModelAttributeCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
+    {
+        m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_AttemptAttributeResolver.TryResolve(customAttribute, typeof(SerializableAttribute), out _))
+        if (m_Configuration.GetValue<bool>("ModelAttributeObfuscationExclude") == false)
         {
-            return false;
+            return true;
         }
-        if (m_AttemptAttributeResolver.TryResolve(customAttribute, typeof(XmlAttributeAttribute), out _))
+        foreach (var attribute in m_Attributes)
         {
-            return false;
-        }
-        if (m_AttemptAttributeResolver.TryResolve(customAttribute, typeof(XmlArrayItemAttribute), out _))
-        {
-            return false;
-        }
-        if (m_AttemptAttributeResolver.TryResolve(customAttribute, typeof(JsonPropertyAttribute), out _))
-        {
-            return false;
+            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Value, attribute.Key, out _))
+            {
+                return false;
+            }
         }
         return false;
     }
