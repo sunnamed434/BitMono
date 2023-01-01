@@ -20,7 +20,7 @@ public class ProtectionsSorter
     {
         var protectionsResolve = new ProtectionsResolver(protections, protectionSettings, m_Logger).Sort();
         protections = protectionsResolve.FoundProtections;
-        var obfuscationAttributeProtections = protections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
+        var obfuscationAttributeProtections = protections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly) == true);
         var deprecatedProtections = protections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
         var sortedProtections = protections
             .Except(obfuscationAttributeProtections)
