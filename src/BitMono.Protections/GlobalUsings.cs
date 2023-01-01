@@ -13,6 +13,7 @@ global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Core.Protecting.Injection;
 global using BitMono.Runtime;
 global using BitMono.Utilities.Extensions.AsmResolver;
+global using NullGuard.CodeAnalysis;
 global using System;
 global using System.Collections.Generic;
 global using System.IO;
