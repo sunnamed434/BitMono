@@ -9,9 +9,9 @@ public class AttemptAttributeResolver : IAttemptAttributeResolver
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve(IHasCustomAttribute from, Type attributeType, [AllowNull] out Dictionary<string, CustomAttributeResolve> keyValuePairs)
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out Dictionary<string, CustomAttributeResolve> keyValuePairs)
     {
-        keyValuePairs = m_CustomAttributesResolver.Resolve(from, attributeType);
+        keyValuePairs = m_CustomAttributesResolver.Resolve(from, @namespace, name);
         if (keyValuePairs != null && keyValuePairs.Any())
         {
             return true;
