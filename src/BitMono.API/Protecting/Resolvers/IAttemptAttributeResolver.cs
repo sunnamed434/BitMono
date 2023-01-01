@@ -2,5 +2,5 @@
 
 public interface IAttemptAttributeResolver
 {
-    bool TryResolve(IHasCustomAttribute from, Type attributeType, out Dictionary<string, CustomAttributeResolve> keyValuePairs);
+    bool TryResolve(IHasCustomAttribute from, string @namespace, string name, out Dictionary<string, CustomAttributeResolve> keyValuePairs);
 }
