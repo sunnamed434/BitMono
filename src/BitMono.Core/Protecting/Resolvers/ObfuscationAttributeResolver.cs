@@ -4,11 +4,15 @@ public class ObfuscationAttributeResolver : AttributeResolver
 {
     private readonly IConfiguration m_Configuration;
     private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+    private readonly string m_AttributeNamespace;
+    private readonly string m_AttributeName;
 
     public ObfuscationAttributeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
     {
         m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
+        m_AttributeNamespace = typeof(ObfuscationAttribute).Namespace;
+        m_AttributeName = nameof(ObfuscationAttribute);
     }
 
     public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
@@ -18,7 +22,7 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, typeof(ObfuscationAttribute), out Dictionary<string, CustomAttributeResolve> keyValuePairs) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out Dictionary<string, CustomAttributeResolve> keyValuePairs) == false)
         {
             return false;
         }
