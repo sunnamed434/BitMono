@@ -4,7 +4,7 @@ public class BitMonoEngine
 {
     private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguratin;
+    private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguration;
     private readonly List<IMemberResolver> m_MemberResolvers;
     private readonly List<IProtection> m_Protections;
     private readonly List<ProtectionSettings> m_ProtectionSettings;
@@ -21,7 +21,7 @@ public class BitMonoEngine
     {
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscationConfiguratin = obfuscationConfiguration;
+        m_ObfuscationConfiguration = obfuscationConfiguration;
         m_MemberResolvers = memberResolvers;
         m_Protections = protections;
         m_ProtectionSettings = protectionSettings;
@@ -30,13 +30,20 @@ public class BitMonoEngine
 
     public async Task ObfuscateAsync(BitMonoContext context, IModuleCreator moduleCreator, CancellationTokenSource cancellationTokenSource)
     {
-        cancellationTokenSource.Token.ThrowIfCancellationRequested();
+        var cancellationToken = cancellationTokenSource.Token;
+        cancellationToken.ThrowIfCancellationRequested();
 
         var moduleDefMDCreationResult = moduleCreator.Create();
         var runtimeModuleDefinition = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
-        var protectionContext = new ProtectionContextCreator(moduleDefMDCreationResult, runtimeModuleDefinition, context).Create();
+        var protectionContext = new ProtectionContextCreator
+        {
+            ModuleCreationResult = moduleDefMDCreationResult, 
+            RuntimeModuleDefinition = runtimeModuleDefinition,
+            BitMonoContext = context,
+            CancellationToken = cancellationToken
+        }.Create();
         new OutputFilePathCreator().Create(context);
-        m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name);
+        m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name.Value);
 
         var protectionsSort = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
             .Sort(m_Protections, m_ProtectionSettings);
@@ -46,16 +53,6 @@ public class BitMonoEngine
             m_Logger.Fatal("No one protection were detected!");
             cancellationTokenSource.Cancel();
             return;
-        }
-        if (m_ObfuscationConfiguratin.Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
-        {
-            var resolvingSucceed = new BitMonoAssemblyResolver(m_Logger).Resolve(protectionContext.BitMonoContext.DependenciesData, protectionContext, cancellationTokenSource.Token);
-            if (resolvingSucceed == false)
-            {
-                m_Logger.Fatal("Drop dependencies in 'libs' directory with the same path as your module has, or set in obfuscation.json FailOnNoRequiredDependency to false");
-                cancellationTokenSource.Cancel();
-                return;
-            }
         }
         
         new ProtectionsExecutionNotifier(m_Logger).Notify(protectionsSort);
@@ -67,6 +64,7 @@ public class BitMonoEngine
             protectionsSort,
             m_DataWriter,
             m_ObfuscationAttributeResolver,
+            m_ObfuscationConfiguration,
             m_Logger)
             .StartAsync(cancellationTokenSource);
         m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectoryName);
