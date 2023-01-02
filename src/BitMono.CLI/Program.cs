@@ -1,4 +1,6 @@
-﻿public class Program
+﻿using BitMono.Core.Extensions;
+
+public class Program
 {
     private const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
     private static CancellationTokenSource CancellationToken = new CancellationTokenSource();
@@ -32,7 +34,7 @@
             var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
             var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
             var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscationAttributeResolver>();
-            var memberDefinitionResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberResolver>>().ToList();
+            var membersResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
             var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
@@ -45,7 +47,7 @@
                 moduleDefMDWriter,
                 obfuscationAttributeResolver,
                 obfuscationConfiguration,
-                memberDefinitionResolver,
+                membersResolver,
                 protections,
                 protectionSettings,
                 logger)
