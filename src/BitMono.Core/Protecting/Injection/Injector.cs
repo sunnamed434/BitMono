@@ -5,7 +5,7 @@ public class Injector : IInjector
     public FieldDefinition InjectInvisibleArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
     {
         var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
-        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.Sealed | TypeAttributes.ExplicitLayout, module.DefaultImporter.ImportType(valueType))
+        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.NestedFamilyAndAssembly, valueType)
         {
             ClassLayout = new ClassLayout(0, (uint)data.Length),
         };
@@ -17,11 +17,10 @@ public class Injector : IInjector
         fieldWithRVA.FieldRva = new DataSegment(data);
         classWithLayout.Fields.Add(fieldWithRVA);
 
-        var byteArray = module.DefaultImporter.ImportType(typeof(byte[]));
-        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Assembly | FieldAttributes.Static, new FieldSignature(byteArray.ToTypeSignature()));
+        var systemByte = module.DefaultImporter.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
+        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Assembly | FieldAttributes.Static, new FieldSignature(systemByte.MakeSzArrayType()));
         classWithLayout.Fields.Add(fieldInjectedArray);
 
-        var systemByte = module.DefaultImporter.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
         var initializeArrayMethod = module.DefaultImporter.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
         {
             typeof(Array),
@@ -45,7 +44,6 @@ public class Injector : IInjector
     {
         var invislbeTypeDef = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, module.CorLibTypeFactory.Object.ToTypeDefOrRef());
         InjectCompilerGeneratedAttribute(module, invislbeTypeDef);
-        invislbeTypeDef.Attributes |= TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
         return invislbeTypeDef;
     }
     public TypeDefinition CreateInvisibleValueType(ModuleDefinition module, string name = null)
