@@ -22,12 +22,10 @@ public class NameCriticalAnalyzer :
     {
         if (m_CriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
         {
-            Console.WriteLine("-----------------------------------------------------> CRITICAL TO RENAME TYPE... SAD");
             return false;
         }
         if (m_CriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
         {
-            Console.WriteLine("-----------------------------------------------------> CRITICAL TO RENAME BASE TYPE... SAD");
             return false;
         }
         return true;
