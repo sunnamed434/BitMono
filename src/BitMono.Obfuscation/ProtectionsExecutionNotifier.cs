@@ -27,14 +27,6 @@ public class ProtectionsExecutionNotifier
         {
             m_Logger.Information("Execute protections: {0}", string.Join(", ", protectionsSort.SortedProtections.Select(p => p?.GetName())));
         }
-        if (protectionsSort.StageProtections.Any())
-        {
-            var moduleWrittenStageProtections = protectionsSort.StageProtections.Where(s => s.Stage == PipelineStages.ModuleWrite);
-            if (moduleWrittenStageProtections.Any())
-            {
-                m_Logger.Information("Execute only at the end: {0}", string.Join(", ", moduleWrittenStageProtections.Select(p => p?.GetName())));
-            }
-        }
         if (protectionsSort.Packers.Any())
         {
             m_Logger.Information("Execute packers: {0}", string.Join(", ", protectionsSort.Packers.Select(p => p?.GetName())));
