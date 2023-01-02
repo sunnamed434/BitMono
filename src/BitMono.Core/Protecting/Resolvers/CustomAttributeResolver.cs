@@ -2,8 +2,15 @@
 
 public class CustomAttributeResolver : ICustomAttributeResolver
 {
+    private readonly ILogger m_Logger;
+
+    public CustomAttributeResolver(ILogger logger)
+    {
+        m_Logger = logger;
+    }
+
     [return: AllowNull]
-    public Dictionary<string, CustomAttributeResolve> Resolve(IHasCustomAttribute from, Type attributeType)
+    public Dictionary<string, CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
         var keyValuePairs = new Dictionary<string, CustomAttributeResolve>();
         for (var i = 0; i < from.CustomAttributes.Count; i++)
@@ -11,7 +18,7 @@ public class CustomAttributeResolver : ICustomAttributeResolver
             var customAttribute = from.CustomAttributes[i];
             foreach (var namedArgument in customAttribute.Signature.NamedArguments)
             {
-                if (customAttribute.Constructor.DeclaringType.Name.Value.Equals(attributeType.Name))
+                if (customAttribute.Constructor.DeclaringType.IsTypeOf(@namespace, name))
                 {
                     if (namedArgument.Argument.Element is Utf8String utf8String)
                     {
@@ -32,7 +39,7 @@ public class CustomAttributeResolver : ICustomAttributeResolver
                 }
             }
         }
-        //Console.WriteLine(string.Join("\n", keyValuePairs.Select(k => $"Property: {k.Key}, Type: {k.Value.Value.GetType()}")));
+        m_Logger.Warning(string.Join("\n", keyValuePairs.Select(k => $"Property: {k.Key}, Type: {k.Value.Value.GetType()}")));
         return keyValuePairs;
     }
 }
