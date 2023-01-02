@@ -1,4 +1,6 @@
-﻿namespace BitMono.Core.Protecting.Renaming;
+﻿using BitMono.Core.Extensions;
+
+namespace BitMono.Core.Protecting.Renaming;
 
 public class Renamer : IRenamer
 {
