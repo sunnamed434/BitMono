@@ -1,7 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(Members.SpecialRuntime)]
-public class CallToCalli : IStageProtection
+public class CallToCalli : IProtection
 {
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
@@ -11,8 +11,6 @@ public class CallToCalli : IStageProtection
         m_Injector = injector;
         m_Renamer = renamer;
     }
-
-    public PipelineStages Stage => PipelineStages.ModuleWrite;
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
