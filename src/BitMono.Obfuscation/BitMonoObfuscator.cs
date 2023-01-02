@@ -3,30 +3,37 @@
 public class BitMonoObfuscator
 {
     private readonly ProtectionContext m_ProtectionContext;
-    private IEnumerable<IMemberResolver> m_MemberDefinitionResolvers;
+    private readonly IEnumerable<IMemberResolver> m_MemberResolvers;
     private readonly ProtectionsSort m_ProtectionsSort;
-    private readonly ICollection<IPacker> m_Packers;
-    private readonly ICollection<IProtection> m_Protections;
+    private readonly IEnumerable<IPacker> m_Packers;
+    private readonly IEnumerable<IProtection> m_Protections;
+    private readonly IEnumerable<IHasPipeline> m_Pipelines;
     private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly IConfiguration m_ObfuscationConfiguration;
+    private readonly IInvokablePipeline m_InvokablePipeline;
     private MembersResolver m_MemberResolver;
     private readonly ILogger m_Logger;
 
     public BitMonoObfuscator(
         ProtectionContext protectionContext,
-        IEnumerable<IMemberResolver> memberDefinitionResolvers,
+        IEnumerable<IMemberResolver> memberResolvers,
         ProtectionsSort protectionsSortResult,
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
+        IBitMonoObfuscationConfiguration obfuscationConfiguration,
         ILogger logger)
     {
-        m_MemberDefinitionResolvers = memberDefinitionResolvers;
+        m_MemberResolvers = memberResolvers;
         m_ProtectionsSort = protectionsSortResult;
         m_Protections = m_ProtectionsSort.SortedProtections;
         m_Packers = m_ProtectionsSort.Packers;
+        m_Pipelines = protectionsSortResult.Pipelines;
         m_ProtectionContext = protectionContext;
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
+        m_ObfuscationConfiguration = obfuscationConfiguration.Configuration;
+        m_InvokablePipeline = new InvokablePipeline(m_ProtectionContext);
         m_MemberResolver = new MembersResolver();
         m_Logger = logger.ForContext<BitMonoObfuscator>();
     }
@@ -36,57 +43,119 @@ public class BitMonoObfuscator
         var cancellationToken = cancellationTokenSource.Token;
         cancellationToken.ThrowIfCancellationRequested();
 
+        m_InvokablePipeline.OnFail += onFail;
+
+        await m_InvokablePipeline.InvokeAsync(outputFrameworkInformationAsync);
+        await m_InvokablePipeline.InvokeAsync(resolveDependenciesAsync);
+        await m_InvokablePipeline.InvokeAsync(expandMacrosAsync);
+        await m_InvokablePipeline.InvokeAsync(protectAsync);
+        await m_InvokablePipeline.InvokeAsync(optimizeMacrosAsync);
+        await m_InvokablePipeline.InvokeAsync(cleanupAsync);
+        await m_InvokablePipeline.InvokeAsync(writeModuleAsync);
+        await m_InvokablePipeline.InvokeAsync(packAsync);
+    }
+
+    private Task<bool> outputFrameworkInformationAsync(ProtectionContext context)
+    {
+        m_Logger.Information(RuntimeUtilities.GetFrameworkInformation().ToString());
+        return Task.FromResult(true);
+    }
+    private Task<bool> resolveDependenciesAsync(ProtectionContext context)
+    {
+        var assemblyResolve = new BitMonoAssemblyResolver(m_Logger).Resolve(context.BitMonoContext.DependenciesData, context, context.CancellationToken);
+        foreach (var reference in assemblyResolve.ResolvedReferences)
+        {
+            m_Logger.Information("Successfully resolved dependency: {0}", reference.FullName);
+        }
+        foreach (var reference in assemblyResolve.FailedToResolveReferences)
+        {
+            m_Logger.Information("Failed to resolve dependency: {0}", reference.FullName);
+        }
+        if (assemblyResolve.Succeed == false)
+        {
+            if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)) == true)
+            {
+                m_Logger.Fatal("Drop dependencies in 'libs' directory with the same path as your module has, or set in obfuscation.json FailOnNoRequiredDependency to false");
+                return Task.FromResult(false);
+            }
+        }
+        return Task.FromResult(true);
+    }
+    private Task<bool> expandMacrosAsync(ProtectionContext context)
+    {
         foreach (var method in m_ProtectionContext.Module.FindDefinitions().OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)
             {
                 body.Instructions.ExpandMacros();
+            }
+        }
+        return Task.FromResult(true);
+    }
+    private async Task<bool> protectAsync(ProtectionContext context)
+    {
+        foreach (var protection in m_Protections)
+        {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            var protectionName = protection.GetName();
+            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(protection, m_ProtectionContext.Module);
+            await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, context.CancellationToken);
+            m_Logger.Information("{0} -> OK", protectionName);
+        }
+        foreach (var pipeline in m_Pipelines)
+        {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            if (pipeline is IProtection protection)
+            {
+                var protectionName = protection.GetName();
+                var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(protection, m_ProtectionContext.Module);
+                await protection.ExecuteAsync(context, protectionParameters, context.CancellationToken);
+                m_Logger.Information("{0} -> Pipeline Protection OK", protectionName);
+            }
+            foreach (var phase in pipeline.PopulatePipeline())
+            {
+                var protectionName = phase.GetName();
+                var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(phase, m_ProtectionContext.Module);
+                await phase.ExecuteAsync(context, protectionParameters, context.CancellationToken);
+                m_Logger.Information("{0} -> Pipeline Phase Protection OK", protectionName);
+
+            }
+        }
+        return true;
+    }
+    private async Task<bool> writeModuleAsync(ProtectionContext context)
+    {
+        try
+        {
+            var memoryStream = new MemoryStream();
+            var image = context.PEImageBuilder.CreateImage(context.Module).ConstructedImage;
+            new ManagedPEFileBuilder().CreateFile(image).Write(memoryStream);
+            context.ModuleOutput = memoryStream.ToArray();
+            await m_DataWriter.WriteAsync(context.BitMonoContext.OutputFile, context.ModuleOutput);
+        }
+        catch (Exception ex)
+        {
+            m_Logger.Fatal(ex, "Error while writing the file!");
+            return false;
+        }
+        return true;
+    }
+    private Task<bool> optimizeMacrosAsync(ProtectionContext context)
+    {
+        foreach (var method in context.Module.FindDefinitions().OfType<MethodDefinition>())
+        {
+            if (method.CilMethodBody is { } body)
+            {
                 body.Instructions.OptimizeMacros();
             }
         }
-        foreach (var protection in m_Protections)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if ((protection is IPipelineStage) == false)
-            {
-                var protectionName = protection.GetName();
-                var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
-                await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                m_Logger.Information("{0} -> OK", protectionName);
-            }
-        }
-        foreach (var protection in m_Protections)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (protection is IPipelineStage stage)
-            {
-                if (stage.Stage == PipelineStages.ModuleWrite)
-                {
-                    var protectionName = protection.GetName();
-                    var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
-                    await protection.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                    m_Logger.Information("{0} -> OK", protectionName);
-                }
-            }
-
-            if (protection is IPipelineProtection pipelineProtection)
-            {
-                foreach (var protectionPhase in pipelineProtection.PopulatePipeline())
-                {
-                    if (protectionPhase.Item2 == PipelineStages.ModuleWrite)
-                    {
-                        var protectionName = protection.GetName();
-                        var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(protection, m_ProtectionContext.Module);
-                        await protectionPhase.Item1.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
-                        m_Logger.Information("{0} -> Pipeline OK", protectionName);
-                    }
-                }
-            }
-        }
-
-        foreach (var customAttribute in m_ProtectionContext.Module.FindDefinitions().OfType<IHasCustomAttribute>())
+        return Task.FromResult(true);
+    }
+    private Task<bool> cleanupAsync(ProtectionContext context)
+    {
+        foreach (var customAttribute in context.Module.FindDefinitions().OfType<IHasCustomAttribute>())
         {
             foreach (var protection in m_ProtectionsSort.FoundProtections)
             {
@@ -103,30 +172,23 @@ public class BitMonoObfuscator
                 }
             }
         }
-
-        try
-        {
-            var memoryStream = new MemoryStream();
-            var image = m_ProtectionContext.PEImageBuilder.CreateImage(m_ProtectionContext.Module).ConstructedImage;
-            new ManagedPEFileBuilder().CreateFile(image).Write(memoryStream);
-            m_ProtectionContext.ModuleOutput = memoryStream.ToArray();
-            await m_DataWriter.WriteAsync(m_ProtectionContext.BitMonoContext.OutputFile, m_ProtectionContext.ModuleOutput);
-        }
-        catch (Exception ex)
-        {
-            m_Logger.Fatal(ex, "Error while writing file!");
-            cancellationTokenSource.Cancel();
-            return;
-        }
-
+        return Task.FromResult(true);
+    }
+    private async Task<bool> packAsync(ProtectionContext context)
+    {
         foreach (var packer in m_Packers)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            context.CancellationToken.ThrowIfCancellationRequested();
 
             var packerName = packer.GetName();
-            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberDefinitionResolvers).Create(packer, m_ProtectionContext.Module);
-            await packer.ExecuteAsync(m_ProtectionContext, protectionParameters, cancellationToken);
+            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(packer, m_ProtectionContext.Module);
+            await packer.ExecuteAsync(m_ProtectionContext, protectionParameters, context.CancellationToken);
             m_Logger.Information("{0} -> Packer OK", packerName);
         }
+        return true;
+    }
+    private void onFail()
+    {
+        m_Logger.Fatal("Obfuscation stopped! Something went wrong!");
     }
 }
