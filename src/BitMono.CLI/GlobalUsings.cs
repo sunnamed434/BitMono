@@ -4,7 +4,6 @@ global using BitMono.API.Protecting;
 global using BitMono.API.Protecting.Resolvers;
 global using BitMono.CLI;
 global using BitMono.CLI.Modules;
-global using BitMono.Core.Extensions.Configuration;
 global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Host;
 global using BitMono.Host.Modules;
