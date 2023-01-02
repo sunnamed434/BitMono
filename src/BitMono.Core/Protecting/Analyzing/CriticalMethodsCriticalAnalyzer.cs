@@ -1,4 +1,6 @@
-﻿namespace BitMono.Core.Protecting.Analyzing;
+﻿using BitMono.Core.Extensions;
+
+namespace BitMono.Core.Protecting.Analyzing;
 
 public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
