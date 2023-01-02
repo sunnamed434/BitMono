@@ -102,16 +102,16 @@ public class BitMonoModule : Module
 
         containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
             .PublicOnly()
-            .Where(t => 
-                t.GetInterface(nameof(IProtection)) != null 
-                && t.GetInterface(nameof(IPhaseProtection)) == null)
+            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
 
         containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
+            .Where(t => 
+                t.GetInterface(nameof(IProtection)) != null 
+                && t.GetInterface(nameof(IPhaseProtection)) == null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
