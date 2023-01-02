@@ -9,44 +9,49 @@ public class BitMonoAssemblyResolver
         m_Logger = logger.ForContext<BitMonoAssemblyResolver>();
     }
 
-    public bool Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context, CancellationToken cancellationToken = default)
+    public AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        var resolvedReferences = new HashSet<AssemblyReference>();
+        var failedToResolveReferences = new HashSet<AssemblyReference>();
 
-        var resolvingSucceed = true;
-        // temp comment
-        //foreach (var dependencyData in dependenciesData)
-        //{
-        //    cancellationToken.ThrowIfCancellationRequested();
-        //
-        //    try
-        //    {
-        //        context.AssemblyResolver.AddToCache(context.Module.Assembly, AssemblyDefinition.FromBytes(dependencyData));
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        Console.WriteLine(ex);
-        //    }
-        //}
-        foreach (var assemblyReference in context.Module.AssemblyReferences)
+        var resolveSucceed = true;
+        foreach (var originalReference in context.Module.AssemblyReferences)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            try
+            foreach (var data in dependenciesData)
             {
-                m_Logger.Information("Resolving assembly: " + assemblyReference.Name);
-                var assembly = context.AssemblyResolver.Resolve(assemblyReference);
-                if (assembly == null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
                 {
-                    m_Logger.Error("Failed to resolve dependency {0}", assemblyReference.FullName);
+                    var defenition = AssemblyDefinition.FromBytes(data);
+                    if (context.AssemblyResolver.HasCached(defenition) == false)
+                    {
+                        context.AssemblyResolver.AddToCache(originalReference, defenition);
+                    }
+                    var resolved = context.AssemblyResolver.Resolve(defenition);
+                    if (resolved != null)
+                    {
+                        resolvedReferences.Add(originalReference);
+                    }
+                    else
+                    {
+                        failedToResolveReferences.Add(originalReference);
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    resolveSucceed = false;
+                    failedToResolveReferences.Add(originalReference);
+                    m_Logger.Debug("Failed to resolve dependency, error: {0}", ex.ToString());
                 }
             }
-            catch (Exception ex)
-            {
-                resolvingSucceed = false;
-                m_Logger.Error("Failed to resolve dependency {0}, error: {1}", assemblyReference.FullName, ex.Message);
-            }
         }
-        return resolvingSucceed;
+        return new AssemblyResolve
+        {
+            ResolvedReferences = resolvedReferences,
+            FailedToResolveReferences = failedToResolveReferences.Except(resolvedReferences).ToHashSet(),
+            Succeed = resolveSucceed,
+        };
     }
 }
