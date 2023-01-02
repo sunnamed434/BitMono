@@ -1,7 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(Members.SpecialRuntime)]
-public class BitMethodDotnet : IStageProtection
+public class BitMethodDotnet : IProtection
 {
     private readonly Random m_Random;
 
@@ -9,8 +9,6 @@ public class BitMethodDotnet : IStageProtection
     {
         m_Random = new Random();
     }
-
-    public PipelineStages Stage => PipelineStages.ModuleWrite;
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
