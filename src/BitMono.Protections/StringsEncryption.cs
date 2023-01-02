@@ -4,16 +4,13 @@
 public class StringsEncryption : IProtection
 {
     private readonly IInjector m_Injector;
-    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
 
     public StringsEncryption(
         IInjector injector,
-        RuntimeCriticalAnalyzer runtimeCriticalAnalyzer,
         IRenamer renamer)
     {
         m_Injector = injector;
-        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
         m_Renamer = renamer;
     }
 
@@ -35,7 +32,7 @@ public class StringsEncryption : IProtection
 
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (method.CilMethodBody is { } body)
             {
                 for (var i = 0; i < body.Instructions.Count(); i++)
                 {
