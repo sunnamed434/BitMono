@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-public class DotNetHook : IStageProtection
+public class DotNetHook : IProtection
 {
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
@@ -12,8 +12,6 @@ public class DotNetHook : IStageProtection
         m_Renamer = renamer;
         m_Random = new Random();
     }
-
-    public PipelineStages Stage => PipelineStages.ModuleWrite;
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
     {
