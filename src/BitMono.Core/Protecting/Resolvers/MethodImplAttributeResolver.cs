@@ -4,13 +4,15 @@ public class MethodImplAttributeResolver : AttributeResolver
 {
     private readonly IConfiguration m_Configuration;
     private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+    private readonly ILogger m_Logger;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public MethodImplAttributeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver) 
+    public MethodImplAttributeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver, ILogger logger) 
     {
         m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
+        m_Logger = logger;
         m_AttributeNamespace = typeof(MethodImplAttribute).Namespace;
         m_AttributeName = nameof(MethodImplAttribute);
     }
