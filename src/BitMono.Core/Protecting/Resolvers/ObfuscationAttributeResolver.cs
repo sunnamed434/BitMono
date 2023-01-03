@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Resolvers;
+﻿namespace BitMono.Core.Protecting.Resolvers;
 
 public class ObfuscationAttributeResolver : AttributeResolver
 {
