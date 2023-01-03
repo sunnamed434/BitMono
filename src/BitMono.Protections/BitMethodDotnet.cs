@@ -10,7 +10,7 @@ public class BitMethodDotnet : IProtection
         m_Random = new Random();
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         foreach (var method in parameters.Targets.OfType<MethodDefinition>())
         {
