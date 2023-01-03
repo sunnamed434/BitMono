@@ -45,7 +45,7 @@ public class BitMonoEngine
         new OutputFilePathCreator().Create(context);
         m_Logger.Information("Loaded Module {0}", protectionContext.Module.Name.Value);
 
-        var protectionsSort = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly, m_Logger)
+        var protectionsSort = new ProtectionsSorter(m_ObfuscationAttributeResolver, protectionContext.Module.Assembly)
             .Sort(m_Protections, m_ProtectionSettings);
 
         if (protectionsSort.HasProtections == false)
@@ -55,7 +55,7 @@ public class BitMonoEngine
             return;
         }
         
-        new ProtectionsExecutionNotifier(m_Logger).Notify(protectionsSort);
+        new ProtectionsNotifier(m_Logger).Notify(protectionsSort);
         
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
@@ -66,7 +66,7 @@ public class BitMonoEngine
             m_ObfuscationAttributeResolver,
             m_ObfuscationConfiguration,
             m_Logger)
-            .StartAsync(cancellationTokenSource);
+            .StartAsync();
         m_Logger.Information("Protected module`s saved in {0}", context.OutputDirectoryName);
     }
     public async Task ObfuscateAsync(BitMonoContext context, byte[] data, CancellationTokenSource cancellationTokenSource)
