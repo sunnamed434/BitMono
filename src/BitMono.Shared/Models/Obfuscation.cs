@@ -3,6 +3,7 @@
 public class Obfuscation
 {
     public bool Watermark { get; set; }
+    public bool NotifyProtections { get; set; }
     public bool NoInliningMethodObfuscationExclude { get; set; }
     public bool ObfuscationAttributeObfuscationExclude { get; set; }
     public bool FailOnNoRequiredDependency { get; set; }
