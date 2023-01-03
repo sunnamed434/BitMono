@@ -3,7 +3,7 @@
 [DoNotResolve(Members.SpecialRuntime)]
 public class AntiDebugBreakpoints : IProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var threadSleepMethods = new List<IMethodDescriptor>
         {
