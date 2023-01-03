@@ -46,6 +46,10 @@ public static class ProtectionExtensions
     {
         return source.GetType().GetName(inherit: false);
     }
+    public static string GetName(this IPipelineProtection source)
+    {
+        return source.GetType().GetName(inherit: false);
+    }
     public static string GetName(this IPacker source)
     {
         return source.GetType().GetName(inherit: false);
