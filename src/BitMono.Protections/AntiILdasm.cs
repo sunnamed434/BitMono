@@ -9,7 +9,7 @@ public class AntiILdasm : IProtection
         m_Injector = injector;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         m_Injector.InjectAttribute(context.Module, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute));
         return Task.CompletedTask;
