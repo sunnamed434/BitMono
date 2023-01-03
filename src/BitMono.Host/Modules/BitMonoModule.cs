@@ -1,4 +1,6 @@
-﻿namespace BitMono.Host.Modules;
+﻿using BitMono.API.Protecting.Pipeline;
+
+namespace BitMono.Host.Modules;
 
 public class BitMonoModule : Module
 {
@@ -100,18 +102,16 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
             .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => 
-                t.GetInterface(nameof(IProtection)) != null 
-                && t.GetInterface(nameof(IPhaseProtection)) == null)
+            .Where(t => t.GetInterface(nameof(IPhaseProtection)) == null && t.GetInterface(nameof(IProtection)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
