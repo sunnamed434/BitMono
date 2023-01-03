@@ -3,7 +3,6 @@ global using AsmResolver.DotNet.Builder;
 global using AsmResolver.DotNet.Serialized;
 global using Autofac.Extensions.DependencyInjection;
 global using BitMono.API.Protecting.Contexts;
-global using BitMono.API.Protecting.Pipeline;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using NullGuard;
