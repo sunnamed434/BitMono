@@ -3,7 +3,7 @@
 [DoNotResolve(Members.SpecialRuntime)]
 public class NoNamespaces : IProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
