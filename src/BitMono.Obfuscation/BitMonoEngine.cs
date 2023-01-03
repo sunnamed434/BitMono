@@ -55,7 +55,7 @@ public class BitMonoEngine
             return;
         }
         
-        new ProtectionsNotifier(m_Logger).Notify(protectionsSort);
+        new ProtectionsNotifier(m_ObfuscationConfiguration, m_Logger).Notify(protectionsSort);
         
         m_Logger.Information("Preparing to protect module: {0}", context.FileName);
         await new BitMonoObfuscator(
