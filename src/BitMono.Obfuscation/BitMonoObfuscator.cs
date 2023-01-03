@@ -66,7 +66,7 @@ public class BitMonoObfuscator
         }
         if (assemblyResolve.Succeed == false)
         {
-            if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)) == true)
+            if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
             {
                 m_Logger.Fatal("Please, specify needed dependencies, or set in obfuscation.json FailOnNoRequiredDependency to false");
                 return Task.FromResult(false);
