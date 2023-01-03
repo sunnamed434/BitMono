@@ -14,7 +14,7 @@ public class StringsEncryption : IProtection
         m_Renamer = renamer;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var globalModuleType = context.Module.GetOrCreateModuleType();
         var decryptorType = m_Injector.InjectInvisibleValueType(context.Module, globalModuleType, m_Renamer.RenameUnsafely());
