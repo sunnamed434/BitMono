@@ -2,25 +2,20 @@
 
 public class BitMonoAssemblyResolver
 {
-    private readonly ILogger m_Logger;
-
-    public BitMonoAssemblyResolver(ILogger logger)
+    public AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context)
     {
-        m_Logger = logger.ForContext<BitMonoAssemblyResolver>();
-    }
-
-    public AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
+        context.ThrowIfCancellationRequested();
         var resolvedReferences = new HashSet<AssemblyReference>();
         var failedToResolveReferences = new HashSet<AssemblyReference>();
 
         var resolveSucceed = true;
         foreach (var originalReference in context.Module.AssemblyReferences)
         {
+            context.ThrowIfCancellationRequested();
+
             foreach (var data in dependenciesData)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                context.ThrowIfCancellationRequested();
 
                 try
                 {
@@ -39,11 +34,10 @@ public class BitMonoAssemblyResolver
                         failedToResolveReferences.Add(originalReference);
                     }
                 }
-                catch (ArgumentException ex)
+                catch (ArgumentException)
                 {
                     resolveSucceed = false;
                     failedToResolveReferences.Add(originalReference);
-                    m_Logger.Debug("Failed to resolve dependency, error: {0}", ex.ToString());
                 }
             }
         }
