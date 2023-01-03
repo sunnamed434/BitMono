@@ -6,7 +6,6 @@ public class ProtectionSettings
     public bool Enabled { get; set; }
     [JsonIgnore] public bool Disabled => Enabled == false;
 
-
     public void Enable()
     {
         Enabled = true;
