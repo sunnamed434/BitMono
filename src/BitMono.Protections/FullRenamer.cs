@@ -14,7 +14,7 @@ public class FullRenamer : IProtection
         m_Renamer = renamer;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
