@@ -2,17 +2,21 @@
   // Adds visible things that show you have been using BitMono
   "Watermark": true,
 
+  // Outputs information about protections (Enabled protections, disabled, deprecated, unknown, etc)
+  // Set to true indicates whether enabled
+  "NotifyProtections": true,
+
   // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute
-  // Set to true indicates is enabled
+  // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,
 
   // Exclude from obfuscation if it is a type/method and etc 
   // should has an [Obfuscation(Feature = "Name")] attribute with Protection name known as Feature
-  // Set to true indicates is enabled
+  // Set to true indicates whether enabled
   "ObfuscationAttributeObfuscationExclude": true,
 
   // Exclude from obfuscation if Model (type, i.e class) has [Serializable]/[JsonProperty], etc, attributes
-  // Set to true indicates is enabled
+  // Set to true indicates whether enabled
   "ModelAttributeObfuscationExclude": true,
 
   // Sometimes when you dont have needed dependency for your app, a tons of reasons could be for that, 
