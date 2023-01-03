@@ -2,9 +2,9 @@
 
 public static class RuntimeUtilities
 {
-    private static RuntimeInformation _lastRuntimeInformation;
+    private static EnvironmentRuntimeInformation _lastRuntimeInformation;
 
-    public static RuntimeInformation GetFrameworkInformation()
+    public static EnvironmentRuntimeInformation GetFrameworkInformation()
     {
         if (_lastRuntimeInformation != null)
         {
@@ -24,10 +24,10 @@ public static class RuntimeUtilities
                 monoDisplayName = displayName.ToString();
             }
         }
-        return _lastRuntimeInformation = new RuntimeInformation
+        return _lastRuntimeInformation = new EnvironmentRuntimeInformation
         {
             OperatingSystem = operatingSystem,
-            DotnetFrameworkVersion = dotnetFrameworkVersion,
+            NetFrameworkVersion = dotnetFrameworkVersion,
             Bits = bits,
             HasMono = hasMono, 
             MonoType = monoType,
