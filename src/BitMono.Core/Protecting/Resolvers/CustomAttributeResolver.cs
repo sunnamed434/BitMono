@@ -2,13 +2,6 @@
 
 public class CustomAttributeResolver : ICustomAttributeResolver
 {
-    private readonly ILogger m_Logger;
-
-    public CustomAttributeResolver(ILogger logger)
-    {
-        m_Logger = logger;
-    }
-
     [return: AllowNull]
     public Dictionary<string, CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
@@ -39,7 +32,6 @@ public class CustomAttributeResolver : ICustomAttributeResolver
                 }
             }
         }
-        m_Logger.Warning(string.Join("\n", keyValuePairs.Select(k => $"Property: {k.Key}, Type: {k.Value.Value.GetType()}")));
         return keyValuePairs;
     }
 }
