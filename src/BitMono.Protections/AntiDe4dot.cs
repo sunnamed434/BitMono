@@ -9,7 +9,7 @@ public class AntiDe4dot : IProtection
         m_Injector = injector;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         m_Injector.InjectAttributeWithContent(context.Module, "SmartAssembly.Attributes", "PoweredBy", string.Empty);
         m_Injector.InjectAttributeWithContent(context.Module, "Xenocode.Client.Attributes.AssemblyAttributes", "PoweredBy", string.Empty);
