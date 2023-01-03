@@ -3,7 +3,7 @@
 [DoNotResolve(Members.SpecialRuntime)]
 public class ObjectReturnType : IProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var boolean = context.Module.CorLibTypeFactory.Boolean;
         var @object = context.Module.CorLibTypeFactory.Object;
