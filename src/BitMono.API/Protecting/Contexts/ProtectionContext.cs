@@ -13,4 +13,9 @@ public class ProtectionContext
 
     [AllowNull] public IAssemblyResolver AssemblyResolver => Module.MetadataResolver.AssemblyResolver;
     [AllowNull] public ReferenceImporter Importer => Module.DefaultImporter;
+
+    public void ThrowIfCancellationRequested()
+    {
+        CancellationToken.ThrowIfCancellationRequested();
+    }
 }
