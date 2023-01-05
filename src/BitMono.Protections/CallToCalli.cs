@@ -34,8 +34,8 @@ public class CallToCalli : IProtection
             {
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
-                    if (body.Instructions[i].OpCode == CilOpCodes.Call
-                        && body.Instructions[i].Operand is IMethodDescriptor methodDescriptor)
+                    var instruction = body.Instructions[i];
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null)
@@ -44,7 +44,7 @@ public class CallToCalli : IProtection
                             {
                                 var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
                                 body.LocalVariables.Add(runtimeMethodHandleLocal);
-                                body.Instructions[i].ReplaceWith(CilOpCodes.Ldtoken, moduleType);
+                                instruction.ReplaceWith(CilOpCodes.Ldtoken, moduleType);
                                 body.Instructions.InsertRange(i + 1, new CilInstruction[]
                                 {
                                     new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod),
