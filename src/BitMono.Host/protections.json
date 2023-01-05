@@ -10,15 +10,19 @@
     },
     {
       "Name": "ObjectReturnType",
+      "Enabled": true
+    },
+    {
+      "Name": "NoNamespaces",
       "Enabled": false
     },
     {
       "Name": "FullRenamer",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDebugBreakpoints",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "StringsEncryption",
@@ -30,6 +34,10 @@
     },
     {
       "Name": "CallToCalli",
+      "Enabled": true
+    },
+    {
+      "Name": "AntiDecompiler",
       "Enabled": true
     },
     {
