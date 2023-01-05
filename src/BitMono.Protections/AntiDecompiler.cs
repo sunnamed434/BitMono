@@ -1,7 +1,11 @@
 ﻿namespace BitMono.Protections;
 
-public class AntiDecompiler : IHasPipeline
+public class AntiDecompiler : IPipelineProtection
 {
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    {
+        return Task.CompletedTask;
+    }
     public IEnumerable<IPhaseProtection> PopulatePipeline()
     {
         yield return new AntiDnSpyAnalyzer();
@@ -10,11 +14,12 @@ public class AntiDecompiler : IHasPipeline
 [ProtectionName(nameof(AntiDnSpyAnalyzer))]
 public class AntiDnSpyAnalyzer : IPhaseProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
+        var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
-            if (type.IsNested)
+            if (type.DeclaringType == moduleType && type.IsNested)
             {
                 type.Attributes = TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
             }
