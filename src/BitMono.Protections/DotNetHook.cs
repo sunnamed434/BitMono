@@ -42,6 +42,7 @@ public class DotNetHook : IProtection
                             {
                                 var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature);
                                 dummyMethod.ImplAttributes = callingMethod.ImplAttributes;
+                                dummyMethod.IsAssembly = true;
                                 dummyMethod.IsStatic = true;
                                 dummyMethod.AssignNextAvaliableToken(context.Module);
                                 moduleType.Methods.Add(dummyMethod);
