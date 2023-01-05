@@ -15,26 +15,21 @@ public class ProtectionsNotifier
     {
         if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.NotifyProtections)))
         {
-            if (protectionsSort.SortedProtections.Any())
+            if (protectionsSort.HasProtections)
             {
-                m_Logger.Information("Execute protections: {0}", string.Join(", ", protectionsSort.SortedProtections.Select(p => p.GetName())));
-            }
-            if (protectionsSort.Pipelines.Any())
-            {
-                m_Logger.Information("Execute pipelines: ");
-                foreach (var pipeline in protectionsSort.Pipelines)
+                var stringBuilder = new StringBuilder();
+                stringBuilder.Append(string.Join(", ", protectionsSort.SortedProtections.Select(p => p.GetName())));
+                if (protectionsSort.Pipelines.Any())
                 {
-                    m_Logger.Information("- {0}", pipeline.GetName());
-                    foreach (var phase in pipeline.PopulatePipeline())
-                    {
-                        m_Logger.Information("-- {0}", phase.GetName());
-                    }
-                    m_Logger.Information("----");
+                    stringBuilder.Append(", ");
+                    stringBuilder.Append(string.Join(", ", protectionsSort.Pipelines.Select(p => p.GetName())));
                 }
-            }
-            if (protectionsSort.Packers.Any())
-            {
-                m_Logger.Information("Execute packers: {0}", string.Join(", ", protectionsSort.Packers.Select(p => p?.GetName())));
+                if (protectionsSort.Packers.Any())
+                {
+                    stringBuilder.Append(", ");
+                    stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(p => p.GetName())));
+                }
+                m_Logger.Information("Execute protections: {0}", stringBuilder.ToString());
             }
             if (protectionsSort.DeprecatedProtections.Any())
             {
@@ -42,7 +37,7 @@ public class ProtectionsNotifier
             }
             if (protectionsSort.ProtectionsResolve.DisabledProtections.Any())
             {
-                m_Logger.Warning("Skip protections: {0}", string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
+                m_Logger.Warning("Disabled protections: {0}", string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
             }
             if (protectionsSort.ProtectionsResolve.UnknownProtections.Any())
             {
