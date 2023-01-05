@@ -20,7 +20,7 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Configuration.GetValue<bool>("ModelAttributeObfuscationExclude") == false)
+        if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.ModelAttributeObfuscationExclude)) == false)
         {
             return true;
         }
