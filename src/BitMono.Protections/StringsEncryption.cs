@@ -6,9 +6,7 @@ public class StringsEncryption : IProtection
     private readonly IInjector m_Injector;
     private readonly IRenamer m_Renamer;
 
-    public StringsEncryption(
-        IInjector injector,
-        IRenamer renamer)
+    public StringsEncryption(IInjector injector, IRenamer renamer)
     {
         m_Injector = injector;
         m_Renamer = renamer;
