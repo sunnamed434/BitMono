@@ -6,6 +6,7 @@ public class Obfuscation
     public bool NotifyProtections { get; set; }
     public bool NoInliningMethodObfuscationExclude { get; set; }
     public bool ObfuscationAttributeObfuscationExclude { get; set; }
+    public bool ModelAttributeObfuscationExclude { get; set; }
     public bool FailOnNoRequiredDependency { get; set; }
     public bool OpenFileDestinationInFileExplorer { get; set; }
     public bool SpecificNamespacesObfuscationOnly { get; set; }
