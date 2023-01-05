@@ -3,14 +3,10 @@
 [DoNotResolve(Members.SpecialRuntime | Members.Model)]
 public class FullRenamer : IProtection
 {
-    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
-    private readonly ModelAttributeCriticalAnalyzer m_ModelAttributelCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
 
-    public FullRenamer(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer, ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer, IRenamer renamer)
+    public FullRenamer(IRenamer renamer)
     {
-        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
-        m_ModelAttributelCriticalAnalyzer = modelAttributeCriticalAnalyzer;
         m_Renamer = renamer;
     }
 
@@ -19,23 +15,16 @@ public class FullRenamer : IProtection
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var type in parameters.Targets.OfType<TypeDefinition>())
         {
-            if (type != moduleType
-                && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(type)
-                && m_ModelAttributelCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (type != moduleType)
             {
                 m_Renamer.Rename(type);
                 foreach (var field in type.Fields.ToArray())
                 {
-                    if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(field))
-                    {
-                        m_Renamer.Rename(field);
-                    }
+                    m_Renamer.Rename(field);
                 }
                 foreach (var method in type.Methods.ToArray())
                 {
-                    if (method.IsConstructor == false
-                        && method.IsVirtual == false
-                        && m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(method))
+                    if (method.IsConstructor == false && method.IsVirtual == false)
                     {
                         m_Renamer.Rename(method);
                         if (method.HasParameters())
