@@ -1,6 +1,7 @@
 ﻿global using AsmResolver.DotNet;
 global using AsmResolver.DotNet.Builder;
 global using AsmResolver.DotNet.Serialized;
+global using AsmResolver.PE.File.Headers;
 global using Autofac.Extensions.DependencyInjection;
 global using BitMono.API.Protecting.Contexts;
 global using Microsoft.Extensions.Configuration;
