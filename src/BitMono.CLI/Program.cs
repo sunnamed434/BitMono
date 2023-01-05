@@ -3,7 +3,6 @@
 public class Program
 {
     private const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-    private static CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
     private static async Task Main(string[] args)
     {
@@ -14,7 +13,7 @@ public class Program
             Console.Clear();
             Console.WriteLine("File: {0}", neededForObfuscation.FileName);
             Console.WriteLine("Dependencies (libs): {0}", neededForObfuscation.DependenciesDirectoryPath);
-            Console.WriteLine("Everything is good, starting obfuscation..");
+            Console.WriteLine("Everything is seems to be good, starting obfuscation..");
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
@@ -42,23 +41,18 @@ public class Program
             var moduleDefMDWriter = new CLIDataWriter();
             var dependenciesDataResolver = new DependenciesDataResolver(neededForObfuscation.DependenciesDirectoryPath);
             var bitMonoContext = new BitMonoContextCreator(dependenciesDataResolver, obfuscationConfiguration).Create(outputDirectoryName, neededForObfuscation.FileName);
+            var cancellationTokenSource = new CancellationTokenSource();
 
-            await new BitMonoEngine(
-                moduleDefMDWriter,
-                obfuscationAttributeResolver,
-                obfuscationConfiguration,
-                membersResolver,
-                protections,
-                protectionSettings,
-                logger)
-                .ObfuscateAsync(bitMonoContext, bitMonoContext.FileName, CancellationToken);
+            var engine = new BitMonoEngine(moduleDefMDWriter, obfuscationAttributeResolver, obfuscationConfiguration, membersResolver, protections, protectionSettings, logger);
+            var succeed = await engine.StartAsync(bitMonoContext, bitMonoContext.FileName, cancellationTokenSource.Token);
 
-            if (CancellationToken.IsCancellationRequested)
+            if (succeed == false)
             {
-                logger.Fatal("Operation cancelled!");
+                logger.Fatal("Engine has issues, unable to continue, stop!");
                 Console.ReadLine();
                 return;
             }
+
             if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
             {
                 Process.Start(bitMonoContext.OutputDirectoryName);
