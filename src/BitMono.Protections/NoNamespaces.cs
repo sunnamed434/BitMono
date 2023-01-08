@@ -5,7 +5,7 @@ public class NoNamespaces : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        foreach (var type in parameters.Targets.OfType<TypeDefinition>())
+        foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
             if (type.HasNamespace())
             {
