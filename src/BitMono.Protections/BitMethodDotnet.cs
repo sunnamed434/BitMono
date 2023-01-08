@@ -5,14 +5,14 @@ public class BitMethodDotnet : IProtection
 {
     private readonly Random m_Random;
 
-    public BitMethodDotnet()
+    public BitMethodDotnet(RuntimeImplementations runtime)
     {
-        m_Random = new Random();
+        m_Random = runtime.Random;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body && method.IsConstructor == false)
             {
