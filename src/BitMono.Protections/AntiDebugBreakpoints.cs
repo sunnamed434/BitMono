@@ -49,12 +49,11 @@ public class AntiDebugBreakpoints : IProtection
         var timeSpan = context.Importer.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
         var @int = context.Importer.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
 
-        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.NotGetterAndSetter() && method.IsConstructor == false)
             {
-                if (method.CilMethodBody is { } body
-                    && body.Instructions.Count >= 5)
+                if (method.CilMethodBody is { } body && body.Instructions.Count >= 5)
                 {
                     var startIndex = 0;
                     var endIndex = body.Instructions.Count - 1;
@@ -62,8 +61,8 @@ public class AntiDebugBreakpoints : IProtection
 
                     for (var i = startIndex; i < endIndex; i++)
                     {
-                        if (body.Instructions[i].OpCode == CilOpCodes.Call
-                            && body.Instructions[i].Operand is MemberReference member)
+                        var instruction = body.Instructions[i];
+                        if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is MemberReference member)
                         {
                             if (threadSleepMethods.Any(t => new SignatureComparer().Equals(member, t)))
                             {
