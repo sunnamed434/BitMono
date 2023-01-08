@@ -21,6 +21,16 @@ public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
         {
             Renamer.RemoveNamespace(cloned);
         }
+        if (Modifies.HasFlag(Modifies.EmptyMethodParameterName))
+        {
+            if (cloned is MethodDefinition method)
+            {
+                foreach (var parameter in method.ParameterDefinitions)
+                {
+                    parameter.Name = string.Empty;
+                }
+            }
+        }
         base.OnClonedMember(original, cloned);
     }
 }
