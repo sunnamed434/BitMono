@@ -6,7 +6,7 @@
   // Set to true indicates whether enabled
   "NotifyProtections": true,
 
-  // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute
+  // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute or NoInlining bit
   // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,
 
@@ -15,7 +15,7 @@
   // Set to true indicates whether enabled
   "ObfuscationAttributeObfuscationExclude": true,
 
-  // Exclude from obfuscation if Model (type, i.e class) has [Serializable]/[JsonProperty], etc, attributes
+  // Exclude from obfuscation if the Model (type, i.e class) has [Serializable]/[JsonProperty], etc, attributes
   // Set to true indicates whether enabled
   "ModelAttributeObfuscationExclude": true,
 
