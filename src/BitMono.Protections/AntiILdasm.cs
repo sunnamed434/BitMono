@@ -2,16 +2,16 @@
 
 public class AntiILdasm : IProtection
 {
-    private readonly IInjector m_Injector;
+    private readonly MscorlibInjector m_Injector;
 
-    public AntiILdasm(IInjector injector)
+    public AntiILdasm(MscorlibInjector injector)
     {
         m_Injector = injector;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        m_Injector.InjectAttribute(context.Module, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute));
+        m_Injector.InjectAttribute(context.Module, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute), context.Module);
         return Task.CompletedTask;
     }
 }
