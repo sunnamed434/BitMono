@@ -8,7 +8,6 @@ public class ProtectionContext
     [AllowNull] public ModuleDefinition RuntimeModule { get; set; }
     [AllowNull] public ReferenceImporter RuntimeImporter { get; set; }
     [AllowNull] public BitMonoContext BitMonoContext { get; set; }
-    [AllowNull] public byte[] ModuleOutput { get; set; }
     [AllowNull] public CancellationToken CancellationToken { get; set; }
 
     [AllowNull] public IAssemblyResolver AssemblyResolver => Module.MetadataResolver.AssemblyResolver;
