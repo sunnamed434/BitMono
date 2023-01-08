@@ -1,6 +1,4 @@
-﻿using BitMono.API.Protecting.Pipeline;
-
-namespace BitMono.Host.Modules;
+﻿namespace BitMono.Host.Modules;
 
 public class BitMonoModule : Module
 {
@@ -70,8 +68,18 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<Injector>()
-            .As<IInjector>()
+        containerBuilder.RegisterType<MscorlibInjector>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<CustomInjector>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<RuntimeImplementations>()
+            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
@@ -106,6 +114,7 @@ public class BitMonoModule : Module
             .PublicOnly()
             .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .OwnedByLifetimeScope()
+            .AsSelf()
             .AsImplementedInterfaces()
             .SingleInstance();
 
