@@ -2,12 +2,12 @@
 
 public class Program
 {
-    private const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-
     private static async Task Main(string[] args)
     {
         try
         {
+            const string ProtectionsFileName = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
+
             var neededForObfuscation = await specifyNeededForObfuscationAsync(args);
 
             Console.Clear();
@@ -16,7 +16,7 @@ public class Program
             Console.WriteLine("Everything is seems to be good, starting obfuscation..");
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
+            var protectionsFile = Path.Combine(domainBaseDirectory, ProtectionsFileName);
             Assembly.LoadFrom(protectionsFile);
 
             var outputDirectoryName = Path.Combine(neededForObfuscation.FileBaseDirectory, "output");
@@ -45,7 +45,6 @@ public class Program
 
             var engine = new BitMonoEngine(moduleDefMDWriter, obfuscationAttributeResolver, obfuscationConfiguration, membersResolver, protections, protectionSettings, logger);
             var succeed = await engine.StartAsync(bitMonoContext, bitMonoContext.FileName, cancellationTokenSource.Token);
-
             if (succeed == false)
             {
                 logger.Fatal("Engine has issues, unable to continue, stop!");
