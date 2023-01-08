@@ -2,7 +2,6 @@
 global using Autofac.Extensions.DependencyInjection;
 global using BitMono.API.Configuration;
 global using BitMono.API.Protecting;
-global using BitMono.Core.Extensions.Configuration;
 global using BitMono.GUI.API;
 global using BitMono.GUI.Data;
 global using BitMono.GUI.Modules;
