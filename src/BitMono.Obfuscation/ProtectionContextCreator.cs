@@ -17,7 +17,7 @@ public class ProtectionContextCreator
             PEImageBuilder = ModuleCreationResult.PEImageBuilder,
             RuntimeImporter = new ReferenceImporter(RuntimeModuleDefinition),
             BitMonoContext = BitMonoContext,
-            CancellationToken = CancellationToken
+            CancellationToken = CancellationToken,
         };
     }
 }
