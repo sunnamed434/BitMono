@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Resolvers;
+﻿namespace BitMono.Core.Protecting.Resolvers;
 
 public class DoNotResolveMemberResolver : IMemberResolver
 {
@@ -15,7 +13,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
 
     public bool Resolve(IProtection protection, IMetadataMember member)
     {
-        if (protection.TryGetDoNotResolveAttribute(out DoNotResolveAttribute doNotResolveAttribute) == false)
+        if (protection.TryGetDoNotResolveAttribute(out var doNotResolveAttribute) == false)
         {
             return true;
         }
