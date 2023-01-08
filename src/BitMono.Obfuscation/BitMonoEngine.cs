@@ -28,7 +28,7 @@ public class BitMonoEngine
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
-    public async Task<bool> StartAsync(ProtectionContext context)
+    internal async Task<bool> StartAsync(ProtectionContext context)
     {
         context.ThrowIfCancellationRequested();
         
@@ -75,12 +75,20 @@ public class BitMonoEngine
         new OutputFilePathCreator().Create(context);
         return await StartAsync(protectionContext);
     }
+    public async Task<bool> StartAsync(BitMonoContext context, byte[] data, IErrorListener errorListener, CancellationToken cancellationToken)
+    {
+        return await StartAsync(context, new ModuleCreator(data, errorListener), cancellationToken);
+    }
+    public async Task<bool> StartAsync(BitMonoContext context, string fileName, IErrorListener errorListener, CancellationToken cancellationToken)
+    {
+        return await StartAsync(context, new ModuleCreator(File.ReadAllBytes(fileName), errorListener), cancellationToken);
+    }
     public async Task<bool> StartAsync(BitMonoContext context, byte[] data, CancellationToken cancellationToken)
     {
-        return await StartAsync(context, new ModuleCreator(data), cancellationToken);
+        return await StartAsync(context, data, new LogErrorListener(m_Logger), cancellationToken);
     }
     public async Task<bool> StartAsync(BitMonoContext context, string fileName, CancellationToken cancellationToken)
     {
-        return await StartAsync(context, new ModuleCreator(File.ReadAllBytes(fileName)), cancellationToken);
+        return await StartAsync(context, fileName, new LogErrorListener(m_Logger), cancellationToken);
     }
 }
