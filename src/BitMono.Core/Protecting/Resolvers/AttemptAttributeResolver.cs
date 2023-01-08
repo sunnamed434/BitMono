@@ -12,7 +12,7 @@ public class AttemptAttributeResolver : IAttemptAttributeResolver
     public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out Dictionary<string, CustomAttributeResolve> keyValuePairs)
     {
         keyValuePairs = m_CustomAttributesResolver.Resolve(from, @namespace, name);
-        if (keyValuePairs != null && keyValuePairs.Any())
+        if (keyValuePairs != null)
         {
             return true;
         }
