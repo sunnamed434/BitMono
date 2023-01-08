@@ -3,15 +3,6 @@
 [DoNotResolve(Members.SpecialRuntime)]
 public class CallToCalli : IProtection
 {
-    private readonly IInjector m_Injector;
-    private readonly IRenamer m_Renamer;
-
-    public CallToCalli(IInjector injector, IRenamer renamer)
-    {
-        m_Injector = injector;
-        m_Renamer = renamer;
-    }
-
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var runtimeMethodHandle = context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
@@ -28,7 +19,7 @@ public class CallToCalli : IProtection
         var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
         var moduleType = context.Module.GetOrCreateModuleType(); 
-        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body && method.DeclaringType != moduleType)
             {
