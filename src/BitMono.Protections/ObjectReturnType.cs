@@ -7,12 +7,11 @@ public class ObjectReturnType : IProtection
     {
         var boolean = context.Module.CorLibTypeFactory.Boolean;
         var @object = context.Module.CorLibTypeFactory.Object;
-        foreach (var method in parameters.Targets.OfType<MethodDefinition>())
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.Signature.ReturnsValue && method.Signature.ReturnType != boolean)
             {
-                if (method.IsConstructor == false && method.IsVirtual == false
-                    && method.NotAsync())
+                if (method.IsConstructor == false && method.IsVirtual == false && method.NotAsync())
                 {
                     if (method.IsSetMethod == false && method.IsGetMethod == false)
                     {
