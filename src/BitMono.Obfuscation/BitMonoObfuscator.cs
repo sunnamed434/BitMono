@@ -102,6 +102,7 @@ public class BitMonoObfuscator
 
             await pipeline.ExecuteAsync(context, createProtectionParameters(pipeline));
             m_ProtectionExecutionNotifier.Notify(pipeline);
+
             foreach (var phase in pipeline.PopulatePipeline())
             {
                 context.ThrowIfCancellationRequested();
@@ -109,23 +110,6 @@ public class BitMonoObfuscator
                 await phase.ExecuteAsync(context, createProtectionParameters(phase));
                 m_ProtectionExecutionNotifier.Notify(phase);
             }
-        }
-        return true;
-    }
-    private async Task<bool> writeModuleAsync(ProtectionContext context)
-    {
-        try
-        {
-            var memoryStream = new MemoryStream();
-            var image = context.PEImageBuilder.CreateImage(context.Module).ConstructedImage;
-            new ManagedPEFileBuilder().CreateFile(image).Write(memoryStream);
-            context.ModuleOutput = memoryStream.ToArray();
-            await m_DataWriter.WriteAsync(context.BitMonoContext.OutputFile, context.ModuleOutput);
-        }
-        catch (Exception ex)
-        {
-            m_Logger.Fatal(ex, "Error while writing the file!");
-            return false;
         }
         return true;
     }
@@ -161,16 +145,33 @@ public class BitMonoObfuscator
         }
         return Task.FromResult(true);
     }
+    private async Task<bool> writeModuleAsync(ProtectionContext context)
+    {
+        try
+        {
+            var memoryStream = new MemoryStream();
+            var image = context.PEImageBuilder.CreateImage(context.Module).ConstructedImage;
+            var fileBuilder = new ManagedPEFileBuilder();
+            fileBuilder
+                .CreateFile(image)
+                .Write(memoryStream);
+            await m_DataWriter.WriteAsync(context.BitMonoContext.OutputFile, memoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            m_Logger.Fatal(ex, "An error occured while writing the module!");
+            return false;
+        }
+        return true;
+    }
     private async Task<bool> packAsync(ProtectionContext context)
     {
         foreach (var packer in m_ProtectionsSort.Packers)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
+            context.ThrowIfCancellationRequested();
 
-            var packerName = packer.GetName();
-            var protectionParameters = new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(packer, m_Context.Module);
-            await packer.ExecuteAsync(m_Context, protectionParameters);
-            m_Logger.Information("{0} -> Packer OK", packerName);
+            await packer.ExecuteAsync(m_Context, createProtectionParameters(packer));
+            m_ProtectionExecutionNotifier.Notify(packer);
         }
         return true;
     }
