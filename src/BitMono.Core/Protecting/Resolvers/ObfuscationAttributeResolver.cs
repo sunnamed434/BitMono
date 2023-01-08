@@ -22,13 +22,13 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out Dictionary<string, CustomAttributeResolve> keyValuePairs) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var keyValuePairs) == false)
         {
             return false;
         }
         if (string.IsNullOrWhiteSpace(feature))
         {
-            return true; // just return the attribute (and say this is found) without checking the any values
+            return true;
         }
         if (keyValuePairs.TryGetValue(nameof(ObfuscationAttribute.Feature), out attributeResolve) == false)
         {
