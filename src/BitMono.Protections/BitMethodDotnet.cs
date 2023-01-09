@@ -34,7 +34,14 @@ public class BitMethodDotnet : IProtection
 
                 var label = body.Instructions[randomMethodBodyIndex].CreateLabel();
                 body.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
-                body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
+                if (randomOpCode == CilOpCodes.Unaligned)
+                {
+                    body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode, (sbyte)0));
+                }
+                else
+                {
+                    body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
+                }
                 body.Instructions[randomMethodBodyIndex].Operand = label;
             }
         }
