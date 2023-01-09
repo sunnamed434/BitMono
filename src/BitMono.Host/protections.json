@@ -18,11 +18,11 @@
     },
     {
       "Name": "FullRenamer",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDebugBreakpoints",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "StringsEncryption",
@@ -38,11 +38,11 @@
     },
     {
       "Name": "AntiDecompiler",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitMethodDotnet",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitTimeDateStamp",
