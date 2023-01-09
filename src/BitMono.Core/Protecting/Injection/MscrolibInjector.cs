@@ -4,23 +4,24 @@ public class MscorlibInjector
 {
     public FieldDefinition InjectCompilerGeneratedArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
     {
-        var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
-        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.NestedFamilyAndAssembly, valueType)
+        var importer = module.DefaultImporter;
+        var valueType = importer.ImportType(typeof(ValueType));
+        var classWithLayout = new TypeDefinition(null, "<>c", TypeAttributes.NestedAssembly | TypeAttributes.Sealed | TypeAttributes.ExplicitLayout, valueType)
         {
             ClassLayout = new ClassLayout(0, (uint)data.Length),
         };
         InjectCompilerGeneratedAttribute(module, classWithLayout);
         type.NestedTypes.Add(classWithLayout);
 
-        var fieldWithRVA = new FieldDefinition("<>c", FieldAttributes.Assembly | FieldAttributes.Static | FieldAttributes.HasFieldRva | FieldAttributes.InitOnly, new FieldSignature(classWithLayout.ToTypeSignature()));
+        var fieldWithRVA = new FieldDefinition("<>c", FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.HasFieldRva, new FieldSignature(classWithLayout.ToTypeSignature()));
         fieldWithRVA.FieldRva = new DataSegment(data);
         classWithLayout.Fields.Add(fieldWithRVA);
 
-        var systemByte = module.DefaultImporter.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
-        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Assembly | FieldAttributes.Static, new FieldSignature(systemByte.MakeSzArrayType()));
+        var systemByte = importer.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
+        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Public | FieldAttributes.Static, new FieldSignature(systemByte.MakeSzArrayType()));
         classWithLayout.Fields.Add(fieldInjectedArray);
 
-        var initializeArrayMethod = module.DefaultImporter.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
+        var initializeArrayMethod = importer.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
         {
             typeof(Array),
             typeof(RuntimeFieldHandle)
@@ -33,7 +34,7 @@ public class MscorlibInjector
             new CilInstruction(CilOpCodes.Ldc_I4, data.Length),
             new CilInstruction(CilOpCodes.Newarr, systemByte),
             new CilInstruction(CilOpCodes.Dup),
-            new CilInstruction(CilOpCodes.Ldtoken, module.DefaultImporter.ImportField(fieldWithRVA)),
+            new CilInstruction(CilOpCodes.Ldtoken, fieldWithRVA),
             new CilInstruction(CilOpCodes.Call, initializeArrayMethod),
             new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray),
         });
@@ -67,11 +68,8 @@ public class MscorlibInjector
     public TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string name = null)
     {
         var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
-        var invislbeValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedAssembly, valueType);
+        var invislbeValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedPublic, valueType);
         InjectCompilerGeneratedAttribute(module, invislbeValueType);
-        invislbeValueType.IsAbstract = false;
-        invislbeValueType.IsSealed = false;
-        invislbeValueType.IsBeforeFieldInit = false;
         return invislbeValueType;
     }
     public CustomAttribute CreateCompilerGeneratedAttribute(ModuleDefinition module)
