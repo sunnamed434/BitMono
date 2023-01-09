@@ -5,9 +5,9 @@ public class DotNetHook : IProtection
     private readonly IRenamer m_Renamer;
     private readonly Random m_Random;
 
-    public DotNetHook(RuntimeImplementations runtime)
+    public DotNetHook(IRenamer renamer, RuntimeImplementations runtime)
     {
-        m_Renamer = runtime.Renamer;
+        m_Renamer = renamer;
         m_Random = runtime.Random;
     }
 
