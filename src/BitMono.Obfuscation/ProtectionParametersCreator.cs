@@ -11,9 +11,9 @@ public class ProtectionParametersCreator
         m_MemberResolvers = memberResolvers;
     }
 
-    public ProtectionParameters Create(IProtection protection, ModuleDefinition moduleDefinition)
+    public ProtectionParameters Create(IProtection protection, ModuleDefinition module)
     {
-        var definitions = moduleDefinition.FindDefinitions();
+        var definitions = module.FindDefinitions();
         var targets = m_MembersResolver.Resolve(protection, definitions, m_MemberResolvers).ToList();
         return new ProtectionParameters(targets);
     }
