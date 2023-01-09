@@ -11,6 +11,7 @@ public class MembersResolver
                 if (resolver.Resolve(protection, definition))
                 {
                     yield return definition;
+                    break;
                 }
             }
         }
