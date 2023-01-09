@@ -1,32 +1,52 @@
 {
-  // Adding visible things that shows you have been used BitMono to protect app
+  // Adds visible things that show you have been using BitMono
+  // Set to true indicates whether enabled
   "Watermark": true,
 
-  // Excluding from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute
-  "NoInliningMethodObfuscationExcluding": true,
+  // Outputs information about protections (Enabled protections, disabled, deprecated, unknown, etc)
+  // Set to true indicates whether enabled
+  "NotifyProtections": true,
 
-  // Excluding from obfuscation if it is a type/method and etc 
+  // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute or NoInlining bit
+  // Set to true indicates whether enabled
+  "NoInliningMethodObfuscationExclude": true,
+
+  // Exclude from obfuscation if it is a type/method and etc 
   // should has an [Obfuscation(Feature = "Name")] attribute with Protection name known as Feature
-  "ObfuscationAttributeObfuscationExcluding": true,
+  // Set to true indicates whether enabled
+  "ObfuscationAttributeObfuscationExclude": true,
+
+  // Exclude from obfuscation if the Model (type, i.e class) has [Serializable]/[JsonProperty], etc, attributes
+  // Set to true indicates whether enabled
+  "ModelAttributeObfuscationExclude": true,
+
+  // Output errors that were registered while building the PE image. BitMono feature is that 
+  // being used vulnerabilities of decompilers and Mono and this is the most powerful of them, 
+  // decompilers and other tools could think that this is cannot work fine and because of that some weird errors
+  // can be outputted
+  // Set to true indicates whether enabled
+  "OutputPEImageBuildErrors": true,
 
   // Sometimes when you dont have needed dependency for your app, a tons of reasons could be for that, 
-  // if you got error that says you dont have needed dependency first of all atleast try to add this dependency
+  // if you got an error that says you dont have needed dependency first of all atleast try to add this dependency
   // otherwise if this is deprecated - you can set this to false to ignore error and continue obfuscation
-  // NB! but be aware of kind a weird errors and issues that breaking you app and it stop working after that
-  // Stay it true if it possible!
+  // NB! but be aware of kind a weird errors and issues that breaking you app and it stops working after that
+  // If this is Unity go to your game path (eg, steam), openup the directory and search for Managed directory xxx_Data\Managed,
+  // Copy asked libraries from there and feed them to BitMono
+  // Stay it true to stay enabled if this is possible!
   "FailOnNoRequiredDependency": true,
 
-  // Opens directory with protected file in file explorer in top of the screen
+  // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,
 
-  // Set to true in cases when you want to obfuscate the specific namespace(s) also add the namespaces 
+  // Set to true to enable, in cases when you want to obfuscate only the specific namespace(s)
   "SpecificNamespacesObfuscationOnly": false,
   "SpecificNamespaces": [
     "Scripts.API",
     "Utilities"
   ],
 
-  // Random strings for Renamer or such other things
+  // Random strings for Renamer or for such other things
   "RandomStrings": [
     "HasPermission",
     "HasPermissions",

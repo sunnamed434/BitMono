@@ -51,6 +51,7 @@ Open **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections
 * NoNamespaces
 * FullRenamer
 * AntiDebugBreakpoints
+* AntiDecompiler
 * BitDateTimeStamp
 
 ## Usage

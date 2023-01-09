@@ -2,5 +2,5 @@
 
 public interface IProtection
 {
-    Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default);
+    Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters);
 }

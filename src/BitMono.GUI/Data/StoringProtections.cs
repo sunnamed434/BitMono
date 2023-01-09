@@ -1,4 +1,6 @@
-﻿namespace BitMono.GUI.Data;
+﻿using BitMono.Core.Extensions;
+
+namespace BitMono.GUI.Data;
 
 internal class StoringProtections : IStoringProtections
 {

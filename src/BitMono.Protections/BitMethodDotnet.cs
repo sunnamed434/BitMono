@@ -1,53 +1,48 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(BitMethodDotnet))]
-public class BitMethodDotnet : IStageProtection
+[DoNotResolve(Members.SpecialRuntime)]
+public class BitMethodDotnet : IProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly ILogger m_Logger;
     private readonly Random m_Random;
 
-    public BitMethodDotnet(
-        DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        ILogger logger)
+    public BitMethodDotnet(RuntimeImplementations runtime)
     {
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-        m_Logger = logger.ForContext<BitMethodDotnet>();
-        m_Random = new Random();
+        m_Random = runtime.Random;
     }
 
-    public PipelineStages Stage => PipelineStages.ModuleWritten;
-
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            foreach (var methodDef in typeDef.Methods)
+            if (method.CilMethodBody is { } body && method.IsConstructor == false)
             {
-                if (methodDef.HasBody && methodDef.IsConstructor == false
-                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+                var randomMethodBodyIndex = 0;
+                if (body.Instructions.Count >= 3)
                 {
-                    var randomMethodDefBodyIndex = 0;
-                    if (methodDef.Body.Instructions.Count >= 3)
-                    {
-                        randomMethodDefBodyIndex = m_Random.Next(0, methodDef.Body.Instructions.Count);
-                    }
-
-                    var randomValue = m_Random.Next(0, 3);
-                    var randomPrefixInstruction = new Instruction();
-                    randomPrefixInstruction.OpCode = randomValue switch
-                    {
-                        0 => OpCodes.Readonly,
-                        1 => OpCodes.Unaligned,
-                        2 => OpCodes.Volatile,
-                        3 => OpCodes.Constrained,
-                        _ => throw new ArgumentOutOfRangeException(),
-                    };
-
-                    methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex, Instruction.Create(OpCodes.Nop));
-                    methodDef.Body.Instructions.Insert(randomMethodDefBodyIndex + 1, randomPrefixInstruction);
-                    methodDef.Body.Instructions[randomMethodDefBodyIndex].ReplaceWith(OpCodes.Br_S, methodDef.Body.Instructions[randomMethodDefBodyIndex + 2]);
+                    randomMethodBodyIndex = m_Random.Next(0, body.Instructions.Count);
                 }
+
+                var randomValue = m_Random.Next(0, 3);
+                var randomOpCode = randomValue switch
+                {
+                    0 => CilOpCodes.Readonly,
+                    1 => CilOpCodes.Unaligned,
+                    2 => CilOpCodes.Volatile,
+                    3 => CilOpCodes.Constrained,
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+
+                var label = body.Instructions[randomMethodBodyIndex].CreateLabel();
+                body.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
+                if (randomOpCode == CilOpCodes.Unaligned)
+                {
+                    body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode, (sbyte)0));
+                }
+                else
+                {
+                    body.Instructions.Insert(randomMethodBodyIndex + 1, new CilInstruction(randomOpCode));
+                }
+                body.Instructions[randomMethodBodyIndex].Operand = label;
             }
         }
         return Task.CompletedTask;

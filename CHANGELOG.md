@@ -1,6 +1,6 @@
 | Versions: |
 | - |
-| [v0.5.0-alpha](#v050-alpha14) |
+| [v0.6.0-alpha](#v060-alpha15) |
 | [v0.4.4-alpha](#v044-alpha13) |
 | [v0.4.3-alpha](#v043-alpha12) |
 | [v0.4.2-alpha](#v042-alpha11) |
@@ -17,6 +17,29 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.6.0-alpha.15:
+#### Added:
+* New protection AntiDecompiler
+* As more as possible errors logging
+
+#### Changed:
+* Migrate dnlib to AsmResolver or Mono.Cecil [#50](https://github.com/sunnamed434/BitMono/issues/50)
+
+#### Fixed:
+* BitMethodDotnet Protection
+* StringsEncryption Protection
+* CallToCalli Protection
+* DotNetHook Protection
+* Load Runtime Module via file instead of typeof(SomeRuntime).Module [#55](https://github.com/sunnamed434/BitMono/issues/55)
+* Rewrite Custom Attributes Resolve as less as a possible reflection [#57](https://github.com/sunnamed434/BitMono/issues/57)
+* System.BadImageFormatException: Invalid DOS signature [#45](https://github.com/sunnamed434/BitMono/issues/45)
+* Whole Protections execution process
+* Protections execution information
+* Obfuscation
+* Optimized file writing
+* Ignoring of targets with [ObfuscationAttribute] and [MethodImpl(MethodImplOptions.NoInlining)]
+* Runtime injection and even became better
+
 ### v0.5.0-alpha.14:
 #### Added:
 * Before obfuscation optmizes all method bodies (macros)
@@ -24,7 +47,6 @@
 #### Fixed: 
 * BitMethodDotnet Protection
 * StringsEncryption Protection
-
 
 ### v0.4.4-alpha.13:
 #### Fixed:

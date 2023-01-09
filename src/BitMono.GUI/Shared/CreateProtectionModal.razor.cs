@@ -1,13 +1,4 @@
-﻿using BitMono.GUI.Utilities.Extensions;
-using BitMono.Shared.Models;
-using dnlib.DotNet;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace BitMono.GUI.Shared
+﻿namespace BitMono.GUI.Shared
 {
     public partial class CreateProtectionModal
     {

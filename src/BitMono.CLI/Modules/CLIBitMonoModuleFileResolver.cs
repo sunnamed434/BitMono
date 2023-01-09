@@ -1,6 +1,6 @@
 ﻿namespace BitMono.CLI.Modules;
 
-internal class CLIBitMonoModuleFileResolver : IBitMonoModuleFileResolver
+internal class CLIBitMonoModuleFileResolver : IModuleFileResolver
 {
     private readonly string[] m_Args;
 

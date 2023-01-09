@@ -3,64 +3,85 @@
 public class Renamer : IRenamer
 {
     private readonly NameCriticalAnalyzer m_NameCriticalAnalyzer;
+    private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
     private readonly IConfiguration m_Configuration;
-    private readonly Random random = new Random();
+    private readonly Random m_Random;
 
-    public Renamer(NameCriticalAnalyzer nameCriticalAnalyzer, IBitMonoObfuscationConfiguration configuration)
+    public Renamer(
+        NameCriticalAnalyzer nameCriticalAnalyzer,
+        SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
+        IBitMonoObfuscationConfiguration configuration,
+        RuntimeImplementations runtime)
     {
         m_NameCriticalAnalyzer = nameCriticalAnalyzer;
+        m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
         m_Configuration = configuration.Configuration;
+        m_Random = runtime.Random;
     }
 
     public string RenameUnsafely()
     {
         var strings = m_Configuration.GetRandomStrings();
-        var randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
-        var randomStringTwo = strings[random.Next(0, strings.Length - 1)];
-        var randomStringThree = strings[random.Next(0, strings.Length - 1)];
+        var randomStringOne = strings[m_Random.Next(0, strings.Length - 1)] + " " + strings[m_Random.Next(0, strings.Length - 1)];
+        var randomStringTwo = strings[m_Random.Next(0, strings.Length - 1)];
+        var randomStringThree = strings[m_Random.Next(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
-    public void Rename(IDnlibDef dnlibDef)
+    public void Rename(IMetadataMember member)
     {
-        if (dnlibDef is TypeDef typeDef)
+        if (member is TypeDefinition type)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
-                typeDef.Name = RenameUnsafely();
+                type.Name = RenameUnsafely();
             }
         }
-        if (dnlibDef is MethodDef methodDef)
+        if (member is MethodDefinition method)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                methodDef.Name = RenameUnsafely();
+                method.Name = RenameUnsafely();
             }
         }
-        if (dnlibDef is FieldDef fieldDef)
+        if (member is FieldDefinition field)
         {
-            fieldDef.Name = RenameUnsafely();
+            field.Name = RenameUnsafely();
+        }
+        if (member is ParameterDefinition parameter)
+        {
+            parameter.Name = RenameUnsafely();
         }
     }
-    public void Rename(IFullName fullName)
+    public void Rename(params IMetadataMember[] members)
     {
-        fullName.Name = RenameUnsafely();
-    }
-    public void Rename(params IFullName[] fullNames)
-    {
-        for (int i = 0; i < fullNames.Length; i++)
+        for (int i = 0; i < members.Length; i++)
         {
-            Rename(fullNames[i]);
+            Rename(members[i]);
         }
     }
-    public void Rename(params IDnlibDef[] dnlibDefs)
+    public void RemoveNamespace(IMetadataMember member)
     {
-        for (int i = 0; i < dnlibDefs.Length; i++)
+        if (member is TypeDefinition type)
         {
-            Rename(dnlibDefs[i]);
+            if (m_SpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            {
+                type.Namespace = string.Empty;
+            }
+        }
+        if (member is MethodDefinition method)
+        {
+            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            {
+                method.DeclaringType.Namespace = string.Empty;
+            }
+        }
+        if (member is FieldDefinition field)
+        {
+            field.DeclaringType.Namespace = string.Empty;
         }
     }
-    public void Rename(IVariable variable)
+    public void RemoveNamespace(params IMetadataMember[] members)
     {
-        variable.Name = RenameUnsafely();
+        members.ForEach(member => RemoveNamespace(member));
     }
 }

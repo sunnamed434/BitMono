@@ -2,5 +2,5 @@
 
 public interface IPipelineProtection : IProtection
 {
-    IEnumerable<(IPhaseProtection, PipelineStages)> PopulatePipeline();
+    IEnumerable<IPhaseProtection> PopulatePipeline();
 }
