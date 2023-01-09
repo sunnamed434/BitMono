@@ -1,4 +1,31 @@
 ﻿{
+  "UseCriticalInterfaces": true,
+  "UseCriticalBaseTypes": true,
+  "UseCriticalMethods": true,
+  "CriticalInterfaces": [
+    // RocketMod
+    "IRocketPlugin",
+    "IRocketCommand",
+    "IRocketPluginConfiguration",
+    "IDefaultable",
+
+    // OpenMod
+    "IOpenModPlugin"
+
+  ],
+  "CriticalBaseTypes": [
+    // RocketMod
+    "RocketPlugin",
+
+    // OpenMod
+    "OpenModUnturnedPlugin",
+    "OpenModUniversalPlugin",
+    "Command",
+
+    // rust-oxide-umod
+    "RustPlugin"
+
+  ],
   "CriticalMethods": [
     // Unity
     "Awake",
@@ -42,27 +69,5 @@
     "OnDisable",
     "OnDestroy"
 
-  ],
-  "CriticalInterfaces": [
-    // RocketMod
-    "IRocketPlugin",
-    "IRocketCommand",
-    "IRocketPluginConfiguration",
-    "IDefaultable",
-
-    // OpenMod
-    "IOpenModPlugin"
-  ],
-  "CriticalBaseTypes": [
-    // RocketMod
-    "RocketPlugin",
-
-    // OpenMod
-    "OpenModUnturnedPlugin",
-    "OpenModUniversalPlugin",
-    "Command",
-
-    // rust-oxide-umod
-    "RustPlugin"
   ]
 }

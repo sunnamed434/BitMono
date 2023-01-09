@@ -2,7 +2,7 @@
 
 public class ModuleCreationResult
 {
-    public ModuleDefMD ModuleDefMD { get; set; }
-    public ModuleCreationOptions ModuleCreationOptions { get; set; }
-    public ModuleWriterOptions ModuleWriterOptions { get; set; }
+    public ModuleDefinition Module { get; set; }
+    public ModuleReaderParameters ModuleReaderParameters { get; set; }
+    public IPEImageBuilder PEImageBuilder { get; set; }
 }

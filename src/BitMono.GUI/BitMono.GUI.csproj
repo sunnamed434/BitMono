@@ -88,12 +88,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BitMono.GUI.API\BitMono.GUI.API.csproj" />
-		<ProjectReference Include="..\BitMono.GUI.Utilities\BitMono.GUI.Utilities.csproj" />
 		<ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
 		<ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
 		<ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
 		<ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
-		<ProjectReference Include="..\dnlib\src\dnlib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

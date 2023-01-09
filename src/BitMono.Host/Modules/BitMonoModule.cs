@@ -68,34 +68,25 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<Injector>()
-            .As<IInjector>()
+        containerBuilder.RegisterType<MscorlibInjector>()
+            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<DnlibDefObfuscationAttributeResolver>()
-            .As<IDnlibDefObfuscationAttributeResolver>()
+        containerBuilder.RegisterType<CustomInjector>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<RuntimeImplementations>()
+            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(ICustomAttributesResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IObfuscationAttributeExcludingResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMethodImplAttributeExcludingResolver)) != null)
+            .Where(t => t.GetInterface(nameof(ICustomAttributeResolver)) != null)
             .AsImplementedInterfaces()
             .OwnedByLifetimeScope()
             .SingleInstance();
@@ -109,23 +100,27 @@ public class BitMonoModule : Module
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
+            .Where(t => t.GetInterface(nameof(IAttributeResolver)) != null)
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterAssemblyTypes(assemblies)
+            .PublicOnly()
             .AsClosedTypesOf(typeof(ICriticalAnalyzer<>))
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => 
-                t.GetInterface(nameof(IProtection)) != null 
-                && t.GetInterface(nameof(IPhaseProtection)) == null)
+            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .OwnedByLifetimeScope()
+            .AsSelf()
             .AsImplementedInterfaces()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t =>
-                t.GetInterface(nameof(IDnlibDefResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IPhaseProtection)) == null && t.GetInterface(nameof(IProtection)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();

@@ -22,6 +22,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsmResolver" Version="5.0.0" />
+    <PackageReference Include="AsmResolver.DotNet" Version="5.0.0" />
     <PackageReference Include="Autofac" Version="6.4.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-rc.2.22472.3" />
@@ -34,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dnlib\src\dnlib.csproj" />
+    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
   </ItemGroup>
 
 </Project>

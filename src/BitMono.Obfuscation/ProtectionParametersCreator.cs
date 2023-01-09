@@ -2,19 +2,19 @@
 
 public class ProtectionParametersCreator
 {
-    private readonly DnlibDefsResolver m_DnlibDefsResolver;
-    private readonly IEnumerable<IDnlibDefResolver> m_Resolvers;
+    private readonly MembersResolver m_MembersResolver;
+    private readonly IEnumerable<IMemberResolver> m_MemberResolvers;
 
-    public ProtectionParametersCreator(DnlibDefsResolver dnlibDefsResolver, IEnumerable<IDnlibDefResolver> resolvers)
+    public ProtectionParametersCreator(MembersResolver membersResolver, IEnumerable<IMemberResolver> memberResolvers)
     {
-        m_DnlibDefsResolver = dnlibDefsResolver;
-        m_Resolvers = resolvers;
+        m_MembersResolver = membersResolver;
+        m_MemberResolvers = memberResolvers;
     }
 
-    public ProtectionParameters Create(string feature, ModuleDefMD moduleDefMD)
+    public ProtectionParameters Create(IProtection protection, ModuleDefinition module)
     {
-        var definitions = moduleDefMD.FindDefinitions();
-        var targets = m_DnlibDefsResolver.Resolve(feature, definitions, m_Resolvers).ToList();
+        var definitions = module.FindDefinitions();
+        var targets = m_MembersResolver.Resolve(protection, definitions, m_MemberResolvers).ToList();
         return new ProtectionParameters(targets);
     }
 }

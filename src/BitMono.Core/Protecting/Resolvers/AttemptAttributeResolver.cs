@@ -2,23 +2,20 @@
 
 public class AttemptAttributeResolver : IAttemptAttributeResolver
 {
-    private readonly ICustomAttributesResolver m_CustomAttributesResolver;
+    private readonly ICustomAttributeResolver m_CustomAttributesResolver;
 
-    public AttemptAttributeResolver(ICustomAttributesResolver customAttributesResolver)
+    public AttemptAttributeResolver(ICustomAttributeResolver customAttributesResolver)
     {
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] Func<TAttribute, bool> strip, [AllowNull] out TAttribute attribute)
-        where TAttribute : Attribute
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out Dictionary<string, CustomAttributeResolve> keyValuePairs)
     {
-        attribute = predicate != null
-            ? m_CustomAttributesResolver.Resolve(from, strip).Where(a => a != null)?.FirstOrDefault(predicate)
-            : m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault();
-        if (attribute == null)
+        keyValuePairs = m_CustomAttributesResolver.Resolve(from, @namespace, name);
+        if (keyValuePairs != null)
         {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
