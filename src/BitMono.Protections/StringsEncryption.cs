@@ -6,10 +6,10 @@ public class StringsEncryption : IProtection
     private readonly MscorlibInjector m_Injector;
     private readonly IRenamer m_Renamer;
 
-    public StringsEncryption(RuntimeImplementations runtime)
+    public StringsEncryption(RuntimeImplementations runtime, IRenamer renamer)
     {
         m_Injector = runtime.MscorlibInjector;
-        m_Renamer = runtime.Renamer;
+        m_Renamer = renamer;
     }
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
