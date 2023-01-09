@@ -2,7 +2,7 @@
 
 public class AssemblyResolve
 {
-    public HashSet<AssemblyReference> ResolvedReferences { get; set; }
-    public HashSet<AssemblyReference> FailedToResolveReferences { get; set; }
+    public List<AssemblyReference> ResolvedReferences { get; set; }
+    public List<AssemblyReference> FailedToResolveReferences { get; set; }
     public bool Succeed { get; set; }
 }
