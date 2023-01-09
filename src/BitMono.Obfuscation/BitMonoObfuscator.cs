@@ -12,6 +12,7 @@ public class BitMonoObfuscator
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
     private readonly ILogger m_Logger;
+    private PEImageBuildResult _imageBuild;
 
     public BitMonoObfuscator(
         ProtectionContext context,
@@ -46,6 +47,8 @@ public class BitMonoObfuscator
         await m_InvokablePipeline.InvokeAsync(protectAsync);
         await m_InvokablePipeline.InvokeAsync(optimizeMacrosAsync);
         await m_InvokablePipeline.InvokeAsync(stripObfuscationAttributesAsync);
+        await m_InvokablePipeline.InvokeAsync(createPEImageAsync);
+        await m_InvokablePipeline.InvokeAsync(outputPEImageBuildErrorsAsync);
         await m_InvokablePipeline.InvokeAsync(writeModuleAsync);
         await m_InvokablePipeline.InvokeAsync(packAsync);
     }
@@ -57,7 +60,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> resolveDependenciesAsync(ProtectionContext context)
     {
-        var assemblyResolve = new BitMonoAssemblyResolver().Resolve(context.BitMonoContext.DependenciesData, context);
+        var assemblyResolve = new AssemblyResolver().Resolve(context.BitMonoContext.DependenciesData, context);
         foreach (var reference in assemblyResolve.ResolvedReferences)
         {
             m_Logger.Information("Successfully resolved dependency: {0}", reference.FullName);
@@ -145,15 +148,34 @@ public class BitMonoObfuscator
         }
         return Task.FromResult(true);
     }
+    private Task<bool> createPEImageAsync(ProtectionContext context)
+    {
+        _imageBuild = context.PEImageBuilder.CreateImage(context.Module);
+        return Task.FromResult(true);
+    }
+    private Task<bool> outputPEImageBuildErrorsAsync(ProtectionContext context)
+    {
+        if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.OutputPEImageBuildErrors)))
+        {
+            if (_imageBuild.DiagnosticBag.HasErrors)
+            {
+                m_Logger.Warning("{0} errors were registered while building the PE", _imageBuild.DiagnosticBag.Exceptions.Count);
+                foreach (var exception in _imageBuild.DiagnosticBag.Exceptions)
+                {
+                    m_Logger.Error(exception, "Error while building the PE!");
+                }
+            }
+        }
+        return Task.FromResult(true);
+    }
     private async Task<bool> writeModuleAsync(ProtectionContext context)
     {
         try
         {
             var memoryStream = new MemoryStream();
-            var image = context.PEImageBuilder.CreateImage(context.Module).ConstructedImage;
             var fileBuilder = new ManagedPEFileBuilder();
             fileBuilder
-                .CreateFile(image)
+                .CreateFile(_imageBuild.ConstructedImage)
                 .Write(memoryStream);
             await m_DataWriter.WriteAsync(context.BitMonoContext.OutputFile, memoryStream.ToArray());
         }
