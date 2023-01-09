@@ -1,30 +1,30 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Renaming;
+﻿namespace BitMono.Core.Protecting.Renaming;
 
 public class Renamer : IRenamer
 {
     private readonly NameCriticalAnalyzer m_NameCriticalAnalyzer;
     private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
     private readonly IConfiguration m_Configuration;
-    private readonly Random random = new Random();
+    private readonly Random m_Random;
 
     public Renamer(
         NameCriticalAnalyzer nameCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
-        IBitMonoObfuscationConfiguration configuration)
+        IBitMonoObfuscationConfiguration configuration,
+        RuntimeImplementations runtime)
     {
         m_NameCriticalAnalyzer = nameCriticalAnalyzer;
         m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
         m_Configuration = configuration.Configuration;
+        m_Random = runtime.Random;
     }
 
     public string RenameUnsafely()
     {
         var strings = m_Configuration.GetRandomStrings();
-        var randomStringOne = strings[random.Next(0, strings.Length - 1)] + " " + strings[random.Next(0, strings.Length - 1)];
-        var randomStringTwo = strings[random.Next(0, strings.Length - 1)];
-        var randomStringThree = strings[random.Next(0, strings.Length - 1)];
+        var randomStringOne = strings[m_Random.Next(0, strings.Length - 1)] + " " + strings[m_Random.Next(0, strings.Length - 1)];
+        var randomStringTwo = strings[m_Random.Next(0, strings.Length - 1)];
+        var randomStringThree = strings[m_Random.Next(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
     public void Rename(IMetadataMember member)
