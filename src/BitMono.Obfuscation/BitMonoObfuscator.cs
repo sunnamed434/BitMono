@@ -11,8 +11,10 @@ public class BitMonoObfuscator
     private readonly IInvokablePipeline m_InvokablePipeline;
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
+    private readonly ProtectionsNotifier m_ProtectionsNotifier;
     private readonly ILogger m_Logger;
     private PEImageBuildResult _imageBuild;
+    private Stopwatch _stopWatch;
 
     public BitMonoObfuscator(
         ProtectionContext context,
@@ -23,16 +25,17 @@ public class BitMonoObfuscator
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
         ILogger logger)
     {
+        m_Context = context;
         m_MemberResolvers = memberResolvers;
         m_ProtectionsSort = protectionsSortResult;
-        m_Context = context;
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscationConfiguration = obfuscationConfiguration.Configuration;
+        m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
-        m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);
+        m_ProtectionsNotifier = new ProtectionsNotifier(obfuscationConfiguration, m_Logger);
     }
 
     public async Task ProtectAsync()
@@ -41,6 +44,8 @@ public class BitMonoObfuscator
 
         m_InvokablePipeline.OnFail += onFail;
 
+        await m_InvokablePipeline.InvokeAsync(outputProtectionsAsync);
+        await m_InvokablePipeline.InvokeAsync(startTimeCounterAsync);
         await m_InvokablePipeline.InvokeAsync(outputFrameworkInformationAsync);
         await m_InvokablePipeline.InvokeAsync(resolveDependenciesAsync);
         await m_InvokablePipeline.InvokeAsync(expandMacrosAsync);
@@ -51,8 +56,20 @@ public class BitMonoObfuscator
         await m_InvokablePipeline.InvokeAsync(outputPEImageBuildErrorsAsync);
         await m_InvokablePipeline.InvokeAsync(writeModuleAsync);
         await m_InvokablePipeline.InvokeAsync(packAsync);
+        await m_InvokablePipeline.InvokeAsync(outputElapsedTimeAsync);
     }
 
+    private Task<bool> outputProtectionsAsync(ProtectionContext context)
+    {
+        m_ProtectionsNotifier.Notify(m_ProtectionsSort);
+        return Task.FromResult(true);
+    }
+    private Task<bool> startTimeCounterAsync(ProtectionContext context)
+    {
+        _stopWatch = new Stopwatch();
+        _stopWatch.Start();
+        return Task.FromResult(true);
+    }
     private Task<bool> outputFrameworkInformationAsync(ProtectionContext context)
     {
         m_Logger.Information(RuntimeUtilities.GetFrameworkInformation().ToString());
@@ -178,6 +195,7 @@ public class BitMonoObfuscator
                 .CreateFile(_imageBuild.ConstructedImage)
                 .Write(memoryStream);
             await m_DataWriter.WriteAsync(context.BitMonoContext.OutputFile, memoryStream.ToArray());
+            m_Logger.Information("Protected module`s saved in {0}", context.BitMonoContext.OutputDirectoryName);
         }
         catch (Exception ex)
         {
@@ -197,12 +215,18 @@ public class BitMonoObfuscator
         }
         return true;
     }
+    private Task<bool> outputElapsedTimeAsync(ProtectionContext context)
+    {
+        _stopWatch.Stop();
+        m_Logger.Information("Since obfuscation elapsed: {0}", _stopWatch.Elapsed.ToString());
+        return Task.FromResult(true);
+    }
     private void onFail()
     {
         m_Logger.Fatal("Obfuscation stopped! Something went wrong!");
     }
     private ProtectionParameters createProtectionParameters(IProtection target)
     {
-        return new ProtectionParametersCreator(m_MemberResolver, m_MemberResolvers).Create(target, m_Context.Module);
+        return new ProtectionParametersFactory(m_MemberResolver, m_MemberResolvers).Create(target, m_Context.Module);
     }
 }
