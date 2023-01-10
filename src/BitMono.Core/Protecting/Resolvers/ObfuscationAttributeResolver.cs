@@ -3,11 +3,11 @@
 public class ObfuscationAttributeResolver : AttributeResolver
 {
     private readonly IConfiguration m_Configuration;
-    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public ObfuscationAttributeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscationAttributeResolver(IBitMonoObfuscationConfiguration configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
         m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
@@ -22,7 +22,7 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var keyValuePairs) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out attributeResolve) == false)
         {
             return false;
         }
@@ -30,15 +30,15 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return true;
         }
-        if (keyValuePairs.TryGetValue(nameof(ObfuscationAttribute.Feature), out attributeResolve) == false)
+        if (attributeResolve.KeyValuePairs.TryGetValue(nameof(ObfuscationAttribute.Feature), out var value) == false)
         {
             return false;
         }
-        if (attributeResolve.Value is string valueFeature)
+        if (value is string valueFeature)
         {
             if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
             {
-                var exclude = keyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                var exclude = attributeResolve.KeyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
                 if (exclude)
                 {
                     return true;
