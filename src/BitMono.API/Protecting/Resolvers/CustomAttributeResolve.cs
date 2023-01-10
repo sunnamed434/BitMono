@@ -2,6 +2,6 @@
 
 public class CustomAttributeResolve
 {
-    public CustomAttribute CustomAttribute { get; set; }
-    public object Value { get; set; }
+    public Dictionary<string, object> KeyValuePairs { get; set; }
+    public CustomAttribute Attribute { get; set; }
 }
