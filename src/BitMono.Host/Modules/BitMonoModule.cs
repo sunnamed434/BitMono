@@ -83,24 +83,21 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
+        containerBuilder.RegisterType<CustomAttributeResolver>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<AttemptAttributeResolver>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(ICustomAttributeResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IAttemptAttributeResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IAttributeResolver)) != null)
             .OwnedByLifetimeScope()
             .SingleInstance();
 
@@ -112,10 +109,8 @@ public class BitMonoModule : Module
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IAttributeResolver)) != null)
             .OwnedByLifetimeScope()
-            .AsSelf()
-            .AsImplementedInterfaces()
             .SingleInstance();
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
