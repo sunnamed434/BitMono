@@ -3,7 +3,7 @@
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
     private readonly IConfiguration m_Configuration;
-    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly Dictionary<string, string> m_Attributes = new Dictionary<string, string>
     {
         { nameof(SerializableAttribute), typeof(SerializableAttribute).Namespace },
@@ -12,7 +12,7 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
         { nameof(JsonPropertyAttribute), typeof(JsonPropertyAttribute).Namespace },
     };
 
-    public ModelAttributeCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
         m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
@@ -26,7 +26,7 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
         }
         foreach (var attribute in m_Attributes)
         {
-            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Value, attribute.Key, out _))
+            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Value, attribute.Key))
             {
                 return false;
             }
