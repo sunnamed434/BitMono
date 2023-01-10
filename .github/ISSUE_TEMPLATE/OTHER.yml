@@ -1,5 +1,5 @@
-name: Other
-description: Something else?
+name: "❓Other"
+description: Something else ?
 body:
   - type: textarea
     id: description
