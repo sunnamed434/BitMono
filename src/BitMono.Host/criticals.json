@@ -1,4 +1,12 @@
 ﻿{
+  // DO NOT write here all of your methods because if you rename them in VS/Rider/VS Code (eg, with hotkey CTLR + R + R/without hotkey, doesn't matter)
+  // whatever else, they're not will be changed here as well.
+  // This is not for complex things, just write here your critical things - it means: for example, imagine Unity there are a lot of methods
+  // which doesn't even have an 'override' i.e 'override void Update()' (which is called every tick) - just void Update(), in such cases these methods
+  // shouldn't be renamed because this is like const things for Unity, and they're very important, 
+  // for complex things use [ObfuscationAttribute(Feature = "ProtectionName")],
+  // but if you don't have plans with the mess in your code and you don't really have plans in near future to rename these critical things it can be done then.
+
   "UseCriticalInterfaces": true,
   "UseCriticalBaseTypes": true,
   "UseCriticalMethods": true,
