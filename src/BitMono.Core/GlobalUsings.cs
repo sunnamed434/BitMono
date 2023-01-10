@@ -14,6 +14,7 @@ global using BitMono.Core.Extensions;
 global using BitMono.Core.Protecting.Analyzing;
 global using BitMono.Core.Protecting.Attributes;
 global using BitMono.Core.Protecting.Injection;
+global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Extensions.AsmResolver;
 global using Microsoft.Extensions.Configuration;
