@@ -3,16 +3,16 @@
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly NoInliningMethodMemberResolver m_NoInliningMethodMemberResolver;
+    private readonly CriticalAttributeResolver m_CriticalAttributeResolver;
     private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
 
     public SafeToMakeChangesMemberResolver(
         ObfuscationAttributeResolver obfuscationAttributeResolver,
-        NoInliningMethodMemberResolver noInliningMethodMemberResolver,
+        CriticalAttributeResolver criticalAttributeResolver,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer)
     {
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_NoInliningMethodMemberResolver = noInliningMethodMemberResolver;
+        m_CriticalAttributeResolver = criticalAttributeResolver;
         m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
     }
 
@@ -25,7 +25,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
             {
                 return false;
             }
-            if (m_NoInliningMethodMemberResolver.Resolve(protection, customAttribute))
+            if (m_CriticalAttributeResolver.Resolve(feature, customAttribute))
             {
                 return false;
             }
