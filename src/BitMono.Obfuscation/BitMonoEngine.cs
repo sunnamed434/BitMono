@@ -42,46 +42,26 @@ public class BitMonoEngine
             return false;
         }
         
-        new ProtectionsNotifier(m_ObfuscationConfiguration, m_Logger).Notify(protectionsSort);
-        
-        m_Logger.Information("Preparing to protect module: {0}", context.BitMonoContext.FileName);
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
-        await new BitMonoObfuscator(
-            context,
-            m_MemberResolvers,
-            protectionsSort,
-            m_DataWriter,
-            m_ObfuscationAttributeResolver,
-            m_ObfuscationConfiguration,
-            m_Logger)
-            .ProtectAsync();
-        stopWatch.Stop();
-        m_Logger.Information("Protected module`s saved in {0}", context.BitMonoContext.OutputDirectoryName);
-        m_Logger.Information("Elapsed: {0}", stopWatch.Elapsed.ToString());
+        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, m_DataWriter, m_ObfuscationAttributeResolver, m_ObfuscationConfiguration, m_Logger);
+        await obfuscator.ProtectAsync();
         return true;
     }
-    public async Task<bool> StartAsync(BitMonoContext context, IModuleCreator moduleCreator, CancellationToken cancellationToken)
+    public async Task<bool> StartAsync(BitMonoContext context, IModuleFactory moduleFactory, CancellationToken cancellationToken)
     {
-        var moduleDefMDCreationResult = moduleCreator.Create();
         var runtimeModule = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
-        var protectionContext = new ProtectionContextCreator
-        {
-            ModuleCreationResult = moduleDefMDCreationResult,
-            RuntimeModuleDefinition = runtimeModule,
-            BitMonoContext = context,
-            CancellationToken = cancellationToken
-        }.Create();
-        new OutputFilePathCreator().Create(context);
+        var moduleFactoryResult = moduleFactory.Create();
+        var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, context, cancellationToken);
+        var protectionContext = protectionContextFactory.Create();
+        new OutputFilePathFactory().Create(context);
         return await StartAsync(protectionContext);
     }
     public async Task<bool> StartAsync(BitMonoContext context, byte[] data, IErrorListener errorListener, CancellationToken cancellationToken)
     {
-        return await StartAsync(context, new ModuleCreator(data, errorListener), cancellationToken);
+        return await StartAsync(context, new ModuleFactory(data, errorListener), cancellationToken);
     }
     public async Task<bool> StartAsync(BitMonoContext context, string fileName, IErrorListener errorListener, CancellationToken cancellationToken)
     {
-        return await StartAsync(context, new ModuleCreator(File.ReadAllBytes(fileName), errorListener), cancellationToken);
+        return await StartAsync(context, new ModuleFactory(File.ReadAllBytes(fileName), errorListener), cancellationToken);
     }
     public async Task<bool> StartAsync(BitMonoContext context, byte[] data, CancellationToken cancellationToken)
     {
