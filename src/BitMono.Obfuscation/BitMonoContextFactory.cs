@@ -1,11 +1,11 @@
 ﻿namespace BitMono.Obfuscation;
 
-public class BitMonoContextCreator
+public class BitMonoContextFactory
 {
     private readonly IDependenciesDataResolver m_DependenciesDataResolver;
     private readonly IConfiguration m_Configuration;
 
-    public BitMonoContextCreator(IDependenciesDataResolver dependenciesDataResolver, IBitMonoObfuscationConfiguration configuration)
+    public BitMonoContextFactory(IDependenciesDataResolver dependenciesDataResolver, IBitMonoObfuscationConfiguration configuration)
     {
         m_DependenciesDataResolver = dependenciesDataResolver;
         m_Configuration = configuration.Configuration;

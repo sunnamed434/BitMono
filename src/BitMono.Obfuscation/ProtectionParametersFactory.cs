@@ -1,11 +1,11 @@
 ﻿namespace BitMono.Obfuscation;
 
-public class ProtectionParametersCreator
+public class ProtectionParametersFactory
 {
     private readonly MembersResolver m_MembersResolver;
     private readonly IEnumerable<IMemberResolver> m_MemberResolvers;
 
-    public ProtectionParametersCreator(MembersResolver membersResolver, IEnumerable<IMemberResolver> memberResolvers)
+    public ProtectionParametersFactory(MembersResolver membersResolver, IEnumerable<IMemberResolver> memberResolvers)
     {
         m_MembersResolver = membersResolver;
         m_MemberResolvers = memberResolvers;

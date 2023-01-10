@@ -29,7 +29,7 @@ public class ProtectionsNotifier
                     stringBuilder.Append(", ");
                     stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(p => p.GetName())));
                 }
-                m_Logger.Information("Execute protections: {0}", stringBuilder.ToString());
+                m_Logger.Information("Enabled protections: {0}", stringBuilder.ToString());
             }
             if (protectionsSort.DeprecatedProtections.Any())
             {

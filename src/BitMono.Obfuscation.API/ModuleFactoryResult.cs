@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Obfuscation.API;
 
-public class ModuleCreationResult
+public class ModuleFactoryResult
 {
     public ModuleDefinition Module { get; set; }
     public ModuleReaderParameters ModuleReaderParameters { get; set; }

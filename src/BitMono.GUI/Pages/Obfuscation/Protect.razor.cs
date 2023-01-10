@@ -51,7 +51,7 @@ public partial class Protect
                     dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
                 }
                 
-                var bitMonoContext = new BitMonoContextCreator(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
+                var bitMonoContext = new BitMonoContextFactory(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
                     .Create(_outputDirectoryName, _obfuscationFile.Name);
                 var guiDataWriter = new GUIDataWriter();
                 await new BitMonoEngine(

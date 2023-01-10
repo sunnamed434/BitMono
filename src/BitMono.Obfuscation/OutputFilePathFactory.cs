@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Obfuscation;
 
-public class OutputFilePathCreator
+public class OutputFilePathFactory
 {
     public BitMonoContext Create(BitMonoContext context)
     {

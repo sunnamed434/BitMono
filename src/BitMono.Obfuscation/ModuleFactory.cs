@@ -1,15 +1,15 @@
-﻿public class ModuleCreator : IModuleCreator
+﻿public class ModuleFactory : IModuleFactory
 {
     private readonly byte[] m_Bytes;
     private readonly IErrorListener m_ErrorListener;
 
-    public ModuleCreator(byte[] bytes, IErrorListener errorListener)
+    public ModuleFactory(byte[] bytes, IErrorListener errorListener)
     {
         m_Bytes = bytes;
         m_ErrorListener = errorListener;
     }
 
-    public ModuleCreationResult Create()
+    public ModuleFactoryResult Create()
     {
         var moduleReaderParameters = new ModuleReaderParameters(m_ErrorListener);
         var module = SerializedModuleDefinition.FromBytes(m_Bytes, moduleReaderParameters);
@@ -30,7 +30,7 @@
             module.MachineType = MachineType.Amd64;
         }
 
-        return new ModuleCreationResult
+        return new ModuleFactoryResult
         {
             Module = module,
             ModuleReaderParameters = moduleReaderParameters,
