@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Analyzing;
+﻿namespace BitMono.Core.Protecting.Analyzing;
 
 public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
