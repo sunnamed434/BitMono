@@ -10,6 +10,14 @@ public static class ConfigurationExtensions
     {
         return source.GetSection("Protections").Get<List<ProtectionSettings>>();
     }
+    public static List<CriticalAttribute> GetCriticalAttributes(this IBitMonoCriticalsConfiguration source)
+    {
+        return source.GetCriticalAttributes();
+    }
+    public static List<CriticalAttribute> GetCriticalAttributes(this IConfiguration source)
+    {
+        return source.GetSection("CriticalAttributes").Get<List<CriticalAttribute>>();
+    }
     public static List<string> GetCriticalMethods(this IBitMonoCriticalsConfiguration source)
     {
         return source.GetCriticalMethods();
