@@ -46,7 +46,7 @@
             var succeed = await engine.StartAsync(bitMonoContext, bitMonoContext.FileName, cancellationTokenSource.Token);
             if (succeed == false)
             {
-                logger.Fatal("Engine has issues, unable to continue, stop!");
+                logger.Fatal("Engine has fatal issues, unable to continue!");
                 Console.ReadLine();
                 return;
             }
