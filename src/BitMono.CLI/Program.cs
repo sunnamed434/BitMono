@@ -38,7 +38,8 @@
 
             var moduleDefMDWriter = new CLIDataWriter();
             var dependenciesDataResolver = new DependenciesDataResolver(neededForObfuscation.DependenciesDirectoryPath);
-            var bitMonoContext = new BitMonoContextCreator(dependenciesDataResolver, obfuscationConfiguration).Create(outputDirectoryName, neededForObfuscation.FileName);
+            var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, obfuscationConfiguration);
+            var bitMonoContext = bitMonoContextFactory.Create(outputDirectoryName, neededForObfuscation.FileName);
             var cancellationTokenSource = new CancellationTokenSource();
 
             var engine = new BitMonoEngine(moduleDefMDWriter, obfuscationAttributeResolver, obfuscationConfiguration, membersResolver, protections, protectionSettings, logger);
