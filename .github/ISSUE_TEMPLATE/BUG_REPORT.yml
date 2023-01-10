@@ -2,7 +2,7 @@ name: "🐛 Bug Report"
 description: Create a new ticket for a bug.
 body:
   - type: textarea
-    id: BitMono Version
+    id: bitmono_version
     attributes:
       label: "BitMono Version"
       description: Please enter the used version of BitMono with the bug
