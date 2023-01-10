@@ -4,16 +4,16 @@ public class MembersResolver
 {
     public IEnumerable<IMetadataMember> Resolve(IProtection protection, IEnumerable<IMetadataMember> members, IEnumerable<IMemberResolver> resolvers)
     {
-        foreach (var definition in members) 
+        foreach (var member in members) 
         {
-            foreach (var resolver in resolvers)
+            if (canBeResolved(protection, member, resolvers))
             {
-                if (resolver.Resolve(protection, definition))
-                {
-                    yield return definition;
-                    break;
-                }
+                yield return member;
             }
         }
+    }
+    private bool canBeResolved(IProtection protection, IMetadataMember member, IEnumerable<IMemberResolver> resolvers)
+    {
+        return resolvers.All(r => r.Resolve(protection, member) == true);
     }
 }
