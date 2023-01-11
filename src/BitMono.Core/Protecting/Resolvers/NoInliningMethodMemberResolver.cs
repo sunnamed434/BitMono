@@ -13,15 +13,15 @@ public class NoInliningMethodMemberResolver : IMemberResolver
     {
         if (m_Configuration.GetValue<bool>(nameof(Obfuscation.NoInliningMethodObfuscationExclude)) == false)
         {
-            return false;
+            return true;
         }
         if (member is MethodDefinition method)
         {
             if (method.NoInlining)
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }

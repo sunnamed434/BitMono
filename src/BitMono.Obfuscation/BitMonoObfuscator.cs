@@ -152,13 +152,13 @@ public class BitMonoObfuscator
             {
                 if (m_ObfuscationAttributeResolver.Resolve(protection.GetName(), customAttribute, out CustomAttributeResolve attributeResolve))
                 {
-                    if (customAttribute.CustomAttributes.Remove(attributeResolve.CustomAttribute))
+                    if (customAttribute.CustomAttributes.Remove(attributeResolve.Attribute))
                     {
                         m_Logger.Information("Successfully stripped obfuscation attribute");
                     }
                     else
                     {
-                        m_Logger.Warning("Failed to stip obfuscation attribute");
+                        m_Logger.Warning("Not able to stip obfuscation attribute");
                     }
                 }
             }

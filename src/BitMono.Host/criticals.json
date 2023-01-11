@@ -7,9 +7,19 @@
   // for complex things use [ObfuscationAttribute(Feature = "ProtectionName")],
   // but if you don't have plans with the mess in your code and you don't really have plans in near future to rename these critical things it can be done then.
 
+  "UseCriticalAttributes": true,
   "UseCriticalInterfaces": true,
   "UseCriticalBaseTypes": true,
   "UseCriticalMethods": true,
+
+  "CriticalAttributes": [
+    // Unity
+    {
+      "Namespace": "UnityEngine",
+      "Name": "SerializeField"
+    }
+
+  ],
   "CriticalInterfaces": [
     // RocketMod
     "IRocketPlugin",
