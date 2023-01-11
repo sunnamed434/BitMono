@@ -1,4 +1,6 @@
-﻿public class ModuleFactory : IModuleFactory
+﻿namespace BitMono.Obfuscation;
+
+public class ModuleFactory : IModuleFactory
 {
     private readonly byte[] m_Bytes;
     private readonly IErrorListener m_ErrorListener;

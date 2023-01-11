@@ -18,7 +18,7 @@ public class BitMonoContextFactory
             OutputDirectoryName = outputDirectoryName,
             DependenciesData = m_DependenciesDataResolver.Resolve(),
             Watermark = m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.Watermark)),
-            FileName = fileName,
+            FileName = fileName
         };
     }
 }

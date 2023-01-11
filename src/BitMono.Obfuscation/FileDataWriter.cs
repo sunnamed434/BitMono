@@ -1,6 +1,6 @@
-﻿namespace BitMono.CLI.Modules;
+﻿namespace BitMono.Obfuscation;
 
-internal class CLIDataWriter : IDataWriter
+internal class FileDataWriter : IDataWriter
 {
     public Task WriteAsync(string outputFile, byte[] outputBuffer)
     {

@@ -2,7 +2,6 @@
 
 public class BitMonoEngine
 {
-    private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguration;
     private readonly List<IMemberResolver> m_MemberResolvers;
@@ -11,7 +10,6 @@ public class BitMonoEngine
     private readonly ILogger m_Logger;
 
     public BitMonoEngine(
-        IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
         IBitMonoObfuscationConfiguration obfuscationConfiguration,
         List<IMemberResolver> memberResolvers,
@@ -19,7 +17,6 @@ public class BitMonoEngine
         List<ProtectionSettings> protectionSettings,
         ILogger logger)
     {
-        m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscationConfiguration = obfuscationConfiguration;
         m_MemberResolvers = memberResolvers;
@@ -28,7 +25,7 @@ public class BitMonoEngine
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
-    internal async Task<bool> StartAsync(ProtectionContext context)
+    internal async Task<bool> StartAsync(ProtectionContext context, IDataWriter dataWriter)
     {
         context.ThrowIfCancellationRequested();
         
@@ -42,33 +39,25 @@ public class BitMonoEngine
             return false;
         }
         
-        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, m_DataWriter, m_ObfuscationAttributeResolver, m_ObfuscationConfiguration, m_Logger);
+        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, dataWriter, m_ObfuscationAttributeResolver, m_ObfuscationConfiguration, m_Logger);
         await obfuscator.ProtectAsync();
         return true;
     }
-    public async Task<bool> StartAsync(BitMonoContext context, IModuleFactory moduleFactory, CancellationToken cancellationToken)
+    public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter, CancellationToken cancellationToken)
     {
+        var dependenciesDataResolver = new DependenciesDataResolver(needs.DependenciesDirectoryName);
+        var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_ObfuscationConfiguration);
+        var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
+
         var runtimeModule = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
-        var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, context, cancellationToken);
+        var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);
         var protectionContext = protectionContextFactory.Create();
-        new OutputFilePathFactory().Create(context);
-        return await StartAsync(protectionContext);
+        new OutputFilePathFactory().Create(bitMonoContext);
+        return await StartAsync(protectionContext, dataWriter);
     }
-    public async Task<bool> StartAsync(BitMonoContext context, byte[] data, IErrorListener errorListener, CancellationToken cancellationToken)
+    public async Task<bool> StartAsync(ObfuscationNeeds needs, CancellationToken cancellationToken)
     {
-        return await StartAsync(context, new ModuleFactory(data, errorListener), cancellationToken);
-    }
-    public async Task<bool> StartAsync(BitMonoContext context, string fileName, IErrorListener errorListener, CancellationToken cancellationToken)
-    {
-        return await StartAsync(context, new ModuleFactory(File.ReadAllBytes(fileName), errorListener), cancellationToken);
-    }
-    public async Task<bool> StartAsync(BitMonoContext context, byte[] data, CancellationToken cancellationToken)
-    {
-        return await StartAsync(context, data, new LogErrorListener(m_Logger), cancellationToken);
-    }
-    public async Task<bool> StartAsync(BitMonoContext context, string fileName, CancellationToken cancellationToken)
-    {
-        return await StartAsync(context, fileName, new LogErrorListener(m_Logger), cancellationToken);
+        return await StartAsync(needs, new ModuleFactory(File.ReadAllBytes(needs.FileName), new LogErrorListener(m_Logger)), new FileDataWriter(), cancellationToken);
     }
 }
