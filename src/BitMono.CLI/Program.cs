@@ -7,9 +7,8 @@ public class Program
         try
         {
             const string ProtectionsFileName = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-
+ 
             var needs = new CLIObfuscationNeedsFactory(args).Create();
-
             Console.Clear();
             Console.WriteLine("File: {0}", needs.FileName);
             Console.WriteLine("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
@@ -57,6 +56,7 @@ public class Program
         {
             Console.WriteLine("Something went wrong! " + ex.ToString());
         }
+        Console.WriteLine("Press any key to exit!");
         Console.ReadLine();
     }
 }
