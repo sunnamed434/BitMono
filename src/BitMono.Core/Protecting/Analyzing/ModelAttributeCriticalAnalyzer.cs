@@ -4,15 +4,8 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
 {
     private readonly IConfiguration m_Configuration;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
-    private readonly Dictionary<string, string> m_Attributes = new Dictionary<string, string>
-    {
-        { nameof(SerializableAttribute), typeof(SerializableAttribute).Namespace },
-        { nameof(XmlAttributeAttribute), typeof(XmlAttributeAttribute).Namespace },
-        { nameof(XmlArrayItemAttribute), typeof(XmlArrayItemAttribute).Namespace },
-        { nameof(JsonPropertyAttribute), typeof(JsonPropertyAttribute).Namespace },
-    };
 
-    public ModelAttributeCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
         m_Configuration = configuration.Configuration;
         m_AttemptAttributeResolver = attemptAttributeResolver;
@@ -20,17 +13,17 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.ModelAttributeObfuscationExclude)) == false)
+        if (m_Configuration.GetValue<bool>("UseCriticalModelAttributes") == false)
         {
             return true;
         }
-        foreach (var attribute in m_Attributes)
+        foreach (var attribute in m_Configuration.GetCriticalModelAttributes())
         {
-            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Value, attribute.Key))
+            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
             {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 }
