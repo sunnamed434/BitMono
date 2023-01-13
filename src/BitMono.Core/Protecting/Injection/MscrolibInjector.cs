@@ -61,9 +61,9 @@ public class MscorlibInjector
     public TypeDefinition CreateCompilerGeneratedType(ModuleDefinition module, string name = null)
     {
         var @object = module.CorLibTypeFactory.Object.ToTypeDefOrRef();
-        var invislbeType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, @object);
-        InjectCompilerGeneratedAttribute(module, invislbeType);
-        return invislbeType;
+        var invisibleType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, @object);
+        InjectCompilerGeneratedAttribute(module, invisibleType);
+        return invisibleType;
     }
     public TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string name = null)
     {

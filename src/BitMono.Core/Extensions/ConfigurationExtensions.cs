@@ -6,6 +6,14 @@ public static class ConfigurationExtensions
     {
         return source.Configuration.GetProtectionSettings();
     }
+    public static List<CriticalAttribute> GetCriticalModelAttributes(this IConfiguration source)
+    {
+        return source.GetSection("CriticalModelAttributes").Get<List<CriticalAttribute>>();
+    }
+    public static List<CriticalAttribute> GetCriticalModelAttributes(this IBitMonoProtectionsConfiguration source)
+    {
+        return source.Configuration.GetCriticalModelAttributes();
+    }
     public static List<ProtectionSettings> GetProtectionSettings(this IConfiguration source)
     {
         return source.GetSection("Protections").Get<List<ProtectionSettings>>();
