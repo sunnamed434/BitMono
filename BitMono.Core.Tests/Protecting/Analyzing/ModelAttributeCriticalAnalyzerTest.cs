@@ -43,7 +43,6 @@ public class ModelAttributeCriticalAnalyzerTest
     [MemberData(nameof(GetAttributes))]
     public void WhenModelCriticalAnalyzing_AndModelIsCritical_ThenShouldBeFalse(string name, string @namespace)
     {
-        // Arrange.
         var module = ModuleDefinition.FromBytes(Resources.HelloWorldLib);
 
         var criticals = new Criticals()
@@ -64,13 +63,11 @@ public class ModelAttributeCriticalAnalyzerTest
         var attemptAttributeResolver = new AttemptAttributeResolver(new CustomAttributeResolver());
         var criticalAnalyzer = new ModelAttributeCriticalAnalyzer(configuration, attemptAttributeResolver);
         
-        // Act.
         var type = new TypeDefinition(string.Empty, Guid.NewGuid().ToString(), TypeAttributes.Public);
         module.TopLevelTypes.Add(type);
         var injector = new MscorlibInjector();
         injector.InjectAttribute(module, @namespace, name, type);
 
-        // Assert.
         var value = criticalAnalyzer.NotCriticalToMakeChanges(type);
         Assert.False(value);
     }
