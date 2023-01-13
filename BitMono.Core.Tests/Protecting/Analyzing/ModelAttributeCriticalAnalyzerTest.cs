@@ -1,33 +1,6 @@
-using BitMono.Core.Protecting.Analyzing;
-using BitMono.Core.Protecting.Injection;
- using System;
- using System.Collections.Generic;
- using System.IO;
- using System.Text;
- using System.Xml.Serialization;
- using Xunit;
- using AsmResolver.DotNet;
- using AsmResolver.PE.DotNet.Metadata.Tables.Rows;
- using BitMono.API.Configuration;
- using BitMono.Core.Protecting.Resolvers;
- using BitMono.Core.Tests.Properties;
- using BitMono.Shared.Models;
- using Microsoft.Extensions.Configuration;
- using Newtonsoft.Json;
-
 namespace BitMono.Core.Tests.Protecting.Analyzing;
 
-public class TestBitMonoCriticalsConfiguration : IBitMonoCriticalsConfiguration
-{
-    public TestBitMonoCriticalsConfiguration(string json)
-    {
-        Configuration = new ConfigurationBuilder()
-            .AddJsonStream(new MemoryStream(Encoding.ASCII.GetBytes(json)))
-            .Build();
-    }
 
-    public IConfiguration Configuration { get; }
-}
 
 public class ModelAttributeCriticalAnalyzerTest
 {
@@ -44,7 +17,6 @@ public class ModelAttributeCriticalAnalyzerTest
     public void WhenModelCriticalAnalyzing_AndModelIsCritical_ThenShouldBeFalse(string name, string @namespace)
     {
         var module = ModuleDefinition.FromBytes(Resources.HelloWorldLib);
-
         var criticals = new Criticals()
         {
             UseCriticalModelAttributes = true,
@@ -57,18 +29,13 @@ public class ModelAttributeCriticalAnalyzerTest
                 },
             }
         };
+        var configuration = Setup.Configuration(criticals);
+        var criticalAnalyzer = Setup.ModelAttributeCriticalAnalyzer(configuration);
+        var type = Setup.EmptyPublicType(module);
+        var injector = Setup.MscorlibInjector();
 
-        var json = JsonConvert.SerializeObject(criticals);
-        var configuration = new TestBitMonoCriticalsConfiguration(json);
-        var attemptAttributeResolver = new AttemptAttributeResolver(new CustomAttributeResolver());
-        var criticalAnalyzer = new ModelAttributeCriticalAnalyzer(configuration, attemptAttributeResolver);
-        
-        var type = new TypeDefinition(string.Empty, Guid.NewGuid().ToString(), TypeAttributes.Public);
-        module.TopLevelTypes.Add(type);
-        var injector = new MscorlibInjector();
         injector.InjectAttribute(module, @namespace, name, type);
-
-        var value = criticalAnalyzer.NotCriticalToMakeChanges(type);
-        Assert.False(value);
+        
+        criticalAnalyzer.NotCriticalToMakeChanges(type).Should().BeFalse();
     }
 }
