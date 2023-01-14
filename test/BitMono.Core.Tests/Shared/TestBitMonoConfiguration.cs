@@ -1,8 +1,8 @@
 namespace BitMono.Core.Tests.Shared;
 
-public class TestBitMonoCriticalsConfiguration : IBitMonoCriticalsConfiguration
+public abstract class TestBitMonoConfiguration : IConfigurationAccessor
 {
-    public TestBitMonoCriticalsConfiguration(string json)
+    public TestBitMonoConfiguration(string json)
     {
         Configuration = new ConfigurationBuilder()
             .AddJsonStream(new MemoryStream(Encoding.ASCII.GetBytes(json)))

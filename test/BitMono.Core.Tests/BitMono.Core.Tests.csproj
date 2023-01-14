@@ -134,8 +134,12 @@
         </Compile>
         <Compile Include="Protecting\Analyzing\CriticalMethodsCriticalAnalyzerTest.cs" />
         <Compile Include="Protecting\Analyzing\ModelAttributeCriticalAnalyzerTest.cs" />
+        <Compile Include="Protecting\Resolvers\NoInliningMethodMemberResolverTest.cs" />
+        <Compile Include="Protecting\Resolvers\ObfuscationAttributeResolverTest.cs" />
         <Compile Include="Setup.cs" />
-        <Compile Include="Shared\TestBitMonoCriticalConfiguration.cs" />
+        <Compile Include="Shared\TestBitMonoConfiguration.cs" />
+        <Compile Include="Shared\TestBitMonoCriticalsConfiguration.cs" />
+        <Compile Include="Shared\TestBitMonoObfuscationConfiguration.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="App.config" />
@@ -155,6 +159,10 @@
       <ProjectReference Include="..\..\src\BitMono.Core\BitMono.Core.csproj">
         <Project>{76b85164-08c4-4d79-b331-f220967529bd}</Project>
         <Name>BitMono.Core</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\..\src\BitMono.Protections\BitMono.Protections.csproj">
+        <Project>{5b46a891-bf1a-487f-af68-0af045f8ec96}</Project>
+        <Name>BitMono.Protections</Name>
       </ProjectReference>
       <ProjectReference Include="..\..\src\BitMono.Shared\BitMono.Shared.csproj">
         <Project>{40615c80-c80c-4c95-abc3-3291c32197d8}</Project>

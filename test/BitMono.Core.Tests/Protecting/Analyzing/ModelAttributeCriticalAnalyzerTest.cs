@@ -34,7 +34,7 @@ public class ModelAttributeCriticalAnalyzerTest
                 },
             }
         };
-        var configuration = Setup.Configuration(criticals);
+        var configuration = Setup.CriticalsConfiguration(criticals);
         var criticalAnalyzer = Setup.ModelAttributeCriticalAnalyzer(configuration);
         var type = Setup.EmptyPublicType(module);
         var injector = Setup.MscorlibInjector();
@@ -43,5 +43,30 @@ public class ModelAttributeCriticalAnalyzerTest
         var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
         
         result.Should().BeFalse();
+    }
+    [Theory]
+    [ClassData(typeof(AttributesData))]
+    public void WhenModelCriticalAnalyzing_AndModelIsNotCritical_ThenShouldBeTrue(string name, string @namespace)
+    {
+        var module = Setup.EmptyModule();
+        var criticals = new Criticals()
+        {
+            UseCriticalModelAttributes = true,
+            CriticalModelAttributes = new List<CriticalAttribute>
+            {
+                new CriticalAttribute
+                {
+                    Namespace = @namespace,
+                    Name = name
+                },
+            }
+        };
+        var configuration = Setup.CriticalsConfiguration(criticals);
+        var criticalAnalyzer = Setup.ModelAttributeCriticalAnalyzer(configuration);
+        var type = Setup.EmptyPublicType(module);
+
+        var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
+
+        result.Should().BeTrue();
     }
 }

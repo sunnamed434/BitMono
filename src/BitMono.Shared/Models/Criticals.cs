@@ -1,5 +1,3 @@
-using NullGuard;
-
 namespace BitMono.Shared.Models;
 
 public class Criticals

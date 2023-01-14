@@ -30,7 +30,7 @@ public class CriticalMethodsCriticalAnalyzerTest
                 methodName
             }
         };
-        var configuration = Setup.Configuration(criticals);
+        var configuration = Setup.CriticalsConfiguration(criticals);
         var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(configuration);
         
         var method = Setup.EmptyPublicMethod(module, methodName);
@@ -38,7 +38,6 @@ public class CriticalMethodsCriticalAnalyzerTest
 
         result.Should().BeFalse();
     }
-
     [Theory]
     [ClassData(typeof(MethodsData))]
     public void WhenMethodIsNotCritical_AndMethodIsNotCritical_ThenShouldBeTrue(string methodName)
@@ -52,7 +51,7 @@ public class CriticalMethodsCriticalAnalyzerTest
                 methodName
             }
         };
-        var configuration = Setup.Configuration(criticals);
+        var configuration = Setup.CriticalsConfiguration(criticals);
         var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(configuration);
         
         var method = Setup.EmptyPublicMethod(module);
