@@ -1,22 +1,27 @@
 namespace BitMono.Core.Tests.Protecting.Analyzing;
 
-
-
-public class ModelAttributeCriticalAnalyzerTest
+public class AttributesData : IEnumerable<object[]>
 {
-    public static IEnumerable<object[]> GetAttributes()
+    public IEnumerator<object[]> GetEnumerator()
     {
         yield return new object[] { nameof(SerializableAttribute), typeof(SerializableAttribute).Namespace };
         yield return new object[] { nameof(XmlAttributeAttribute), typeof(XmlAttributeAttribute).Namespace };
         yield return new object[] { nameof(XmlArrayItemAttribute), typeof(XmlArrayItemAttribute).Namespace };
         yield return new object[] { nameof(JsonPropertyAttribute), typeof(JsonPropertyAttribute).Namespace };
     }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
 
+public class ModelAttributeCriticalAnalyzerTest
+{
     [Theory]
-    [MemberData(nameof(GetAttributes))]
+    [ClassData(typeof(AttributesData))]
     public void WhenModelCriticalAnalyzing_AndModelIsCritical_ThenShouldBeFalse(string name, string @namespace)
     {
-        var module = ModuleDefinition.FromBytes(Resources.HelloWorldLib);
+        var module = Setup.EmptyModule();
         var criticals = new Criticals()
         {
             UseCriticalModelAttributes = true,
@@ -35,7 +40,8 @@ public class ModelAttributeCriticalAnalyzerTest
         var injector = Setup.MscorlibInjector();
 
         injector.InjectAttribute(module, @namespace, name, type);
+        var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
         
-        criticalAnalyzer.NotCriticalToMakeChanges(type).Should().BeFalse();
+        result.Should().BeFalse();
     }
 }

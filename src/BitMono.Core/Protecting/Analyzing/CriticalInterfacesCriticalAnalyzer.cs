@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Analyzing;
+﻿namespace BitMono.Core.Protecting.Analyzing;
 
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
@@ -13,7 +11,7 @@ public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefiniti
 
     public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
-        if (m_Configuration.GetValue<bool>("UseCriticalInterfaces") == false)
+        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalInterfaces)) == false)
         {
             return true;
         }

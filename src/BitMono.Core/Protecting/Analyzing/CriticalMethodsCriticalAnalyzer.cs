@@ -11,7 +11,7 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        if (m_Configuration.GetValue<bool>("UseCriticalMethods") == false)
+        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalMethods)) == false)
         {
             return true;
         }

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.props" Condition="Exists('..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.props')" />
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -131,6 +132,7 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
+        <Compile Include="Protecting\Analyzing\CriticalMethodsCriticalAnalyzerTest.cs" />
         <Compile Include="Protecting\Analyzing\ModelAttributeCriticalAnalyzerTest.cs" />
         <Compile Include="Setup.cs" />
         <Compile Include="Shared\TestBitMonoCriticalConfiguration.cs" />
@@ -146,6 +148,18 @@
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\src\BitMono.API\BitMono.API.csproj">
+        <Project>{af23cab0-659e-4444-9d31-7f4d06bda5c4}</Project>
+        <Name>BitMono.API</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\..\src\BitMono.Core\BitMono.Core.csproj">
+        <Project>{76b85164-08c4-4d79-b331-f220967529bd}</Project>
+        <Name>BitMono.Core</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\..\src\BitMono.Shared\BitMono.Shared.csproj">
+        <Project>{40615c80-c80c-4c95-abc3-3291c32197d8}</Project>
+        <Name>BitMono.Shared</Name>
+      </ProjectReference>
       <ProjectReference Include="..\src\BitMono.API\BitMono.API.csproj">
         <Project>{af23cab0-659e-4444-9d31-7f4d06bda5c4}</Project>
         <Name>BitMono.API</Name>
@@ -167,6 +181,18 @@
       <None Include="Resources\HelloWorldLib.dll" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <Import Project="..\..\packages\Microsoft.Packaging.Tools.1.0.0-preview2-25401-01\build\Microsoft.Packaging.Tools.targets" Condition="Exists('..\..\packages\Microsoft.Packaging.Tools.1.0.0-preview2-25401-01\build\Microsoft.Packaging.Tools.targets')" />
+    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+      <PropertyGroup>
+        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+      </PropertyGroup>
+      <Error Condition="!Exists('..\..\packages\Microsoft.Packaging.Tools.1.0.0-preview2-25401-01\build\Microsoft.Packaging.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Packaging.Tools.1.0.0-preview2-25401-01\build\Microsoft.Packaging.Tools.targets'))" />
+      <Error Condition="!Exists('..\..\packages\NETStandard.Library.2.0.0-preview2-25401-01\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NETStandard.Library.2.0.0-preview2-25401-01\build\netstandard2.0\NETStandard.Library.targets'))" />
+      <Error Condition="!Exists('..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.props'))" />
+      <Error Condition="!Exists('..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.targets'))" />
+    </Target>
+    <Import Project="..\..\packages\NETStandard.Library.2.0.0-preview2-25401-01\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\..\packages\NETStandard.Library.2.0.0-preview2-25401-01\build\netstandard2.0\NETStandard.Library.targets')" />
+    <Import Project="..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.targets" Condition="Exists('..\..\packages\NETStandard.Library.NETFramework.2.0.0-preview2-25405-01\build\net461\NETStandard.Library.NETFramework.targets')" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">

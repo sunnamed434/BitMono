@@ -11,7 +11,7 @@ public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinitio
 
     public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
-        if (m_Configuration.GetValue<bool>("UseCriticalBaseTypes") == false)
+        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalBaseTypes)) == false)
         {
             return true;
         }

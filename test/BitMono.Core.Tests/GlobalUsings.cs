@@ -1,9 +1,11 @@
 global using System;
+global using System.Collections;
 global using System.Collections.Generic;
 global using System.IO;
 global using System.Text;
 global using System.Xml.Serialization;
 global using AsmResolver.DotNet;
+global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.PE.DotNet.Metadata.Tables.Rows;
 global using BitMono.API.Configuration;
 global using BitMono.Core.Protecting.Analyzing;
@@ -15,5 +17,4 @@ global using FluentAssertions;
 global using Microsoft.Extensions.Configuration;
 global using Newtonsoft.Json;
 global using Xunit;
-global using BitMono.Core.Tests.Protecting.Analyzing;
 global using BitMono.Core.Tests.Shared;

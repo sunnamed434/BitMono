@@ -13,7 +13,7 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Configuration.GetValue<bool>("UseCriticalModelAttributes") == false)
+        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalModelAttributes)) == false)
         {
             return true;
         }
