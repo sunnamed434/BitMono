@@ -54,7 +54,7 @@ internal class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Something went wrong! " + ex.ToString());
+            Console.WriteLine("Something went wrong! " + ex);
         }
         Console.WriteLine("Press any key to exit!");
         Console.ReadLine();
