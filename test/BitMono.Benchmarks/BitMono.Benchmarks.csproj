@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net461</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>10</LangVersion>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
