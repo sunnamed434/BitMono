@@ -80,4 +80,4 @@ Credits
 
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
 [image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main?style=plastic
-[image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg
+[image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
