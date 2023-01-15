@@ -4,7 +4,6 @@ global using BitMono.API.Configuration;
 global using BitMono.API.Protecting;
 global using BitMono.GUI.API;
 global using BitMono.GUI.Data;
-global using BitMono.GUI.Modules;
 global using BitMono.GUI.Shared.Alerting;
 global using BitMono.GUI.Shared.Inputs;
 global using BitMono.Host.Modules;
