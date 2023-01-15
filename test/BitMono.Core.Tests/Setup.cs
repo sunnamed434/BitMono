@@ -23,12 +23,6 @@ public static class Setup
     {
         return EmptyPublicType(string.Empty, Guid.NewGuid().ToString());
     }
-    public static TypeDefinition EmptyPublicType(ModuleDefinition injectTo, string @namespace, string name)
-    {
-        var type = EmptyPublicType(@namespace, name);
-        injectTo.TopLevelTypes.Add(type);
-        return type;
-    }
     public static TypeDefinition EmptyPublicType(ModuleDefinition injectTo)
     {
         var type = EmptyPublicType();
