@@ -18,7 +18,7 @@ internal class Program
             var protectionsFile = Path.Combine(domainBaseDirectory, ProtectionsFileName);
             Assembly.LoadFrom(protectionsFile);
             
-            var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
+            var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger: configureLogger =>
             {
                 configureLogger.WriteTo.Async(configure => configure.Console(
                     outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));

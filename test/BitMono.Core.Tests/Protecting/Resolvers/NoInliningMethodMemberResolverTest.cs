@@ -11,9 +11,9 @@ public class NoInliningMethodMemberResolverTest
         };
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
         var resolver = Setup.NoInliningMethodMemberResolver(configuration);
-        var module = Setup.EmptyModule();
-        var method = Setup.EmptyPublicMethod(module);
-        method.NoInlining = true;
+        var module = ModuleDefinition.FromFile(typeof(MembersWithCustomAttribute).Assembly.Location);
+        var type = module.TopLevelTypes.First(t => t.Name == nameof(MembersWithCustomAttribute));
+        var method = type.Methods.First(m => m.Name == nameof(MembersWithCustomAttribute.NoInliningMethod));
         
         var result = resolver.Resolve(null, method);
 
@@ -28,8 +28,9 @@ public class NoInliningMethodMemberResolverTest
         };
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
         var resolver = Setup.NoInliningMethodMemberResolver(configuration);
-        var module = Setup.EmptyModule();
-        var method = Setup.EmptyPublicMethod(module);
+        var module = ModuleDefinition.FromFile(typeof(MembersWithCustomAttribute).Assembly.Location);
+        var type = module.TopLevelTypes.First(t => t.Name == nameof(MembersWithCustomAttribute));
+        var method = type.Methods.First(m => m.Name == nameof(MembersWithCustomAttribute.VoidMethod));
         
         var result = resolver.Resolve(null, method);
 

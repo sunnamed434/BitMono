@@ -2,19 +2,24 @@
 
 public class BitMonoModule : Module
 {
+    private readonly Action<ContainerBuilder> m_ConfigureServices;
     private readonly Action<LoggerConfiguration> m_ConfigureLogger;
     private readonly Action<ConfigurationBuilder> m_ConfigureConfigurationBuilder;
 
     public BitMonoModule(
+        Action<ContainerBuilder> configureServices = default,
         Action<LoggerConfiguration> configureLogger = default,
         Action<ConfigurationBuilder> configureConfigurationBuilder = default)
     {
+        m_ConfigureServices = configureServices;
         m_ConfigureLogger = configureLogger;
         m_ConfigureConfigurationBuilder = configureConfigurationBuilder;
     }
 
     protected override void Load(ContainerBuilder containerBuilder)
     {
+        m_ConfigureServices?.Invoke(containerBuilder);
+        
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         var fileFormat = string.Format(Path.Combine(currentAssemblyDirectory, "logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now).Replace("\\", "/");
 
@@ -31,10 +36,7 @@ public class BitMonoModule : Module
             m_ConfigureLogger.Invoke(loggerConfiguration);
 
             var logger = loggerConfiguration.CreateLogger();
-            containerBuilder.Register<ILogger>((_, _) =>
-            {
-                return logger;
-            });
+            containerBuilder.Register<ILogger>((_, _) => logger);
         }
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -46,7 +48,7 @@ public class BitMonoModule : Module
                 .As<IConfiguration>()
                 .OwnedByLifetimeScope();
         }
-
+        
         containerBuilder.Register(context => new BitMonoAppSettingsConfiguration())
             .As<IBitMonoAppSettingsConfiguration>()
             .OwnedByLifetimeScope();

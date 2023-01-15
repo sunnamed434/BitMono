@@ -28,7 +28,7 @@ public static class MauiProgram
         Assembly.LoadFrom(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ProtectionsFile));
         builder.ConfigureContainer(new AutofacServiceProviderFactory(), configure =>
         {
-            configure.RegisterModule(new BitMonoModule(configureLogger =>
+            configure.RegisterModule(new BitMonoModule(configureLogger: configureLogger =>
             {
                 configureLogger.WriteTo.Async(configure =>
                 {
