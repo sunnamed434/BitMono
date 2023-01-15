@@ -20,5 +20,6 @@ global using Serilog.Formatting;
 global using Serilog.Formatting.Display;
 global using System.Collections.Concurrent;
 global using System.Reflection;
+global using BitMono.GUI.Utilities.Extensions;
 global using static BitMono.Utilities.Extensions.Collections.CollectionExtensions;
 global using ILogger = Serilog.ILogger;

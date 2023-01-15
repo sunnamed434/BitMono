@@ -1,6 +1,6 @@
 ﻿namespace BitMono.CLI;
 
-public class Program
+internal class Program
 {
     private static async Task Main(string[] args)
     {

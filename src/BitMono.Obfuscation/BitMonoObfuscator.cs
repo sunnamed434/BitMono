@@ -14,7 +14,7 @@ public class BitMonoObfuscator
     private readonly ProtectionsNotifier m_ProtectionsNotifier;
     private readonly ILogger m_Logger;
     private PEImageBuildResult _imageBuild;
-    private Stopwatch _stopWatch;
+    private long _startTime;
 
     public BitMonoObfuscator(
         ProtectionContext context,
@@ -66,8 +66,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> startTimeCounterAsync(ProtectionContext context)
     {
-        _stopWatch = new Stopwatch();
-        _stopWatch.Start();
+        _startTime = Stopwatch.GetTimestamp();
         return Task.FromResult(true);
     }
     private Task<bool> outputFrameworkInformationAsync(ProtectionContext context)
@@ -217,8 +216,8 @@ public class BitMonoObfuscator
     }
     private Task<bool> outputElapsedTimeAsync(ProtectionContext context)
     {
-        _stopWatch.Stop();
-        m_Logger.Information("Since obfuscation elapsed: {0}", _stopWatch.Elapsed.ToString());
+        var elapsedTime = StopwatchUtilities.GetElapsedTime(_startTime, Stopwatch.GetTimestamp());
+        m_Logger.Information("Since obfuscation elapsed: {0}", elapsedTime.ToString());
         return Task.FromResult(true);
     }
     private void onFail()

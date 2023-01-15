@@ -1,6 +1,7 @@
 ﻿using AsmResolver.DotNet;
 using BitMono.API.Protecting.Resolvers;
 using BitMono.Core.Protecting.Resolvers;
+using BitMono.Obfuscation.API;
 
 namespace BitMono.GUI.Pages.Obfuscation;
 
@@ -42,7 +43,7 @@ public partial class Protect
 
                 var obfuscationConfiguration = ServiceProvider.GetRequiredService<IBitMonoObfuscationConfiguration>();
                 var appSettingsConfiguration = ServiceProvider.GetRequiredService<IBitMonoAppSettingsConfiguration>();
-                var dnlibDefObfuscationAttributeResolver = ServiceProvider.GetRequiredService<ObfuscationAttributeResolver>();
+                var obfuscationAttributeResolver = ServiceProvider.GetRequiredService<ObfuscationAttributeResolver>();
 
                 var dependencies = Directory.GetFiles(_dependenciesDirectoryName);
                 var dependeciesData = new List<byte[]>();
@@ -50,21 +51,13 @@ public partial class Protect
                 {
                     dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
                 }
-                
-                var bitMonoContext = new BitMonoContextFactory(new DependenciesDataResolver(_dependenciesDirectoryName), obfuscationConfiguration)
-                    .Create(_outputDirectoryName, _obfuscationFile.Name);
-                var guiDataWriter = new GUIDataWriter();
-                await new BitMonoEngine(
-                    guiDataWriter, 
-                    dnlibDefObfuscationAttributeResolver, 
-                    obfuscationConfiguration,
-                    MemberResolvers.ToList(),
-                    Protections.ToList(),
-                    StoringProtections.Protections,
-                    Logger)
-                    .ObfuscateAsync(bitMonoContext, moduleBytes, new CancellationTokenSource());
 
-                new TipsNotifier(appSettingsConfiguration, Logger).Notify();
+                var dataResolver = new DependenciesDataResolver(_dependenciesDirectoryName);
+                var bitMonoContextFactory = new BitMonoContextFactory(dataResolver, obfuscationConfiguration);
+                var bitMonoContext = bitMonoContextFactory.Create(_outputDirectoryName, _obfuscationFile.Name);
+                var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscationConfiguration,
+                    MemberResolvers.ToList(), Protections.ToList(), StoringProtections.Protections, Logger);
+                //engine.StartAsync()
             }
             catch (Exception ex)
             {
@@ -88,7 +81,7 @@ public partial class Protect
         }
         if (string.IsNullOrWhiteSpace(_dependenciesDirectoryName))
         {
-            await AlertsContainer.ShowAlertAsync("obfuscation-info", "Please, specify dependecies folder!", Alerts.Danger);
+            await AlertsContainer.ShowAlertAsync("obfuscation-info", "Please, specify dependencies folder!", Alerts.Danger);
             return;
         }
         if (string.IsNullOrWhiteSpace(_outputDirectoryName))
