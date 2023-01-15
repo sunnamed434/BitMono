@@ -19,7 +19,7 @@ public class ObfuscationAttributeResolverTest
 {
     [Theory]
     [ClassData(typeof(FeaturesData))]
-    public void WhenObfuscationAttributeResolving_AndTypeHasComplexObfuscationAttributeWithExcludeFalseAttribute_ThenShouldBeFalse(string feature)
+    public void WhenObfuscationAttributeResolving_AndTypeHasComplexObfuscationAttributeWithExcludeFalse_ThenShouldBeFalse(string feature)
     {
         var obfuscation = new Obfuscation
         {
