@@ -1,94 +1,75 @@
 namespace BitMono.Core.Tests.Protecting.Resolvers;
 
-public class FeaturesData : IEnumerable<object[]>
-{
-    public IEnumerator<object[]> GetEnumerator()
-    {
-        yield return new object[] { typeof(AntiDe4dot).GetName() };
-        yield return new object[] { typeof(AntiILdasm).GetName() };
-        yield return new object[] { typeof(AntiDecompiler).GetName() };
-        yield return new object[] { typeof(CallToCalli).GetName() };
-    }
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-}
-
 public class ObfuscationAttributeResolverTest
 {
     [Theory]
-    [ClassData(typeof(FeaturesData))]
+    [InlineData(nameof(CallToCalli))]
     public void WhenObfuscationAttributeResolving_AndTypeHasComplexObfuscationAttributeWithExcludeFalse_ThenShouldBeFalse(string feature)
     {
         var obfuscation = new Obfuscation
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var module = Setup.EmptyModule();
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var type = Setup.EmptyPublicType(module);
         var resolver = Setup.ObfuscationAttributeResolver(configuration);
-        var attribute = Setup.CustomObfuscationAttribute(module, feature, type);
-        var factory = module.CorLibTypeFactory;
-        var argument = new CustomAttributeNamedArgument(CustomAttributeArgumentMemberType.Property,
-            Setup.ObfuscationAttributeExcludePropertyName, factory.String,
-            new CustomAttributeArgument(factory.Boolean, false));
-        attribute.Signature.NamedArguments.Add(argument);
+        var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
+        var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
+        var type = types.NestedTypes.First(n =>
+            n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalliWithExcludeFalse));
         
         var result = resolver.Resolve(feature, type);
 
         result.Should().BeFalse();
     }
     [Theory]
-    [ClassData(typeof(FeaturesData))]
-    public void WhenObfuscationAttributeResolving_AndTypeHasComplexObfuscationAttribute_ThenShouldBeTrue(string feature)
+    [InlineData(nameof(CallToCalli))]
+    public void WhenObfuscationAttributeResolving_AndTypeHasObfuscationAttributeCallToCalli_ThenShouldBeTrue(string feature)
     {
         var obfuscation = new Obfuscation
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var module = Setup.EmptyModule();
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var type = Setup.EmptyPublicType(module);
         var resolver = Setup.ObfuscationAttributeResolver(configuration);
-        Setup.CustomObfuscationAttribute(module, feature, type);
+        var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
+        var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
+        var type = types.NestedTypes.First(n =>
+            n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalli));
 
         var result = resolver.Resolve(feature, type);
 
         result.Should().BeTrue();
     }
     [Fact]
-    public void WhenObfuscationAttributeResolving_AndTypeHasObfuscationAttribute_ThenShouldBeTrue()
+    public void WhenObfuscationAttributeResolving_AndTypeHasVoidObfuscationAttribute_ThenShouldBeTrue()
     {
         var obfuscation = new Obfuscation
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var module = Setup.EmptyModule();
-        var injector = Setup.MscorlibInjector();
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var type = Setup.EmptyPublicType(module);
         var resolver = Setup.ObfuscationAttributeResolver(configuration);
-        injector.InjectAttribute(module, Setup.ObfuscationAttributeNamespace, Setup.ObfuscationAttributeName, type);
+        var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
+        var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
+        var type = types.NestedTypes.First(n =>
+            n.Name == nameof(ObfuscationTypes.VoidObfuscationAttribute));
 
         var result = resolver.Resolve(type);
 
         result.Should().BeTrue();
     }
     [Fact]
-    public void WhenObfuscationAttributeResolving_AndMethodHasObfuscationAttribute_ThenShouldBeTrue()
+    public void WhenObfuscationAttributeResolving_AndMethodHasVoidObfuscationAttribute_ThenShouldBeTrue()
     {
         var obfuscation = new Obfuscation
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var module = Setup.EmptyModule();
-        var injector = Setup.MscorlibInjector();
         var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var method = Setup.EmptyPublicMethod(module);
         var resolver = Setup.ObfuscationAttributeResolver(configuration);
-        injector.InjectAttribute(module, Setup.ObfuscationAttributeNamespace, Setup.ObfuscationAttributeName, method);
+        var module = ModuleDefinition.FromFile(typeof(ObfuscationMethods).Assembly.Location);
+        var type = module.TopLevelTypes.First(n => n.Name == nameof(ObfuscationMethods));
+        var method = type.Methods.First(m => m.Name == nameof(ObfuscationMethods.VoidObfuscationAttribute));
 
         var result = resolver.Resolve(method);
 

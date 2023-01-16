@@ -16,10 +16,10 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
             return true;
         }
         var criticalMethodNames = m_Configuration.GetCriticalMethods();
-        if (criticalMethodNames.Any(c => c.Equals(method.Name)) == false)
+        if (criticalMethodNames.Any(c => c.Equals(method.Name)))
         {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

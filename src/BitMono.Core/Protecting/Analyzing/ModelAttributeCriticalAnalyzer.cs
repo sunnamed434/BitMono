@@ -24,6 +24,8 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
                 return false;
             }
         }
+
+        throw new ArgumentException("AAAAAA");
         return true;
     }
 }
