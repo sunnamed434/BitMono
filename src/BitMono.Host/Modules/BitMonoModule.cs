@@ -19,6 +19,8 @@ public class BitMonoModule : Module
     protected override void Load(ContainerBuilder containerBuilder)
     {
         m_ConfigureServices?.Invoke(containerBuilder);
+
+        var serviceCollection = new ServiceCollection();
         
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         var fileFormat = string.Format(Path.Combine(currentAssemblyDirectory, "logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now).Replace("\\", "/");
@@ -49,19 +51,23 @@ public class BitMonoModule : Module
                 .OwnedByLifetimeScope();
         }
         
-        containerBuilder.Register(context => new BitMonoAppSettingsConfiguration())
-            .As<IBitMonoAppSettingsConfiguration>()
+        serviceCollection.AddOptions();
+        var protections = new BitMonoProtectionsConfiguration();
+        var criticals = new BitMonoCriticalsConfiguration();
+        var obfuscation = new BitMonoObfuscationConfiguration();
+        serviceCollection.Configure<ProtectionSettings>(options => protections.Configuration.Bind(options));
+        serviceCollection.Configure<Criticals>(criticals.Configuration);
+        serviceCollection.Configure<Obfuscation>(obfuscation.Configuration);
+        
+        containerBuilder.Register(context => protections)
+            .As<IBitMonoProtectionsConfiguration>()
             .OwnedByLifetimeScope();
-
-        containerBuilder.Register(context => new BitMonoCriticalsConfiguration())
+        
+        containerBuilder.Register(context => criticals)
             .As<IBitMonoCriticalsConfiguration>()
             .OwnedByLifetimeScope();
 
-        containerBuilder.Register(context => new BitMonoProtectionsConfiguration())
-            .As<IBitMonoProtectionsConfiguration>()
-            .OwnedByLifetimeScope();
-
-        containerBuilder.Register(context => new BitMonoObfuscationConfiguration())
+        containerBuilder.Register(context => obfuscation)
             .As<IBitMonoObfuscationConfiguration>()
             .OwnedByLifetimeScope();
 
@@ -121,5 +127,7 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
+        
+        containerBuilder.Populate(serviceCollection);
     }
 }

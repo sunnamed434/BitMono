@@ -1,17 +1,7 @@
-﻿namespace BitMono.Shared.Models;
+namespace BitMono.Shared.Models;
 
 public class ProtectionSettings
 {
-    [JsonRequired] public string Name { get; set; }
-    public bool Enabled { get; set; }
-    [JsonIgnore] public bool Disabled => Enabled == false;
-
-    public void Enable()
-    {
-        Enabled = true;
-    }
-    public void Disable()
-    {
-        Enabled = false;
-    }
+    [AllowNull]
+    public List<ProtectionSetting> Protections { get; set; }
 }

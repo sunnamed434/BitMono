@@ -26,12 +26,12 @@ public partial class Protections
             protectionSettings.Disable();
         }
     }
-    public void MoveUp(ProtectionSettings protectionSetting)
+    public void MoveUp(ProtectionSetting protectionSetting)
     {
         var index = StoringProtections.Protections.IndexOf(protectionSetting);
         StoringProtections.Protections.Swap(index, index - 1);
     }
-    public void MoveDown(ProtectionSettings protectionSetting)
+    public void MoveDown(ProtectionSetting protectionSetting)
     {
         var index = StoringProtections.Protections.IndexOf(protectionSetting);
         StoringProtections.Protections.Swap(index, index + 1);

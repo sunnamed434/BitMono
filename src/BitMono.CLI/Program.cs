@@ -24,18 +24,16 @@ internal class Program
                     outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
             })).Build();
 
-            var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
-            var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
-            var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
+            var obfuscation = serviceProvider.LifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var protectionSettings = serviceProvider.LifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value;
             var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscationAttributeResolver>();
             var membersResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
-            var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
 
             var cancellationTokenSource = new CancellationTokenSource();
 
-            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscationConfiguration, membersResolver, protections, protectionSettings, logger);
+            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, protectionSettings, membersResolver, protections, logger);
             var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
             if (succeed == false)
             {
@@ -44,12 +42,11 @@ internal class Program
                 return;
             }
 
-            if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(BitMono.Shared.Models.Obfuscation.OpenFileDestinationInFileExplorer)))
+            if (obfuscation.OpenFileDestinationInFileExplorer)
             {
                 Process.Start(needs.OutputDirectoryName);
             }
 
-            new TipsNotifier(appSettingsConfiguration, logger).Notify();
             await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)

@@ -2,7 +2,7 @@
 
 public static class ConfigurationExtensions
 {
-    public static List<ProtectionSettings> GetProtectionSettings(this IBitMonoProtectionsConfiguration source)
+    public static List<ProtectionSetting> GetProtectionSettings(this IBitMonoProtectionsConfiguration source)
     {
         return source.Configuration.GetProtectionSettings();
     }
@@ -14,9 +14,9 @@ public static class ConfigurationExtensions
     {
         return GetCriticalModelAttributes(source.Configuration);
     }
-    public static List<ProtectionSettings> GetProtectionSettings(this IConfiguration source)
+    public static List<ProtectionSetting> GetProtectionSettings(this IConfiguration source)
     {
-        return source.GetSection("Protections").Get<List<ProtectionSettings>>();
+        return source.GetSection("Protections").Get<List<ProtectionSetting>>();
     }
     public static List<CriticalAttribute> GetCriticalAttributes(this IBitMonoCriticalsConfiguration source)
     {
@@ -66,7 +66,7 @@ public static class ConfigurationExtensions
     {
         return source.GetSection(nameof(Obfuscation.RandomStrings)).Get<string[]>();
     }
-    public static bool AsProtection(this ProtectionSettings source, ICollection<IProtection> protections, out IProtection result)
+    public static bool AsProtection(this ProtectionSetting source, ICollection<IProtection> protections, out IProtection result)
     {
         foreach (var protection in protections)
         {

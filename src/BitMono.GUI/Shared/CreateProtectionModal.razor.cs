@@ -3,14 +3,14 @@
     public partial class CreateProtectionModal
     {
         [Inject] public IJSRuntime JSRuntime { get; set; }
-        [Parameter, EditorRequired] public ICollection<ProtectionSettings> Collection { get; set; }
-        [Parameter] public EventCallback<ProtectionSettings> OnSubmit { get; set; }
-        public ProtectionSettings Model { get; set; }
+        [Parameter, EditorRequired] public ICollection<ProtectionSetting> Collection { get; set; }
+        [Parameter] public EventCallback<ProtectionSetting> OnSubmit { get; set; }
+        public ProtectionSetting Model { get; set; }
 
 
         protected override Task OnInitializedAsync()
         {
-            Model = new ProtectionSettings { Name = string.Empty };
+            Model = new ProtectionSetting { Name = string.Empty };
             return Task.CompletedTask;
         }
 

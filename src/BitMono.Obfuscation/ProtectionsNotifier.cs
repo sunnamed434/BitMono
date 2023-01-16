@@ -2,18 +2,18 @@
 
 public class ProtectionsNotifier
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Shared.Models.Obfuscation m_Obfuscation;
     private readonly ILogger m_Logger;
 
-    public ProtectionsNotifier(IBitMonoObfuscationConfiguration configuration, ILogger logger)
+    public ProtectionsNotifier(Shared.Models.Obfuscation obfuscation, ILogger logger)
     {
-        m_Configuration = configuration.Configuration;
+        m_Obfuscation = obfuscation;
         m_Logger = logger.ForContext<ProtectionsNotifier>();
     }
 
     public void Notify(ProtectionsSort protectionsSort)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.NotifyProtections)))
+        if (m_Obfuscation.NotifyProtections)
         {
             if (protectionsSort.HasProtections)
             {

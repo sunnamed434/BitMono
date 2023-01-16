@@ -27,5 +27,6 @@ global using System.Linq;
 global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using System.Threading.Tasks;
+global using Microsoft.Extensions.Options;
 global using FieldAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.FieldAttributes;
 global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;

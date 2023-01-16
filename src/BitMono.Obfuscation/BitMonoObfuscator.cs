@@ -7,7 +7,7 @@ public class BitMonoObfuscator
     private readonly ProtectionsSort m_ProtectionsSort;
     private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly IConfiguration m_ObfuscationConfiguration;
+    private readonly Shared.Models.Obfuscation m_Obfuscation;
     private readonly IInvokablePipeline m_InvokablePipeline;
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
@@ -22,7 +22,7 @@ public class BitMonoObfuscator
         ProtectionsSort protectionsSortResult,
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
-        IBitMonoObfuscationConfiguration obfuscationConfiguration,
+        Shared.Models.Obfuscation obfuscation,
         ILogger logger)
     {
         m_Context = context;
@@ -30,12 +30,12 @@ public class BitMonoObfuscator
         m_ProtectionsSort = protectionsSortResult;
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscationConfiguration = obfuscationConfiguration.Configuration;
+        m_Obfuscation = obfuscation;
         m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);
-        m_ProtectionsNotifier = new ProtectionsNotifier(obfuscationConfiguration, m_Logger);
+        m_ProtectionsNotifier = new ProtectionsNotifier(obfuscation, m_Logger);
     }
 
     public async Task ProtectAsync()
@@ -87,7 +87,7 @@ public class BitMonoObfuscator
         }
         if (assemblyResolve.Succeed == false)
         {
-            if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
+            if (m_Obfuscation.FailOnNoRequiredDependency)
             {
                 m_Logger.Fatal("Please, specify needed dependencies, or set in obfuscation.json FailOnNoRequiredDependency to false");
                 return Task.FromResult(false);
@@ -171,7 +171,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> outputPEImageBuildErrorsAsync(ProtectionContext context)
     {
-        if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.OutputPEImageBuildErrors)))
+        if (m_Obfuscation.OutputPEImageBuildErrors)
         {
             if (_imageBuild.DiagnosticBag.HasErrors)
             {

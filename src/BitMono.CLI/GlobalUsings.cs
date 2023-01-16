@@ -20,4 +20,6 @@ global using System.Linq;
 global using System.Reflection;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using BitMono.Shared.Models;
+global using Microsoft.Extensions.Options;
 global using ILogger = Serilog.ILogger;

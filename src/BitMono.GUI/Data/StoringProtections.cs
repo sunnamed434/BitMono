@@ -9,5 +9,5 @@ internal class StoringProtections : IStoringProtections
 		Protections = configuration.GetProtectionSettings();
 	}
 
-	public List<ProtectionSettings> Protections { get; }
+	public List<ProtectionSetting> Protections { get; }
 }

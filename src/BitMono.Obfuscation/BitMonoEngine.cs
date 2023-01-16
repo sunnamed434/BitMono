@@ -3,25 +3,25 @@
 public class BitMonoEngine
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly IBitMonoObfuscationConfiguration m_ObfuscationConfiguration;
+    private readonly Shared.Models.Obfuscation m_Obfuscation;
+    private readonly List<ProtectionSetting> m_ProtectionSettings;
     private readonly List<IMemberResolver> m_MemberResolvers;
     private readonly List<IProtection> m_Protections;
-    private readonly List<ProtectionSettings> m_ProtectionSettings;
     private readonly ILogger m_Logger;
 
     public BitMonoEngine(
         ObfuscationAttributeResolver obfuscationAttributeResolver,
-        IBitMonoObfuscationConfiguration obfuscationConfiguration,
+        Shared.Models.Obfuscation obfuscation,
+        ProtectionSettings protectionSettings,
         List<IMemberResolver> memberResolvers,
         List<IProtection> protections,
-        List<ProtectionSettings> protectionSettings,
         ILogger logger)
     {
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscationConfiguration = obfuscationConfiguration;
+        m_Obfuscation = obfuscation;
         m_MemberResolvers = memberResolvers;
         m_Protections = protections;
-        m_ProtectionSettings = protectionSettings;
+        m_ProtectionSettings = protectionSettings.Protections;
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
@@ -39,14 +39,14 @@ public class BitMonoEngine
             return false;
         }
         
-        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, dataWriter, m_ObfuscationAttributeResolver, m_ObfuscationConfiguration, m_Logger);
+        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, dataWriter, m_ObfuscationAttributeResolver, m_Obfuscation, m_Logger);
         await obfuscator.ProtectAsync();
         return true;
     }
     public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter, CancellationToken cancellationToken)
     {
         var dependenciesDataResolver = new DependenciesDataResolver(needs.DependenciesDirectoryName);
-        var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_ObfuscationConfiguration);
+        var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_Obfuscation);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
 
         var runtimeModule = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
