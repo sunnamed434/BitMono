@@ -7,6 +7,7 @@ public class BitMonoObfuscator
     private readonly ProtectionsSort m_ProtectionsSort;
     private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
     private readonly Shared.Models.Obfuscation m_Obfuscation;
     private readonly IInvokablePipeline m_InvokablePipeline;
     private readonly MembersResolver m_MemberResolver;
@@ -22,6 +23,7 @@ public class BitMonoObfuscator
         ProtectionsSort protectionsSortResult,
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
+        ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver,
         Shared.Models.Obfuscation obfuscation,
         ILogger logger)
     {
@@ -30,6 +32,7 @@ public class BitMonoObfuscator
         m_ProtectionsSort = protectionsSortResult;
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
+        m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
         m_Obfuscation = obfuscation;
         m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
@@ -149,15 +152,42 @@ public class BitMonoObfuscator
         {
             foreach (var protection in m_ProtectionsSort.ProtectionsResolve.FoundProtections)
             {
-                if (m_ObfuscationAttributeResolver.Resolve(protection.GetName(), customAttribute, out CustomAttributeResolve attributeResolve))
+                if (m_ObfuscationAttributeResolver.Resolve(protection.GetName(), customAttribute, out var attributeResolve))
                 {
-                    if (customAttribute.CustomAttributes.Remove(attributeResolve.Attribute))
+                    if (attributeResolve.NamedValues.TryGetValue(nameof(ObfuscationAttribute.StripAfterObfuscation), 
+                            out var stripAfterObfuscation))
+                    {
+                        if (stripAfterObfuscation is true)
+                        {
+                            if (customAttribute.CustomAttributes.Remove(attributeResolve.Attribute))
+                            {
+                                m_Logger.Information("Successfully stripped obfuscation attribute");
+                            }
+                            else
+                            {
+                                m_Logger.Warning("Not able to strip obfuscation attribute");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        var assembly = context.Module.Assembly;
+        if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, assembly, out var assemblyAttributeResolve))
+        {
+            if (assemblyAttributeResolve.NamedValues.TryGetValue(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation),
+                    out var stripAfterObfuscation))
+            {
+                if (stripAfterObfuscation is true)
+                {
+                    if (assembly.CustomAttributes.Remove(assemblyAttributeResolve.Attribute))
                     {
                         m_Logger.Information("Successfully stripped obfuscation attribute");
                     }
                     else
                     {
-                        m_Logger.Warning("Not able to stip obfuscation attribute");
+                        m_Logger.Warning("Not able to strip obfuscation attribute");
                     }
                 }
             }

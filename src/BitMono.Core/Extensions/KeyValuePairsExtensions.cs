@@ -5,13 +5,21 @@ public static class KeyValuePairsExtensions
     public static bool TryGetValueOrDefault(this Dictionary<string, object> source, string key, bool defaultValue = false)
     {
         var value = defaultValue;
-        if (source.TryGetValue(key, out var valueValue))
+        if (source.TryGetTypedValue(key, out bool valueValue))
         {
-            if (valueValue is bool resolveValue)
-            {
-                value = resolveValue;
-            }
+            value = valueValue;
         }
         return value;
+    }
+    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, out TActual value)
+        where TActual : TValue
+    {
+        if (source.TryGetValue(key, out TValue tempValue))
+        {
+            value = (TActual)tempValue;
+            return true;
+        }
+        value = default;
+        return false;
     }
 }

@@ -11,10 +11,14 @@
   // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,
 
-  // Exclude from obfuscation if it is a type/method and etc 
+  // Exclude from obfuscation if type/method has [ObfuscationAttribute(..)] 
   // should have an [Obfuscation(Feature = "Name")] attribute with Protection name known as Feature
   // Set to true indicates whether enabled
   "ObfuscationAttributeObfuscationExclude": true,
+
+  // Exclude from obfuscation if assembly has [ObfuscateAssemblyAttribute(true)] 
+  // Set to true indicates whether enabled
+  "ObfuscateAssemblyAttributeObfuscationExclude": true,
 
   // Output errors that were registered while building the PE image. BitMono feature is that 
   // being used vulnerabilities of decompilers and Mono and this is the most powerful of them, 

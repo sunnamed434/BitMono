@@ -48,7 +48,7 @@ public partial class Protect
                 var dataResolver = new DependenciesDataResolver(_dependenciesDirectoryName);
                 var bitMonoContextFactory = new BitMonoContextFactory(dataResolver, obfuscation);
                 var bitMonoContext = bitMonoContextFactory.Create(_outputDirectoryName, _obfuscationFile.Name);
-                var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, StoringProtections.Protections, MemberResolvers.ToList(),  Protections.ToList(), Logger);
+                //var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, StoringProtections.Protections, MemberResolvers.ToList(),  Protections.ToList(), Logger);
                 //await engine.StartAsync();
             }
             catch (Exception ex)

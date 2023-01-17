@@ -22,26 +22,27 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out attributeResolve) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var attributesResolve) == false)
         {
             return false;
         }
         if (string.IsNullOrWhiteSpace(feature))
         {
+            attributeResolve = attributesResolve.First();        
             return true;
         }
-        if (attributeResolve.KeyValuePairs.TryGetValue(nameof(ObfuscationAttribute.Feature), out var value) == false)
+        foreach (var attribute in attributesResolve)
         {
-            return false;
-        }
-        if (value is string valueFeature)
-        {
-            if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
+            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string valueFeature))
             {
-                var exclude = attributeResolve.KeyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
-                if (exclude)
+                if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    var exclude = attribute.NamedValues.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    if (exclude)
+                    {
+                        attributeResolve = attribute;
+                        return true;
+                    }
                 }
             }
         }

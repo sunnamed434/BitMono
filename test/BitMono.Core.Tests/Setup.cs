@@ -2,10 +2,13 @@ namespace BitMono.Core.Tests;
 
 public static class Setup
 {
+    public static AttemptAttributeResolver AttemptAttributeResolver()
+    {
+        return new AttemptAttributeResolver(new CustomAttributeResolver());
+    }
     public static ModelAttributeCriticalAnalyzer ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals)
     {
-        var attemptAttributeResolver = new AttemptAttributeResolver(new CustomAttributeResolver());
-        return new ModelAttributeCriticalAnalyzer(criticals, attemptAttributeResolver);
+        return new ModelAttributeCriticalAnalyzer(criticals, AttemptAttributeResolver());
     }
     public static CriticalMethodsCriticalAnalyzer CriticalMethodsCriticalAnalyzer(IOptions<Criticals> criticals)
     {
@@ -17,6 +20,11 @@ public static class Setup
     }
     public static ObfuscationAttributeResolver ObfuscationAttributeResolver(IOptions<Obfuscation> obfuscation)
     {
-        return new ObfuscationAttributeResolver(obfuscation, new AttemptAttributeResolver(new CustomAttributeResolver()));
+        return new ObfuscationAttributeResolver(obfuscation, AttemptAttributeResolver());
+    }
+    public static ObfuscateAssemblyAttributeResolver ObfuscateAssemblyAttributeResolver(
+        IOptions<Obfuscation> obfuscation)
+    {
+        return new ObfuscateAssemblyAttributeResolver(obfuscation, AttemptAttributeResolver());
     }
 }
