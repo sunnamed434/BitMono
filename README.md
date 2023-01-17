@@ -8,7 +8,7 @@
 [![Test status][image_test]][test]
 [![Gitter Chat][image_gitter]][gitter]
 
-BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as fork of .NET Framework but with custom bugs or Unity. Which uses **[AsmResolver](https://github.com/Washi1337/AsmResolver)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install the latest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
+BitMono is an free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework but for Unity. Which uses **[AsmResolver](https://github.com/Washi1337/AsmResolver)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install the latest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
@@ -31,10 +31,10 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 </p>
 
 ## Documentation 
-Open the **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protections functionnality and more.
+Open the **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protection, functionality and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
-* Seems to C++ application but this is an actual C# application
+* Looks like C++ application but is an actual C# application
 * Crash of decompilers when analyzing types
 * Broken decompilers
 * Broken IL Code
@@ -58,7 +58,7 @@ Open the **[wiki](https://github.com/sunnamed434/BitMono/wiki)** to read protect
 ## Usage
 `BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`
 
-Always drop dependencies in `libs` directory in the same path where is obfuscation `file` located
+Always drop dependencies in `libs` directory in the same path where `file` for obfuscation is located
 
 Credits
 -------
