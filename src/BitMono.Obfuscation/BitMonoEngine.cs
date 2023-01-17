@@ -3,6 +3,7 @@
 public class BitMonoEngine
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
+    private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
     private readonly Shared.Models.Obfuscation m_Obfuscation;
     private readonly List<ProtectionSetting> m_ProtectionSettings;
     private readonly List<IMemberResolver> m_MemberResolvers;
@@ -11,6 +12,7 @@ public class BitMonoEngine
 
     public BitMonoEngine(
         ObfuscationAttributeResolver obfuscationAttributeResolver,
+        ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver,
         Shared.Models.Obfuscation obfuscation,
         List<ProtectionSetting> protectionSetting,
         List<IMemberResolver> memberResolvers,
@@ -18,6 +20,7 @@ public class BitMonoEngine
         ILogger logger)
     {
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
+        m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
         m_Obfuscation = obfuscation;
         m_ProtectionSettings = protectionSetting;
         m_MemberResolvers = memberResolvers;
@@ -39,7 +42,7 @@ public class BitMonoEngine
             return false;
         }
         
-        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, dataWriter, m_ObfuscationAttributeResolver, m_Obfuscation, m_Logger);
+        var obfuscator = new BitMonoObfuscator(context, m_MemberResolvers, protectionsSort, dataWriter, m_ObfuscationAttributeResolver, m_ObfuscateAssemblyAttributeResolver, m_Obfuscation, m_Logger);
         await obfuscator.ProtectAsync();
         return true;
     }

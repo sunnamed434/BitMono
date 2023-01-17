@@ -9,9 +9,9 @@ public class AttemptAttributeResolver
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out IEnumerable<CustomAttributeResolve> attributesResolve)
     {
-        return (attributeResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name)) != null;
+        return (attributesResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name)) != null;
     }
     public bool TryResolve(IHasCustomAttribute from, string @namespace, string name)
     {

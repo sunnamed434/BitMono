@@ -33,8 +33,7 @@ public class ObfuscationAttributeResolverTest
         var resolver = Setup.ObfuscationAttributeResolver(options);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
-        var type = types.NestedTypes.First(n =>
-            n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalli));
+        var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalli));
 
         var result = resolver.Resolve(feature, type);
 

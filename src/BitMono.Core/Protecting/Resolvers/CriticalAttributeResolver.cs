@@ -20,8 +20,9 @@ public class CriticalAttributeResolver : AttributeResolver
         }
         foreach (var criticalAttribute in m_Criticals.CriticalAttributes)
         {
-            if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out attributeResolve))
+            if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out var attributesResolve))
             {
+                attributeResolve = attributesResolve.First();
                 return true;
             }
         }

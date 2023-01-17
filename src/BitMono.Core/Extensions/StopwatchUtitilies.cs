@@ -7,7 +7,7 @@ public static class StopwatchUtilities
     
     public static TimeSpan GetElapsedTime(long startingTimestamp, long endingTimestamp)
     {
-        var tickFrequency = (double)TicksPerSecond/ Stopwatch.Frequency;
+        var tickFrequency = (double)TicksPerSecond / Stopwatch.Frequency;
         return new TimeSpan((long)((endingTimestamp - startingTimestamp) * tickFrequency));
     }
 }

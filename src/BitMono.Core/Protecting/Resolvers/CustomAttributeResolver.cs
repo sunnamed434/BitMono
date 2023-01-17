@@ -3,32 +3,44 @@
 public class CustomAttributeResolver
 {
     [return: AllowNull]
-    public CustomAttributeResolve Resolve(IHasCustomAttribute from, string @namespace, string name)
+    public IEnumerable<CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
-        var keyValuePairs = new Dictionary<string, object>();
         for (var i = 0; i < from.CustomAttributes.Count; i++)
         {
             var customAttribute = from.CustomAttributes[i];
             if (customAttribute.Constructor.DeclaringType.IsTypeOf(@namespace, name))
             {
+                var namedValues = new Dictionary<string, object>();
+                var fixedValues = new List<object>();
                 foreach (var namedArgument in customAttribute.Signature.NamedArguments)
                 {
                     if (namedArgument.Argument.Element is Utf8String utf8String)
                     {
-                        keyValuePairs.Add(namedArgument.MemberName.Value, utf8String.Value);
+                        namedValues.Add(namedArgument.MemberName.Value, utf8String.Value);
                     }
                     else
                     {
-                        keyValuePairs.Add(namedArgument.MemberName.Value, namedArgument.Argument.Element);
+                        namedValues.Add(namedArgument.MemberName.Value, namedArgument.Argument.Element);
                     }
                 }
-                return new CustomAttributeResolve
+                foreach (var fixedArgument in customAttribute.Signature.FixedArguments)
                 {
-                    KeyValuePairs = keyValuePairs,
+                    if (fixedArgument.Element is Utf8String utf8String)
+                    {
+                        fixedValues.Add(utf8String.Value);
+                    }
+                    else
+                    {
+                        fixedValues.Add(fixedArgument.Element);
+                    }
+                }
+                yield return new CustomAttributeResolve
+                {
+                    NamedValues = namedValues,
+                    FixedValues = fixedValues,
                     Attribute = customAttribute
                 };
             }
         }
-        return null;
     }
 }
