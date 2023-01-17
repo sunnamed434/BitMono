@@ -10,6 +10,10 @@
     },
     {
       "Name": "ObjectReturnType",
+      "Enabled": true
+    },
+    {
+      "Name": "NoNamespaces",
       "Enabled": false
     },
     {
@@ -33,8 +37,12 @@
       "Enabled": true
     },
     {
+      "Name": "AntiDecompiler",
+      "Enabled": false
+    },
+    {
       "Name": "BitMethodDotnet",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitTimeDateStamp",

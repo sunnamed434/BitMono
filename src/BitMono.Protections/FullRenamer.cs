@@ -1,55 +1,37 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(FullRenamer))]
+[DoNotResolve(Members.SpecialRuntime | Members.Model)]
 public class FullRenamer : IProtection
 {
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly TypeDefAttributeCriticalAnalyzer m_TypeDefModelCriticalAnalyzer;
     private readonly IRenamer m_Renamer;
-    private readonly ILogger m_Logger;
 
-    public FullRenamer(
-        DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        TypeDefAttributeCriticalAnalyzer typeDefModelCriticalAnalyzer,
-        IRenamer renamer,
-        ILogger logger)
+    public FullRenamer(IRenamer renamer)
     {
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-        m_TypeDefModelCriticalAnalyzer = typeDefModelCriticalAnalyzer;
         m_Renamer = renamer;
-        m_Logger = logger.ForContext<FullRenamer>();
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
+        var moduleType = context.Module.GetOrCreateModuleType();
+        foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
-            if (typeDef.IsGlobalModuleType == false
-                && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(typeDef)
-                && m_TypeDefModelCriticalAnalyzer.NotCriticalToMakeChanges(typeDef))
+            if (type != moduleType)
             {
-                m_Renamer.Rename(typeDef);
-
-                foreach (var fieldDef in typeDef.Fields.ToArray())
+                m_Renamer.Rename(type);
+                foreach (var field in type.Fields)
                 {
-                    if (m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(fieldDef))
-                    {
-                        m_Renamer.Rename(fieldDef);
-                    }
+                    m_Renamer.Rename(field);
                 }
-
-                foreach (var methodDef in typeDef.Methods.ToArray())
+                foreach (var method in type.Methods)
                 {
-                    if (methodDef.IsConstructor == false
-                        && methodDef.IsVirtual == false
-                        && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+                    if (method.IsConstructor == false && method.IsVirtual == false)
                     {
-                        m_Renamer.Rename(methodDef);
-                        if (methodDef.HasParameters())
+                        m_Renamer.Rename(method);
+                        if (method.HasParameters())
                         {
-                            foreach (var parameter in methodDef.Parameters.ToArray())
+                            foreach (var parameter in method.Parameters)
                             {
-                                m_Renamer.Rename(parameter);
+                                m_Renamer.Rename(parameter.Definition);
                             }
                         }
                     }

@@ -1,34 +1,35 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(BitDotNet))]
 public class BitDotNet : IPacker
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         using (var stream = File.Open(context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
         using (var reader = new BinaryReader(stream))
         using (var writer = new BinaryWriter(stream))
         {
-            var numberOfRvaAndSizes = 0xF4;
-            stream.Position = numberOfRvaAndSizes;
-            writer.Write(0xD);
-            writer.Write(0x1);
 
-            var dotnetSize = 0x16C;
-            stream.Position = dotnetSize;
-            writer.Write(0);
-
-            var debugVirtualAddress = 0x128;
-            stream.Position = debugVirtualAddress;
-            writer.Write(0);
-
-            var debugSize = 0x12C;
-            stream.Position = debugSize;
-            writer.Write(0);
-
-            var importSize = 0x104;
-            stream.Position = importSize;
-            writer.Write(0);
+            // Rewrite it by getting the real offsets instead of "const" usage
+            //var numberOfRvaAndSizes = 0xF4;
+            //stream.Position = numberOfRvaAndSizes;
+            //writer.Write(0xD);
+            //writer.Write(0x1);
+            //
+            //var dotnetSize = 0x16C;
+            //stream.Position = dotnetSize;
+            //writer.Write(0);
+            //
+            //var debugVirtualAddress = 0x128;
+            //stream.Position = debugVirtualAddress;
+            //writer.Write(0);
+            //
+            //var debugSize = 0x12C;
+            //stream.Position = debugSize;
+            //writer.Write(0);
+            //
+            //var importSize = 0x104;
+            //stream.Position = importSize;
+            //writer.Write(0);
 
             stream.Position = 0x3C;
             var peHeader = reader.ReadUInt32();
@@ -48,7 +49,7 @@ public class BitDotNet : IPacker
 
             uint dotNetPointerRaw = 0;
             stream.Position += 0xC;
-            for (int i = 0; i < numberOfSections; i++)
+            for (var i = 0; i < numberOfSections; i++)
             {
                 stream.Position += 0xC;
                 var virtualAddress = reader.ReadUInt32();

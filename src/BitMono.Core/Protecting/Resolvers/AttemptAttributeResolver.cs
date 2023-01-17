@@ -1,24 +1,20 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class AttemptAttributeResolver : IAttemptAttributeResolver
+public class AttemptAttributeResolver
 {
-    private readonly ICustomAttributesResolver m_CustomAttributesResolver;
+    private readonly CustomAttributeResolver m_CustomAttributesResolver;
 
-    public AttemptAttributeResolver(ICustomAttributesResolver customAttributesResolver)
+    public AttemptAttributeResolver(CustomAttributeResolver customAttributesResolver)
     {
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve<TAttribute>(IHasCustomAttribute from, [AllowNull] Func<TAttribute, bool> predicate, [AllowNull] Func<TAttribute, bool> strip, [AllowNull] out TAttribute attribute)
-        where TAttribute : Attribute
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out CustomAttributeResolve attributeResolve)
     {
-        attribute = predicate != null
-            ? m_CustomAttributesResolver.Resolve(from, strip).Where(a => a != null)?.FirstOrDefault(predicate)
-            : m_CustomAttributesResolver.Resolve(from, strip).FirstOrDefault();
-        if (attribute == null)
-        {
-            return false;
-        }
-        return true;
+        return (attributeResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name)) != null;
+    }
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name)
+    {
+        return TryResolve(from, @namespace, name, out _);
     }
 }

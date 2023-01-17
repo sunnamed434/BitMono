@@ -4,7 +4,7 @@ public class BitMonoApplication : IApplication
 {
     private readonly ContainerBuilder m_ContainerBuilder;
     private readonly List<IModule> m_Modules;
-
+    
     public BitMonoApplication()
     {
         m_ContainerBuilder = new ContainerBuilder();

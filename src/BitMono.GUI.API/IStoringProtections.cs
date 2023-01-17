@@ -2,5 +2,5 @@
 
 public interface IStoringProtections
 {
-    List<ProtectionSettings> Protections { get; }
+    List<ProtectionSetting> Protections { get; }
 }

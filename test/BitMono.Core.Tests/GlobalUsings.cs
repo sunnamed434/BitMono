@@ -1,0 +1,13 @@
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.Linq;
+global using AsmResolver.DotNet;
+global using BitMono.Core.Protecting.Analyzing;
+global using BitMono.Core.Protecting.Resolvers;
+global using BitMono.Core.TestCases.CustomAttributes;
+global using BitMono.Core.TestCases.Methods;
+global using BitMono.Shared.Models;
+global using FluentAssertions;
+global using Xunit;
+global using BitMono.Protections;
+global using Microsoft.Extensions.Options;

@@ -1,71 +1,53 @@
 ﻿namespace BitMono.Protections;
 
-[ProtectionName(nameof(CallToCalli))]
-public class CallToCalli : IStageProtection
+[DoNotResolve(Members.SpecialRuntime)]
+public class CallToCalli : IProtection
 {
-    private readonly IInjector m_Injector;
-    private readonly IRenamer m_Renamer;
-    private readonly DnlibDefCriticalAnalyzer m_DnlibDefCriticalAnalyzer;
-    private readonly ILogger m_Logger;
-
-    public CallToCalli(
-        IInjector injector,
-        IRenamer renamer,
-        DnlibDefCriticalAnalyzer dnlibDefCriticalAnalyzer,
-        ILogger logger)
+    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        m_Injector = injector;
-        m_Renamer = renamer;
-        m_DnlibDefCriticalAnalyzer = dnlibDefCriticalAnalyzer;
-        m_Logger = logger.ForContext<CallToCalli>();
-    }
-
-    public PipelineStages Stage => PipelineStages.ModuleWritten;
-
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters, CancellationToken cancellationToken = default)
-    {
-        var runtimeMethodHandle = context.Importer.Import(typeof(RuntimeMethodHandle));
-        var getTypeFromHandleMethod = context.Importer.Import(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
+        var runtimeMethodHandle = context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
+        var getTypeFromHandleMethod = context.Importer.ImportMethod(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
         {
             typeof(RuntimeTypeHandle)
         }));
-        var getModuleMethod = context.Importer.Import(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
-        var resolveMethodMethod = context.Importer.Import(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
+        var getModuleMethod = context.Importer.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
+        var resolveMethodMethod = context.Importer.ImportMethod(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
         {
             typeof(int)
         }));
-        var getMethodHandleMethod = context.Importer.Import(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
-        var getFunctionPointerMethod = context.Importer.Import(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
+        var getMethodHandleMethod = context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
+        var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
-        foreach (var typeDef in parameters.Targets.OfType<TypeDef>())
+        var moduleType = context.Module.GetOrCreateModuleType(); 
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            foreach (var methodDef in typeDef.Methods)
+            if (method.CilMethodBody is { } body && method.DeclaringType != moduleType)
             {
-                if (methodDef.HasBody && methodDef.Body.HasInstructions
-                    && methodDef.DeclaringType.IsGlobalModuleType == false
-                    && m_DnlibDefCriticalAnalyzer.NotCriticalToMakeChanges(methodDef))
+                for (var i = 0; i < body.Instructions.Count; i++)
                 {
-                    for (var i = 0; i < methodDef.Body.Instructions.Count; i++)
+                    var instruction = body.Instructions[i];
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
                     {
-                        if (methodDef.Body.Instructions[i].OpCode == OpCodes.Call)
+                        var callingMethod = methodDescriptor.Resolve();
+                        if (callingMethod != null)
                         {
-                            if (methodDef.Body.Instructions[i].Operand is MethodDef callingMethodDef && callingMethodDef.HasBody)
+                            if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
-                                var runtimeMethodHandleLocal = methodDef.Body.Variables.Add(new Local(new ValueTypeSig(runtimeMethodHandle)));
-                                if (methodDef.Body.HasExceptionHandlers == false)
+                                var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
+                                body.LocalVariables.Add(runtimeMethodHandleLocal);
+                                instruction.ReplaceWith(CilOpCodes.Ldtoken, moduleType);
+                                body.Instructions.InsertRange(i + 1, new CilInstruction[]
                                 {
-                                    methodDef.Body.Instructions[i].ReplaceWith(OpCodes.Ldtoken, context.ModuleDefMD.GlobalType);
-                                    methodDef.Body.Instructions.Insert(i + 1, new Instruction(OpCodes.Call, getTypeFromHandleMethod));
-                                    methodDef.Body.Instructions.Insert(i + 2, new Instruction(OpCodes.Callvirt, getModuleMethod));
-                                    methodDef.Body.Instructions.Insert(i + 3, new Instruction(OpCodes.Ldc_I4, callingMethodDef.MDToken.ToInt32()));
-                                    methodDef.Body.Instructions.Insert(i + 4, new Instruction(OpCodes.Call, resolveMethodMethod));
-                                    methodDef.Body.Instructions.Insert(i + 5, new Instruction(OpCodes.Callvirt, getMethodHandleMethod));
-                                    methodDef.Body.Instructions.Insert(i + 6, new Instruction(OpCodes.Stloc, runtimeMethodHandleLocal));
-                                    methodDef.Body.Instructions.Insert(i + 7, new Instruction(OpCodes.Ldloca, runtimeMethodHandleLocal));
-                                    methodDef.Body.Instructions.Insert(i + 8, new Instruction(OpCodes.Call, getFunctionPointerMethod));
-                                    methodDef.Body.Instructions.Insert(i + 9, new Instruction(OpCodes.Calli, callingMethodDef.MethodSig));
-                                    i += 9;
-                                }
+                                    new CilInstruction(CilOpCodes.Call, getTypeFromHandleMethod),
+                                    new CilInstruction(CilOpCodes.Callvirt, getModuleMethod),
+                                    new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
+                                    new CilInstruction(CilOpCodes.Call, resolveMethodMethod),
+                                    new CilInstruction(CilOpCodes.Callvirt, getMethodHandleMethod),
+                                    new CilInstruction(CilOpCodes.Stloc, runtimeMethodHandleLocal),
+                                    new CilInstruction(CilOpCodes.Ldloca, runtimeMethodHandleLocal),
+                                    new CilInstruction(CilOpCodes.Call, getFunctionPointerMethod),
+                                    new CilInstruction(CilOpCodes.Calli, callingMethod.Signature.MakeStandAloneSignature())
+                                });
                             }
                         }
                     }

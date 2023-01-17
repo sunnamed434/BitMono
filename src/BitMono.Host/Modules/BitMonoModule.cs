@@ -2,19 +2,26 @@
 
 public class BitMonoModule : Module
 {
+    private readonly Action<ContainerBuilder> m_ConfigureServices;
     private readonly Action<LoggerConfiguration> m_ConfigureLogger;
     private readonly Action<ConfigurationBuilder> m_ConfigureConfigurationBuilder;
 
     public BitMonoModule(
+        Action<ContainerBuilder> configureServices = default,
         Action<LoggerConfiguration> configureLogger = default,
         Action<ConfigurationBuilder> configureConfigurationBuilder = default)
     {
+        m_ConfigureServices = configureServices;
         m_ConfigureLogger = configureLogger;
         m_ConfigureConfigurationBuilder = configureConfigurationBuilder;
     }
 
     protected override void Load(ContainerBuilder containerBuilder)
     {
+        m_ConfigureServices?.Invoke(containerBuilder);
+
+        var serviceCollection = new ServiceCollection();
+        
         var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         var fileFormat = string.Format(Path.Combine(currentAssemblyDirectory, "logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now).Replace("\\", "/");
 
@@ -31,10 +38,7 @@ public class BitMonoModule : Module
             m_ConfigureLogger.Invoke(loggerConfiguration);
 
             var logger = loggerConfiguration.CreateLogger();
-            containerBuilder.Register<ILogger>((_, _) =>
-            {
-                return logger;
-            });
+            containerBuilder.Register<ILogger>((_, _) => logger);
         }
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -46,20 +50,24 @@ public class BitMonoModule : Module
                 .As<IConfiguration>()
                 .OwnedByLifetimeScope();
         }
-
-        containerBuilder.Register(context => new BitMonoAppSettingsConfiguration())
-            .As<IBitMonoAppSettingsConfiguration>()
+        
+        serviceCollection.AddOptions();
+        var protections = new BitMonoProtectionsConfiguration();
+        var criticals = new BitMonoCriticalsConfiguration();
+        var obfuscation = new BitMonoObfuscationConfiguration();
+        serviceCollection.Configure<ProtectionSettings>(options => protections.Configuration.Bind(options));
+        serviceCollection.Configure<Criticals>(criticals.Configuration);
+        serviceCollection.Configure<Obfuscation>(obfuscation.Configuration);
+        
+        containerBuilder.Register(context => protections)
+            .As<IBitMonoProtectionsConfiguration>()
             .OwnedByLifetimeScope();
-
-        containerBuilder.Register(context => new BitMonoCriticalsConfiguration())
+        
+        containerBuilder.Register(context => criticals)
             .As<IBitMonoCriticalsConfiguration>()
             .OwnedByLifetimeScope();
 
-        containerBuilder.Register(context => new BitMonoProtectionsConfiguration())
-            .As<IBitMonoProtectionsConfiguration>()
-            .OwnedByLifetimeScope();
-
-        containerBuilder.Register(context => new BitMonoObfuscationConfiguration())
+        containerBuilder.Register(context => obfuscation)
             .As<IBitMonoObfuscationConfiguration>()
             .OwnedByLifetimeScope();
 
@@ -68,41 +76,35 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<Injector>()
-            .As<IInjector>()
+        containerBuilder.RegisterType<MscorlibInjector>()
+            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<DnlibDefObfuscationAttributeResolver>()
-            .As<IDnlibDefObfuscationAttributeResolver>()
+        containerBuilder.RegisterType<CustomInjector>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<RuntimeImplementations>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<CustomAttributeResolver>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<AttemptAttributeResolver>()
+            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(ICustomAttributesResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IObfuscationAttributeExcludingResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMethodImplAttributeExcludingResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IAttemptAttributeResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
             .AsImplementedInterfaces()
             .OwnedByLifetimeScope()
             .SingleInstance();
@@ -113,21 +115,19 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => 
-                t.GetInterface(nameof(IProtection)) != null 
-                && t.GetInterface(nameof(IPhaseProtection)) == null)
+            .Where(t => t.GetInterface(nameof(IAttributeResolver)) != null)
             .OwnedByLifetimeScope()
-            .AsImplementedInterfaces()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(AppDomain.CurrentDomain.GetAssemblies())
+        containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t =>
-                t.GetInterface(nameof(IDnlibDefResolver)) != null)
+            .Where(t => t.GetInterface(nameof(IPhaseProtection)) == null && t.GetInterface(nameof(IProtection)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
+        
+        containerBuilder.Populate(serviceCollection);
     }
 }

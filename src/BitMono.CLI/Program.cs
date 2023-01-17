@@ -1,94 +1,59 @@
-﻿public class Program
-{
-    const string Protections = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
-    static CancellationTokenSource CancellationToken = new CancellationTokenSource();
+﻿namespace BitMono.CLI;
 
+internal class Program
+{
     private static async Task Main(string[] args)
     {
         try
         {
-            var moduleFileName = await new CLIBitMonoModuleFileResolver(args).ResolveAsync();
-            if (string.IsNullOrWhiteSpace(moduleFileName))
-            {
-                while (string.IsNullOrWhiteSpace(moduleFileName))
-                {
-                    Console.Clear();
-                    Console.WriteLine("Please, specify file or drag-and-drop in BitMono CLI");
-                    moduleFileName = Console.ReadLine();
-                }
-            }
-            var moduleFileBaseDirectory = Path.GetDirectoryName(moduleFileName);
-            var dependenciesDirectoryName = Path.Combine(moduleFileBaseDirectory, "libs");
-            if (Directory.Exists(dependenciesDirectoryName) == false)
-            {
-                while (string.IsNullOrWhiteSpace(dependenciesDirectoryName))
-                {
-                    Console.Clear();
-                    Console.WriteLine("Please, specify dependencies (libs) path: ");
-                    dependenciesDirectoryName = Console.ReadLine();
-                }
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine("Dependencies (libs) directory was automatically found in: {0}!", dependenciesDirectoryName);
-            }
+            const string ProtectionsFileName = nameof(BitMono) + "." + nameof(BitMono.Protections) + ".dll";
+ 
+            var needs = new CLIObfuscationNeedsFactory(args).Create();
+            Console.Clear();
+            Console.WriteLine("File: {0}", needs.FileName);
+            Console.WriteLine("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
+            Console.WriteLine("Everything is seems to be good, starting obfuscation..");
 
             var domainBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var protectionsFile = Path.Combine(domainBaseDirectory, Protections);
+            var protectionsFile = Path.Combine(domainBaseDirectory, ProtectionsFileName);
             Assembly.LoadFrom(protectionsFile);
-
-            var outputDirectoryName = Path.Combine(moduleFileBaseDirectory, "output");
-            Directory.CreateDirectory(dependenciesDirectoryName);
-            Directory.CreateDirectory(outputDirectoryName);
-
-            var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger =>
+            
+            var serviceProvider = new BitMonoApplication().RegisterModule(new BitMonoModule(configureLogger: configureLogger =>
             {
                 configureLogger.WriteTo.Async(configure => configure.Console(
                     outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"));
             })).Build();
 
-            var obfuscationConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoObfuscationConfiguration>();
-            var protectionsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoProtectionsConfiguration>();
-            var appSettingsConfiguration = serviceProvider.LifetimeScope.Resolve<IBitMonoAppSettingsConfiguration>();
-            var dnlibDefObfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<IDnlibDefObfuscationAttributeResolver>();
-            var dnlibDefResolvers = serviceProvider.LifetimeScope.Resolve<ICollection<IDnlibDefResolver>>().ToList();
+            var obfuscation = serviceProvider.LifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var protectionSettings = serviceProvider.LifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value;
+            var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscationAttributeResolver>();
+            var membersResolver = serviceProvider.LifetimeScope.Resolve<ICollection<IMemberResolver>>().ToList();
             var protections = serviceProvider.LifetimeScope.Resolve<ICollection<IProtection>>().ToList();
-            var protectionSettings = protectionsConfiguration.GetProtectionSettings();
             var logger = serviceProvider.LifetimeScope.Resolve<ILogger>().ForContext<Program>();
 
-            var moduleDefMDWriter = new CLIDataWriter();
-            var dependenciesDataResolver = new DependenciesDataResolver(dependenciesDirectoryName);
-            var bitMonoContext = new BitMonoContextCreator(dependenciesDataResolver, obfuscationConfiguration).Create(outputDirectoryName, moduleFileName);
+            var cancellationTokenSource = new CancellationTokenSource();
 
-            await new BitMonoEngine(
-                moduleDefMDWriter,
-                dnlibDefObfuscationAttributeResolver,
-                obfuscationConfiguration,
-                dnlibDefResolvers,
-                protections,
-                protectionSettings,
-                logger)
-                .ObfuscateAsync(bitMonoContext, bitMonoContext.FileName, CancellationToken);
-
-            if (CancellationToken.IsCancellationRequested)
+            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, protectionSettings.Protections, membersResolver, protections, logger);
+            var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
+            if (succeed == false)
             {
-                logger.Fatal("Operation cancelled!");
+                logger.Fatal("Engine has fatal issues, unable to continue!");
                 Console.ReadLine();
                 return;
             }
-            if (obfuscationConfiguration.Configuration.GetValue<bool>(nameof(Obfuscation.OpenFileDestinationInFileExplorer)))
+
+            if (obfuscation.OpenFileDestinationInFileExplorer)
             {
-                Process.Start(bitMonoContext.OutputDirectoryName);
+                Process.Start(needs.OutputDirectoryName);
             }
 
-            new TipsNotifier(appSettingsConfiguration, logger).Notify();
             await serviceProvider.DisposeAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Something went wrong! " + ex.ToString());
+            Console.WriteLine("Something went wrong! " + ex);
         }
+        Console.WriteLine("Press any key to exit!");
         Console.ReadLine();
     }
 }

@@ -2,11 +2,11 @@
 {
     public class ProtectionParameters
     {
-        public ProtectionParameters(List<IDnlibDef> targets)
+        public ProtectionParameters(List<IMetadataMember> members)
         {
-            Targets = targets;
+            Members = members;
         }
 
-        public List<IDnlibDef> Targets { get; private set; }
+        public List<IMetadataMember> Members { get; }
     }
 }

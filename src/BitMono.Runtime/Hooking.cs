@@ -35,6 +35,6 @@ internal struct Hooking
         VirtualProtect(fromPtr, (IntPtr)5, oldProtect, out _);
     }
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi, EntryPoint = nameof(VirtualProtect))]
     internal static extern bool VirtualProtect(IntPtr address, IntPtr size, uint newProtect, out uint oldProtect);
 }

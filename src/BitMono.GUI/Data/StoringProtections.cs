@@ -2,10 +2,10 @@
 
 internal class StoringProtections : IStoringProtections
 {
-	public StoringProtections(IBitMonoProtectionsConfiguration configuration)
+	public StoringProtections(IOptions<ProtectionSettings> settings)
 	{
-		Protections = configuration.GetProtectionSettings();
+		Protections = settings.Value.Protections;
 	}
 
-	public List<ProtectionSettings> Protections { get; }
+	public List<ProtectionSetting> Protections { get; }
 }
