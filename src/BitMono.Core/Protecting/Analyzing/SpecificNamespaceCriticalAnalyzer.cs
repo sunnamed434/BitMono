@@ -2,21 +2,20 @@
 
 public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Obfuscation m_Obfuscation;
 
-    public SpecificNamespaceCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration)
+    public SpecificNamespaceCriticalAnalyzer(IOptions<Obfuscation> obfuscation)
     {
-        m_Configuration = configuration.Configuration;
+        m_Obfuscation = obfuscation.Value;
     }
 
     public bool NotCriticalToMakeChanges(IMetadataMember member)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Obfuscation.SpecificNamespacesObfuscationOnly)) == false)
+        if (m_Obfuscation.SpecificNamespacesObfuscationOnly == false)
         {
             return true;
         }
-
-        var specificNamespaces = m_Configuration.GetSpecificNamespaces();
+        var specificNamespaces = m_Obfuscation.SpecificNamespaces;
         if (member is TypeDefinition type && type.HasNamespace())
         {
             if (specificNamespaces.Any(s => s.Equals(type.Namespace.Value)) == false)

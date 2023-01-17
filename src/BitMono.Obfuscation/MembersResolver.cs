@@ -14,6 +14,6 @@ public class MembersResolver
     }
     private bool canBeResolved(IProtection protection, IMetadataMember member, IEnumerable<IMemberResolver> resolvers)
     {
-        return resolvers.All(r => r.Resolve(protection, member) == true);
+        return resolvers.All(r => r.Resolve(protection, member));
     }
 }

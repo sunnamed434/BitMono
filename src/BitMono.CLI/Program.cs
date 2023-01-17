@@ -33,7 +33,7 @@ internal class Program
 
             var cancellationTokenSource = new CancellationTokenSource();
 
-            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, protectionSettings, membersResolver, protections, logger);
+            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, protectionSettings.Protections, membersResolver, protections, logger);
             var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
             if (succeed == false)
             {

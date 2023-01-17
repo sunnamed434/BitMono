@@ -9,8 +9,8 @@ public class NoInliningMethodMemberResolverTest
         {
             NoInliningMethodObfuscationExclude = true,
         };
-        var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var resolver = Setup.NoInliningMethodMemberResolver(configuration);
+        var options = Options.Create(obfuscation);
+        var resolver = Setup.NoInliningMethodMemberResolver(options);
         var module = ModuleDefinition.FromFile(typeof(NoInliningMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(NoInliningMethods));
         var method = type.Methods.First(m => m.Name == nameof(NoInliningMethods.NoInliningMethod));
@@ -26,8 +26,8 @@ public class NoInliningMethodMemberResolverTest
         {
             NoInliningMethodObfuscationExclude = true,
         };
-        var configuration = Setup.ObfuscationConfiguration(obfuscation);
-        var resolver = Setup.NoInliningMethodMemberResolver(configuration);
+        var options = Options.Create(obfuscation);
+        var resolver = Setup.NoInliningMethodMemberResolver(options);
         var module = ModuleDefinition.FromFile(typeof(NoInliningMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(NoInliningMethods));
         var method = type.Methods.First(m => m.Name == nameof(NoInliningMethods.VoidMethod));

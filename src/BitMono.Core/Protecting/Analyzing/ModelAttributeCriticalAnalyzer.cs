@@ -2,22 +2,22 @@
 
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Criticals m_Criticals;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public ModelAttributeCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Configuration = configuration.Configuration;
+        m_Criticals = criticals.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalModelAttributes)) == false)
+        if (m_Criticals.UseCriticalModelAttributes == false)
         {
             return true;
         }
-        foreach (var attribute in m_Configuration.GetCriticalModelAttributes())
+        foreach (var attribute in m_Criticals.CriticalModelAttributes)
         {
             if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
             {

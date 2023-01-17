@@ -2,22 +2,22 @@
 
 public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Criticals m_Criticals;
 
-    public CriticalBaseTypesCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration)
+    public CriticalBaseTypesCriticalAnalyzer(IOptions<Criticals> criticals)
     {
-        m_Configuration = configuration.Configuration;
+        m_Criticals = criticals.Value;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Criticals.UseCriticalBaseTypes)) == false)
+        if (m_Criticals.UseCriticalBaseTypes == false)
         {
             return true;
         }
         if (typeDefinition.HasBaseType())
         {
-            var criticalBaseTypes = m_Configuration.GetCriticalBaseTypes();
+            var criticalBaseTypes = m_Criticals.CriticalBaseTypes;
             if (criticalBaseTypes.FirstOrDefault(c => c.StartsWith(typeDefinition.BaseType.Name.Value.Split('`')[0])) != null)
             {
                 return false;

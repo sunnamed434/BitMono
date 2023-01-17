@@ -12,16 +12,16 @@ public class BitMonoEngine
     public BitMonoEngine(
         ObfuscationAttributeResolver obfuscationAttributeResolver,
         Shared.Models.Obfuscation obfuscation,
-        ProtectionSettings protectionSettings,
+        List<ProtectionSetting> protectionSetting,
         List<IMemberResolver> memberResolvers,
         List<IProtection> protections,
         ILogger logger)
     {
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_Obfuscation = obfuscation;
+        m_ProtectionSettings = protectionSetting;
         m_MemberResolvers = memberResolvers;
         m_Protections = protections;
-        m_ProtectionSettings = protectionSettings.Protections;
         m_Logger = logger.ForContext<BitMonoEngine>();
     }
 

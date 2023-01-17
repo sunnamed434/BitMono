@@ -2,32 +2,21 @@ namespace BitMono.Core.Tests;
 
 public static class Setup
 {
-    public static TestBitMonoCriticalsConfiguration CriticalsConfiguration(Criticals model)
-    {
-        return new TestBitMonoCriticalsConfiguration(JsonConvert.SerializeObject(model));
-    }
-    public static TestBitMonoObfuscationConfiguration ObfuscationConfiguration(Obfuscation model)
-    {
-        return new TestBitMonoObfuscationConfiguration(JsonConvert.SerializeObject(model));
-    }
-    public static ModelAttributeCriticalAnalyzer ModelAttributeCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration)
+    public static ModelAttributeCriticalAnalyzer ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals)
     {
         var attemptAttributeResolver = new AttemptAttributeResolver(new CustomAttributeResolver());
-        return new ModelAttributeCriticalAnalyzer(configuration, attemptAttributeResolver);
+        return new ModelAttributeCriticalAnalyzer(criticals, attemptAttributeResolver);
     }
-    public static CriticalMethodsCriticalAnalyzer CriticalMethodsCriticalAnalyzer(
-        IBitMonoCriticalsConfiguration configuration)
+    public static CriticalMethodsCriticalAnalyzer CriticalMethodsCriticalAnalyzer(IOptions<Criticals> criticals)
     {
-        return new CriticalMethodsCriticalAnalyzer(configuration);
+        return new CriticalMethodsCriticalAnalyzer(criticals);
     }
-    public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(
-        IBitMonoObfuscationConfiguration configuration)
+    public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(IOptions<Obfuscation> obfuscation)
     {
-        return new NoInliningMethodMemberResolver(configuration);
+        return new NoInliningMethodMemberResolver(obfuscation);
     }
-    public static ObfuscationAttributeResolver ObfuscationAttributeResolver(
-        IBitMonoObfuscationConfiguration configuration)
+    public static ObfuscationAttributeResolver ObfuscationAttributeResolver(IOptions<Obfuscation> obfuscation)
     {
-        return new ObfuscationAttributeResolver(configuration, new AttemptAttributeResolver(new CustomAttributeResolver()));
+        return new ObfuscationAttributeResolver(obfuscation, new AttemptAttributeResolver(new CustomAttributeResolver()));
     }
 }
