@@ -40,7 +40,7 @@ public class ObfuscationAttributeResolverTest
         result.Should().BeTrue();
     }
     [Fact]
-    public void WhenObfuscationAttributeResolving_AndTypeHasVoidObfuscationAttribute_ThenShouldBeTrue()
+    public void WhenObfuscationAttributeResolving_AndTypeHasVoidObfuscationAttribute_ThenShouldBeFalse()
     {
         var obfuscation = new Obfuscation
         {
@@ -52,12 +52,12 @@ public class ObfuscationAttributeResolverTest
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.VoidObfuscationAttribute));
 
-        var result = resolver.Resolve(type);
+        var result = resolver.Resolve(string.Empty, type);
 
-        result.Should().BeTrue();
+        result.Should().BeFalse();
     }
     [Fact]
-    public void WhenObfuscationAttributeResolving_AndMethodHasVoidObfuscationAttribute_ThenShouldBeTrue()
+    public void WhenObfuscationAttributeResolving_AndMethodHasVoidObfuscationAttribute_ThenShouldBeFalse()
     {
         var obfuscation = new Obfuscation
         {
@@ -69,8 +69,8 @@ public class ObfuscationAttributeResolverTest
         var type = module.TopLevelTypes.First(n => n.Name == nameof(ObfuscationMethods));
         var method = type.Methods.First(m => m.Name == nameof(ObfuscationMethods.VoidObfuscationAttribute));
 
-        var result = resolver.Resolve(method);
+        var result = resolver.Resolve(string.Empty, method);
 
-        result.Should().BeTrue();
+        result.Should().BeFalse();
     }
 }

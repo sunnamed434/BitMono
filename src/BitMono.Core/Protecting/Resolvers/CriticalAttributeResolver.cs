@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class CriticalAttributeResolver : AttributeResolver
+public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolve>
 {
     private readonly Criticals m_Criticals;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;

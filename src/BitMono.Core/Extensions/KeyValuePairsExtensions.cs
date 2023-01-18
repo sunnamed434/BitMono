@@ -2,7 +2,16 @@
 
 public static class KeyValuePairsExtensions
 {
-    public static bool TryGetValueOrDefault(this Dictionary<string, object> source, string key, bool defaultValue = false)
+    public static string GetValueOrDefault(this Dictionary<string, object> source, string key, string defaultValue = "")
+    {
+        var value = defaultValue;
+        if (source.TryGetTypedValue(key, out string valueValue))
+        {
+            value = valueValue;
+        }
+        return value;
+    }
+    public static bool GetValueOrDefault(this Dictionary<string, object> source, string key, bool defaultValue = false)
     {
         var value = defaultValue;
         if (source.TryGetTypedValue(key, out bool valueValue))
@@ -11,7 +20,7 @@ public static class KeyValuePairsExtensions
         }
         return value;
     }
-    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, out TActual value)
+    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, [AllowNull] out TActual value)
         where TActual : TValue
     {
         if (source.TryGetValue(key, out TValue tempValue))

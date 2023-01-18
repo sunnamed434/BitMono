@@ -82,6 +82,6 @@ public class Renamer : IRenamer
     }
     public void RemoveNamespace(params IMetadataMember[] members)
     {
-        members.ForEach(member => RemoveNamespace(member));
+        members.ForEach(RemoveNamespace);
     }
 }
