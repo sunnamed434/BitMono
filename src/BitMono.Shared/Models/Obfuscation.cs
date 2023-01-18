@@ -5,6 +5,7 @@ public class Obfuscation
     public bool Watermark { get; set; }
     public bool NotifyProtections { get; set; }
     public bool NoInliningMethodObfuscationExclude { get; set; }
+    public bool SerializableBitObfuscationExclude { get; set; }
     public bool ObfuscationAttributeObfuscationExclude { get; set; }
     public bool ObfuscateAssemblyAttributeObfuscationExclude { get; set; }
     public bool OutputPEImageBuildErrors { get; set; }
