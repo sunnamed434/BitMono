@@ -13,7 +13,8 @@ public class BitMonoObfuscator
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
     private readonly ProtectionsNotifier m_ProtectionsNotifier;
-    private readonly ObfuscationAttributesCleaner m_ObfuscationAttributesCleaner; 
+    private readonly ObfuscationAttributesStripper m_ObfuscationAttributesStripper;
+    private readonly ObfuscationAttributesStripNotifier m_ObfuscationAttributesStripNotifier;
     private readonly ILogger m_Logger;
     private PEImageBuildResult _imageBuild;
     private long _startTime;
@@ -40,8 +41,9 @@ public class BitMonoObfuscator
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);
         m_ProtectionsNotifier = new ProtectionsNotifier(m_Obfuscation, m_Logger);
-        m_ObfuscationAttributesCleaner = new ObfuscationAttributesCleaner(m_Obfuscation, m_ObfuscationAttributeResolver,
-            m_ObfuscateAssemblyAttributeResolver, m_Logger);
+        m_ObfuscationAttributesStripper = new ObfuscationAttributesStripper(m_Obfuscation,
+            m_ObfuscationAttributeResolver, m_ObfuscateAssemblyAttributeResolver);
+        m_ObfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(m_Logger);
     }
 
     public async Task ProtectAsync()
@@ -151,7 +153,8 @@ public class BitMonoObfuscator
     }
     private Task<bool> stripObfuscationAttributesAsync(ProtectionContext context)
     {
-        m_ObfuscationAttributesCleaner.Strip(context, m_ProtectionsSort);
+        var obfuscationAttributesStrip = m_ObfuscationAttributesStripper.Strip(context, m_ProtectionsSort);
+        m_ObfuscationAttributesStripNotifier.Notify(obfuscationAttributesStrip);
         return Task.FromResult(true);
     }
     private Task<bool> createPEImageAsync(ProtectionContext context)
