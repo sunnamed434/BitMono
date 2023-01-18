@@ -13,6 +13,7 @@ public class BitMonoObfuscator
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
     private readonly ProtectionsNotifier m_ProtectionsNotifier;
+    private readonly ObfuscationAttributesCleaner m_ObfuscationAttributesCleaner; 
     private readonly ILogger m_Logger;
     private PEImageBuildResult _imageBuild;
     private long _startTime;
@@ -38,7 +39,9 @@ public class BitMonoObfuscator
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);
-        m_ProtectionsNotifier = new ProtectionsNotifier(obfuscation, m_Logger);
+        m_ProtectionsNotifier = new ProtectionsNotifier(m_Obfuscation, m_Logger);
+        m_ObfuscationAttributesCleaner = new ObfuscationAttributesCleaner(m_Obfuscation, m_ObfuscationAttributeResolver,
+            m_ObfuscateAssemblyAttributeResolver, m_Logger);
     }
 
     public async Task ProtectAsync()
@@ -148,41 +151,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> stripObfuscationAttributesAsync(ProtectionContext context)
     {
-        foreach (var customAttribute in context.Module.FindDefinitions().OfType<IHasCustomAttribute>())
-        {
-            foreach (var protection in m_ProtectionsSort.ProtectionsResolve.FoundProtections)
-            {
-                var protectionName = protection.GetName();
-                if (m_Obfuscation.StripObfuscationAttributes)
-                {
-                    if (m_ObfuscationAttributeResolver.Resolve(protectionName, customAttribute, out ObfuscationAttributeData obfuscationAttributeData))
-                    {
-                        if (obfuscationAttributeData.StripAfterObfuscation)
-                        {
-                            if (customAttribute.CustomAttributes.Remove(obfuscationAttributeData.CustomAttribute))
-                            {
-                                m_Logger.Information("Successfully stripped obfuscation attribute");
-                            }
-                            else
-                            {
-                                m_Logger.Warning("Not able to strip obfuscation attribute");
-                            }
-                        }
-                    }
-                    if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out ObfuscateAssemblyAttributeData obfuscateAssemblyAttributeData))
-                    {
-                        if (customAttribute.CustomAttributes.Remove(obfuscateAssemblyAttributeData.CustomAttribute))
-                        {
-                            m_Logger.Information("Successfully stripped assembly obfuscation attribute");
-                        }
-                        else
-                        {
-                            m_Logger.Warning("Not able to strip assembly obfuscation attribute");
-                        }
-                    }
-                }
-            }
-        }
+        m_ObfuscationAttributesCleaner.Strip(context, m_ProtectionsSort);
         return Task.FromResult(true);
     }
     private Task<bool> createPEImageAsync(ProtectionContext context)
