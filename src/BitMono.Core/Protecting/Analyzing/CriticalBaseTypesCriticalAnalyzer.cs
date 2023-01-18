@@ -9,16 +9,16 @@ public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinitio
         m_Criticals = criticals.Value;
     }
 
-    public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
+    public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
         if (m_Criticals.UseCriticalBaseTypes == false)
         {
             return true;
         }
-        if (typeDefinition.HasBaseType())
+        if (type.HasBaseType())
         {
             var criticalBaseTypes = m_Criticals.CriticalBaseTypes;
-            if (criticalBaseTypes.FirstOrDefault(c => c.StartsWith(typeDefinition.BaseType.Name.Value.Split('`')[0])) != null)
+            if (criticalBaseTypes.FirstOrDefault(c => c.StartsWith(type.BaseType.Name.Value.Split('`')[0])) != null)
             {
                 return false;
             }

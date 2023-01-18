@@ -27,4 +27,8 @@ public static class Setup
     {
         return new ObfuscateAssemblyAttributeResolver(obfuscation, AttemptAttributeResolver());
     }
+    public static SerializableBitCriticalAnalyzer SerializableBitCriticalAnalyzer(IOptions<Obfuscation> obfuscation)
+    {
+        return new SerializableBitCriticalAnalyzer(obfuscation);
+    }
 }
