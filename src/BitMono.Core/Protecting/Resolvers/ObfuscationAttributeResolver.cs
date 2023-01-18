@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class ObfuscationAttributeResolver : AttributeResolver
+public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttributeData>
 {
     private readonly Obfuscation m_Obfuscation;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
@@ -15,9 +15,9 @@ public class ObfuscationAttributeResolver : AttributeResolver
         m_AttributeName = nameof(ObfuscationAttribute);
     }
 
-    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public override bool Resolve(string featureName, IHasCustomAttribute from, [AllowNull] out ObfuscationAttributeData model)
     {
-        attributeResolve = null;
+        model = null;
         if (m_Obfuscation.ObfuscationAttributeObfuscationExclude == false)
         {
             return false;
@@ -26,21 +26,25 @@ public class ObfuscationAttributeResolver : AttributeResolver
         {
             return false;
         }
-        if (string.IsNullOrWhiteSpace(feature))
-        {
-            attributeResolve = attributesResolve.First();        
-            return true;
-        }
         foreach (var attribute in attributesResolve)
         {
-            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string valueFeature))
+            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string feature))
             {
-                if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
+                if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var exclude = attribute.NamedValues.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    var exclude = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    var applyToMembers = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    var stripAfterObfuscation = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.StripAfterObfuscation), defaultValue: true);
                     if (exclude)
                     {
-                        attributeResolve = attribute;
+                        model = new ObfuscationAttributeData
+                        {
+                            Exclude = exclude,
+                            ApplyToMembers = applyToMembers,
+                            StripAfterObfuscation = stripAfterObfuscation,
+                            Feature = feature,
+                            CustomAttribute = attribute.Attribute
+                        };
                         return true;
                     }
                 }

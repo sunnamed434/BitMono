@@ -117,7 +117,7 @@ public class BitMonoModule : Module
 
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IAttributeResolver)) != null)
+            .AsClosedTypesOf(typeof(IAttributeResolver<>))
             .OwnedByLifetimeScope()
             .SingleInstance();
 

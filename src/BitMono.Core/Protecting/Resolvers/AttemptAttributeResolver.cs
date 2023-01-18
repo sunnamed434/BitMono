@@ -11,7 +11,8 @@ public class AttemptAttributeResolver
 
     public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out IEnumerable<CustomAttributeResolve> attributesResolve)
     {
-        return (attributesResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name)) != null;
+        attributesResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name);
+        return attributesResolve.IsNullOrEmpty() == false;
     }
     public bool TryResolve(IHasCustomAttribute from, string @namespace, string name)
     {

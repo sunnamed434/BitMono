@@ -20,6 +20,13 @@
   // Set to true indicates whether enabled
   "ObfuscateAssemblyAttributeObfuscationExclude": true,
 
+  // Strip attribute after obfuscation if assembly has [ObfuscateAssemblyAttribute(true, StripAfterObfuscation = true)] 
+  // or member has [Obfuscation(Feature = "Some_BitMono_Feature", StripAfterObfuscation = true]
+  // By default, you could just specify [Obfuscation(Feature = "Some_BitMono_Feature"] - and this will strip it
+  // (StripAfterObfuscation is true by default in dotnet sources), the same with ObfuscateAssemblyAttribute
+  // Set to true indicates whether enabled
+  "StripObfuscationAttributes": true,
+
   // Output errors that were registered while building the PE image. BitMono feature is that 
   // being used vulnerabilities of decompilers and Mono and this is the most powerful of them, 
   // decompilers and other tools could think that this is cannot work fine and because of that some weird errors

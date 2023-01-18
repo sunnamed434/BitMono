@@ -1,6 +1,6 @@
 namespace BitMono.Core.Protecting.Resolvers;
 
-public class ObfuscateAssemblyAttributeResolver : AttributeResolver
+public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAssemblyAttributeData>
 {
     private readonly Obfuscation m_Obfuscation;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
@@ -15,9 +15,9 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver
         m_AttributeName = nameof(ObfuscateAssemblyAttribute);
     }
     
-    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out ObfuscateAssemblyAttributeData model)
     {
-        attributeResolve = null;
+        model = null;
         if (m_Obfuscation.ObfuscateAssemblyAttributeObfuscationExclude == false)
         {
             return false;
@@ -26,14 +26,15 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver
         {
             return false;
         }
-        foreach (var attribute in attributesResolve)
+        var attribute = attributesResolve.First();
+        var assemblyIsPrivate = attribute.FixedValues[0] is bool;
+        var stripAfterObfuscation = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation), defaultValue: true);
+        model = new ObfuscateAssemblyAttributeData
         {
-            if (attribute.FixedValues[0] is true)
-            {
-                attributeResolve = attribute;
-                return true;
-            }
-        }
-        return false;
+            AssemblyIsPrivate = assemblyIsPrivate,
+            StripAfterObfuscation = stripAfterObfuscation,
+            CustomAttribute = attribute.Attribute
+        };
+        return true;
     }
 }

@@ -152,14 +152,14 @@ public class BitMonoObfuscator
         {
             foreach (var protection in m_ProtectionsSort.ProtectionsResolve.FoundProtections)
             {
-                if (m_ObfuscationAttributeResolver.Resolve(protection.GetName(), customAttribute, out var attributeResolve))
+                var protectionName = protection.GetName();
+                if (m_Obfuscation.StripObfuscationAttributes)
                 {
-                    if (attributeResolve.NamedValues.TryGetValue(nameof(ObfuscationAttribute.StripAfterObfuscation), 
-                            out var stripAfterObfuscation))
+                    if (m_ObfuscationAttributeResolver.Resolve(protectionName, customAttribute, out ObfuscationAttributeData obfuscationAttributeData))
                     {
-                        if (stripAfterObfuscation is true)
+                        if (obfuscationAttributeData.StripAfterObfuscation)
                         {
-                            if (customAttribute.CustomAttributes.Remove(attributeResolve.Attribute))
+                            if (customAttribute.CustomAttributes.Remove(obfuscationAttributeData.CustomAttribute))
                             {
                                 m_Logger.Information("Successfully stripped obfuscation attribute");
                             }
@@ -169,25 +169,16 @@ public class BitMonoObfuscator
                             }
                         }
                     }
-                }
-            }
-        }
-
-        var assembly = context.Module.Assembly;
-        if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, assembly, out var assemblyAttributeResolve))
-        {
-            if (assemblyAttributeResolve.NamedValues.TryGetValue(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation),
-                    out var stripAfterObfuscation))
-            {
-                if (stripAfterObfuscation is true)
-                {
-                    if (assembly.CustomAttributes.Remove(assemblyAttributeResolve.Attribute))
+                    if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out ObfuscateAssemblyAttributeData obfuscateAssemblyAttributeData))
                     {
-                        m_Logger.Information("Successfully stripped obfuscation attribute");
-                    }
-                    else
-                    {
-                        m_Logger.Warning("Not able to strip obfuscation attribute");
+                        if (customAttribute.CustomAttributes.Remove(obfuscateAssemblyAttributeData.CustomAttribute))
+                        {
+                            m_Logger.Information("Successfully stripped assembly obfuscation attribute");
+                        }
+                        else
+                        {
+                            m_Logger.Warning("Not able to strip assembly obfuscation attribute");
+                        }
                     }
                 }
             }
