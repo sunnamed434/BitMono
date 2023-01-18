@@ -27,13 +27,19 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         if (member is IHasCustomAttribute customAttribute)
         {
             var feature = protection.GetName();
-            if (m_ObfuscationAttributeResolver.Resolve(feature, customAttribute))
+            if (m_ObfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributeData))
             {
-                return false;
+                if (obfuscationAttributeData.Exclude)
+                {
+                    return false;
+                }
             }
-            if (m_ObfuscateAssemblyAttributeResolver.Resolve(customAttribute))
+            if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
             {
-                return false;
+                if (obfuscateAssemblyAttributeData.AssemblyIsPrivate)
+                {
+                    return false;
+                }
             }
             if (m_CriticalAttributeResolver.Resolve(feature, customAttribute))
             {
