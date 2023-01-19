@@ -105,7 +105,7 @@ Credits
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev
 
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
-[image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main?style=plastic
+[image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main
 [image_codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/badge/main
 [image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
 [image_license]: https://img.shields.io/github/license/sunnamed434/bitmono
