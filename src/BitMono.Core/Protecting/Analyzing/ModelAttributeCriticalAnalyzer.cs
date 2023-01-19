@@ -2,35 +2,28 @@
 
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
-    private readonly IConfiguration m_Configuration;
-    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
-    private readonly Dictionary<string, string> m_Attributes = new Dictionary<string, string>
-    {
-        { nameof(SerializableAttribute), typeof(SerializableAttribute).Namespace },
-        { nameof(XmlAttributeAttribute), typeof(XmlAttributeAttribute).Namespace },
-        { nameof(XmlArrayItemAttribute), typeof(XmlArrayItemAttribute).Namespace },
-        { nameof(JsonPropertyAttribute), typeof(JsonPropertyAttribute).Namespace },
-    };
+    private readonly Criticals m_Criticals;
+    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public ModelAttributeCriticalAnalyzer(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Configuration = configuration.Configuration;
+        m_Criticals = criticals.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Shared.Models.Obfuscation.ModelAttributeObfuscationExclude)) == false)
+        if (m_Criticals.UseCriticalModelAttributes == false)
         {
             return true;
         }
-        foreach (var attribute in m_Attributes)
+        foreach (var attribute in m_Criticals.CriticalModelAttributes)
         {
-            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Value, attribute.Key, out _))
+            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
             {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 }

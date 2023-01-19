@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.7.0-alpha](#v070-alpha16) |
 | [v0.6.0-alpha](#v060-alpha15) |
 | [v0.4.4-alpha](#v044-alpha13) |
 | [v0.4.3-alpha](#v043-alpha12) |
@@ -17,6 +18,23 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.7.0-alpha-16:
+#### Added: 
+* Unit Tests
+* Benchmarks
+* Support of ObfuscateAssemblyAttribute
+* New properties in obfuscation.json
+* Ignore members with specific attribute, eg, [SerializeField], it can be edited in criticals.json
+
+#### Changed:
+* Obfuscation process
+* ObfuscationAttribute support
+* Moved from .NET Framework 461 to .NET Framework 462
+
+#### Fixed:
+* [SerializableAttribute] support
+* [MethodImpl(MethodImplOptions.NoInlining)] support
+
 ### v0.6.0-alpha.15:
 #### Added:
 * New protection AntiDecompiler

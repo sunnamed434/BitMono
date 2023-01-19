@@ -1,24 +1,22 @@
-﻿using BitMono.Core.Extensions;
-
-namespace BitMono.Core.Protecting.Analyzing;
+﻿namespace BitMono.Core.Protecting.Analyzing;
 
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Criticals m_Criticals;
 
-    public CriticalInterfacesCriticalAnalyzer(IBitMonoCriticalsConfiguration configuration)
+    public CriticalInterfacesCriticalAnalyzer(IOptions<Criticals> criticals)
     {
-        m_Configuration = configuration.Configuration;
+        m_Criticals = criticals.Value;
     }
 
-    public bool NotCriticalToMakeChanges(TypeDefinition typeDefinition)
+    public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (m_Configuration.GetValue<bool>("UseCriticalInterfaces") == false)
+        if (m_Criticals.UseCriticalInterfaces == false)
         {
             return true;
         }
-        var criticalInterfaces = m_Configuration.GetCriticalInterfaces();
-        if (typeDefinition.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
+        var criticalInterfaces = m_Criticals.CriticalInterfaces;
+        if (type.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
         {
             return false;
         }

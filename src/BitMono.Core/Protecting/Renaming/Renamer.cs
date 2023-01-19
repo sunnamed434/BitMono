@@ -4,24 +4,24 @@ public class Renamer : IRenamer
 {
     private readonly NameCriticalAnalyzer m_NameCriticalAnalyzer;
     private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
-    private readonly IConfiguration m_Configuration;
+    private readonly Obfuscation m_Obfuscation;
     private readonly Random m_Random;
 
     public Renamer(
         NameCriticalAnalyzer nameCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
-        IBitMonoObfuscationConfiguration configuration,
+        IOptions<Obfuscation> configuration,
         RuntimeImplementations runtime)
     {
         m_NameCriticalAnalyzer = nameCriticalAnalyzer;
         m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
-        m_Configuration = configuration.Configuration;
+        m_Obfuscation = configuration.Value;
         m_Random = runtime.Random;
     }
 
     public string RenameUnsafely()
     {
-        var strings = m_Configuration.GetRandomStrings();
+        var strings = m_Obfuscation.RandomStrings;
         var randomStringOne = strings[m_Random.Next(0, strings.Length - 1)] + " " + strings[m_Random.Next(0, strings.Length - 1)];
         var randomStringTwo = strings[m_Random.Next(0, strings.Length - 1)];
         var randomStringThree = strings[m_Random.Next(0, strings.Length - 1)];
@@ -82,6 +82,6 @@ public class Renamer : IRenamer
     }
     public void RemoveNamespace(params IMetadataMember[] members)
     {
-        members.ForEach(member => RemoveNamespace(member));
+        members.ForEach(RemoveNamespace);
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace BitMono.Core.Protecting.Injection;
 
 [Flags]
-public enum Modifies
+public enum ModifyFlags
 {
     Rename = 0x1,
     RemoveNamespace = 0x2,

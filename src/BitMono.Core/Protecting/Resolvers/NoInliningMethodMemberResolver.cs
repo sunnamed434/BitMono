@@ -2,26 +2,26 @@
 
 public class NoInliningMethodMemberResolver : IMemberResolver
 {
-    private readonly IConfiguration m_Configuration;
+    private readonly Obfuscation m_Obfuscation;
 
-    public NoInliningMethodMemberResolver(IBitMonoObfuscationConfiguration configuration)
+    public NoInliningMethodMemberResolver(IOptions<Obfuscation> obfuscation)
     {
-        m_Configuration = configuration.Configuration;
+        m_Obfuscation = obfuscation.Value;
     }
 
-    public bool Resolve(IProtection protection, IMetadataMember member)
+    public bool Resolve([AllowNull] IProtection protection, IMetadataMember member)
     {
-        if (m_Configuration.GetValue<bool>(nameof(Obfuscation.NoInliningMethodObfuscationExclude)) == false)
+        if (m_Obfuscation.NoInliningMethodObfuscationExclude == false)
         {
-            return false;
+            return true;
         }
         if (member is MethodDefinition method)
         {
             if (method.NoInlining)
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }

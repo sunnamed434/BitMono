@@ -11,7 +11,7 @@ public class ProtectionsSorter
         m_Assembly = assembly;
     }
 
-    public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
+    public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
     {
         var protectionsResolve = new ProtectionsResolver(protections, protectionSettings).Sort();
         var obfuscationAttributeProtections = protectionsResolve.FoundProtections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly) == true);

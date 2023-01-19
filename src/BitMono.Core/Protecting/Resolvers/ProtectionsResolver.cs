@@ -3,9 +3,9 @@
 public class ProtectionsResolver
 {
     private readonly List<IProtection> m_Protections;
-    private readonly IEnumerable<ProtectionSettings> m_ProtectionSettings;
+    private readonly IEnumerable<ProtectionSetting> m_ProtectionSettings;
 
-    public ProtectionsResolver(List<IProtection> protections, IEnumerable<ProtectionSettings> protectionSettings)
+    public ProtectionsResolver(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
     {
         m_Protections = protections;
         m_ProtectionSettings = protectionSettings;

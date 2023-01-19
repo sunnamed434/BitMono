@@ -1,47 +1,52 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class ObfuscationAttributeResolver : AttributeResolver
+public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttributeData>
 {
-    private readonly IConfiguration m_Configuration;
-    private readonly IAttemptAttributeResolver m_AttemptAttributeResolver;
+    private readonly Obfuscation m_Obfuscation;
+    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public ObfuscationAttributeResolver(IBitMonoObfuscationConfiguration configuration, IAttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscationAttributeResolver(IOptions<Obfuscation> configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Configuration = configuration.Configuration;
+        m_Obfuscation = configuration.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
         m_AttributeNamespace = typeof(ObfuscationAttribute).Namespace;
         m_AttributeName = nameof(ObfuscationAttribute);
     }
 
-    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public override bool Resolve(string featureName, IHasCustomAttribute from, [AllowNull] out ObfuscationAttributeData model)
     {
-        attributeResolve = null;
-        if (m_Configuration.GetValue<bool>(nameof(Obfuscation.ObfuscationAttributeObfuscationExclude)) == false)
+        model = null;
+        if (m_Obfuscation.ObfuscationAttributeObfuscationExclude == false)
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var keyValuePairs) == false)
+        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var attributesResolve) == false)
         {
             return false;
         }
-        if (string.IsNullOrWhiteSpace(feature))
+        foreach (var attribute in attributesResolve)
         {
-            return true;
-        }
-        if (keyValuePairs.TryGetValue(nameof(ObfuscationAttribute.Feature), out attributeResolve) == false)
-        {
-            return false;
-        }
-        if (attributeResolve.Value is string valueFeature)
-        {
-            if (valueFeature.Equals(feature, StringComparison.OrdinalIgnoreCase))
+            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string feature))
             {
-                var exclude = keyValuePairs.TryGetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
-                if (exclude)
+                if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    var exclude = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    var applyToMembers = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude), defaultValue: true);
+                    var stripAfterObfuscation = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.StripAfterObfuscation), defaultValue: true);
+                    if (exclude)
+                    {
+                        model = new ObfuscationAttributeData
+                        {
+                            Exclude = exclude,
+                            ApplyToMembers = applyToMembers,
+                            StripAfterObfuscation = stripAfterObfuscation,
+                            Feature = feature,
+                            CustomAttribute = attribute.Attribute
+                        };
+                        return true;
+                    }
                 }
             }
         }

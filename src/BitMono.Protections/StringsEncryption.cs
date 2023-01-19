@@ -21,7 +21,7 @@ public class StringsEncryption : IProtection
 
         var runtimeDecryptorType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
         var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
-        var listener = new ModifyInjectTypeClonerListener(Modifies.All, m_Renamer, context.Module);
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, context.Module);
         var memberCloneResult = new MemberCloner(context.Module, listener)
             .Include(runtimeDecryptorType)
             .Clone();

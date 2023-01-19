@@ -2,26 +2,26 @@
 
 public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
 {
-    public ModifyInjectTypeClonerListener(Modifies modifies, IRenamer renamer, ModuleDefinition targetModule) : base(targetModule)
+    public ModifyInjectTypeClonerListener(ModifyFlags modify, IRenamer renamer, ModuleDefinition targetModule) : base(targetModule)
     {
-        Modifies = modifies;
+        Modify = modify;
         Renamer = renamer;
     }
 
-    public Modifies Modifies { get; }
+    public ModifyFlags Modify { get; }
     public IRenamer Renamer { get; }
 
     public override void OnClonedMember(IMemberDefinition original, IMemberDefinition cloned)
     {
-        if (Modifies.HasFlag(Modifies.Rename))
+        if (Modify.HasFlag(ModifyFlags.Rename))
         {
             Renamer.Rename(cloned);
         }
-        if (Modifies.HasFlag(Modifies.RemoveNamespace))
+        if (Modify.HasFlag(ModifyFlags.RemoveNamespace))
         {
             Renamer.RemoveNamespace(cloned);
         }
-        if (Modifies.HasFlag(Modifies.EmptyMethodParameterName))
+        if (Modify.HasFlag(ModifyFlags.EmptyMethodParameterName))
         {
             if (cloned is MethodDefinition method)
             {

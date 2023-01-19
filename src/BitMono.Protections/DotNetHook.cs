@@ -15,7 +15,7 @@ public class DotNetHook : IProtection
     {
         var runtimeHookingType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
         var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
-        var listener = new ModifyInjectTypeClonerListener(Modifies.All, m_Renamer, context.Module);
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, context.Module);
         var memberCloneResult = new MemberCloner(context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();

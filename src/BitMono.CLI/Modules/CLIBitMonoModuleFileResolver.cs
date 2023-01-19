@@ -1,22 +1,15 @@
 ﻿namespace BitMono.CLI.Modules;
 
-internal class CLIBitMonoModuleFileResolver : IModuleFileResolver
+internal class CLIBitMonoModuleFileResolver
 {
-    private readonly string[] m_Args;
-
-    public CLIBitMonoModuleFileResolver(string[] args)
-    {
-        m_Args = args;
-    }
-
     [return: AllowNull]
-    public Task<string> ResolveAsync()
+    public string Resolve(string[] args)
     {
         string file = null;
-        if (m_Args?.Any() == true)
+        if (args?.Any() == true)
         {
-            file = m_Args[0];
+            file = args[0];
         }
-        return Task.FromResult(file);
+        return file;
     }
 }

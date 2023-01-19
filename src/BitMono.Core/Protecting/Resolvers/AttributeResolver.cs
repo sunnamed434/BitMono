@@ -1,19 +1,19 @@
 ﻿namespace BitMono.Core.Protecting.Resolvers;
 
-public class AttributeResolver : IAttributeResolver
+public class AttributeResolver<TModel> : IAttributeResolver<TModel> where TModel : class
 {
-    public virtual bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public virtual bool Resolve([AllowNull] string featureName, IHasCustomAttribute from, [AllowNull] out TModel model)
     {
-        attributeResolve = null;
+        model = default;
         return false;
     }
-    public virtual bool Resolve([AllowNull] string feature, IHasCustomAttribute from)
+    public virtual bool Resolve([AllowNull] string featureName, IHasCustomAttribute from)
     {
-        return Resolve(feature, from, out _);
+        return Resolve(featureName, from, out _);
     }
     public virtual bool Resolve(IHasCustomAttribute from)
     {
-        return Resolve(feature: null, from);
+        return Resolve(featureName: null, from);
     }
     public virtual bool Resolve(Type featureType, IHasCustomAttribute from)
     {

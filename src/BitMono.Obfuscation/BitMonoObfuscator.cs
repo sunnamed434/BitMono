@@ -7,14 +7,17 @@ public class BitMonoObfuscator
     private readonly ProtectionsSort m_ProtectionsSort;
     private readonly IDataWriter m_DataWriter;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly IConfiguration m_ObfuscationConfiguration;
+    private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
+    private readonly Shared.Models.Obfuscation m_Obfuscation;
     private readonly IInvokablePipeline m_InvokablePipeline;
     private readonly MembersResolver m_MemberResolver;
     private readonly ProtectionExecutionNotifier m_ProtectionExecutionNotifier;
     private readonly ProtectionsNotifier m_ProtectionsNotifier;
+    private readonly ObfuscationAttributesStripper m_ObfuscationAttributesStripper;
+    private readonly ObfuscationAttributesStripNotifier m_ObfuscationAttributesStripNotifier;
     private readonly ILogger m_Logger;
     private PEImageBuildResult _imageBuild;
-    private Stopwatch _stopWatch;
+    private long _startTime;
 
     public BitMonoObfuscator(
         ProtectionContext context,
@@ -22,7 +25,8 @@ public class BitMonoObfuscator
         ProtectionsSort protectionsSortResult,
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
-        IBitMonoObfuscationConfiguration obfuscationConfiguration,
+        ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver,
+        Shared.Models.Obfuscation obfuscation,
         ILogger logger)
     {
         m_Context = context;
@@ -30,12 +34,16 @@ public class BitMonoObfuscator
         m_ProtectionsSort = protectionsSortResult;
         m_DataWriter = dataWriter;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscationConfiguration = obfuscationConfiguration.Configuration;
+        m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
+        m_Obfuscation = obfuscation;
         m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);
-        m_ProtectionsNotifier = new ProtectionsNotifier(obfuscationConfiguration, m_Logger);
+        m_ProtectionsNotifier = new ProtectionsNotifier(m_Obfuscation, m_Logger);
+        m_ObfuscationAttributesStripper = new ObfuscationAttributesStripper(m_Obfuscation,
+            m_ObfuscationAttributeResolver, m_ObfuscateAssemblyAttributeResolver);
+        m_ObfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(m_Logger);
     }
 
     public async Task ProtectAsync()
@@ -66,8 +74,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> startTimeCounterAsync(ProtectionContext context)
     {
-        _stopWatch = new Stopwatch();
-        _stopWatch.Start();
+        _startTime = Stopwatch.GetTimestamp();
         return Task.FromResult(true);
     }
     private Task<bool> outputFrameworkInformationAsync(ProtectionContext context)
@@ -88,7 +95,7 @@ public class BitMonoObfuscator
         }
         if (assemblyResolve.Succeed == false)
         {
-            if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.FailOnNoRequiredDependency)))
+            if (m_Obfuscation.FailOnNoRequiredDependency)
             {
                 m_Logger.Fatal("Please, specify needed dependencies, or set in obfuscation.json FailOnNoRequiredDependency to false");
                 return Task.FromResult(false);
@@ -146,23 +153,8 @@ public class BitMonoObfuscator
     }
     private Task<bool> stripObfuscationAttributesAsync(ProtectionContext context)
     {
-        foreach (var customAttribute in context.Module.FindDefinitions().OfType<IHasCustomAttribute>())
-        {
-            foreach (var protection in m_ProtectionsSort.ProtectionsResolve.FoundProtections)
-            {
-                if (m_ObfuscationAttributeResolver.Resolve(protection.GetName(), customAttribute, out CustomAttributeResolve attributeResolve))
-                {
-                    if (customAttribute.CustomAttributes.Remove(attributeResolve.CustomAttribute))
-                    {
-                        m_Logger.Information("Successfully stripped obfuscation attribute");
-                    }
-                    else
-                    {
-                        m_Logger.Warning("Failed to stip obfuscation attribute");
-                    }
-                }
-            }
-        }
+        var obfuscationAttributesStrip = m_ObfuscationAttributesStripper.Strip(context, m_ProtectionsSort);
+        m_ObfuscationAttributesStripNotifier.Notify(obfuscationAttributesStrip);
         return Task.FromResult(true);
     }
     private Task<bool> createPEImageAsync(ProtectionContext context)
@@ -172,7 +164,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> outputPEImageBuildErrorsAsync(ProtectionContext context)
     {
-        if (m_ObfuscationConfiguration.GetValue<bool>(nameof(Shared.Models.Obfuscation.OutputPEImageBuildErrors)))
+        if (m_Obfuscation.OutputPEImageBuildErrors)
         {
             if (_imageBuild.DiagnosticBag.HasErrors)
             {
@@ -217,8 +209,8 @@ public class BitMonoObfuscator
     }
     private Task<bool> outputElapsedTimeAsync(ProtectionContext context)
     {
-        _stopWatch.Stop();
-        m_Logger.Information("Since obfuscation elapsed: {0}", _stopWatch.Elapsed.ToString());
+        var elapsedTime = StopwatchUtilities.GetElapsedTime(_startTime, Stopwatch.GetTimestamp());
+        m_Logger.Information("Since obfuscation elapsed: {0}", elapsedTime.ToString());
         return Task.FromResult(true);
     }
     private void onFail()

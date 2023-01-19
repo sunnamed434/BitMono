@@ -2,6 +2,9 @@
 
 public class CustomAttributeResolve
 {
-    public CustomAttribute CustomAttribute { get; set; }
-    public object Value { get; set; }
+    [AllowNull]
+    public Dictionary<string, object> NamedValues { get; set; }
+    [AllowNull]
+    public List<object> FixedValues { get; set; }
+    public CustomAttribute Attribute { get; set; }
 }
