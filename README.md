@@ -6,6 +6,7 @@
 ## BitMono
 [![Build status][image_build]][build]
 [![Test status][image_test]][test]
+[![Codefactor][image_codefactor]][codefactor]
 [![Gitter Chat][image_gitter]][gitter]
 
 BitMono is an free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework but for Unity. Which uses **[AsmResolver](https://github.com/Washi1337/AsmResolver)** for assembly manipulation. If you have any questions/issues please let me know **[there](https://github.com/sunnamed434/BitMono/issues)**. You can install the latest version of BitMono **[here](https://github.com/sunnamed434/BitMono/releases)**.
@@ -74,10 +75,12 @@ Credits
 
 **[Kao and his blogs](https://lifeinhex.com/)** thanks a lot of these blogs.
 
-[test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [build]: https://ci.appveyor.com/project/sunnamed434/bitmono
+[test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
+[codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
 [image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main?style=plastic
+[image_codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/badge/main
 [image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
