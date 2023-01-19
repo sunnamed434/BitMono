@@ -4,7 +4,7 @@
 </p>
 
 ## BitMono
-[![Build status][image_build]][build]
+[![Build status][image_appveyor_main_badge]][appveyor_main_build]
 [![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
 [![Gitter Chat][image_gitter]][gitter]
@@ -82,7 +82,6 @@ Credits
 
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
-[build]: https://ci.appveyor.com/project/sunnamed434/bitmono
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
