@@ -7,7 +7,7 @@
   // for complex things use [ObfuscationAttribute(Feature = "ProtectionName")],
   // but if you don't have plans with the mess in your code, and you don't really have plans in near future to rename these critical things it can be done then.
   
-  // Exclude from obfuscation if the type has attribute
+  // Exclude from obfuscation if the member has attribute
   // Set to true indicates whether enabled
   "UseCriticalAttributes": true,
   "CriticalAttributes": [
