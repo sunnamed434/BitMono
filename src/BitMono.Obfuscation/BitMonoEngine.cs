@@ -38,7 +38,7 @@ public class BitMonoEngine
         var protectionsSort = protectionsSorter.Sort(m_Protections, m_ProtectionSettings);
         if (protectionsSort.HasProtections == false)
         {
-            m_Logger.Fatal("No one protection were detected!");
+            m_Logger.Fatal("No one protection were detected, please specify or enable them in protections.json!");
             return false;
         }
         

@@ -25,9 +25,10 @@ public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
         {
             if (cloned is MethodDefinition method)
             {
-                foreach (var parameter in method.ParameterDefinitions)
+                var parameterDefinitions = method.ParameterDefinitions;
+                for (var i = 0; i < parameterDefinitions.Count; i++)
                 {
-                    parameter.Name = string.Empty;
+                    parameterDefinitions[i].Name = string.Empty;
                 }
             }
         }

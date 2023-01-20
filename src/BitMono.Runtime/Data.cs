@@ -2,8 +2,8 @@
 
 public struct Data
 {
-    internal readonly static byte[] CryptKeyBytes = new byte[8];
-    internal readonly static byte[] SaltBytes = new byte[8];
+    internal static readonly byte[] CryptKeyBytes = new byte[8];
+    internal static readonly byte[] SaltBytes = new byte[8];
     
     static Data()
     {
