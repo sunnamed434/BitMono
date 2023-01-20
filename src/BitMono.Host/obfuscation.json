@@ -41,7 +41,7 @@
   // If this is Unity go to your game path (eg, steam), open-up the directory and search for Managed directory xxx_Data\Managed,
   // Copy asked libraries from there and feed them to BitMono
   // Stay it true to stay enabled if this is possible!
-  "FailOnNoRequiredDependency": false,
+  "FailOnNoRequiredDependency": true,
 
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,
