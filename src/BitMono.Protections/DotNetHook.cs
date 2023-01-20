@@ -19,11 +19,10 @@ public class DotNetHook : IProtection
         var memberCloneResult = new MemberCloner(context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();
-        var hookingType = memberCloneResult.GetClonedMember(runtimeHookingType);
         var redirectStubMethod = memberCloneResult.GetClonedMember(runtimeRedirectStubMethod);
 
         var factory = context.Module.CorLibTypeFactory;
-        var @void = factory.Void;
+        var systemVoid = factory.Void;
 
         var moduleType = context.Module.GetOrCreateModuleType();
         var moduleCctor = moduleType.GetOrCreateStaticConstructor();
@@ -34,35 +33,37 @@ public class DotNetHook : IProtection
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
                     var instruction = body.Instructions[i];
-                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor callingOperandMethod)
+                    if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor callingOperandMethod)
                     {
                         var callingMethod = callingOperandMethod.Resolve();
-                        if (callingMethod != null && callingMethod.CilMethodBody != null
+                        if (callingMethod is { CilMethodBody: { } } 
                             && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
                         {
                             if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
-                                var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature);
-                                dummyMethod.ImplAttributes = callingMethod.ImplAttributes;
-                                dummyMethod.IsAssembly = true;
-                                dummyMethod.IsStatic = true;
-                                dummyMethod.AssignNextAvaliableToken(context.Module);
-                                moduleType.Methods.Add(dummyMethod);
-                                foreach (var parameter in callingMethod.ParameterDefinitions)
+                                var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
                                 {
+                                    IsAssembly = true,
+                                    IsStatic = true
+                                }.AssignNextAvailableToken(context.Module);
+                                moduleType.Methods.Add(dummyMethod);
+                                var parameterDefinitions = callingMethod.ParameterDefinitions;
+                                for (var j = 0; j < parameterDefinitions.Count; j++)
+                                {
+                                    var parameter = parameterDefinitions[i];
                                     dummyMethod.ParameterDefinitions.Add(new ParameterDefinition(parameter.Sequence, parameter.Name, parameter.Attributes));
                                 }
-                                dummyMethod.MethodBody = new CilMethodBody(dummyMethod);
+                                var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody(dummyMethod);
                                 if (callingMethod.Signature.ReturnsValue)
                                 {
-                                    dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
+                                    dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
                                 }
-                                dummyMethod.CilMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
+                                dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
 
-                                var signature = MethodSignature.CreateStatic(@void);
+                                var signature = MethodSignature.CreateStatic(systemVoid);
                                 var attributes = MethodAttributes.Assembly | MethodAttributes.Static;
-                                var initializatorMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), attributes, signature);
-                                initializatorMethod.CilMethodBody = new CilMethodBody(initializatorMethod)
+                                var initializationMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), attributes, signature);
+                                initializationMethod.CilMethodBody = new CilMethodBody(initializationMethod)
                                 {
                                     Instructions =
                                     {
@@ -72,11 +73,11 @@ public class DotNetHook : IProtection
                                         new CilInstruction(CilOpCodes.Ret) 
                                     }
                                 };
-                                moduleType.Methods.Add(initializatorMethod);
+                                moduleType.Methods.Add(initializationMethod);
 
                                 instruction.Operand = dummyMethod;
                                 var randomIndex = m_Random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
-                                moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializatorMethod));
+                                moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }
                     }

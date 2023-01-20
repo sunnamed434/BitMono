@@ -35,4 +35,8 @@ public static class MethodDefinitionExtensions
     {
         return source.Parameters.Any();
     }
+    public static bool ReturnsValue(this MethodSignature source, TypeSignature type)
+    {
+        return source.ReturnsValue && source.ReturnType.Equals(type);
+    }
 }

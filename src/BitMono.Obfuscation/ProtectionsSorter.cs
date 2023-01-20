@@ -26,7 +26,7 @@ public class ProtectionsSorter
 
         sortedProtections = sortedProtections.Except(packers).Except(pipelineProtections);
 
-        var hasProtections = sortedProtections.Any();
+        var hasProtections = sortedProtections.IsEmpty() == false || packers.IsEmpty() == false;
         return new ProtectionsSort
         {
             ProtectionsResolve = protectionsResolve,

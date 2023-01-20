@@ -5,11 +5,11 @@ public class ObjectReturnType : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        var boolean = context.Module.CorLibTypeFactory.Boolean;
-        var @object = context.Module.CorLibTypeFactory.Object;
+        var systemBoolean = context.Module.CorLibTypeFactory.Boolean;
+        var systemObject = context.Module.CorLibTypeFactory.Object;
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.Signature.ReturnsValue && method.Signature.ReturnType != boolean)
+            if (method.Signature.ReturnsValue(systemBoolean))
             {
                 if (method.IsConstructor == false && method.IsVirtual == false && method.NotAsync())
                 {
@@ -17,7 +17,7 @@ public class ObjectReturnType : IProtection
                     {
                         if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn) == false)
                         {
-                            method.Signature.ReturnType = @object;
+                            method.Signature.ReturnType = systemObject;
                         }
                     }
                 }
