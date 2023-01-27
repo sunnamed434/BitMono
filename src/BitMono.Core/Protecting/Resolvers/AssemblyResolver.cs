@@ -18,10 +18,10 @@ public class AssemblyResolver
             {
                 context.ThrowIfCancellationRequested();
 
-                var defenition = AssemblyDefinition.FromBytes(data);
-                if (context.AssemblyResolver.HasCached(originalReference) == false && signatureComparer.Equals(originalReference, defenition))
+                var definition = AssemblyDefinition.FromBytes(data);
+                if (context.AssemblyResolver.HasCached(originalReference) == false && signatureComparer.Equals(originalReference, definition))
                 {
-                    context.AssemblyResolver.AddToCache(originalReference, defenition);
+                    context.AssemblyResolver.AddToCache(originalReference, definition);
                 }
             }
         }

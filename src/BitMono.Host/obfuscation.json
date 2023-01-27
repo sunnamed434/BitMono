@@ -20,14 +20,10 @@
   // Set to true indicates whether enabled
   "ObfuscateAssemblyAttributeObfuscationExclude": true,
   
-  // Exclude from obfuscation if type name used by: Type.GetTypeFromHandle, or simply used by ldtoken CIL instruction
-  // Set to true indicates whether enabled
-  "ReflectionOnMemberUsedTypeGetTypeFromHandleExclude": true,
-  
   // Exclude from obfuscation if member name used by: 
   // Type.GetMethod, Type.GetField, Type.GetProperty, Type.GetEvent, Type.GetMember
   // Set to true indicates whether enabled
-  "ReflectionOnMemberUsedExclude": true,
+  "ReflectionMembersObfuscationExclude": true,
 
   // Strip attribute after obfuscation if assembly has [ObfuscateAssemblyAttribute(true, StripAfterObfuscation = true)] 
   // or member has [Obfuscation(Feature = "Some_BitMono_Feature", StripAfterObfuscation = true]

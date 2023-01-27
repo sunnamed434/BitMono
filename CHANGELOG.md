@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.8.0-alpha](#v080-alpha17) |
 | [v0.7.0-alpha](#v070-alpha16) |
 | [v0.6.0-alpha](#v060-alpha15) |
 | [v0.4.4-alpha](#v044-alpha13) |
@@ -18,7 +19,16 @@
 | [v0.1.0](#v010) |
 
 ---
-### v0.7.0-alpha-16:
+### v0.8.0-alpha.17:
+2023-01-27
+#### Added
+* Reflection analysis such as in ConfuserEx [#41](https://github.com/sunnamed434/BitMono/issues/41)
+* BitMono protection 
+
+#### Changed:
+* Moved new protections from BitDotNet to BitMono protection and added support for PE32 and PE32+
+
+### v0.7.0-alpha.16:
 #### Added: 
 * Unit Tests
 * Benchmarks

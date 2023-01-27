@@ -51,7 +51,7 @@ public class BitMonoEngine
         var dependenciesDataResolver = new DependenciesDataResolver(needs.DependenciesDirectoryName);
         var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_Obfuscation);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
-
+        
         var runtimeModule = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
         var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);

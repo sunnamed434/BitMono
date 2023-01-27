@@ -45,7 +45,6 @@ public class DoNotResolveMemberResolver : IMemberResolver
             {
                 if (m_ReflectionCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
                 {
-                    Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>> SKIPP!!!! of method name: " + method.Name);
                     return false;
                 }
             }

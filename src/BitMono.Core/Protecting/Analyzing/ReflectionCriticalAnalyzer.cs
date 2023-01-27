@@ -3,6 +3,7 @@ namespace BitMono.Core.Protecting.Analyzing;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
+    private readonly Obfuscation m_Obfuscation;
     private List<MethodDefinition> m_CachedMethods;
     private static readonly string[] ReflectionMethods = new string[]
     {
@@ -13,8 +14,9 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         nameof(Type.GetMember),
     };
 
-    public ReflectionCriticalAnalyzer()
+    public ReflectionCriticalAnalyzer(IOptions<Obfuscation> obfuscation)
     {
+        m_Obfuscation = obfuscation.Value;
         m_CachedMethods = new List<MethodDefinition>();
     }
 
@@ -22,6 +24,10 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
+        if (m_Obfuscation.ReflectionMembersObfuscationExclude == false)
+        {
+            return true;
+        }
         if (m_CachedMethods.FirstOrDefault(r => r.Name.Equals(method.Name)) != null)
         {
             return false;

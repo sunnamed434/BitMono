@@ -8,6 +8,7 @@ public class Obfuscation
     public bool SerializableBitObfuscationExclude { get; set; }
     public bool ObfuscationAttributeObfuscationExclude { get; set; }
     public bool ObfuscateAssemblyAttributeObfuscationExclude { get; set; }
+    public bool ReflectionMembersObfuscationExclude { get; set; }
     public bool StripObfuscationAttributes { get; set; }
     public bool OutputPEImageBuildErrors { get; set; }
     public bool FailOnNoRequiredDependency { get; set; }

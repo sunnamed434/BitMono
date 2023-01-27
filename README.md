@@ -48,13 +48,14 @@ Open the **[wiki][bitmono_wiki]** to read protection, functionality and more.
 * **[BitDotNet][bitdotnet_source]** (based and improved on existing protection)
 * **[BitMethodDotnet][bitmethoddotnet_source]** (based and improved on existing protection)
 * **[DotNetHook][dotnethook_source]** (based on existing protection)
-* Call to calli
+* CallToCalli
 * ObjectReturnType
 * NoNamespaces
 * FullRenamer
 * AntiDebugBreakpoints
 * AntiDecompiler
 * BitDateTimeStamp
+* BitMono
 
 ## Usage
 `BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`

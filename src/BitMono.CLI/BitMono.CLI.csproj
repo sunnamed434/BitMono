@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Serilog" Version="2.12.0" />

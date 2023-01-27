@@ -8,7 +8,11 @@ public class ReflectionCriticalAnalyzerTest
         var module = ModuleDefinition.FromFile(typeof(ReflectionMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(ReflectionMethods));
         var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = new ReflectionCriticalAnalyzer();
+        var obfuscation = new Obfuscation
+        {
+            ReflectionMembersObfuscationExclude = true
+        };
+        var criticalAnalyzer = new ReflectionCriticalAnalyzer(Options.Create(obfuscation));
         
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
