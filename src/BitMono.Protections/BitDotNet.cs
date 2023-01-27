@@ -2,6 +2,7 @@
 
 public class BitDotNet : IPacker
 {
+    private const int PEHeaderWithExtraByteHex = 0x00014550;
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         using (var stream = File.Open(context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
@@ -11,8 +12,6 @@ public class BitDotNet : IPacker
             stream.Position = 0x3C;
             var peHeader = reader.ReadUInt32();
             stream.Position = peHeader;
-
-            const int PEHeaderWithExtraByteHex = 0x00014550;
             writer.Write(PEHeaderWithExtraByteHex);
 
             stream.Position += 0x2;
@@ -20,7 +19,7 @@ public class BitDotNet : IPacker
 
             stream.Position += 0x10;
             var x64PEOptionsHeader = reader.ReadUInt16() == 0x20B;
-
+            
             stream.Position += x64PEOptionsHeader ? 0x38 : 0x28 + 0xA6;
             var dotNetVirtualAddress = reader.ReadUInt32();
 

@@ -54,7 +54,7 @@
     },
     {
       "Name": "BitMono",
-      "Enabled": false
+      "Enabled": true
     }
   ]
 }
