@@ -15,6 +15,14 @@
     {
       "Namespace": "UnityEngine",
       "Name": "SerializeField"
+    },
+
+    // "Magic name" attributes, please use instead special library if you need to add features from newer C# versions in older
+    // eg add record types, or "magic name" attributes, etc
+    // special library: https://github.com/Sergio0694/PolySharp (In Mono works fine)
+    {
+      "Namespace": "System.Runtime.CompilerServices",
+      "Name": "ModuleInitializerAttribute"
     }
 
   ],

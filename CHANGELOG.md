@@ -28,6 +28,9 @@
 #### Changed:
 * Moved new protections from BitDotNet to BitMono protection and added support for PE32 and PE32+
 
+#### New Contributors
+* @Gibsol made their first contribution in [#54](https://github.com/sunnamed434/BitMono/pull/54)
+
 ### v0.7.0-alpha.16:
 #### Added: 
 * Unit Tests
