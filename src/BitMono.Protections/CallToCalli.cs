@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class CallToCalli : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
@@ -26,7 +26,7 @@ public class CallToCalli : IProtection
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
                     var instruction = body.Instructions[i];
-                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
+                    if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null)

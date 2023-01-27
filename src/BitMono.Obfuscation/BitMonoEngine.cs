@@ -38,7 +38,7 @@ public class BitMonoEngine
         var protectionsSort = protectionsSorter.Sort(m_Protections, m_ProtectionSettings);
         if (protectionsSort.HasProtections == false)
         {
-            m_Logger.Fatal("No one protection were detected!");
+            m_Logger.Fatal("No one protection were detected, please specify or enable them in protections.json!");
             return false;
         }
         
@@ -51,7 +51,7 @@ public class BitMonoEngine
         var dependenciesDataResolver = new DependenciesDataResolver(needs.DependenciesDirectoryName);
         var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_Obfuscation);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
-
+        
         var runtimeModule = ModuleDefinition.FromFile(typeof(BitMono.Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
         var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);

@@ -4,7 +4,7 @@
 </p>
 
 ## BitMono
-[![Build status][image_build]][build]
+[![Build status][image_appveyor_main_badge]][appveyor_main_build]
 [![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
 [![Gitter Chat][image_gitter]][gitter]
@@ -48,13 +48,14 @@ Open the **[wiki][bitmono_wiki]** to read protection, functionality and more.
 * **[BitDotNet][bitdotnet_source]** (based and improved on existing protection)
 * **[BitMethodDotnet][bitmethoddotnet_source]** (based and improved on existing protection)
 * **[DotNetHook][dotnethook_source]** (based on existing protection)
-* Call to calli
+* CallToCalli
 * ObjectReturnType
 * NoNamespaces
 * FullRenamer
 * AntiDebugBreakpoints
 * AntiDecompiler
 * BitDateTimeStamp
+* BitMono
 
 ## Usage
 `BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`
@@ -82,7 +83,6 @@ Credits
 
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
-[build]: https://ci.appveyor.com/project/sunnamed434/bitmono
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -105,7 +105,7 @@ Credits
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev
 
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
-[image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main?style=plastic
+[image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main
 [image_codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/badge/main
 [image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
 [image_license]: https://img.shields.io/github/license/sunnamed434/bitmono

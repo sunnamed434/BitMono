@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class StringsEncryption : IProtection
 {
     private readonly MscorlibInjector m_Injector;
@@ -15,7 +15,7 @@ public class StringsEncryption : IProtection
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var globalModuleType = context.Module.GetOrCreateModuleType();
-        var decryptorType = m_Injector.InjectCompilerGeneratedValueType(context.Module, globalModuleType, m_Renamer.RenameUnsafely());
+        m_Injector.InjectCompilerGeneratedValueType(context.Module, globalModuleType, m_Renamer.RenameUnsafely());
         var cryptKeyField = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, Data.CryptKeyBytes, m_Renamer.RenameUnsafely());
         var saltBytesField = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, Data.SaltBytes, m_Renamer.RenameUnsafely());
 
@@ -32,13 +32,13 @@ public class StringsEncryption : IProtection
         {
             if (method.CilMethodBody is { } body)
             {
-                for (var i = 0; i < body.Instructions.Count(); i++)
+                for (var i = 0; i < body.Instructions.Count; i++)
                 {
-                    if (body.Instructions[i].OpCode == CilOpCodes.Ldstr
-                        && body.Instructions[i].Operand is string content)
+                    if (body.Instructions[i].OpCode.Equals( CilOpCodes.Ldstr) && body.Instructions[i].Operand is string content)
                     {
                         var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
-                        var encryptedDataFieldDef = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, data, m_Renamer.RenameUnsafely());
+                        var arrayName = m_Renamer.RenameUnsafely();
+                        var encryptedDataFieldDef = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, data, arrayName);
 
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                         body.Instructions.InsertRange(i + 1, new CilInstruction[]

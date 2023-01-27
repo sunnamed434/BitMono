@@ -2,15 +2,15 @@
   "Protections": [
     {
       "Name": "AntiILdasm",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "ObjectReturnType",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "NoNamespaces",
@@ -18,7 +18,7 @@
     },
     {
       "Name": "FullRenamer",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDebugBreakpoints",
@@ -30,11 +30,11 @@
     },
     {
       "Name": "DotNetHook",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "CallToCalli",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDecompiler",
@@ -46,11 +46,15 @@
     },
     {
       "Name": "BitTimeDateStamp",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitDotNet",
       "Enabled": false
+    },
+    {
+      "Name": "BitMono",
+      "Enabled": true
     }
   ]
 }

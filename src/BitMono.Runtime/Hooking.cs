@@ -18,9 +18,7 @@ internal struct Hooking
         {
             Marshal.WriteByte(fromPtr, 0, 0x49);
             Marshal.WriteByte(fromPtr, 1, 0xBB);
-
             Marshal.WriteInt64(fromPtr, 2, toPtr.ToInt64());
-
             Marshal.WriteByte(fromPtr, 10, 0x41);
             Marshal.WriteByte(fromPtr, 11, 0xFF);
             Marshal.WriteByte(fromPtr, 12, 0xE3);

@@ -6,6 +6,7 @@ global using BitMono.Core.Protecting.Analyzing;
 global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Core.TestCases.CustomAttributes;
 global using BitMono.Core.TestCases.Methods;
+global using BitMono.Core.TestCases.Reflection;
 global using BitMono.Shared.Models;
 global using FluentAssertions;
 global using Xunit;

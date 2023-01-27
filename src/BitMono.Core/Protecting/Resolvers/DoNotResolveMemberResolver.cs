@@ -4,11 +4,16 @@ public class DoNotResolveMemberResolver : IMemberResolver
 {
     private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
     private readonly ModelAttributeCriticalAnalyzer m_ModelAttributeCriticalAnalyzer;
+    private readonly ReflectionCriticalAnalyzer m_ReflectionCriticalAnalyzer;
 
-    public DoNotResolveMemberResolver(RuntimeCriticalAnalyzer runtimeCriticalAnalyzer, ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer)
+    public DoNotResolveMemberResolver(
+        RuntimeCriticalAnalyzer runtimeCriticalAnalyzer, 
+        ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer,
+        ReflectionCriticalAnalyzer reflectionCriticalAnalyzer)
     {
         m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
         m_ModelAttributeCriticalAnalyzer = modelAttributeCriticalAnalyzer;
+        m_ReflectionCriticalAnalyzer = reflectionCriticalAnalyzer;
     }
 
     public bool Resolve(IProtection protection, IMetadataMember member)
@@ -17,7 +22,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             return true;
         }
-        if (doNotResolveAttribute.Members.HasFlag(Members.SpecialRuntime))
+        if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.SpecialRuntime))
         {
             if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
             {
@@ -26,9 +31,19 @@ public class DoNotResolveMemberResolver : IMemberResolver
         }
         if (member is IHasCustomAttribute customAttribute)
         {
-            if (doNotResolveAttribute.Members.HasFlag(Members.Model))
+            if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Model))
             {
                 if (m_ModelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute) == false)
+                {
+                    return false;
+                }
+            }
+        }
+        if (member is MethodDefinition method)
+        {
+            if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Reflection))
+            {
+                if (m_ReflectionCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
                 {
                     return false;
                 }

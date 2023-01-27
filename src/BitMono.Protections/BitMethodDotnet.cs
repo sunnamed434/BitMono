@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class BitMethodDotnet : IProtection
 {
     private readonly Random m_Random;
@@ -14,7 +14,7 @@ public class BitMethodDotnet : IProtection
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body && method.IsConstructor == false)
+            if (method is { CilMethodBody: { } body, IsConstructor: false })
             {
                 var randomMethodBodyIndex = 0;
                 if (body.Instructions.Count >= 3)

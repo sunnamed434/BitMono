@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class AntiDebugBreakpoints : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
@@ -53,7 +53,7 @@ public class AntiDebugBreakpoints : IProtection
         {
             if (method.NotGetterAndSetter() && method.IsConstructor == false)
             {
-                if (method.CilMethodBody is { } body && body.Instructions.Count >= 5)
+                if (method.CilMethodBody is { Instructions.Count: >= 5 } body)
                 {
                     var startIndex = 0;
                     var endIndex = body.Instructions.Count - 1;

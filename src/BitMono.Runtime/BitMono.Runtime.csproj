@@ -3,6 +3,7 @@
   <PropertyGroup>
 	<TargetFrameworks>net462</TargetFrameworks>
 	<LangVersion>10.0</LangVersion>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">

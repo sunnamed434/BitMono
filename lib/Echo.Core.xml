@@ -1,0 +1,1444 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Echo.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Echo.Core.Code.AddressRange">
+            <summary>
+            Represents an address range in memory.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Code.AddressRange.NilRange">
+            <summary>
+            A range that starts and ends at index 0.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.op_Equality(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange)">
+            <summary>
+            Determines whether two address ranges are considered equal.
+            </summary>
+            <param name="a">The first range.</param>
+            <param name="b">The second range.</param>
+            <returns><c>true</c> if the ranges are considered equal, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.op_Inequality(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange)">
+            <summary>
+            Determines whether two address ranges are not considered equal.
+            </summary>
+            <param name="a">The first range.</param>
+            <param name="b">The second range.</param>
+            <returns><c>true</c> if the ranges are not considered equal, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.#ctor(System.Int64,System.Int64)">
+            <summary>
+            Creates a new address range.
+            </summary>
+            <param name="start">The starting address.</param>
+            <param name="end">The exclusive ending address.</param>
+        </member>
+        <member name="P:Echo.Core.Code.AddressRange.Start">
+            <summary>
+            Gets the address of the first byte in the address range.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Code.AddressRange.End">
+            <summary>
+            Gets the address where this address range stops. This address is exclusive. 
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Code.AddressRange.Length">
+            <summary>
+            Gets the total length of the address range.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.Contains(System.Int64)">
+            <summary>
+            Determines whether the provided address falls within the address range.
+            </summary>
+            <param name="address">The address.</param>
+            <returns><c>true</c> if the address falls within the range, <c>false otherwise</c>.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.Contains(Echo.Core.Code.AddressRange)">
+            <summary>
+            Determines whether the address range contains the provided sub range.
+            </summary>
+            <param name="range">The address range.</param>
+            <returns><c>true</c> if the sub range falls within the range, <c>false otherwise</c>.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.Equals(Echo.Core.Code.AddressRange@)">
+            <summary>
+            Determines whether the range is considered equal with the provided range.
+            </summary>
+            <param name="other">The other range.</param>
+            <returns><c>true</c> if the ranges are considered equal, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Code.AddressRange.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Code.IInstructionSetArchitecture`1">
+            <summary>
+            Provides members for describing an instruction set.
+            </summary>
+            <typeparam name="TInstruction">The type of the instruction model this architecture describes.</typeparam>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetOffset(`0@)">
+            <summary>
+            Gets the offset of an instruction.
+            </summary>
+            <param name="instruction">The instruction to get the offset from.</param>
+            <returns>The offset.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetSize(`0@)">
+            <summary>
+            Gets the size in bytes of an instruction.
+            </summary>
+            <param name="instruction">The instruction to measure.</param>
+            <returns>The size.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetFlowControl(`0@)">
+            <summary>
+            Gets attributes associated to the flow control behaviour of the provided instruction.
+            </summary>
+            <param name="instruction">The instruction to get the attributes from.</param>
+            <returns>The flow control attributes.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetStackPushCount(`0@)">
+            <summary>
+            Gets a value indicating the number of values an instruction pushes on the stack.
+            </summary>
+            <param name="instruction">The instruction to get the stack push count from.</param>
+            <returns>The number of stack slots the instruction pushes.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetStackPopCount(`0@)">
+            <summary>
+            Gets a value indicating the number of values an instruction pops from the stack.
+            </summary>
+            <param name="instruction">The instruction to get the stack pop count from.</param>
+            <returns>The number of stack slots the instruction pops.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetReadVariablesCount(`0@)">
+            <summary>
+            Gets the number of variables that the provided instruction reads from.
+            </summary>
+            <param name="instruction">The instruction to get the number of read variables from.</param>
+            <returns>The number of variables.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetReadVariables(`0@,System.Span{Echo.Core.Code.IVariable})">
+            <summary>
+            Gets a collection of variables that an instruction reads from.
+            </summary>
+            <param name="instruction">The instruction to get the variables from.</param>
+            <param name="variablesBuffer">The output buffer to write the read variables into.</param>
+            <returns>The number of variables that were written into <paramref name="variablesBuffer"/>.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetWrittenVariablesCount(`0@)">
+            <summary>
+            Gets the number of variables that the provided instruction writes to.
+            </summary>
+            <param name="instruction">The instruction to get the number of written variables from.</param>
+            <returns>The number of variables.</returns>
+        </member>
+        <member name="M:Echo.Core.Code.IInstructionSetArchitecture`1.GetWrittenVariables(`0@,System.Span{Echo.Core.Code.IVariable})">
+            <summary>
+            Gets a collection of variables that an instruction writes to.
+            </summary>
+            <param name="instruction">The instruction to get the variables from.</param>
+            <param name="variablesBuffer">The output buffer to write the written variables into.</param>
+            <returns>The number of variables that were written into <paramref name="variablesBuffer"/>.</returns>
+        </member>
+        <member name="T:Echo.Core.Code.InstructionFlowControl">
+            <summary>
+            Provides members for describing various flow control properties of an instruction. 
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Code.InstructionFlowControl.Fallthrough">
+            <summary>
+            Indicates the instruction does not have any specific attributes assigned to it.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Code.InstructionFlowControl.CanBranch">
+            <summary>
+            Indicates the instruction might branch out from the normal control flow to a different instruction. 
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Code.InstructionFlowControl.IsTerminator">
+            <summary>
+            Indicates the instruction terminates the current execution path.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Code.IPurityClassifier`1">
+            <summary>
+            Provides members for describing the purity of instructions.
+            </summary>
+            <typeparam name="TInstruction">The type of instructions.</typeparam>
+        </member>
+        <member name="M:Echo.Core.Code.IPurityClassifier`1.IsPure(`0@)">
+            <summary>
+            Gets a value indicating whether a particular instruction is considered pure, that is, has no side effects.
+            </summary>
+            <param name="instruction">The instruction to classify.</param>
+            <returns><c>true</c> if the instruction is pure, <c>false</c> if not, and <see cref="F:Echo.Core.Trilean.Unknown"/> if
+            this could not be determined.</returns>
+        </member>
+        <member name="T:Echo.Core.Code.IStaticInstructionProvider`1">
+            <summary>
+            Represents a collection of instructions that can be accessed by their offset.
+            </summary>
+            <typeparam name="TInstruction">The type of instructions that this collection provides.</typeparam>
+        </member>
+        <member name="P:Echo.Core.Code.IStaticInstructionProvider`1.Architecture">
+            <summary>
+            Gets the architecture describing the instructions exposed by this instruction provider.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Code.IStaticInstructionProvider`1.GetInstructionAtOffset(System.Int64)">
+            <summary>
+            Gets the instruction at the provided address.
+            </summary>
+            <param name="offset">The address of the instruction to get.</param>
+            <returns>The instruction at the provided address.</returns>
+        </member>
+        <member name="T:Echo.Core.Code.IVariable">
+            <summary>
+            Represents a single variable in a virtual machine.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Code.IVariable.Name">
+            <summary>
+            Gets the name of the variable.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Code.ListInstructionProvider`1">
+            <summary>
+            Wraps a simple collection of instructions in a basic implementation of an <see cref="T:Echo.Core.Code.IStaticInstructionProvider`1"/>.
+            </summary>
+            <typeparam name="TInstruction">The type of instructions to store.</typeparam>
+        </member>
+        <member name="M:Echo.Core.Code.ListInstructionProvider`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0},System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Creates a new wrapper for a sequence of instructions.
+            </summary>
+            <param name="architecture">The instruction architecture.</param>
+            <param name="instructions">The instructions to put into the wrapper.</param>
+            <exception cref="T:System.ArgumentException">Occurs when there are multiple instructions with the same offset.</exception>
+            <exception cref="T:System.ArgumentNullException">Occurs when the provided instruction sequence is <c>null</c>.</exception>
+        </member>
+        <member name="P:Echo.Core.Code.ListInstructionProvider`1.Architecture">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Code.ListInstructionProvider`1.GetInstructionAtOffset(System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Emulation.IStackState`1">
+            <summary>
+            Represents a snapshot of the stack at a particular point in time during an execution of a program.
+            </summary>
+            <typeparam name="TValue">The type to use to model the slots in the stack.</typeparam>
+        </member>
+        <member name="P:Echo.Core.Emulation.IStackState`1.Top">
+            <summary>
+            Gets the top value of the stack.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Emulation.IStackState`1.Size">
+            <summary>
+            Gets the number of elements on the stack.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Emulation.IStackState`1.Item(System.Int32)">
+            <summary>
+            Gets the value at the provided index.
+            </summary>
+            <param name="index">The index.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.GetAllStackSlots">
+            <summary>
+            Gets an ordered collection of all slots that are in use. 
+            </summary>
+            <returns>The collection of slots, ordered from top to bottom.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Push(`0)">
+            <summary>
+            Pushes a single value onto the stack.
+            </summary>
+            <param name="value">The value to push.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Push(System.Collections.Generic.IEnumerable{`0},System.Boolean)">
+            <summary>
+            Pushes a collection of values onto the stack.
+            </summary>
+            <param name="values">The values to push.</param>
+            <param name="reversed">True indicates whether the collection of values should be pushed in reversed order.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Pop">
+            <summary>
+            Pops a single value from the top of the stack.
+            </summary>
+            <returns>The value that was popped from the stack.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Pop(System.Int32,System.Boolean)">
+            <summary>
+            Pops a collection of values from the stack.
+            </summary>
+            <param name="count">The number of values to pop from the stack.</param>
+            <param name="reversed">True indicates whether the collection of values should be returned in reversed order.</param>
+            <returns>The popped values.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Copy">
+            <summary>
+            Creates a copy of the stack state. This also copies all values inside the stack.
+            </summary>
+            <returns>The copied stack state.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IStackState`1.Clear">
+            <summary>
+            Removes all slots from the stack.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Emulation.IValue">
+            <summary>
+            Provides a base for all virtualized values.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Emulation.IValue.IsKnown">
+            <summary>
+            Gets a value indicating whether all bits of the value are fully known or not. 
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Emulation.IValue.Size">
+            <summary>
+            Gets the number of bytes this value uses to represent itself in memory.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Emulation.IValue.Copy">
+            <summary>
+            Creates a shallow copy of the value.
+            </summary>
+            <returns>The copied value.</returns>
+        </member>
+        <member name="T:Echo.Core.Emulation.IVariableState`1">
+            <summary>
+            Represents a snapshot of all variables and their values at a particular point in time during the execution
+            of a program.
+            </summary>
+            <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="P:Echo.Core.Emulation.IVariableState`1.Item(Echo.Core.Code.IVariable)">
+            <summary>
+            Gets or sets the value currently assigned to a variable.
+            </summary>
+            <param name="variable">The variable.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.IVariableState`1.GetAllRecordedVariables">
+            <summary>
+            Obtains a list of all recorded variables in this snapshot.
+            </summary>
+            <returns>The recorded variables.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IVariableState`1.Copy">
+            <summary>
+            Creates a copy of the snapshot. This also copies all registered values for each variable.
+            </summary>
+            <returns>The copied variable state.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IVariableState`1.Remove(Echo.Core.Code.IVariable)">
+            <summary>
+            Removes recorded variable.
+            </summary>
+            <param name="variable">The variable.</param>
+            <returns><see langword="true" /> if the variable is successfully found and removed; otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.IVariableState`1.Clear">
+            <summary>
+            Removes all variables.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Emulation.StackImbalanceException">
+            <summary>
+            The exception that is thrown when an inconsistency in the size of the stack was detected. Typically this
+            exception occurs when two or more converging control flow paths have inconsistent stack sizes, or when
+            either an insufficient or excessive amount of values were pushed onto the stack.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackImbalanceException.#ctor">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackImbalanceException.#ctor(System.Int64)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="offset">The offset where the stack inconsistency was detected.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackImbalanceException.#ctor(System.String)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="message">The message of the error that occured.</param>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackImbalanceException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="message">The message of the error that occured.</param>
+            <param name="innerException">The inner cause of the exception.</param>
+        </member>
+        <member name="P:Echo.Core.Emulation.StackImbalanceException.Offset">
+            <summary>
+            Gets the offset where the stack inconsistency was detected.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Emulation.StackState`1">
+            <summary>
+            Provides a base implementation of a stack state snapshot.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Emulation.StackState`1.Top">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Core.Emulation.StackState`1.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Core.Emulation.StackState`1.Item(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Core.Emulation.StackState`1.Items">
+            <summary>
+            Gets an ordered list of items allocated on the stack. The last item in the list represents the top of the stack.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.GetAllStackSlots">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Push(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Push(System.Collections.Generic.IEnumerable{`0},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Pop">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Pop(System.Int32,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Clear">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.Copy">
+            <summary>
+            Creates a copy of the stack state. This also copies all values inside the stack.
+            </summary>
+            <returns>The copied stack state.</returns>
+        </member>
+        <member name="M:Echo.Core.Emulation.StackState`1.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Emulation.VariableState`1">
+            <summary>
+            Provides a base implementation of a variable state, that initially assigns for every variable a default value.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.#ctor(`0)">
+            <summary>
+            Creates a new variable state snapshot, using the provided default value.
+            </summary>
+            <param name="defaultValue">The default value for all variables.</param>
+        </member>
+        <member name="P:Echo.Core.Emulation.VariableState`1.Item(Echo.Core.Code.IVariable)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.Echo#Core#Emulation#IVariableState{TValue}#Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.Remove(Echo.Core.Code.IVariable)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.Clear">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.GetAllRecordedVariables">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Emulation.VariableState`1.Copy">
+            <summary>
+            Creates a copy of the snapshot. This also copies all registered values for each variable.
+            </summary>
+            <returns>The copied variable state.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Connectivity.ComponentDetector">
+            <summary>
+            Provides utility members for finding connected components within a graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Connectivity.ComponentDetector.FindStronglyConnectedComponents(Echo.Core.Graphing.IGraph)">
+            <summary>
+            Finds all strongly connected components in the provided graph.
+            </summary>
+            <param name="graph">The graph to get the components from.</param>
+            <returns>A collection of sets representing the strongly connected components.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.CycleDetectedException">
+            <summary>
+            Represents the error that occurs when a cycle was found in a graph that is supposed to be acyclic. 
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.CycleDetectedException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Echo.Core.Graphing.Analysis.CycleDetectedException"/> class.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.CycleDetectedException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Echo.Core.Graphing.Analysis.CycleDetectedException"/> class.
+            </summary>
+            <param name="message">The error message.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.CycleDetectedException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Echo.Core.Graphing.Analysis.CycleDetectedException"/> class.
+            </summary>
+            <param name="message">The error message.</param>
+            <param name="innerException">The inner exception that was the cause of this exception.</param>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1">
+            <summary>
+            Provides a mechanism for sorting nodes in a graph, such that for every edge from node A to node B in the graph we
+            have that node A comes before node B in the final ordering, also known as a topological sorting of the graph.
+            </summary>
+            <typeparam name="TNode">The type of nodes to sort.</typeparam>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.ChildrenLister">
+            <summary>
+            Represents the method that obtains an ordered list of children of a node in a graph. 
+            </summary>
+            <param name="node">The node to list the children for.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.#ctor(Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter{`0}.ChildrenLister)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1"/> class.
+            </summary>
+            <param name="childrenLister">The method to call when obtaining an ordered list of children of a node.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.#ctor(Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter{`0}.ChildrenLister,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1"/> class.
+            </summary>
+            <param name="childrenLister">The method to call when obtaining an ordered list of children of a node.</param>
+            <param name="ignoreCycles">Determines whether the algorithm should ignore any back-edges.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.TopologicalChildrenLister">
+            <summary>
+            Gets the method to call when obtaining an ordered list of children of a node.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.IgnoreCycles">
+            <summary>
+            Gets or sets a value indicating whether the algorithm should ignore any back-edges.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.GetTopologicalSorting(`0)">
+            <summary>
+            Obtains the topological sorting of a graph, using the provided node as the root.
+            </summary>
+            <param name="root">The root of the graph.</param>
+            <returns>An ordered list of nodes, such that any node A appears before any other node B if the edge A to B
+            exists in the graph.</returns>
+            <exception cref="T:Echo.Core.Graphing.Analysis.CycleDetectedException">Occurs when there was a cycle detected in the graph, and
+            <see cref="P:Echo.Core.Graphing.Analysis.Sorting.TopologicalSorter`1.IgnoreCycles"/> is set to <c>false</c>.</exception>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal">
+            <summary>
+            Represents a depth-first node traversal of a graph.
+            </summary>
+        </member>
+        <member name="E:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.NodeDiscovered">
+            <inheritdoc />
+        </member>
+        <member name="E:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.TraversalCompleted">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.#ctor">
+            <summary>
+            Creates a new depth first traversal.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.#ctor(System.Boolean)">
+            <summary>
+            Creates a new depth first traversal.
+            </summary>
+            <param name="reverseTraversal">
+            <c>True</c> if the traversal should traverse the graph in a reversed manner.
+            That is, whether the traversal should treat each edge as if it was reversed.
+            </param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.ReverseTraversal">
+            <summary>
+            Gets a value indicating the traversal algorithm should traverse either outgoing or incoming edges. 
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.Run(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.OnNodeDiscovered(Echo.Core.Graphing.Analysis.Traversal.NodeDiscoveryEventArgs)">
+            <summary>
+            Fires and handles the node discovered event.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.DepthFirstTraversal.OnTraversalCompleted">
+            <summary>
+            Fires and handles the traversal completed event.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.DiscoveryEventArgs">
+            <summary>
+            Provides a base for a discovery event that occurs while traversing a graph.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.DiscoveryEventArgs.ContinueExploring">
+            <summary>
+            Gets or sets a value indicating whether the traversal should continue exploring the current path.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.DiscoveryEventArgs.Abort">
+            <summary>
+            Gets or sets a value indicating whether the traversal should be aborted or not.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.ITraversal">
+            <summary>
+            Provides members for traversing a graph.
+            </summary>
+        </member>
+        <member name="E:Echo.Core.Graphing.Analysis.Traversal.ITraversal.NodeDiscovered">
+            <summary>
+            Fires when a node is about to be traversed by the traversal.
+            </summary>
+        </member>
+        <member name="E:Echo.Core.Graphing.Analysis.Traversal.ITraversal.TraversalCompleted">
+            <summary>
+            Fires when the traversal is completed.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.ITraversal.Run(Echo.Core.Graphing.INode)">
+            <summary>
+            Performs the traversal algorithm.
+            </summary>
+            <param name="entrypoint">The starting node.</param>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.NodeDiscoveryEventArgs">
+            <summary>
+            Provides information about a node discovery during a traversal of a graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.NodeDiscoveryEventArgs.#ctor(Echo.Core.Graphing.INode,Echo.Core.Graphing.IEdge)">
+            <summary>
+            Creates a new node discovery event.
+            </summary>
+            <param name="newNode">The node that was discovered.</param>
+            <param name="origin">The edge that was traversed to discover the node.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.NodeDiscoveryEventArgs.NewNode">
+            <summary>
+            Gets the node that was discovered.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.NodeDiscoveryEventArgs.Origin">
+            <summary>
+            Gets the edge that was traversed that resulted in the node to be discovered.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.ParentRecorder">
+            <summary>
+            Provides a mechanism to record all parent nodes during a traversal.
+            </summary>
+            <remarks>
+            A node is a parent of another node if it is the parent in the search tree. 
+            </remarks>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.ParentRecorder.#ctor(Echo.Core.Graphing.Analysis.Traversal.ITraversal)">
+            <summary>
+            Creates a new parent recorder.
+            </summary>
+            <param name="traversal">The traversal to hook into.</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when the provided traversal is <c>null</c>.</exception>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.ParentRecorder.GetParentEdge(Echo.Core.Graphing.INode)">
+            <summary>
+            Gets the edge that was traversed when discovering the provided node.
+            </summary>
+            <param name="node">The node to get the edge to its parent from.</param>
+            <returns>The edge originating from the parent node, or <c>null</c> if the node was the first node to be discovered.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.ParentRecorder.GetParent(Echo.Core.Graphing.INode)">
+            <summary>
+            Gets the parent of the provided node in the search tree that was recorded.
+            </summary>
+            <param name="node">The node to get the parent node from.</param>
+            <returns>The parent node in the search tree, or <c>null</c> if the node was the first node to be discovered.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.PostOrderRecorder">
+            <summary>
+            Provides a mechanism for recording a post traversal order.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.PostOrderRecorder.#ctor(Echo.Core.Graphing.Analysis.Traversal.ITraversal)">
+            <summary>
+            Creates a new post traversal order and hooks into the provided traversal object.
+            </summary>
+            <param name="traversal">The traversal object to hook into.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.PostOrderRecorder.GetOrder">
+            <summary>
+            Gets the final post-order of nodes that was recorded.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Analysis.Traversal.TraversalOrderRecorder">
+            <summary>
+            Provides a mechanism to record the order in which each node in the graph was traversed by a traversal algorithm.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.TraversalOrderRecorder.#ctor(Echo.Core.Graphing.Analysis.Traversal.ITraversal)">
+            <summary>
+            Creates a new traversal order recorder and hooks into the provided traversal object.
+            </summary>
+            <param name="traversal">The traversal object to hook into.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Analysis.Traversal.TraversalOrderRecorder.TraversedNodes">
+            <summary>
+            Gets a collection of all the nodes that were discovered during the traversal.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.TraversalOrderRecorder.GetIndex(Echo.Core.Graphing.INode)">
+            <summary>
+            Gets the index of the node during the traversal. 
+            </summary>
+            <param name="node">The node to get the index from.</param>
+            <returns>The index.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.Analysis.Traversal.TraversalOrderRecorder.GetTraversal">
+            <summary>
+            Gets the full traversal as an ordered list of nodes.
+            </summary>
+            <returns>The traversal.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Edge">
+            <summary>
+            Provides a basic implementation of an edge in a graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Edge.#ctor(Echo.Core.Graphing.INode,Echo.Core.Graphing.INode)">
+            <summary>
+            Creates a new edge in a graph.
+            </summary>
+            <param name="origin">The node that this edge starts at in the directed graph.</param>
+            <param name="target">The node that this edge points to in the directed graph.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Edge.Origin">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Core.Graphing.Edge.Target">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.Edge.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Graphing.IEdge">
+            <summary>
+            Represents a single edge that connects two nodes together in a directed graph.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.IEdge.Origin">
+            <summary>
+            Gets the node that this edge starts at in the directed graph.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.IEdge.Target">
+            <summary>
+            Gets the node that this edge points to in the directed graph.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.GraphExtensions">
+            <summary>
+            Provides utility methods that further extend the graph model classes.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.GraphExtensions.GetOtherNode(Echo.Core.Graphing.IEdge,Echo.Core.Graphing.INode)">
+            <summary>
+            Given an edge and one of the nodes that this edge connects with, gets the other end of the edge.
+            </summary>
+            <param name="edge">The edge.</param>
+            <param name="node">One of the nodes of the edge.</param>
+            <returns>The other end of the edge.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.IGraph">
+            <summary>
+            Provides members to model a directed graph-like structure.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.IGraph.GetEdges">
+            <summary>
+            Gets a collection of all directed edges (or arcs) that connect nodes in the directed graph.
+            </summary>
+            <returns>The edges.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.IIdentifiedNode">
+            <summary>
+            Represents a node that is tagged with an identification number.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.IIdentifiedNode.Id">
+            <summary>
+            Gets the unique identifier of the node.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.INode">
+            <summary>
+            Represents a single node in a generic directed graph.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.INode.InDegree">
+            <summary>
+            Gets a value indicating the number of incoming edges that this node is incident to.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.INode.OutDegree">
+            <summary>
+            Gets a value indicating the number of outgoing edges that this node is incident to.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.GetIncomingEdges">
+            <summary>
+            Gets a collection of all edges that target this node.
+            </summary>
+            <returns>The incoming edges.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.GetOutgoingEdges">
+            <summary>
+            Gets a collection of all outgoing edges originating from this node.
+            </summary>
+            <returns>The outgoing edges.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.GetPredecessors">
+            <summary>
+            Gets a collection of nodes that precede this node.
+            </summary>
+            <returns>The predecessor nodes.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.GetSuccessors">
+            <summary>
+            Gets a collection of nodes that can be reached from this node by following one of the incident edges.
+            </summary>
+            <returns>The successor nodes.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.HasPredecessor(Echo.Core.Graphing.INode)">
+            <summary>
+            Determines whether the provided node precedes the current node. 
+            </summary>
+            <param name="node">The node to check.</param>
+            <returns><c>True</c> if the node is a predecessor, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.INode.HasSuccessor(Echo.Core.Graphing.INode)">
+            <summary>
+            Determines whether the provided node can be reached from this node by following one of the incident edges.
+            </summary>
+            <param name="node">The node to check.</param>
+            <returns><c>True</c> if the node is a successor, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.ISubGraph">
+            <summary>
+            Represents a region of a graph, comprising of a subset of nodes of the full graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.ISubGraph.GetNodes">
+            <summary>
+            Gets a collection of nodes that this segment contains.
+            </summary>
+            <returns>The nodes.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.ISubGraph.GetSubGraphs">
+            <summary>
+            Gets a collection of sub graphs that this segment contains (if any).
+            </summary>
+            <returns>The sub graphs.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.DotEntityStyle">
+            <summary>
+            Defines a tuple of style properties for an entity in a control flow graph. 
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotEntityStyle.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new style for an entity.
+            </summary>
+            <param name="color">The color of the entity.</param>
+            <param name="style">The line drawing style of the entity.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotEntityStyle.Color">
+            <summary>
+            Gets the color of the entity.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotEntityStyle.Style">
+            <summary>
+            Gets the line drawing style of the entity.
+            </summary>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.DotWriter">
+            <summary>
+            Provides a mechanism for writing graphs to a character stream using the dot file format.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.#ctor(System.IO.TextWriter)">
+            <summary>
+            Creates a new dot writer. 
+            </summary>
+            <param name="writer">The writer responsible for writing the output.</param>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.Writer">
+            <summary>
+            Gets the writer that is used to write textual data to the output stream.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.SeparateNodesAndEdges">
+            <summary>
+            Gets or sets a value indicating whether nodes in the output file should be explicitly defined before the
+            edges are defined.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.IncludeSemicolons">
+            <summary>
+            Gets or sets a value indicating whether statements in the output file should be separated by semicolons.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.NodeIdentifier">
+            <summary>
+            Gets or sets the object responsible for assigning unique identifiers to nodes in a graph.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.NodeAdorner">
+            <summary>
+            Gets or sets the adorner to use for adorning the nodes in the final output.
+            </summary>
+            <remarks>
+            When this property is set to <c>null</c>, no adornments will be added.
+            </remarks>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.EdgeAdorner">
+            <summary>
+            Gets or sets the adorner to use for adorning the edges in the final output.
+            </summary>
+            <remarks>
+            When this property is set to <c>null</c>, no adornments will be added.
+            </remarks>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.SubGraphAdorner">
+            <summary>
+            Gets or sets the adorner to use for adorning the sub graphs in the final output.
+            </summary>
+            <remarks>
+            When this property is set to <c>null</c>, no adornments will be added.
+            </remarks>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.Write(Echo.Core.Graphing.IGraph)">
+            <summary>
+            Writes a graph to the character stream.
+            </summary>
+            <param name="graph">The graph to write.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteHeader(System.String,System.String)">
+            <summary>
+            Appends the header of a new graph to the output stream.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteFooter">
+            <summary>
+            Appends the footer of a graph to the output stream.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteNode(Echo.Core.Graphing.INode)">
+            <summary>
+            Appends a single node definition to the output stream.
+            </summary>
+            <param name="node">The node to append.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteEdge(Echo.Core.Graphing.IEdge)">
+            <summary>
+            Appends an edge to the output stream.
+            </summary>
+            <param name="edge">The edge to append.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteIdentifier(System.String)">
+            <summary>
+            Appends a single identifier to the output stream.
+            </summary>
+            <param name="text">The identifier to write.</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteSemicolon">
+            <summary>
+            Appends a semicolon to the output stream, depending on the value of <see cref="P:Echo.Core.Graphing.Serialization.Dot.DotWriter.IncludeSemicolons"/>.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.NeedsEscaping(System.String)">
+            <summary>
+            Determines whether an identifier requires escaping.
+            </summary>
+            <param name="text">The identifier to test.</param>
+            <returns><c>True</c> if the identifier needs escaping, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.DotWriter.WriteEscapedCharacter(System.Char)">
+            <summary>
+            Appends a single character to the output stream, and escapes it when necessary.
+            </summary>
+            <param name="c">The character to write.</param>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.HashCodeNodeIdentifier">
+            <summary>
+            Provides an implementation of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier"/> interface, that returns the hash code of the
+            node object as unique identifiers.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.HashCodeNodeIdentifier.Instance">
+            <summary>
+            Provides a default instance of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.HashCodeNodeIdentifier"/> class. 
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.HashCodeNodeIdentifier.GetIdentifier(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.HexLabelNodeAdorner">
+            <summary>
+            Represents a node adorner that adds a label to a node containing the hexadecimal representation of the
+            <see cref="P:Echo.Core.Graphing.IIdentifiedNode.Id"/> property.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.HexLabelNodeAdorner.Prefix">
+            <summary>
+            Gets or sets the string to prepend to the identifier of the node.  
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.HexLabelNodeAdorner.Suffix">
+            <summary>
+            Gets or sets the string to append to the identifier of the node.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.HexLabelNodeAdorner.PaddingZeroes">
+            <summary>
+            Gets or sets the minimal number of digits to use in the label.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.HexLabelNodeAdorner.GetNodeAttributes(Echo.Core.Graphing.INode,System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.IdentifiedNodeIdentifier">
+            <summary>
+            Provides an implementation of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier"/> interface, that returns the value of
+            <see cref="P:Echo.Core.Graphing.IIdentifiedNode.Id"/>.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.Serialization.Dot.IdentifiedNodeIdentifier.Instance">
+            <summary>
+            Provides a default instance of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.IdentifiedNodeIdentifier"/> class. 
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IdentifiedNodeIdentifier.GetIdentifier(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.IDotEdgeAdorner">
+            <summary>
+            Provides members for adorning an edge in a graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IDotEdgeAdorner.GetEdgeAttributes(Echo.Core.Graphing.IEdge,System.Int64,System.Int64)">
+            <summary>
+            Obtains the adornments that should be added to the edge. 
+            </summary>
+            <param name="edge">The edge to adorn.</param>
+            <param name="sourceId">The identifier assigned to the source node.</param>
+            <param name="targetId">The identifier assigned to the target node.</param>
+            <returns>The adornments.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.IDotNodeAdorner">
+            <summary>
+            Provides members for adorning a node in a graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IDotNodeAdorner.GetNodeAttributes(Echo.Core.Graphing.INode,System.Int64)">
+            <summary>
+            Obtains the adornments that should be added to the node. 
+            </summary>
+            <param name="node">The node to adorn.</param>
+            <param name="id">The identifier assigned to the node.</param>
+            <returns>The adornments.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.IDotSubGraphAdorner">
+            <summary>
+            Provides members for adorning a sub graph.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IDotSubGraphAdorner.GetSubGraphName(Echo.Core.Graphing.ISubGraph)">
+            <summary>
+            Determines the name of the provided sub graph.
+            </summary>
+            <param name="subGraph">The sub graph.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IDotSubGraphAdorner.GetSubGraphAttributes(Echo.Core.Graphing.ISubGraph)">
+            <summary>
+            Obtains the adornments that should be added to the sub graph. 
+            </summary>
+            <param name="subGraph">The sub graph to adorn.</param>
+            <returns>The adornments.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.IncrementingNodeIdentifier">
+            <summary>
+            Provides an implementation of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier"/> interface, that maintains a counter
+            that is increased every time a new node is assigned an identifier.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.IncrementingNodeIdentifier.GetIdentifier(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier">
+            <summary>
+            Provides members for obtaining unique identifiers to a node.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier.GetIdentifier(Echo.Core.Graphing.INode)">
+            <summary>
+            Gets the identifier assigned to the node.
+            </summary>
+            <param name="node">The node.</param>
+            <returns>The identifier.</returns>
+        </member>
+        <member name="T:Echo.Core.Graphing.TreeNodeBase">
+            <summary>
+            Provides a base contract for nodes that will be used in a tree
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.TreeNodeBase.Parent">
+            <summary>
+            The parent of this <see cref="T:Echo.Core.Graphing.TreeNodeBase"/>
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Graphing.TreeNodeBase.InDegree">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Core.Graphing.TreeNodeBase.OutDegree">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.GetChildren">
+            <summary>
+            Gets the children of the current <see cref="T:Echo.Core.Graphing.TreeNodeBase"/>.
+            </summary>
+            <returns>The children.</returns>
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.GetIncomingEdges">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.GetOutgoingEdges">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.GetPredecessors">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.GetSuccessors">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.HasPredecessor(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.HasSuccessor(Echo.Core.Graphing.INode)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeBase.UpdateChild``1(``0@,``0)">
+            <summary>
+            Updates the value and the parent of the <paramref name="child"/> node.
+            </summary>
+            <param name="child">The child element to update.</param>
+            <param name="value">The new value to assign to the <paramref name="child"/>.</param>
+            <exception cref="T:System.InvalidOperationException">When the node already has a parent.</exception>
+        </member>
+        <member name="T:Echo.Core.Graphing.TreeNodeCollection`2">
+            <summary>
+            Represents a collection of tree node children
+            </summary>
+            <typeparam name="TParent">The type of the parent</typeparam>
+            <typeparam name="TChild">The node to create a collection of</typeparam>
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.#ctor(`0)">
+            <summary>
+            Creates a new tree node collection with the specified <paramref name="owner"/>
+            </summary>
+            <param name="owner">The owner whose children this collection represents</param>
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.AssertNoParent(`1)">
+            <summary>
+            Asserts that the provided node is not already added to another tree node.
+            </summary>
+            <param name="node">The node to verify.</param>
+            <exception cref="T:System.ArgumentException">Occurs if the node is already added to another node.</exception>
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.SetItem(System.Int32,`1)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.ClearItems">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.RemoveItem(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Graphing.TreeNodeCollection`2.InsertItem(System.Int32,`1)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.Trilean">
+            <summary>
+            Represents a ternary boolean (true, false or unknown) value. 
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Trilean.True">
+            <summary>
+            Represents the true value.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Trilean.False">
+            <summary>
+            Represents the false value.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.Trilean.Unknown">
+            <summary>
+            Represents the unknown value.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Trilean.#ctor(System.Boolean)">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">The boolean value.</param>
+        </member>
+        <member name="M:Echo.Core.Trilean.#ctor(Echo.Core.TrileanValue)">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">The trilean value.</param>
+        </member>
+        <member name="M:Echo.Core.Trilean.#ctor(System.Nullable{System.Boolean})">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">
+            The nullable boolean value. If the value is <c>null</c>, <see cref="F:Echo.Core.TrileanValue.Unknown"/> will be assumed.
+            </param>
+        </member>
+        <member name="P:Echo.Core.Trilean.Value">
+            <summary>
+            Gets the raw integer representation of the trilean value.
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Trilean.IsKnown">
+            <summary>
+            Gets a value indicating whether the value is known (either true or false).
+            </summary>
+        </member>
+        <member name="P:Echo.Core.Trilean.IsUnknown">
+            <summary>
+            Gets a value indicating whether the value is unknown.
+            </summary>
+        </member>
+        <member name="M:Echo.Core.Trilean.ToBoolean">
+            <summary>
+            When the trilean value is known, obtains the boolean value.
+            </summary>
+            <returns>The boolean value.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.ToBooleanOrFalse">
+            <summary>
+            When the trilean value is known, obtains the boolean value, otherwise returns <c>false</c>.
+            </summary>
+            <returns>The boolean value.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.ToNullableBoolean">
+            <summary>
+            Converts the trilean to a nullable boolean, where null indicates the unknown state.
+            </summary>
+            <returns>The nullable boolean.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_Implicit(System.Boolean)~Echo.Core.Trilean">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">The boolean value.</param>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_Implicit(Echo.Core.TrileanValue)~Echo.Core.Trilean">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">The trilean value.</param>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_Implicit(System.Nullable{System.Boolean})~Echo.Core.Trilean">
+            <summary>
+            Creates a new trilean.
+            </summary>
+            <param name="value">The trilean value.</param>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_True(Echo.Core.Trilean)">
+            <summary>
+            Determines whether the trilean is <c>true</c>.
+            </summary>
+            <param name="value">The trilean.</param>
+            <returns><c>true</c> if the <see cref="P:Echo.Core.Trilean.Value"/> property is <see cref="F:Echo.Core.TrileanValue.True"/>, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_False(Echo.Core.Trilean)">
+            <summary>
+            Determines whether the trilean is <c>false</c>.
+            </summary>
+            <param name="value">The trilean.</param>
+            <returns><c>false</c> if the <see cref="P:Echo.Core.Trilean.Value"/> property is <see cref="F:Echo.Core.TrileanValue.False"/>, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_Equality(Echo.Core.Trilean,Echo.Core.Trilean)">
+            <summary>
+            Determines whether this trilean is exactly equal to the specified trilean.
+            </summary>
+            <param name="a">The left hand side of the comparison.</param>
+            <param name="b">The right hand side of the comparison.</param>
+            <returns>
+            <c>true</c> if the <see cref="P:Echo.Core.Trilean.Value"/> property of both trileans are equal, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_Inequality(Echo.Core.Trilean,Echo.Core.Trilean)">
+            <summary>
+            Determines whether this trilean is not equal to the specified trilean.
+            </summary>
+            <param name="a">The left hand side of the comparison.</param>
+            <param name="b">The right hand side of the comparison.</param>
+            <returns>
+            <c>true</c> if the <see cref="P:Echo.Core.Trilean.Value"/> property of both trileans are different, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.Equals(Echo.Core.Trilean)">
+            <summary>
+            Determines whether this trilean is exactly equal to the specified trilean.
+            </summary>
+            <param name="other">The other trilean.</param>
+            <returns>
+            <c>true</c> if the <see cref="P:Echo.Core.Trilean.Value"/> property of both trileans are equal, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Trilean.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Core.Trilean.op_LogicalNot(Echo.Core.Trilean)">
+            <summary>
+            Inverts the trilean value.
+            </summary>
+            <param name="value">The value to invert.</param>
+            <returns>
+            Returns true if the value is false, and vice versa. If unknown, the return value is also unknown.
+            </returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.Not">
+            <summary>
+            Inverts the trilean value.
+            </summary>
+            <returns>
+            Returns true if the value is false, and vice versa. If unknown, the return value is also unknown.
+            </returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.GetLookupTableIndex(Echo.Core.TrileanValue,Echo.Core.TrileanValue)">
+            <summary>
+            Calculates the index within a binary operator lookup table.
+            </summary>
+            <param name="row">The row.</param>
+            <param name="column">The column.</param>
+            <returns>The index.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_BitwiseAnd(Echo.Core.Trilean,Echo.Core.Trilean)">
+            <summary>
+            Computes the and between two trilean values.
+            </summary>
+            <param name="a">The left hand side of the binary operator.</param>
+            <param name="b">The right hand side of the binary operator.</param>
+            <returns>Returns true if both values are true. If not, returns unknown if at
+            least one is true or unknown and the other is unknown, and false otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.And(Echo.Core.Trilean)">
+            <summary>
+            Computes the and between two trilean values.
+            </summary>
+            <param name="other">The other trilean value.</param>
+            <returns>Returns true if both values are true. If not, returns unknown if at
+            least one is true or unknown and the other is unknown, and false otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_BitwiseOr(Echo.Core.Trilean,Echo.Core.Trilean)">
+            <summary>
+            Computes the inclusive or between two trilean values.
+            </summary>
+            <param name="a">The left hand side of the binary operator.</param>
+            <param name="b">The right hand side of the binary operator.</param>
+            <returns>Returns true if at least one of the values is true. If neither are true, returns unknown if at
+            least one is unknown, and false otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.Or(Echo.Core.Trilean)">
+            <summary>
+            Computes the inclusive or between two trilean values.
+            </summary>
+            <param name="other">The other trilean value.</param>
+            <returns>Returns true if at least one of the values is true. If neither are true, returns unknown if at
+            least one is unknown, and false otherwise.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.op_ExclusiveOr(Echo.Core.Trilean,Echo.Core.Trilean)">
+            <summary>
+            Computes the exclusive or between two trilean values.
+            </summary>
+            <param name="a">The left hand side of the binary operator.</param>
+            <param name="b">The right hand side of the binary operator.</param>
+            <returns>Returns true if the two trilean values are different. If at least one is unknown,
+            the result is unknown.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.Xor(Echo.Core.Trilean)">
+            <summary>
+            Computes the exclusive or between two trilean values.
+            </summary>
+            <param name="other">The other trilean value.</param>
+            <returns>Returns true if the two trilean values are different. If at least one is unknown,
+            the result is unknown.</returns>
+        </member>
+        <member name="M:Echo.Core.Trilean.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Core.TrileanValue">
+            <summary>
+            Provides members for all possible values in a ternary number system.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.TrileanValue.False">
+            <summary>
+            Indicates the true value.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.TrileanValue.True">
+            <summary>
+            Indicates the false value.
+            </summary>
+        </member>
+        <member name="F:Echo.Core.TrileanValue.Unknown">
+            <summary>
+            Indicates the unknown value.
+            </summary>
+        </member>
+    </members>
+</doc>

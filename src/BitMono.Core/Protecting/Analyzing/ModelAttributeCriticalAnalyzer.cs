@@ -17,8 +17,10 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
         {
             return true;
         }
-        foreach (var attribute in m_Criticals.CriticalModelAttributes)
+        var criticalAttributes = m_Criticals.CriticalModelAttributes;
+        for (var i = 0; i < criticalAttributes.Count; i++)
         {
+            var attribute = criticalAttributes[i];
             if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
             {
                 return false;

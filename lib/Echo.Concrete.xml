@@ -1,0 +1,1983 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Echo.Concrete</name>
+    </assembly>
+    <members>
+        <member name="T:Echo.Concrete.Emulation.DispatchException">
+            <summary>
+            Represents an exception that occurs during the dispatch phase of a virtual machine.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchException.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.DispatchException"/> class.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.DispatchException"/> class, with the provided message.
+            </summary>
+            <param name="message">The error message.</param> 
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.DispatchException"/> class, with the provided message.
+            </summary>
+            <param name="message">The error message.</param>
+            <param name="inner">The inner cause of the error.</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Emulation.DispatchResult">
+            <summary>
+            Represents a result produced after dispatching an instruction to an operation code handler. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchResult.Success">
+            <summary>
+            Creates a new dispatch result indicating a successful dispatch and execution of the instruction. 
+            </summary>
+            <returns>The dispatch result.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchResult.InvalidProgram">
+            <summary>
+            Creates a new dispatch result indicating an invalid program was detected. 
+            </summary>
+            <returns>The dispatch result.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.DispatchResult.#ctor(System.Exception)">
+            <summary>
+            Creates a new dispatch result with the provided exception.
+            </summary>
+            <param name="exception">The exception that occured during the execution of the instruction.</param>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.DispatchResult.HasTerminated">
+            <summary>
+            Gets or sets a value indicating whether the execution of the program was terminated.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.DispatchResult.IsSuccess">
+            <summary>
+            Gets a value indicating the execution of an instruction was successful.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.DispatchResult.Exception">
+            <summary>
+            Gets or sets the exception that was thrown during the dispatch of the instruction (if any).
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Emulation.EmulationException">
+            <summary>
+            Represents the exception that is thrown when a virtual machine encounters an error. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.EmulationException.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.EmulationException"/> class.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.EmulationException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.EmulationException"/> class, with the provided message.
+            </summary>
+            <param name="message">The error message.</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.EmulationException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.EmulationException"/> class, with the provided message
+            and inner exception.
+            </summary>
+            <param name="message">The error message.</param>
+            <param name="inner">The inner cause of the exception.</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.EmulationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Emulation.ExecutionResult">
+            <summary>
+            Represents an aggregation of results that were produced during the execution of a virtual machine. 
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.ExecutionResult.IsSuccess">
+            <summary>
+            Gets a value indicating whether the execution finished successfully.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.ExecutionResult.Exception">
+            <summary>
+            Gets or sets the exception that was thrown during the execution of the program (if any).
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.ExecutionResult.ReturnValue">
+            <summary>
+            Gets or sets the return value that was produced (if any).
+            </summary>
+            <remarks>
+            A value of <c>null</c> indicates no value was produced.
+            </remarks>
+        </member>
+        <member name="T:Echo.Concrete.Emulation.ExecutionTerminatedEventArgs">
+            <summary>
+            Provides arguments for describing the event that is fired upon the termination of a virtual machine. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.ExecutionTerminatedEventArgs.#ctor(Echo.Concrete.Emulation.ExecutionResult)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.ExecutionTerminatedEventArgs"/> class.
+            </summary>
+            <param name="result">The results produced during the execution.</param>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.ExecutionTerminatedEventArgs.Result">
+            <summary>
+            Gets the results that were produced during the execution of the virtual machine.
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Emulation.IVirtualMachine`1">
+            <summary>
+            Provides an interface to an emulation of a computer system.
+            </summary>
+            <typeparam name="TInstruction">The type of instructions to emulate.</typeparam>
+        </member>
+        <member name="E:Echo.Concrete.Emulation.IVirtualMachine`1.ExecutionTerminated">
+            <summary>
+            Represents the event that occurs when the execution of the virtual machine has ended.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Emulation.IVirtualMachine`1.Status">
+            <summary>
+            Gets a value indicating the current status of the virtual machine.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.IVirtualMachine`1.Execute(System.Threading.CancellationToken)">
+            <summary>
+            Executes the instructions until completion.
+            </summary>
+            <param name="cancellationToken">The cancellation token to use for aborting the execution.</param>
+            <returns>The produced result.</returns>
+            <exception cref="T:Echo.Concrete.Emulation.EmulationException">
+            Occurs when an internal error occurs within the virtual machine.
+            </exception>
+            <remarks>
+            This method consumes any exception that might be thrown by the user-code. In such an event, the exception
+            is put into the <see cref="P:Echo.Concrete.Emulation.ExecutionResult.Exception"/> property of the return value of this method.
+            </remarks>
+        </member>
+        <member name="T:Echo.Concrete.Emulation.UndefinedInstructionException">
+            <summary>
+            Represents the exception that occurs upon the execution of an undefined instruction.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.UndefinedInstructionException.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.UndefinedInstructionException"/>.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.UndefinedInstructionException.#ctor(System.Int64)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.UndefinedInstructionException"/>.
+            </summary>
+            <param name="offset">The offset of the undefined instruction.</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.UndefinedInstructionException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.UndefinedInstructionException"/>.
+            </summary>
+            <param name="message">The error message</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.UndefinedInstructionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Emulation.UndefinedInstructionException"/>.
+            </summary>
+            <param name="message">The error message</param>
+            <param name="inner">The inner cause of the exception.</param>
+        </member>
+        <member name="M:Echo.Concrete.Emulation.UndefinedInstructionException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Emulation.UndefinedInstructionException.Offset">
+            <summary>
+            Gets the offset of the undefined instruction that was attempted to be executed.
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Emulation.VirtualMachineStatus">
+            <summary>
+            Provides members describing all possible states a virtual machine can be in.
+            </summary>
+        </member>
+        <member name="F:Echo.Concrete.Emulation.VirtualMachineStatus.Idle">
+            <summary>
+            Indicates the virtual machine is idle and is not executing any instructions.
+            </summary>
+        </member>
+        <member name="F:Echo.Concrete.Emulation.VirtualMachineStatus.Running">
+            <summary>
+            Indicates the virtual machine is running.
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Values.BitField">
+            <summary>
+            A simple data structure to manipulate individual bits
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.#ctor(System.Span{System.Byte})">
+            <summary>
+            Creates a new <see cref="T:Echo.Concrete.Values.BitField"/> with the given <paramref name="span"/>
+            </summary>
+            <param name="span">The value to initialize the <see cref="T:Echo.Concrete.Values.BitField"/> with</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.BitField.Item(System.Int32)">
+            <summary>
+            Gets the bit at the <paramref name="index"/>
+            </summary>
+            <param name="index">The index to get the bit at</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.Not">
+            <summary>
+            Performs a bitwise NOT operation on <see cref="T:Echo.Concrete.Values.BitField"/>
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.And(Echo.Concrete.Values.BitField)">
+            <summary>
+            Performs a bitwise AND operation between two <see cref="T:Echo.Concrete.Values.BitField"/>'s
+            </summary>
+            <param name="other">The right side of the expression</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.Or(Echo.Concrete.Values.BitField)">
+            <summary>
+            Performs a bitwise OR operation between two <see cref="T:Echo.Concrete.Values.BitField"/>'s
+            </summary>
+            <param name="other">The right side of the expression</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.Xor(Echo.Concrete.Values.BitField)">
+            <summary>
+            Performs a bitwise XOR operation between two <see cref="T:Echo.Concrete.Values.BitField"/>'s
+            </summary>
+            <param name="other">The right side of the expression</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.Equals(Echo.Concrete.Values.BitField)">
+            <summary>
+            Compares two <see cref="T:Echo.Concrete.Values.BitField"/>'s
+            </summary>
+            <remarks>
+            This overload exists to avoid a nasty boxing allocation
+            </remarks>
+            <param name="other">The <see cref="T:Echo.Concrete.Values.BitField"/> to compare to</param>
+            <returns>Whether the two <see cref="T:Echo.Concrete.Values.BitField"/>'s are equal</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.BitField.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.IConcreteValue">
+            <summary>
+            Provides a base for all virtualized concrete values.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.IConcreteValue.IsValueType">
+            <summary>
+            Gets a value indicating whether the object is passed on by value or by reference. 
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.IConcreteValue.IsZero">
+            <summary>
+            Determines whether the value is null or consists of only zeroes.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.IConcreteValue.IsNonZero">
+            <summary>
+            Determines whether the value is not null or contains at least a single one in its bit string.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.IConcreteValue.IsPositive">
+            <summary>
+            Determines whether the value contains a positive value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.IConcreteValue.IsNegative">
+            <summary>
+            Determines whether the value contains a negative value.
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Values.IMemoryAccessValue">
+            <summary>
+            Provides memory read/write operations on a concrete value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadBytes(System.Int32,System.Span{System.Byte})">
+            <summary>
+            Reads raw contents of the memory block. 
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <param name="memoryBuffer">The memory buffer to copy data to.</param>
+            <remarks>
+            This method has undefined behaviour if the memory contains unknown bits.
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadBytes(System.Int32,System.Span{System.Byte},System.Span{System.Byte})">
+            <summary>
+            Reads raw contents of the memory block. 
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <param name="memoryBuffer">The memory buffer to copy data to.</param>
+            <param name="knownBitmaskBuffer">The buffer to copy the known bitmask to.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Writes raw data to the memory block as fully known bytes.
+            </summary>
+            <param name="offset">The offset to start writing.</param>
+            <param name="data">The data to write.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Writes raw data to the memory block.
+            </summary>
+            <param name="offset">The offset to start writing.</param>
+            <param name="data">The data to write.</param>
+            <param name="knownBitMask">
+            The bitmask indicating the bits that are known within the data referenced by <paramref name="data"/>.
+            </param>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadInteger8(System.Int32)">
+            <summary>
+            Reads a single 8 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read integer.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadInteger16(System.Int32)">
+            <summary>
+            Reads a single 16 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read integer.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadInteger32(System.Int32)">
+            <summary>
+            Reads a single 32 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read integer.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadInteger64(System.Int32)">
+            <summary>
+            Reads a single 64 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read integer.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadFloat32(System.Int32)">
+            <summary>
+            Reads a single 32 bit floating point number at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read number.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.ReadFloat64(System.Int32)">
+            <summary>
+            Reads a single 64 bit floating point number at the provided offset.
+            </summary>
+            <param name="offset">The offset to start reading.</param>
+            <returns>The read number.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteInteger8(System.Int32,Echo.Concrete.Values.ValueType.Integer8Value)">
+            <summary>
+            Writes a single 8 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteInteger16(System.Int32,Echo.Concrete.Values.ValueType.Integer16Value)">
+            <summary>
+            Writes a single 16 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteInteger32(System.Int32,Echo.Concrete.Values.ValueType.Integer32Value)">
+            <summary>
+            Writes a single 32 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteInteger64(System.Int32,Echo.Concrete.Values.ValueType.Integer64Value)">
+            <summary>
+            Writes a single 64 bit integer at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteFloat32(System.Int32,Echo.Concrete.Values.ValueType.Float32Value)">
+            <summary>
+            Writes a single 32 bit floating point number at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.IMemoryAccessValue.WriteFloat64(System.Int32,Echo.Concrete.Values.ValueType.Float64Value)">
+            <summary>
+            Writes a single 64 bit floating point number at the provided offset.
+            </summary>
+            <param name="offset">The offset to start writing at.</param>
+            <param name="value">The value to write.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Occurs when the offset does not fall within the memory range.
+            </exception>
+        </member>
+        <member name="T:Echo.Concrete.Values.MemoryAccessValueExtensions">
+            <summary>
+            Provides extension methods for the <see cref="T:Echo.Concrete.Values.IMemoryAccessValue"/> interface.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.MemoryAccessValueExtensions.MakePointer(Echo.Concrete.Values.IMemoryAccessValue,System.Boolean)">
+            <summary>
+            Creates a new pointer to the memory.
+            </summary>
+            <param name="self">The memory to reference.</param>
+            <param name="is32Bit">Indicates whether the pointer is 32 or 64 bits wide.</param>
+            <returns>The constructed pointer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.MemoryAccessValueExtensions.MakePointer(Echo.Concrete.Values.IMemoryAccessValue,System.Int32,System.Boolean)">
+            <summary>
+            Creates a new pointer to an offset within the memory.
+            </summary>
+            <param name="self">The memory to reference.</param>
+            <param name="offset">The offset within the memory.</param>
+            <param name="is32Bit">Indicates whether the pointer is 32 or 64 bits wide.</param>
+            <returns>The constructed pointer.</returns>
+        </member>
+        <member name="T:Echo.Concrete.Values.ReferenceType.ArrayValue">
+            <summary>
+            Represents a fixed-size collection of values that is passed on by reference.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.#ctor">
+            <summary>
+            Creates a new empty array.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.#ctor(System.Int32,Echo.Concrete.Values.IConcreteValue)">
+            <summary>
+            Creates a new array filled with copies of the provided default value.
+            </summary>
+            <param name="length">The length of the array.</param>
+            <param name="defaultValue">The value to fill in the array with.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.#ctor(System.Collections.Generic.IEnumerable{Echo.Concrete.Values.IConcreteValue})">
+            <summary>
+            Wraps a collection of elements into an array value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.Length">
+            <summary>
+            Gets the length of the array.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.Item(System.Int32)">
+            <summary>
+            Gets or sets the value of an element at the provided index.
+            </summary>
+            <param name="index">The index of the element.</param>
+            <exception cref="T:System.ArgumentNullException">Occurs when the set value is <c>null</c>.</exception>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.Echo#Core#Emulation#IValue#Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.GetEnumerator">
+            <summary>
+            Returns an enumerator that enumerates through all elements in the array.
+            </summary>
+            <returns>The enumerator.</returns>
+        </member>
+        <member name="T:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator">
+            <summary>
+            Provides an implementation for an enumerator of the <see cref="T:Echo.Concrete.Values.ReferenceType.ArrayValue"/> class.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator.#ctor(Echo.Concrete.Values.ReferenceType.ArrayValue)">
+            <summary>
+            Creates a new instance of the <see cref="T:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator"/> structure.
+            </summary>
+            <param name="array">The array to enumerate.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator.MoveNext">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator.Reset">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator.Current">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ArrayValue.ArrayValueEnumerator.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ReferenceType.IPointerValue">
+            <summary>
+            Represents a pointer value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.IPointerValue.Is32Bit">
+            <summary>
+            Gets a value indicating whether the pointer is 32 bit or 64 bit wide.
+            </summary>
+        </member>
+        <member name="T:Echo.Concrete.Values.ReferenceType.ObjectReference">
+            <summary>
+            Represents a simple reference to an object.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.Null(System.Boolean)">
+            <summary>
+            Creates a new null object reference value. 
+            </summary>
+            <param name="is32Bit">Indicates whether the reference to the object is 32 or 64 bits wide.</param>
+            <returns>The null reference.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.#ctor(Echo.Concrete.Values.IConcreteValue,System.Boolean)">
+            <summary>
+            Creates a new fully known reference to an object.
+            </summary>
+            <param name="referencedObject">The referenced object.</param>
+            <param name="is32Bit">Indicates the pointer to the referenced object is 32 or 64 bits wide.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.#ctor(Echo.Concrete.Values.IConcreteValue,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new reference to an object.
+            </summary>
+            <param name="referencedObject">The referenced object.</param>
+            <param name="isKnown">Indicates the referenced object is known.</param>
+            <param name="is32Bit">Indicates the pointer to the referenced object is 32 or 64 bits wide.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.ReferencedObject">
+            <summary>
+            Gets the value of the object that is referenced.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.Is32Bit">
+            <summary>
+            Gets a value indicating whether the reference to the object is 32 or 64 bits wide.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.ObjectReference.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.IsEqualTo(Echo.Concrete.Values.ReferenceType.ObjectReference)">
+            <summary>
+            Determines whether the object reference is equal to the provided object.
+            </summary>
+            <param name="other">The other object.</param>
+            <returns><c>true</c> if the object are equal, <c>false</c> if not, and
+            <c>null</c> if the conclusion of the comparison is not certain.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.IsGreaterThan(Echo.Concrete.Values.ReferenceType.ObjectReference)">
+            <summary>
+            Determines whether the current object reference is considered greater than the provided object reference.
+            </summary>
+            <param name="other">The other object reference.</param>
+            <returns><c>true</c> if the current value is greater than the provided value, <c>false</c> otherwise.</returns>
+            <remarks>
+            This method is only really reliable when one of the values is the null value. 
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.IsLessThan(Echo.Concrete.Values.ReferenceType.ObjectReference)">
+            <summary>
+            Determines whether the current object reference is considered less than the provided object reference.
+            </summary>
+            <param name="other">The other object reference.</param>
+            <returns><c>true</c> if the current value is less than the provided value, <c>false</c> otherwise.</returns>
+            <remarks>
+            This method is only really reliable when one of the values is the null value. 
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.Equals(Echo.Concrete.Values.ReferenceType.ObjectReference)">
+            <summary>
+            Determines whether the provided object references are considered equal. 
+            </summary>
+            <param name="other">The other object reference.</param>
+            <returns><c>true</c> if the object references are equal, <c>false</c> otherwise.</returns>
+            <remarks>
+            This method verifies whether the actual contents of this object reference is equal to other. 
+            This includes the case where both values are unknown, it returns <c>true</c>.
+            This method should not be used within an emulation context to test whether two virtual object references
+            are equal during the execution of a virtual machine.
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.ObjectReference.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ReferenceType.RelativePointerValue">
+            <summary>
+            Represents a pointer that is relative to a base pointer. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new null or unknown pointer value.
+            </summary>
+            <param name="isKnown">Indicates whether the pointer is known.</param>
+            <param name="is32Bit">Indicates the pointer is 32 or 64 bits wide.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.#ctor(Echo.Concrete.Values.IMemoryAccessValue,System.Boolean)">
+            <summary>
+            Creates a new known relative pointer value.
+            </summary>
+            <param name="referencedMemory">The base memory pointer.</param>
+            <param name="is32Bit">Indicates the pointer is 32 or 64 bits wide.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.#ctor(Echo.Concrete.Values.IMemoryAccessValue,System.Int32,System.Boolean)">
+            <summary>
+            Creates a new known relative pointer value.
+            </summary>
+            <param name="referencedMemory">The base memory pointer.</param>
+            <param name="offset">The offset relative to the base po[inter.</param>
+            <param name="is32Bit">Indicates the pointer is 32 or 64 bits wide.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReferencedMemory">
+            <summary>
+            Gets the base memory pointer. 
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.CurrentOffset">
+            <summary>
+            Gets or sets the current offset relative to the base pointer.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.Is32Bit">
+            <summary>
+            Gets a value indicating whether the pointer is 32 bit or 64 bit wide.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.Size">
+            <inheritdoc />
+            <remarks>
+            This property represents the size of the pointer, and not the size of the memory chunk that is referenced.
+            </remarks>
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ReferenceType.RelativePointerValue.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadBytes(System.Int32,System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadBytes(System.Int32,System.Span{System.Byte},System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadInteger8(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadInteger16(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadInteger32(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadInteger64(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadFloat32(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.ReadFloat64(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteInteger8(System.Int32,Echo.Concrete.Values.ValueType.Integer8Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteInteger16(System.Int32,Echo.Concrete.Values.ValueType.Integer16Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteInteger32(System.Int32,Echo.Concrete.Values.ValueType.Integer32Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteInteger64(System.Int32,Echo.Concrete.Values.ValueType.Integer64Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteFloat32(System.Int32,Echo.Concrete.Values.ValueType.Float32Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.WriteFloat64(System.Int32,Echo.Concrete.Values.ValueType.Float64Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.Add(System.Int32)">
+            <summary>
+            Moves the relative pointer a certain amount of bytes up in the address space.
+            </summary>
+            <param name="offset">The number of bytes to move up.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.Subtract(System.Int32)">
+            <summary>
+            Moves the relative pointer a certain amount of bytes down in the address space.
+            </summary>
+            <param name="offset">The number of bytes to move down.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ReferenceType.RelativePointerValue.Copy">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.UnknownValue">
+            <summary>
+            Represents the fully unknown value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Core#Emulation#IValue#Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Concrete#Values#IConcreteValue#IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Concrete#Values#IConcreteValue#IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Concrete#Values#IConcreteValue#IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Concrete#Values#IConcreteValue#IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.UnknownValue.Echo#Concrete#Values#IConcreteValue#IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.UnknownValue.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.UnknownValue.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Float32Value">
+            <summary>
+            Represents a fully known concrete 32 bit floating point numerical value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.op_Implicit(System.Single)~Echo.Concrete.Values.ValueType.Float32Value">
+            <summary>
+            Wraps a 32 bit floating point number into an instance of <see cref="T:Echo.Concrete.Values.ValueType.Float32Value"/>.
+            </summary>
+            <param name="value">The 32 bit floating point number to wrap.</param>
+            <returns>The concrete 32 bit floating point numerical value.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.#ctor(System.Single)">
+            <summary>
+            Creates a new fully known concrete 32 bit floating point numerical value.
+            </summary>
+            <param name="value">The raw 32 bit value.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.F32">
+            <summary>
+            Gets or sets the raw floating point value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float32Value.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float32Value.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Float64Value">
+            <summary>
+            Represents a fully known concrete 64 bit floating point numerical value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.op_Implicit(System.Double)~Echo.Concrete.Values.ValueType.Float64Value">
+            <summary>
+            Wraps a 64 bit floating point number into an instance of <see cref="T:Echo.Concrete.Values.ValueType.Float64Value"/>.
+            </summary>
+            <param name="value">The 64 bit floating point number to wrap.</param>
+            <returns>The concrete 64 bit floating point numerical value.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.#ctor(System.Double)">
+            <summary>
+            Creates a new fully known concrete 64 bit floating point numerical value.
+            </summary>
+            <param name="value">The raw 64 bit value.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.F64">
+            <summary>
+            Gets or sets the raw floating point value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Float64Value.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Float64Value.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Integer16Value">
+            <summary>
+            Represents a (partially) known concrete 16 bit integral value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.op_Implicit(System.UInt16)~Echo.Concrete.Values.ValueType.Integer16Value">
+            <summary>
+            Wraps an unsigned 16 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer16Value"/>.
+            </summary>
+            <param name="value">The 16 bit integer to wrap.</param>
+            <returns>The concrete 16 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.op_Implicit(System.Int16)~Echo.Concrete.Values.ValueType.Integer16Value">
+            <summary>
+            Wraps a signed 16 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer16Value"/>.
+            </summary>
+            <param name="value">The 16 bit integer to wrap.</param>
+            <returns>The concrete 16 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.op_Implicit(System.String)~Echo.Concrete.Values.ValueType.Integer16Value">
+            <summary>
+            Parses a (partially) known bit string into an 16 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+            <returns>The 16 bit integer.</returns>
+        </member>
+        <member name="F:Echo.Concrete.Values.ValueType.Integer16Value.FullyKnownMask">
+            <summary>
+            Represents the bitmask that is used for a fully known concrete 16 bit integral value. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.#ctor(System.UInt16)">
+            <summary>
+            Creates a new, fully known concrete 16 bit integral value.
+            </summary>
+            <param name="value">The raw 16 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.#ctor(System.Int16)">
+            <summary>
+            Creates a new, fully known concrete 16 bit integral value.
+            </summary>
+            <param name="value">The raw 16 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.#ctor(System.Int16,System.UInt16)">
+            <summary>
+            Creates a new, partially known concrete 16 bit integral value.
+            </summary>
+            <param name="value">The raw 16 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.#ctor(System.UInt16,System.UInt16)">
+            <summary>
+            Creates a new, partially known concrete 16 bit integral value.
+            </summary>
+            <param name="value">The raw 16 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.#ctor(System.String)">
+            <summary>
+            Parses a (partially) known bit string into an 16 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.I16">
+            <summary>
+            Gets the signed representation of this 16 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.U16">
+            <summary>
+            Gets the unsigned representation of this 16 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer16Value.Mask">
+            <summary>
+            Gets a value indicating which bits in the integer are known.
+            If bit at location <c>i</c> equals 1, bit <c>i</c> in <see cref="P:Echo.Concrete.Values.ValueType.Integer16Value.I16"/> and <see cref="P:Echo.Concrete.Values.ValueType.Integer16Value.U16"/> is known,
+            and unknown otherwise.  
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.GetBit(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.SetBit(System.Int32,Echo.Core.Trilean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Not">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.And(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Or(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Xor(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Add(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Subtract(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Multiply(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Divide(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.Remainder(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.IsEqualTo(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.IsGreaterThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.IsLessThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer16Value.MarkFullyUnknown">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Integer32Value">
+            <summary>
+            Represents a (partially) known concrete 32 bit integral value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.op_Implicit(System.UInt16)~Echo.Concrete.Values.ValueType.Integer32Value">
+            <summary>
+            Wraps an unsigned 32 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer32Value"/>.
+            </summary>
+            <param name="value">The 32 bit integer to wrap.</param>
+            <returns>The concrete 32 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.op_Implicit(System.Int16)~Echo.Concrete.Values.ValueType.Integer32Value">
+            <summary>
+            Wraps a signed 32 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer32Value"/>.
+            </summary>
+            <param name="value">The 32 bit integer to wrap.</param>
+            <returns>The concrete 32 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.op_Implicit(System.String)~Echo.Concrete.Values.ValueType.Integer32Value">
+            <summary>
+            Parses a (partially) known bit string into an 32 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+            <returns>The 32 bit integer.</returns>
+        </member>
+        <member name="F:Echo.Concrete.Values.ValueType.Integer32Value.FullyKnownMask">
+            <summary>
+            Represents the bitmask that is used for a fully known concrete 32 bit integral value. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.#ctor(System.Int32)">
+            <summary>
+            Creates a new, fully known concrete 32 bit integral value.
+            </summary>
+            <param name="value">The raw 32 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.#ctor(System.UInt32)">
+            <summary>
+            Creates a new, fully known concrete 32 bit integral value.
+            </summary>
+            <param name="value">The raw 32 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.#ctor(System.Int32,System.UInt32)">
+            <summary>
+            Creates a new, partially known concrete 32 bit integral value.
+            </summary>
+            <param name="value">The raw 32 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.#ctor(System.UInt32,System.UInt32)">
+            <summary>
+            Creates a new, partially known concrete 32 bit integral value.
+            </summary>
+            <param name="value">The raw 32 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.#ctor(System.String)">
+            <summary>
+            Parses a (partially) known bit string into an 32 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.I32">
+            <summary>
+            Gets the signed representation of this 32 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.U32">
+            <summary>
+            Gets the unsigned representation of this 32 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer32Value.Mask">
+            <summary>
+            Gets a value indicating which bits in the integer are known.
+            If bit at location <c>i</c> equals 1, bit <c>i</c> in <see cref="P:Echo.Concrete.Values.ValueType.Integer32Value.I32"/> and <see cref="P:Echo.Concrete.Values.ValueType.Integer32Value.U32"/> is known,
+            and unknown otherwise.  
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.GetBit(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.SetBit(System.Int32,Echo.Core.Trilean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Not">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.And(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Or(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Xor(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Add(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Subtract(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Multiply(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Divide(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.Remainder(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.IsEqualTo(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.IsGreaterThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.IsLessThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer32Value.MarkFullyUnknown">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Integer64Value">
+            <summary>
+            Represents a (partially) known concrete 64 bit integral value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.op_Implicit(System.UInt64)~Echo.Concrete.Values.ValueType.Integer64Value">
+            <summary>
+            Wraps an unsigned 64 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer64Value"/>.
+            </summary>
+            <param name="value">The 64 bit integer to wrap.</param>
+            <returns>The concrete 64 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.op_Implicit(System.Int64)~Echo.Concrete.Values.ValueType.Integer64Value">
+            <summary>
+            Wraps a signed 64 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer64Value"/>.
+            </summary>
+            <param name="value">The 64 bit integer to wrap.</param>
+            <returns>The concrete 64 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.op_Implicit(System.String)~Echo.Concrete.Values.ValueType.Integer64Value">
+            <summary>
+            Parses a (partially) known bit string into an 64 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+            <returns>The 64 bit integer.</returns>
+        </member>
+        <member name="F:Echo.Concrete.Values.ValueType.Integer64Value.FullyKnownMask">
+            <summary>
+            Represents the bitmask that is used for a fully known concrete 64 bit integral value. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.#ctor(System.UInt64)">
+            <summary>
+            Creates a new, fully known concrete 64 bit integral value.
+            </summary>
+            <param name="value">The raw 64 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.#ctor(System.Int64)">
+            <summary>
+            Creates a new, fully known concrete 64 bit integral value.
+            </summary>
+            <param name="value">The raw 64 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.#ctor(System.Int64,System.UInt64)">
+            <summary>
+            Creates a new, partially known concrete 64 bit integral value.
+            </summary>
+            <param name="value">The raw 64 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.#ctor(System.UInt64,System.UInt64)">
+            <summary>
+            Creates a new, partially known concrete 64 bit integral value.
+            </summary>
+            <param name="value">The raw 64 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.#ctor(System.String)">
+            <summary>
+            Parses a (partially) known bit string into an 64 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.I64">
+            <summary>
+            Gets the signed representation of this 64 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.U64">
+            <summary>
+            Gets the unsigned representation of this 64 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer64Value.Mask">
+            <summary>
+            Gets a value indicating which bits in the integer are known.
+            If bit at location <c>i</c> equals 1, bit <c>i</c> in <see cref="P:Echo.Concrete.Values.ValueType.Integer64Value.I64"/> and <see cref="P:Echo.Concrete.Values.ValueType.Integer64Value.U64"/> is known,
+            and unknown otherwise.  
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.GetBit(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.SetBit(System.Int32,Echo.Core.Trilean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Not">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.And(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Or(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Xor(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Add(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Subtract(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Multiply(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Divide(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.Remainder(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.IsEqualTo(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.IsGreaterThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.IsLessThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer64Value.MarkFullyUnknown">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.Integer8Value">
+            <summary>
+            Represents a (partially) known concrete 8 bit integral value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.op_Implicit(System.Byte)~Echo.Concrete.Values.ValueType.Integer8Value">
+            <summary>
+            Wraps an unsigned 8 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer8Value"/>.
+            </summary>
+            <param name="value">The 8 bit integer to wrap.</param>
+            <returns>The concrete 8 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.op_Implicit(System.SByte)~Echo.Concrete.Values.ValueType.Integer8Value">
+            <summary>
+            Wraps a signed 8 bit integer into a fully concrete and known instance of <see cref="T:Echo.Concrete.Values.ValueType.Integer8Value"/>.
+            </summary>
+            <param name="value">The 8 bit integer to wrap.</param>
+            <returns>The concrete 8 bit integer.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.op_Implicit(System.String)~Echo.Concrete.Values.ValueType.Integer8Value">
+            <summary>
+            Parses a (partially) known bit string into an 8 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+            <returns>The 8 bit integer.</returns>
+        </member>
+        <member name="F:Echo.Concrete.Values.ValueType.Integer8Value.FullyKnownMask">
+            <summary>
+            Represents the bitmask that is used for a fully known concrete 8 bit integral value. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.#ctor(System.Byte)">
+            <summary>
+            Creates a new, fully known concrete 8 bit integral value.
+            </summary>
+            <param name="value">The raw 8 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.#ctor(System.SByte)">
+            <summary>
+            Creates a new, fully known concrete 8 bit integral value.
+            </summary>
+            <param name="value">The raw 8 bit value.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.#ctor(System.SByte,System.Byte)">
+            <summary>
+            Creates a new, partially known concrete 8 bit integral value.
+            </summary>
+            <param name="value">The raw 8 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a new, partially known concrete 8 bit integral value.
+            </summary>
+            <param name="value">The raw 8 bit value.</param>
+            <param name="mask">The bit mask indicating the bits that are known.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.#ctor(System.String)">
+            <summary>
+            Parses a (partially) known bit string into an 8 bit integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.I8">
+            <summary>
+            Gets the signed representation of this 8 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.U8">
+            <summary>
+            Gets the unsigned representation of this 8 bit value.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.Integer8Value.Mask">
+            <summary>
+            Gets a value indicating which bits in the integer are known.
+            If bit at location <c>i</c> equals 1, bit <c>i</c> in <see cref="P:Echo.Concrete.Values.ValueType.Integer8Value.I8"/> and <see cref="P:Echo.Concrete.Values.ValueType.Integer8Value.U8"/> is known,
+            and unknown otherwise.  
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.GetBit(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.SetBit(System.Int32,Echo.Core.Trilean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Not">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.And(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Or(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Xor(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Add(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Subtract(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Multiply(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Divide(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.Remainder(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.IsEqualTo(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.IsGreaterThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.IsLessThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.Integer8Value.MarkFullyUnknown">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.IntegerNValue">
+            <summary>
+            Represents a (partially) known fixed size integer value. 
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.#ctor(System.Int32)">
+            <summary>
+            Creates a new zero integer.
+            </summary>
+            <param name="byteCount">The number of bytes to use for encoding this integer.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.#ctor(System.Span{System.Byte})">
+            <summary>
+            Creates a fully known new integer from a bit array.
+            </summary>
+            <param name="bits">The raw bits of the integer.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.#ctor(System.Span{System.Byte},System.Span{System.Byte})">
+            <summary>
+            Creates a partially known new integer from a bit array and a known bit mask.
+            </summary>
+            <param name="bits">The raw bits of the integer.</param>
+            <param name="knownMask">The known bit mask.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.#ctor(System.String)">
+            <summary>
+            Parses a (partially) known bit string into an integer.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.Finalize">
+            <summary>
+            Returns the rented array to <see cref="T:System.Buffers.ArrayPool`1"/>
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerNValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerNValue.Size">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.GetBit(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.SetBit(System.Int32,Echo.Core.Trilean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerNValue.MarkFullyUnknown">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.IntegerValue">
+            <summary>
+            Represents a primitive integral value that might contain unknown bits.
+            </summary>
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.IntegerValue.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.GetLastBit">
+            <summary>
+            Gets the most significant bit of the integer value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.GetBit(System.Int32)">
+            <summary>
+            Reads a single bit value at the provided index.
+            </summary>
+            <param name="index">The index of the bit to read.</param>
+            <returns>The read bit, or <c>null</c> if the bit value is unknown.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Occurs when an invalid index was provided.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.SetBit(System.Int32,Echo.Core.Trilean)">
+            <summary>
+            Writes a single bit value at the provided index.
+            </summary>
+            <param name="index">The index of the bit to write.</param>
+            <param name="value">The new value of the bit to write. <c>null</c> indicates an unknown bit value.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Occurs when an invalid index was provided.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.SetBits(System.String)">
+            <summary>
+            Parses a (partially) known bit string and sets the contents of integer to the parsed result.
+            </summary>
+            <param name="bitString">The bit string to parse.</param>
+            <exception cref="T:System.OverflowException"></exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Copy">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Not">
+            <summary>
+            Performs a bitwise not operation on the (partially) known integer value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.And(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Performs a bitwise and operation with another (partially) known integer value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Or(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Performs a bitwise inclusive or operation with another (partially) known integer value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Xor(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Performs a bitwise exclusive or operation with another (partially) known integer value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.LeftShift(System.Int32)">
+            <summary>
+            Performs a bitwise shift to the left on this (partially) known integer.
+            </summary>
+            <param name="count">The number of bits to shift.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.RightShift(System.Int32,System.Boolean)">
+            <summary>
+            Performs a bitwise shift to the right on this (partially) known integer.
+            </summary>
+            <param name="count">The number of bits to shift.</param>
+            <param name="signExtend">Indicates whether the sign bit should be extended or should always be filled
+            in with zeroes.</param> 
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Add(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Adds a second (partially) known integer to the current integer. 
+            </summary>
+            <param name="other">The integer to add.</param>
+            <exception cref="T:System.ArgumentException">Occurs when the sizes of the integers do not match.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.TwosComplement">
+            <summary>
+            Transforms the (partially) known integer into its twos complement.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Subtract(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Subtracts a second (partially) known integer from the current integer. 
+            </summary>
+            <param name="other">The integer to subtract.</param>
+            <exception cref="T:System.ArgumentException">Occurs when the sizes of the integers do not match.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Multiply(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Multiplies the current integer with a second (partially) known integer.
+            </summary>
+            <param name="other">The integer to multiply with.</param>
+            <exception cref="T:System.ArgumentException">Occurs when the sizes of the integers do not match.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Divide(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Divides the current integer with a second (partially) known integer.
+            </summary>
+            <param name="other">The integer to divide with</param>
+            <exception cref="T:System.ArgumentException">Occurs when the sizes of the integers do not match or there is dividing by zero.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Remainder(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Divides the current integer with a second (partially) known integer and returns remainder of division. 
+            </summary>
+            <param name="other">The integer to divide with</param>
+            <exception cref="T:System.ArgumentException">Occurs when the sizes of the integers do not match or there is dividing by zero.</exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.IsEqualTo(Echo.Concrete.Values.ValueType.IntegerValue)">
+            <summary>
+            Determines whether the integer is equal to the provided integer.
+            </summary>
+            <param name="other">The other integer.</param>
+            <returns><c>true</c> if the integers are equal, <c>false</c> if not, and
+            <c>null</c> if the conclusion of the comparison is not certain.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.IsGreaterThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <summary>
+            Determines whether the integer is greater than the provided integer.
+            </summary>
+            <param name="other">The other integer.</param>
+            <param name="signed">Indicates the integers should be interpreted as signed or unsigned integers.</param>
+            <returns><c>true</c> if the current integer is greater than the provided integer, <c>false</c> if not, and
+            <c>null</c> if the conclusion of the comparison is not certain.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.IsLessThan(Echo.Concrete.Values.ValueType.IntegerValue,System.Boolean)">
+            <summary>
+            Determines whether the integer is less than the provided integer.
+            </summary>
+            <param name="other">The other integer.</param>
+            <param name="signed">Indicates the integers should be interpreted as signed or unsigned integers.</param>
+            <returns><c>true</c> if the current integer is less than the provided integer, <c>false</c> if not, and
+            <c>null</c> if the conclusion of the comparison is not certain.</returns>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Extend(System.Int32,System.Boolean)">
+            <summary>
+            Extends the integer value to a bigger bit length.
+            </summary>
+            <param name="newBitLength">The new bit length to extend the integer to.</param>
+            <param name="signExtend">Indicates whether the sign bit should be extended.</param>
+            <returns>
+            The extended integer. If the provided size is either 8, 16, 32 or 64, this method will return an integer
+            using the specialized <see cref="T:Echo.Concrete.Values.ValueType.Integer8Value"/>, <see cref="T:Echo.Concrete.Values.ValueType.Integer16Value"/>, <see cref="T:Echo.Concrete.Values.ValueType.Integer32Value"/>
+            or <see cref="T:Echo.Concrete.Values.ValueType.Integer64Value"/> types.
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            Occurs when the new bit length is shorter than the current bit length.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Truncate(System.Int32)">
+            <summary>
+            Truncates the integer value to a smaller bit length.
+            </summary>
+            <param name="newBitLength">The new bit length to truncate the integer to.</param>
+            <returns>
+            The truncated integer. If the provided size is either 8, 16, 32 or 64, this method will return an integer
+            using the specialized <see cref="T:Echo.Concrete.Values.ValueType.Integer8Value"/>, <see cref="T:Echo.Concrete.Values.ValueType.Integer16Value"/>, <see cref="T:Echo.Concrete.Values.ValueType.Integer32Value"/>
+            or <see cref="T:Echo.Concrete.Values.ValueType.Integer64Value"/> types.
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            Occurs when the new bit length is larger than the current bit length.
+            </exception>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.MarkFullyUnknown">
+            <summary>
+            Marks all bits in the integer value as unknown.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IntegerValue.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.IValueTypeValue">
+            <summary>
+            Represents an object that is passed on by-value.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IValueTypeValue.GetBits(System.Span{System.Byte})">
+            <summary>
+            Gets the raw bits of the primitive value.
+            </summary>
+            <param name="buffer">The buffer to write the raw bits to.</param>
+            <remarks>
+            The bits returned by this method assume the value is known entirely. Any bit that is marked unknown will be
+            set to 0. 
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IValueTypeValue.GetMask(System.Span{System.Byte})">
+            <summary>
+            Gets the bit mask indicating the bits that are known.  
+            </summary>
+            <param name="buffer">The buffer to write the raw mask to.</param>
+            <remarks>
+            If bit at location <c>i</c> equals 1, bit <c>i</c> is known, and unknown otherwise.
+            </remarks>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.IValueTypeValue.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Replaces the raw contents of the integer with the provided bits and known mask.
+            </summary>
+            <param name="bits">The new bit values.</param>
+            <param name="mask">The new bit mask indicating the known bits.</param>
+        </member>
+        <member name="T:Echo.Concrete.Values.ValueType.MemoryBlockValue">
+            <summary>
+            Represents a chunk of memory.
+            </summary>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.#ctor(System.Int32)">
+            <summary>
+            Creates a new uninitialized block of memory.
+            </summary>
+            <param name="size">The size of the memory.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Creates a new block of memory.
+            </summary>
+            <param name="size">The size of the memory.</param>
+            <param name="initialize">Determines whether the block should be initialized with zeroes or not.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.#ctor(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Creates a new fully known memory block.
+            </summary>
+            <param name="memory">The referenced memory.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.#ctor(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Creates a new memory block.
+            </summary>
+            <param name="memory">The referenced memory.</param>
+            <param name="knownBitMask">The bit mask indicating the known and unknown bits.</param>
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.Finalize">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsKnown">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.Size">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsValueType">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsNonZero">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsPositive">
+            <inheritdoc />
+        </member>
+        <member name="P:Echo.Concrete.Values.ValueType.MemoryBlockValue.IsNegative">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.GetBits(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.GetMask(System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.SetBits(System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadBytes(System.Int32,System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadBytes(System.Int32,System.Span{System.Byte},System.Span{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteBytes(System.Int32,System.ReadOnlySpan{System.Byte},System.ReadOnlySpan{System.Byte})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadInteger8(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadInteger16(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadInteger32(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadInteger64(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadFloat32(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.ReadFloat64(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteInteger8(System.Int32,Echo.Concrete.Values.ValueType.Integer8Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteInteger16(System.Int32,Echo.Concrete.Values.ValueType.Integer16Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteInteger32(System.Int32,Echo.Concrete.Values.ValueType.Integer32Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteInteger64(System.Int32,Echo.Concrete.Values.ValueType.Integer64Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteFloat32(System.Int32,Echo.Concrete.Values.ValueType.Float32Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.WriteFloat64(System.Int32,Echo.Concrete.Values.ValueType.Float64Value)">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.Concrete.Values.ValueType.MemoryBlockValue.Copy">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
