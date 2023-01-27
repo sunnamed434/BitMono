@@ -30,6 +30,7 @@
 
 #### New Contributors
 * @Gibsol made their first contribution in [#54](https://github.com/sunnamed434/BitMono/pull/54)
+* @0x59R11 made their first contribution in [#81](https://github.com/sunnamed434/BitMono/pull/81)
 
 ### v0.7.0-alpha.16:
 #### Added: 
