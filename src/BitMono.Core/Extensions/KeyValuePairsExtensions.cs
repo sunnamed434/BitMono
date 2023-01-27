@@ -2,15 +2,6 @@
 
 public static class KeyValuePairsExtensions
 {
-    public static string GetValueOrDefault(this Dictionary<string, object> source, string key, string defaultValue = "")
-    {
-        var value = defaultValue;
-        if (source.TryGetTypedValue(key, out string valueValue))
-        {
-            value = valueValue;
-        }
-        return value;
-    }
     public static bool GetValueOrDefault(this Dictionary<string, object> source, string key, bool defaultValue = false)
     {
         var value = defaultValue;

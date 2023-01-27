@@ -22,7 +22,7 @@ public class ObfuscationAttributesStripper
         var obfuscationAttributesFailStrip = new List<CustomAttribute>();
         var obfuscateAssemblyAttributesSuccessStrip = new List<CustomAttribute>();
         var obfuscateAssemblyAttributesFailStrip = new List<CustomAttribute>();
-        foreach (var customAttribute in context.Module.FindDefinitions().OfType<IHasCustomAttribute>())
+        foreach (var customAttribute in context.Module.FindMembers().OfType<IHasCustomAttribute>())
         {
             foreach (var protection in protectionsSort.ProtectionsResolve.FoundProtections)
             {

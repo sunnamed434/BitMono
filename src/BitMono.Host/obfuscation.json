@@ -19,6 +19,15 @@
   // Exclude from obfuscation if assembly has [ObfuscateAssemblyAttribute(true)] 
   // Set to true indicates whether enabled
   "ObfuscateAssemblyAttributeObfuscationExclude": true,
+  
+  // Exclude from obfuscation if type name used by: Type.GetTypeFromHandle, or simply used by ldtoken CIL instruction
+  // Set to true indicates whether enabled
+  "ReflectionOnMemberUsedTypeGetTypeFromHandleExclude": true,
+  
+  // Exclude from obfuscation if member name used by: 
+  // Type.GetMethod, Type.GetField, Type.GetProperty, Type.GetEvent, Type.GetMember
+  // Set to true indicates whether enabled
+  "ReflectionOnMemberUsedExclude": true,
 
   // Strip attribute after obfuscation if assembly has [ObfuscateAssemblyAttribute(true, StripAfterObfuscation = true)] 
   // or member has [Obfuscation(Feature = "Some_BitMono_Feature", StripAfterObfuscation = true]
@@ -41,7 +50,7 @@
   // If this is Unity go to your game path (eg, steam), open-up the directory and search for Managed directory xxx_Data\Managed,
   // Copy asked libraries from there and feed them to BitMono
   // Stay it true to stay enabled if this is possible!
-  "FailOnNoRequiredDependency": true,
+  "FailOnNoRequiredDependency": false,
 
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,

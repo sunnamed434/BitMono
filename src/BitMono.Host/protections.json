@@ -18,7 +18,7 @@
     },
     {
       "Name": "FullRenamer",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDebugBreakpoints",

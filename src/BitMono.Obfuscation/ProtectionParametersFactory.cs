@@ -13,8 +13,15 @@ public class ProtectionParametersFactory
 
     public ProtectionParameters Create(IProtection protection, ModuleDefinition module)
     {
-        var definitions = module.FindDefinitions();
+        var definitions = module.FindMembers();
         var targets = m_MembersResolver.Resolve(protection, definitions, m_MemberResolvers).ToList();
+        foreach (var method in targets.OfType<MethodDefinition>())
+        {
+            if (method.CilMethodBody is { } body)
+            {
+                body.Instructions.CalculateOffsets();
+            }
+        }
         return new ProtectionParameters(targets);
     }
 }
