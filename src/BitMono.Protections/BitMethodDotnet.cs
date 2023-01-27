@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class BitMethodDotnet : IProtection
 {
     private readonly Random m_Random;

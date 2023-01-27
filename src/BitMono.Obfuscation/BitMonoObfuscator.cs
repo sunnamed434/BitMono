@@ -105,7 +105,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> expandMacrosAsync(ProtectionContext context)
     {
-        foreach (var method in m_Context.Module.FindDefinitions().OfType<MethodDefinition>())
+        foreach (var method in m_Context.Module.FindMembers().OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)
             {
@@ -142,7 +142,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> optimizeMacrosAsync(ProtectionContext context)
     {
-        foreach (var method in context.Module.FindDefinitions().OfType<MethodDefinition>())
+        foreach (var method in context.Module.FindMembers().OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)
             {
@@ -168,10 +168,10 @@ public class BitMonoObfuscator
         {
             if (_imageBuild.DiagnosticBag.HasErrors)
             {
-                m_Logger.Warning("{0} errors were registered while building the PE", _imageBuild.DiagnosticBag.Exceptions.Count);
+                m_Logger.Warning("{0} error(s) were registered while building the PE", _imageBuild.DiagnosticBag.Exceptions.Count);
                 foreach (var exception in _imageBuild.DiagnosticBag.Exceptions)
                 {
-                    m_Logger.Error(exception, "Error while building the PE!");
+                    m_Logger.Error(exception, exception.GetType().Name);
                 }
             }
         }

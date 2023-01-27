@@ -35,6 +35,7 @@
       <ProjectReference Include="..\..\src\BitMono.Protections\BitMono.Protections.csproj" />
       <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.CustomAttributes\BitMono.Core.TestCases.CustomAttributes.csproj" />
       <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Methods\BitMono.Core.TestCases.Methods.csproj" />
+      <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Reflection\BitMono.Core.TestCases.Reflection.csproj" />
       <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Types\BitMono.Core.TestCases.Types.csproj" />
     </ItemGroup>
 

@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(Members.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class NoNamespaces : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)

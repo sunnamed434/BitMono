@@ -3,10 +3,10 @@
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class DoNotResolveAttribute : Attribute
 {
-    public DoNotResolveAttribute(Members members)
+    public DoNotResolveAttribute(MemberInclusionFlags memberInclusion)
     {
-        Members = members;
+        MemberInclusion = memberInclusion;
     }
 
-    public Members Members { get; }
+    public MemberInclusionFlags MemberInclusion { get; }
 }

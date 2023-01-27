@@ -14,29 +14,21 @@ public static class ModuleDefinitionExtensions
         }
         throw new ArgumentException($"Unable to resolve member {type.FullName}");
     }
-    public static IEnumerable<IMetadataMember> FindDefinitions(this ModuleDefinition source)
+    [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
+    [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
+    public static List<IMetadataMember> FindMembers(this ModuleDefinition source)
     {
-        yield return source.Assembly;
-        yield return source;
+        var members = new List<IMetadataMember>();
+        members.Add(source);
+        members.Add(source.Assembly);
         foreach (var type in source.GetAllTypes())     
         {
-            yield return type;
-            foreach (var method in type.Methods)
-            {
-                yield return method;
-            }
-            foreach (var field in type.Fields)
-            {
-                yield return field;
-            }
-            foreach (var property in type.Properties)
-            {
-                yield return property;
-            }
-            foreach (var @event in type.Events)
-            {
-                yield return @event;
-            }
+            members.Add(type);
+            members.AddRange(type.Methods);
+            members.AddRange(type.Fields);
+            members.AddRange(type.Properties);
+            members.AddRange(type.Events);
         }
+        return members;
     }
 }
