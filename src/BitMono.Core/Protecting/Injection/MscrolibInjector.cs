@@ -1,4 +1,5 @@
-﻿namespace BitMono.Core.Protecting.Injection;
+﻿#pragma warning disable CS8602
+namespace BitMono.Core.Protecting.Injection;
 
 public class MscorlibInjector
 {
@@ -40,7 +41,7 @@ public class MscorlibInjector
         });
         return fieldInjectedArray;
     }
-    public TypeDefinition InjectCompilerGeneratedValueType(ModuleDefinition module, TypeDefinition type, string name = null)
+    public TypeDefinition InjectCompilerGeneratedValueType(ModuleDefinition module, TypeDefinition type, string? name = null)
     {
         var result = CreateCompilerGeneratedValueType(module, name);
         type.NestedTypes.Add(result);
@@ -58,19 +59,19 @@ public class MscorlibInjector
         @in.CustomAttributes.Add(attribute);
         return attribute;
     }
-    public TypeDefinition CreateCompilerGeneratedType(ModuleDefinition module, string name = null)
+    public TypeDefinition CreateCompilerGeneratedType(ModuleDefinition module, string? name = null)
     {
         var @object = module.CorLibTypeFactory.Object.ToTypeDefOrRef();
         var invisibleType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, @object);
         InjectCompilerGeneratedAttribute(module, invisibleType);
         return invisibleType;
     }
-    public TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string name = null)
+    public TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string? name = null)
     {
         var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
-        var invislbeValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedPublic, valueType);
-        InjectCompilerGeneratedAttribute(module, invislbeValueType);
-        return invislbeValueType;
+        var invisibleValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedPublic, valueType);
+        InjectCompilerGeneratedAttribute(module, invisibleValueType);
+        return invisibleValueType;
     }
     public CustomAttribute CreateCompilerGeneratedAttribute(ModuleDefinition module)
     {

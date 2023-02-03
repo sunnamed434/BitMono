@@ -1,3 +1,4 @@
+#pragma warning disable CS8604
 namespace BitMono.Obfuscation;
 
 public class ObfuscationAttributesStripNotifier
@@ -6,7 +7,7 @@ public class ObfuscationAttributesStripNotifier
 
     public ObfuscationAttributesStripNotifier(ILogger logger)
     {
-        m_Logger = logger;
+        m_Logger = logger.ForContextFile();
     }
 
     public void Notify(ObfuscationAttributesStrip obfuscationAttributesStrip)

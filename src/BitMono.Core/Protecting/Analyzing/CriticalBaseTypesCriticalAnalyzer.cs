@@ -1,4 +1,5 @@
-﻿namespace BitMono.Core.Protecting.Analyzing;
+﻿#pragma warning disable CS8602
+namespace BitMono.Core.Protecting.Analyzing;
 
 public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {

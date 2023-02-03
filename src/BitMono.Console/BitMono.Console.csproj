@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Label="BitMonoSettings">
+    <BitMonoEnabled>true</BitMonoEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BitMono.MSBuild.Tasks" Version="0.1.0-build20230202-1220">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

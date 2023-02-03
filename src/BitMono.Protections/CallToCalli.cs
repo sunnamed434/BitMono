@@ -1,4 +1,5 @@
-﻿namespace BitMono.Protections;
+﻿#pragma warning disable CS8602
+namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class CallToCalli : IProtection
@@ -18,7 +19,7 @@ public class CallToCalli : IProtection
         var getMethodHandleMethod = context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
         var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
-        var moduleType = context.Module.GetOrCreateModuleType(); 
+        var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body && method.DeclaringType != moduleType)

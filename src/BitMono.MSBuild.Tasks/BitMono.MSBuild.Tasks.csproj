@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Nuget Package">
+    <PackageId>BitMono.MSBuild.Tasks</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Obfuscation BitMono</PackageTags>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>build$([System.DateTime]::Now.ToString('yyyyMMdd-HHmm'))</VersionSuffix>
+    <PackageProjectUrl>https://github.com/sunnamed434/BitMono</PackageProjectUrl>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)..\..\artifacts\</PackageOutputPath>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeBitMonoDependencyFiles</TargetsForTfmSpecificContentInPackage>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="build\BitMono.MSBuild.Tasks.targets" PackagePath="build\" />
+    <Content Include="buildMultiTargeting\BitMono.MSBuild.Tasks.props" PackagePath="buildMultiTargeting\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.4.0" PrivateAssets="All" />
+    <PackageReference Include="Serilog.Sinks.MSBuild" Version="1.5.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <IncludeBitMonoDependencyFilesDependsOn>
+      IncludeBitMonoDependencyFilesFramework;
+      IncludeBitMonoDependencyFilesStandard
+    </IncludeBitMonoDependencyFilesDependsOn>
+  </PropertyGroup>
+
+  <Target Name="IncludeBitMonoDependencyFiles" DependsOnTargets="$(IncludeBitMonoDependencyFilesDependsOn)" />
+
+  <Target Name="IncludeBitMonoDependencyFilesFramework" Condition="'$(TargetFramework)' == 'net462'">
+    <ItemGroup>
+      <BitMonoNetFrameworkDependencies Include="$(BaseOutputPath)\$(Configuration)\net462\*.dll" />
+      <BitMonoNetFrameworkDependencies Include="$(BaseOutputPath)\$(Configuration)\net462\*.pdb" />
+    </ItemGroup>
+    <CreateItem Include="@(BitMonoNetFrameworkDependencies)" AdditionalMetadata="PackagePath=netframework">
+      <Output TaskParameter="Include" ItemName="TfmSpecificPackageFile" />
+    </CreateItem>
+  </Target>
+
+  <Target Name="IncludeBitMonoDependencyFilesStandard" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ItemGroup>
+      <BitMonoNetStandardDependencies Include="$(BaseOutputPath)\$(Configuration)\netstandard2.0\*.dll" />
+      <BitMonoNetStandardDependencies Include="$(BaseOutputPath)\$(Configuration)\netstandard2.0\*.pdb" />
+    </ItemGroup>
+    <CreateItem Include="@(BitMonoNetStandardDependencies)" AdditionalMetadata="PackagePath=netstandard">
+      <Output TaskParameter="Include" ItemName="TfmSpecificPackageFile" />
+    </CreateItem>
+  </Target>
+
+</Project>

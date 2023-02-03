@@ -2,7 +2,7 @@
 
 public static class ProtectionExtensions
 {
-    public static bool TryGetDoNotResolveAttribute(this Type source, [AllowNull] out DoNotResolveAttribute attribute, bool inherit = false)
+    public static bool TryGetDoNotResolveAttribute(this Type source, out DoNotResolveAttribute? attribute, bool inherit = false)
     {
         attribute = source.GetCustomAttribute<DoNotResolveAttribute>(inherit);
         if (attribute == null)
@@ -11,15 +11,15 @@ public static class ProtectionExtensions
         }
         return true;
     }
-    public static bool TryGetDoNotResolveAttribute(this IProtection source, [AllowNull] out DoNotResolveAttribute attribute)
+    public static bool TryGetDoNotResolveAttribute(this IProtection source, out DoNotResolveAttribute? attribute)
     {
         return source.GetType().TryGetDoNotResolveAttribute(out attribute);
     }
-    public static bool TryGetDoNotResolveAttribute(this IPacker source, [AllowNull] out DoNotResolveAttribute attribute)
+    public static bool TryGetDoNotResolveAttribute(this IPacker source, out DoNotResolveAttribute? attribute)
     {
         return source.GetType().TryGetDoNotResolveAttribute(out attribute);
     }
-    public static bool TryGetDoNotResolveAttribute<TProtection>([AllowNull] out DoNotResolveAttribute attribute) where TProtection : IProtection
+    public static bool TryGetDoNotResolveAttribute<TProtection>(out DoNotResolveAttribute? attribute) where TProtection : IProtection
     {
         return typeof(TProtection).TryGetDoNotResolveAttribute(out attribute);
     }
@@ -28,19 +28,11 @@ public static class ProtectionExtensions
         var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);
         if (protectionNameAttribute != null)
         {
-            if (string.IsNullOrWhiteSpace(protectionNameAttribute.Name) == false)
-            {
-                return protectionNameAttribute.Name;
-            }
-            else
-            {
-                return source.Name;
-            }
+            return string.IsNullOrWhiteSpace(protectionNameAttribute.Name) == false
+                ? protectionNameAttribute.Name
+                : source.Name;
         }
-        else
-        {
-            return source.Name;
-        }
+        return source.Name;
     }
     public static string GetName(this IProtection source)
     {

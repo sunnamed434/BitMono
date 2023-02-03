@@ -1,4 +1,5 @@
-﻿namespace BitMono.Core.Protecting.Resolvers;
+﻿#pragma warning disable CS8602
+namespace BitMono.Core.Protecting.Resolvers;
 
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
@@ -52,7 +53,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
             {
                 return false;
             }
-        }        
+        }
         if (m_SpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
         {
             return false;

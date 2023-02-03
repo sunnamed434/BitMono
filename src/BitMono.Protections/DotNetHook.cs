@@ -36,7 +36,7 @@ public class DotNetHook : IProtection
                     if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor callingOperandMethod)
                     {
                         var callingMethod = callingOperandMethod.Resolve();
-                        if (callingMethod is { CilMethodBody: { } } 
+                        if (callingMethod is { CilMethodBody: { } }
                             && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
                         {
                             if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
@@ -70,7 +70,7 @@ public class DotNetHook : IProtection
                                         new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
                                         new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
                                         new CilInstruction(CilOpCodes.Call, redirectStubMethod),
-                                        new CilInstruction(CilOpCodes.Ret) 
+                                        new CilInstruction(CilOpCodes.Ret)
                                     }
                                 };
                                 moduleType.Methods.Add(initializationMethod);

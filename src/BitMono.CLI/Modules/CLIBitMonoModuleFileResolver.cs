@@ -2,11 +2,10 @@
 
 internal class CLIBitMonoModuleFileResolver
 {
-    [return: AllowNull]
-    public string Resolve(string[] args)
+    public static string? Resolve(string[] args)
     {
-        string file = null;
-        if (args?.Any() == true)
+        string? file = null;
+        if (args.IsEmpty() == false)
         {
             file = args[0];
         }

@@ -11,16 +11,12 @@ public class ObjectReturnType : IProtection
         {
             if (method.Signature.ReturnsValue(systemBoolean))
             {
-                if (method.IsConstructor == false && method.IsVirtual == false && method.NotAsync())
-                {
-                    if (method.IsSetMethod == false && method.IsGetMethod == false)
+                if (method.IsConstructor == false && method.IsVirtual == false && method.NotAsync()
+                    && method.IsSetMethod == false && method.IsGetMethod == false)
+                    if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn) == false)
                     {
-                        if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn) == false)
-                        {
-                            method.Signature.ReturnType = systemObject;
-                        }
+                        method.Signature.ReturnType = systemObject;
                     }
-                }
             }
         }
         return Task.CompletedTask;

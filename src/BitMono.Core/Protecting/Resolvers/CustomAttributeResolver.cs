@@ -2,8 +2,7 @@
 
 public class CustomAttributeResolver
 {
-    [return: AllowNull]
-    public IEnumerable<CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
+    public IEnumerable<CustomAttributeResolve>? Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
         for (var i = 0; i < from.CustomAttributes.Count; i++)
         {

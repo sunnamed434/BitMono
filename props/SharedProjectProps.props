@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>BitMono Obfuscator Dotnet Unity Mono Bit AsmResolver dnlib Protector Mono-Obfuscator Dotnet-Protector </PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sunnamed434/BitMono</PackageProjectUrl>
+    <PackageOwners>sunnamed434</PackageOwners>
+    <PackageVersion>0.8.0-alpha.17</PackageVersion>
+    <RepositoryUrl>https://github.com/sunnamed434/BitMono</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>sunnamed434</Authors>
+    <Version>0.8.0-alpha.17</Version>
+    <InformationalVersion>0.8.0-alpha.17</InformationalVersion>
+    <Company>BitMono</Company>
+    <Copyright>sunnamed434</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>10</LangVersion>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);NU1701;NU1702;CS0436;CS1591</NoWarn>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WeaverConfiguration>
+    </WeaverConfiguration>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'== 'net461'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>

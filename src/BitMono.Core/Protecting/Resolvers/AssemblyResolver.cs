@@ -1,4 +1,5 @@
-﻿namespace BitMono.Core.Protecting.Resolvers;
+﻿#pragma warning disable CS8602
+namespace BitMono.Core.Protecting.Resolvers;
 
 public class AssemblyResolver
 {

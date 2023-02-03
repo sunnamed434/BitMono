@@ -9,8 +9,7 @@ public class InvokablePipeline : IInvokablePipeline
 
     public bool Succeed { get; private set; } = true;
     public ProtectionContext Context { get; }
-    [AllowNull]
-    public Action OnFail { get; set; }
+    [AllowNull] public Action? OnFail { get; set; } = null;
 
     public async Task InvokeAsync(Func<ProtectionContext, Task<bool>> func)
     {
@@ -19,6 +18,18 @@ public class InvokablePipeline : IInvokablePipeline
             return;
         }
         Succeed = await func.Invoke(Context);
+        if (Succeed == false)
+        {
+            OnFail?.Invoke();
+        }
+    }
+    public async Task InvokeAsync(Func<ProtectionContext, IInvokablePipeline, Task<bool>> func)
+    {
+        if (Succeed == false)
+        {
+            return;
+        }
+        Succeed = await func.Invoke(Context, this);
         if (Succeed == false)
         {
             OnFail?.Invoke();

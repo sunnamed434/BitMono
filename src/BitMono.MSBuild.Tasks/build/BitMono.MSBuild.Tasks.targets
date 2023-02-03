@@ -1,0 +1,26 @@
+<Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
+
+  <PropertyGroup>
+    <TaskAssembly Condition="'$(MSBuildRuntimeType)' == 'Full'">$(MSBuildThisFileDirectory)\..\netframework\BitMono.MSBuild.Tasks.dll</TaskAssembly>
+    <TaskAssembly Condition="'$(TaskAssembly)' == ''">$(MSBuildThisFileDirectory)\..\netstandard\BitMono.MSBuild.Tasks.dll</TaskAssembly>
+
+    <BitMonoEnabled Condition="'$(BitMonoEnabled)' == ''">true</BitMonoEnabled>
+  </PropertyGroup>
+
+  <UsingTask TaskName="BitMono.MSBuild.Tasks.Protect" AssemblyFile="$(TaskAssembly)" />
+  <Target
+    Name="RunBitMono"
+    AfterTargets="AfterCompile"
+    DependsOnTargets="$(BitMonoDependsOn)"
+    Condition="Exists(@(IntermediateAssembly)) And $(DesignTimeBuild) != true And $(BitMonoEnabled) == true And ($(Configuration) == 'Release')"
+  >
+    <Protect
+      AssemblyPath="@(IntermediateAssembly)"
+      References="@(ReferencePath)"
+      BitMonoEnabled="$(BitMonoEnabled)"
+      BitMonoProtections="$(MSBuildProjectDirectory)\protections.json"
+      BitMonoCriticals="$(MSBuildProjectDirectory)\criticals.json"
+      BitMonoObfuscation="$(MSBuildProjectDirectory)\obfuscation.json"
+    ></Protect>
+  </Target>
+</Project>

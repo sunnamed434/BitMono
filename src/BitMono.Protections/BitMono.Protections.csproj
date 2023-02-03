@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-	<LangVersion>10.0</LangVersion>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DebugType>none</DebugType>
@@ -39,8 +40,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-rc.2.22472.3" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-      <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
-      <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
   </ItemGroup>
 
   <ItemGroup>

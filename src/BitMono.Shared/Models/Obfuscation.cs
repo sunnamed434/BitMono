@@ -14,8 +14,6 @@ public class Obfuscation
     public bool FailOnNoRequiredDependency { get; set; }
     public bool OpenFileDestinationInFileExplorer { get; set; }
     public bool SpecificNamespacesObfuscationOnly { get; set; }
-    [AllowNull]
-    public string[] SpecificNamespaces { get; set; }
-    [AllowNull]
-    public string[] RandomStrings { get; set; }
+    public string[]? SpecificNamespaces { get; set; }
+    public string[]? RandomStrings { get; set; }
 }

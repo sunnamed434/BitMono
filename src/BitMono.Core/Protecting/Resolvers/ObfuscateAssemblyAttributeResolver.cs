@@ -14,8 +14,8 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
         m_AttributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace;
         m_AttributeName = nameof(ObfuscateAssemblyAttribute);
     }
-    
-    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out ObfuscateAssemblyAttributeData model)
+
+    public override bool Resolve(string? feature, IHasCustomAttribute from, out ObfuscateAssemblyAttributeData? model)
     {
         model = null;
         if (m_Obfuscation.ObfuscateAssemblyAttributeObfuscationExclude == false)

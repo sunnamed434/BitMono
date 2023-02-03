@@ -13,9 +13,9 @@ public static class RuntimeUtilities
         var dotnetFrameworkVersion = Environment.Version;
         var operatingSystem = Environment.OSVersion;
         var bits = IntPtr.Size * 8;
-        var monoType = Type.GetType(KnownMonoRuntimes.TypeName);
+        var monoType = Type.GetType(KnownMonoRuntimes.MonoTypeName);
         var hasMono = monoType != null;
-        string monoDisplayName = null;
+        string? monoDisplayName = null;
         if (hasMono)
         {
             var displayName = monoType.GetMethod(KnownMonoRuntimes.GetDisplayName, BindingFlags.NonPublic | BindingFlags.Static);
@@ -30,7 +30,7 @@ public static class RuntimeUtilities
             OperatingSystem = operatingSystem,
             NetFrameworkVersion = dotnetFrameworkVersion,
             Bits = bits,
-            HasMono = hasMono, 
+            HasMono = hasMono,
             MonoType = monoType,
             MonoDisplayName = monoDisplayName
         };

@@ -2,7 +2,7 @@
 
 public class OutputFilePathFactory
 {
-    public BitMonoContext Create(BitMonoContext context)
+    public static string Create(BitMonoContext context)
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.Append(Path.GetFileNameWithoutExtension(context.FileName));
@@ -11,8 +11,6 @@ public class OutputFilePathFactory
             stringBuilder.Append("_bitmono");
         }
         stringBuilder.Append(Path.GetExtension(context.FileName));
-        var outputFile = Path.Combine(context.OutputDirectoryName, stringBuilder.ToString());
-        context.OutputFile = outputFile;
-        return context;
+        return Path.Combine(context.OutputDirectoryName, stringBuilder.ToString());
     }
 }

@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-	<TargetFramework>net462</TargetFramework>
-	<LangVersion>10.0</LangVersion>
-	<ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
+    <TargetFramework>net462</TargetFramework>
+    <ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>none</DebugType>

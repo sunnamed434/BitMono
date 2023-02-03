@@ -1,4 +1,5 @@
-﻿namespace BitMono.API.Protecting.Contexts;
+﻿#pragma warning disable CS8618
+namespace BitMono.API.Protecting.Contexts;
 
 public class ProtectionContext
 {
