@@ -86,11 +86,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
 		<PackageReference Include="morelinq" Version="3.3.2" />
         <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
-        <PackageReference Include="Serilog" Version="2.12.1-dev-01587" />
+        <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.1-dev-00077" />
 		<PackageReference Include="Serilog.Sinks.TextWriter" Version="2.1.0" />
 	</ItemGroup>

@@ -23,7 +23,6 @@ public class BitMonoModule : Module
 
         var logsPath = string.Format(Path.Combine("logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now)
             .ReplaceDirectorySeparatorToAlt();
-
         var loggerConfiguration = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Async(configure =>

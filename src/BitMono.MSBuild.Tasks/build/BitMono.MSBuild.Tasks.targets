@@ -1,10 +1,13 @@
 <Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
 
   <PropertyGroup>
-    <TaskAssembly Condition="'$(MSBuildRuntimeType)' == 'Full'">$(MSBuildThisFileDirectory)\..\netframework\BitMono.MSBuild.Tasks.dll</TaskAssembly>
+    <TaskAssembly Condition="'$(MSBuildRuntimeType)' == 'Full'">$(MSBuildThisFileDirectory)\..\netframework\bitMono.MSBuild.Tasks.dll</TaskAssembly>
     <TaskAssembly Condition="'$(TaskAssembly)' == ''">$(MSBuildThisFileDirectory)\..\netstandard\BitMono.MSBuild.Tasks.dll</TaskAssembly>
 
     <BitMonoEnabled Condition="'$(BitMonoEnabled)' == ''">true</BitMonoEnabled>
+    <BitMonoProtections Condition="'$(BitMonoProtections)' == ''">$(MSBuildProjectDirectory)\protections.json</BitMonoProtections>
+    <BitMonoCriticals Condition="'$(BitMonoCriticals)' == ''">$(MSBuildProjectDirectory)\criticals.json</BitMonoCriticals>
+    <BitMonoObfuscation Condition="'$(BitMonoObfuscation)' == ''">$(MSBuildProjectDirectory)\obfuscation.json</BitMonoObfuscation>
   </PropertyGroup>
 
   <UsingTask TaskName="BitMono.MSBuild.Tasks.Protect" AssemblyFile="$(TaskAssembly)" />
@@ -12,15 +15,13 @@
     Name="RunBitMono"
     AfterTargets="AfterCompile"
     DependsOnTargets="$(BitMonoDependsOn)"
-    Condition="Exists(@(IntermediateAssembly)) And $(DesignTimeBuild) != true And $(BitMonoEnabled) == true And ($(Configuration) == 'Release')"
-  >
-    <Protect
-      AssemblyPath="@(IntermediateAssembly)"
-      References="@(ReferencePath)"
-      BitMonoEnabled="$(BitMonoEnabled)"
-      BitMonoProtections="$(MSBuildProjectDirectory)\protections.json"
-      BitMonoCriticals="$(MSBuildProjectDirectory)\criticals.json"
-      BitMonoObfuscation="$(MSBuildProjectDirectory)\obfuscation.json"
-    ></Protect>
+    Condition="Exists(@(IntermediateAssembly)) And $(DesignTimeBuild) != true And $(BitMonoEnabled) == true And ($(Configuration) == 'Release')">
+    <Protect TaskAssembly="$(TaskAssembly)"
+             AssemblyPath="@(IntermediateAssembly)"
+             References="@(ReferencePath)"
+             BitMonoEnabled="$(BitMonoEnabled)"
+             BitMonoProtections="$(BitMonoProtections)"
+             BitMonoCriticals="$(BitMonoCriticals)"
+             BitMonoObfuscation="$(BitMonoObfuscation)" />
   </Target>
 </Project>

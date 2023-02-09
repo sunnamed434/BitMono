@@ -14,7 +14,7 @@ public class ProtectionsSorter
     public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
     {
         var protectionsResolve = new ProtectionsResolver(protections, protectionSettings).Sort();
-        var obfuscationAttributeProtections = protectionsResolve.FoundProtections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly) == true);
+        var obfuscationAttributeProtections = protectionsResolve.FoundProtections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
         var deprecatedProtections = protectionsResolve.FoundProtections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
         var sortedProtections = protectionsResolve.FoundProtections.Except(obfuscationAttributeProtections)
             .Except(deprecatedProtections);

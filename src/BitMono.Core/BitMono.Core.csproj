@@ -1,57 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-  </PropertyGroup>
-
-  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugType>none</DebugType>
+    <TargetFramework>net462</TargetFramework>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Injection\**" />
-    <EmbeddedResource Remove="Injection\**" />
-    <None Remove="Injection\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0-rc.2.22472.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0-rc.2.22472.3" />
+    <PackageReference Include="AsmResolver.DotNet" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
     <PackageReference Include="Pocket" Version="0.0.3" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
+    <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
-    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj" />
   </ItemGroup>
 
@@ -59,31 +22,16 @@
     <Reference Include="Echo.Concrete" Condition="'$(TargetFramework)' == 'net462'">
       <HintPath>..\..\lib\Echo.Concrete.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Concrete">
-      <HintPath>..\..\lib\Echo.Concrete.dll</HintPath>
-    </Reference>
     <Reference Include="Echo.ControlFlow" Condition="'$(TargetFramework)' == 'net462'">
-      <HintPath>..\..\lib\Echo.ControlFlow.dll</HintPath>
-    </Reference>
-    <Reference Include="Echo.ControlFlow">
       <HintPath>..\..\lib\Echo.ControlFlow.dll</HintPath>
     </Reference>
     <Reference Include="Echo.Core" Condition="'$(TargetFramework)' == 'net462'">
       <HintPath>..\..\lib\Echo.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Core">
-      <HintPath>..\..\lib\Echo.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Echo.DataFlow" Condition="'$(TargetFramework)' == 'net462'">
       <HintPath>..\..\lib\Echo.DataFlow.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.DataFlow">
-      <HintPath>..\..\lib\Echo.DataFlow.dll</HintPath>
-    </Reference>
     <Reference Include="Echo.Platforms.AsmResolver" Condition="'$(TargetFramework)' == 'net462'">
-      <HintPath>..\..\lib\Echo.Platforms.AsmResolver.dll</HintPath>
-    </Reference>
-    <Reference Include="Echo.Platforms.AsmResolver">
       <HintPath>..\..\lib\Echo.Platforms.AsmResolver.dll</HintPath>
     </Reference>
   </ItemGroup>

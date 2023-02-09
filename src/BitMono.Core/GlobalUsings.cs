@@ -30,7 +30,7 @@ global using Echo.DataFlow.Analysis;
 global using Echo.Platforms.AsmResolver;
 global using Microsoft.Extensions.Options;
 global using Pocket.Extensions;
-global using Serilog;
 global using Serilog.Core;
 global using FieldAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.FieldAttributes;
+global using ILogger = Serilog.ILogger;
 global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;
