@@ -1,7 +1,4 @@
-﻿using AsmResolver.DotNet.Signatures;
-using AsmResolver.DotNet.Signatures.Types;
-
-namespace BitMono.Utilities.Extensions.AsmResolver;
+﻿namespace BitMono.Utilities.Extensions.AsmResolver;
 
 public static class MethodDefinitionExtensions
 {
@@ -38,8 +35,8 @@ public static class MethodDefinitionExtensions
     {
         return source.Parameters.Any();
     }
-    public static bool ReturnsValue(this MethodSignature source, TypeSignature type)
+    public static bool ReturnsValue(this MethodSignature source, TypeSignature typeSignature)
     {
-        return source.ReturnsValue && source.ReturnType.Equals(type);
+        return source.ReturnsValue && source.ReturnType.Equals(typeSignature);
     }
 }

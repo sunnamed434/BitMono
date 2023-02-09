@@ -12,10 +12,9 @@ public class FullRenamer : IProtection
 
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.DeclaringType != moduleType && method.IsConstructor == false && method.IsVirtual == false)
+            if (method.DeclaringType.IsModuleType == false && method.IsConstructor == false && method.IsVirtual == false)
             {
                 m_Renamer.Rename(method);
                 if (method.HasParameters())
@@ -29,14 +28,14 @@ public class FullRenamer : IProtection
         }
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
-            if (type != moduleType)
+            if (type.IsModuleType == false)
             {
                 m_Renamer.Rename(type);
             }
         }
         foreach (var field in parameters.Members.OfType<FieldDefinition>())
         {
-            if (field.DeclaringType != moduleType)
+            if (field.DeclaringType.IsModuleType == false)
             {
                 m_Renamer.Rename(field);
             }
