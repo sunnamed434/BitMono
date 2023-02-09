@@ -3,14 +3,11 @@
 public static class ModuleDefinitionExtensions
 {
     [return: AllowNull]
-    public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type)
+    public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type) where TMember : class, IMetadataMember
     {
-        if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out var metadataMember))
+        if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out TMember? member))
         {
-            if (metadataMember is TMember member)
-            {
-                return member;
-            }
+            return member;
         }
         throw new ArgumentException($"Unable to resolve member {type.FullName}");
     }
