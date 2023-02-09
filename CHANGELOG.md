@@ -24,10 +24,10 @@
 2023-02-09
 #### Changed:
 * Bumped to the latest version of AsmResolver
-* Minor code changes
 
 #### Fixed
 * Errors when launching the BitMono.CLI
+* Bug fixes and other minor improvements
 
 ### v0.8.0-alpha.17:
 2023-01-27
