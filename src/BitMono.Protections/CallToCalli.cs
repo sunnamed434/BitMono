@@ -27,7 +27,7 @@ public class CallToCalli : IProtection
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
                     var instruction = body.Instructions[i];
-                    if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null)
