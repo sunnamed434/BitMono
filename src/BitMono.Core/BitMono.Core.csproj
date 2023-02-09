@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <LangVersion>10</LangVersion>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <ItemGroup>
     <PackageReference Include="AsmResolver.DotNet" Version="5.0.0" />

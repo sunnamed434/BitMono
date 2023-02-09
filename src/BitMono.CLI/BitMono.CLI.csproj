@@ -3,13 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
-    <LangVersion>10</LangVersion>
     <ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
+
   <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="morelinq" Version="3.3.2" />
-    <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="NullGuard.Fody" Version="3.1.1" />
     <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
     <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />

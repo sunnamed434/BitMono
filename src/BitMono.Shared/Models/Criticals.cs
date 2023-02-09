@@ -7,14 +7,9 @@ public class Criticals
     public bool UseCriticalInterfaces { get; set; }
     public bool UseCriticalBaseTypes { get; set; }
     public bool UseCriticalMethods { get; set; }
-    [AllowNull]
-    public List<CriticalAttribute> CriticalAttributes { get; set; }
-    [AllowNull]
+    public List<CriticalAttribute>? CriticalAttributes { get; set; }
     public List<CriticalAttribute>? CriticalModelAttributes { get; set; }
-    [AllowNull]
     public List<string>? CriticalInterfaces { get; set; }
-    [AllowNull]
     public List<string>? CriticalBaseTypes { get; set; }
-    [AllowNull]
     public List<string>? CriticalMethods { get; set; }
 }

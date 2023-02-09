@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace BitMono.Host.Configurations;
+﻿namespace BitMono.Host.Configurations;
 
 public class BitMonoProtectionsConfiguration : JsonConfigurationAccessor, IBitMonoProtectionsConfiguration
 {

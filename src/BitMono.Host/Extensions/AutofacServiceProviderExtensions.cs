@@ -23,11 +23,10 @@ public static class AutofacServiceProviderExtensions
         string? protectionsFile = null, string? criticalsFile = null, string? obfuscationFile = null)
     {
         var protections = new BitMonoProtectionsConfiguration();
-        Console.WriteLine(protections.Configuration.GetSection("Protections").Get<List<ProtectionSetting>>().Count);
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
         var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
         source.AddOptions()
-            .Configure<ProtectionSettings>(options => protections.Configuration.Bind(options))
+            .Configure<ProtectionSettings>(protections.Configuration)
             .Configure<Criticals>(criticals.Configuration)
             .Configure<Obfuscation>(obfuscation.Configuration);
         return source;
