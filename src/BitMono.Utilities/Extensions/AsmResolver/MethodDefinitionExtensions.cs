@@ -1,4 +1,7 @@
-﻿namespace BitMono.Utilities.Extensions.AsmResolver;
+﻿using AsmResolver.DotNet.Signatures;
+using AsmResolver.DotNet.Signatures.Types;
+
+namespace BitMono.Utilities.Extensions.AsmResolver;
 
 public static class MethodDefinitionExtensions
 {

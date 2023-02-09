@@ -2,12 +2,12 @@
 
 public class AttributeResolver<TModel> : IAttributeResolver<TModel> where TModel : class
 {
-    public virtual bool Resolve([AllowNull] string featureName, IHasCustomAttribute from, [AllowNull] out TModel model)
+    public virtual bool Resolve(string? featureName, IHasCustomAttribute from, out TModel? model)
     {
         model = default;
         return false;
     }
-    public virtual bool Resolve([AllowNull] string featureName, IHasCustomAttribute from)
+    public virtual bool Resolve(string? featureName, IHasCustomAttribute from)
     {
         return Resolve(featureName, from, out _);
     }

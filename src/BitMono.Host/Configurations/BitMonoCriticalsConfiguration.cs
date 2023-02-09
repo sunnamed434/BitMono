@@ -2,7 +2,7 @@
 
 public class BitMonoCriticalsConfiguration : JsonConfigurationAccessor, IBitMonoCriticalsConfiguration
 {
-    public BitMonoCriticalsConfiguration() : base(file: "criticals.json")
+    public BitMonoCriticalsConfiguration(string? file = null) : base(file ?? "criticals.json")
     {
     }
 }

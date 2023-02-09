@@ -11,12 +11,12 @@ public static class KeyValuePairsExtensions
         }
         return value;
     }
-    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, [AllowNull] out TActual value)
+    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, out TActual? value)
         where TActual : TValue
     {
-        if (source.TryGetValue(key, out TValue tempValue))
+        if (source.TryGetValue(key, out var tempValue))
         {
-            value = (TActual)tempValue;
+            value = (TActual?)tempValue;
             return true;
         }
         value = default;

@@ -1,10 +1,9 @@
 namespace BitMono.Core.Protecting.Analyzing;
 
-[SuppressMessage("ReSharper", "IdentifierTypo")]
 public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
     private readonly Obfuscation m_Obfuscation;
-    private List<MethodDefinition> m_CachedMethods;
+    private readonly List<MethodDefinition> m_CachedMethods;
     private static readonly string[] ReflectionMethods = new string[]
     {
         nameof(Type.GetMethod),
@@ -35,7 +34,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         if (method.CilMethodBody is { } body)
         {
             body.ConstructSymbolicFlowGraph(out var dataFlowGraph);
-            
+
             foreach (var node in dataFlowGraph.Nodes)
             {
                 var orderedDependencies =
@@ -48,18 +47,15 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
                         if (IsReflection(calledMethod))
                         {
                             var traceArgument = TraceLdstrArgument(body, instruction);
-                            if (traceArgument != null)
+                            if (traceArgument?.Operand is string traceMethodName)
                             {
-                                if (traceArgument.Operand is string traceMethodName)
+                                foreach (var possibleMethod in method.Module
+                                             .FindMembers()
+                                             .OfType<MethodDefinition>()
+                                             .Where(m => m.Name.Equals(traceMethodName)))
                                 {
-                                    foreach (var possibleMember in method.Module
-                                                 .FindMembers()
-                                                 .OfType<MethodDefinition>()
-                                                 .Where(m => m.Name.Equals(traceMethodName)))
-                                    {
-                                        m_CachedMethods.Add(possibleMember);
-                                        return false;
-                                    }
+                                    m_CachedMethods.Add(possibleMethod);
+                                    return false;
                                 }
                             }
                         }
@@ -69,14 +65,13 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         }
         return true;
     }
-    
+
     private static bool IsReflection(IMethodDefOrRef calledMethod)
     {
-        return calledMethod.DeclaringType.IsTypeOf(typeof(Type).Namespace, nameof(Type)) &&
+        return calledMethod.DeclaringType.IsSystemType() &&
                ReflectionMethods.Contains(calledMethod.Name.Value);
     }
-    [return: AllowNull]
-    private static CilInstruction TraceLdstrArgument(CilMethodBody body, CilInstruction instruction)
+    private static CilInstruction? TraceLdstrArgument(CilMethodBody body, CilInstruction instruction)
     {
         for (var i = body.Instructions.IndexOf(instruction); i > 0 && body.Instructions.Count.IsLess(i) == false; i--)
         {

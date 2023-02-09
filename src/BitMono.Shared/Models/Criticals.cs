@@ -10,11 +10,11 @@ public class Criticals
     [AllowNull]
     public List<CriticalAttribute> CriticalAttributes { get; set; }
     [AllowNull]
-    public List<CriticalAttribute> CriticalModelAttributes { get; set; }
+    public List<CriticalAttribute>? CriticalModelAttributes { get; set; }
     [AllowNull]
-    public List<string> CriticalInterfaces { get; set; }
+    public List<string>? CriticalInterfaces { get; set; }
     [AllowNull]
-    public List<string> CriticalBaseTypes { get; set; }
+    public List<string>? CriticalBaseTypes { get; set; }
     [AllowNull]
-    public List<string> CriticalMethods { get; set; } 
+    public List<string>? CriticalMethods { get; set; }
 }

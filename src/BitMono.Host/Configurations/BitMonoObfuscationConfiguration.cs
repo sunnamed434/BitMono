@@ -2,7 +2,7 @@
 
 public class BitMonoObfuscationConfiguration : JsonConfigurationAccessor, IBitMonoObfuscationConfiguration
 {
-    public BitMonoObfuscationConfiguration() : base(file: "obfuscation.json")
+    public BitMonoObfuscationConfiguration(string? file = null) : base(file ?? "obfuscation.json")
     {
     }
 }

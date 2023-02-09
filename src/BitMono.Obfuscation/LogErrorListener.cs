@@ -9,12 +9,12 @@ internal class LogErrorListener : IErrorListener
         m_Logger = logger;
     }
 
-    public void MarkAsFatal()
+    void IErrorListener.MarkAsFatal()
     {
         throw new NotImplementedException();
     }
     public void RegisterException(Exception exception)
     {
-        m_Logger.Error(exception, "Module raised an error!");
+        m_Logger.Error(exception, "Registered error!");
     }
 }

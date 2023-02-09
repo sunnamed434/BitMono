@@ -6,5 +6,5 @@ public class ObfuscationAttributeData
     public bool Exclude { get; set; }
     public bool StripAfterObfuscation { get; set; }
     public string Feature { get; set; }
-    public CustomAttribute CustomAttribute { get; set; }
+    public CustomAttribute? CustomAttribute { get; set; }
 }

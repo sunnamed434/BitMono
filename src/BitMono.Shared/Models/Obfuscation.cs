@@ -1,4 +1,5 @@
-﻿namespace BitMono.Shared.Models;
+﻿#nullable enable
+namespace BitMono.Shared.Models;
 
 public class Obfuscation
 {
@@ -15,7 +16,7 @@ public class Obfuscation
     public bool OpenFileDestinationInFileExplorer { get; set; }
     public bool SpecificNamespacesObfuscationOnly { get; set; }
     [AllowNull]
-    public string[] SpecificNamespaces { get; set; }
+    public string[]? SpecificNamespaces { get; set; }
     [AllowNull]
-    public string[] RandomStrings { get; set; }
+    public string[]? RandomStrings { get; set; }
 }

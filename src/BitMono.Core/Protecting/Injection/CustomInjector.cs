@@ -19,7 +19,9 @@ public class CustomInjector
         var signature = MethodSignature.CreateInstance(factory.Void, factory.String);
         var attributeCtor = new MemberReference(attributeReference, ".ctor", signature);
         var customAttribute = new CustomAttribute(attributeCtor);
+#pragma warning disable CS8602
         customAttribute.Signature.FixedArguments.Add(new CustomAttributeArgument(factory.String, content));
+#pragma warning restore CS8602
         module.CustomAttributes.Add(customAttribute);
         return customAttribute;
     }

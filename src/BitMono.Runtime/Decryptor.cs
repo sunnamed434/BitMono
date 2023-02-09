@@ -4,7 +4,7 @@ public struct Decryptor
 {
     internal static string Decrypt(byte[] bytes, byte[] saltBytes, byte[] cryptKeyBytes)
     {
-        byte[] decryptedBytes = null;
+        byte[]? decryptedBytes = null;
         using (var memoryStream = new MemoryStream())
         {
             using (var aes = new RijndaelManaged())
@@ -25,7 +25,6 @@ public struct Decryptor
                 key.Dispose();
             }
         }
-
         return Encoding.UTF8.GetString(decryptedBytes);
     }
 }

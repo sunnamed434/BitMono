@@ -13,7 +13,7 @@ public class ReflectionCriticalAnalyzerTest
             ReflectionMembersObfuscationExclude = true
         };
         var criticalAnalyzer = new ReflectionCriticalAnalyzer(Options.Create(obfuscation));
-        
+
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
         result.Should().BeFalse();

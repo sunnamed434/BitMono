@@ -8,9 +8,10 @@ public class ProtectionsNotifier
     public ProtectionsNotifier(Shared.Models.Obfuscation obfuscation, ILogger logger)
     {
         m_Obfuscation = obfuscation;
-        m_Logger = logger.ForContext<ProtectionsNotifier>();
+        m_Logger = logger.ForContextFile();
     }
 
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     public void Notify(ProtectionsSort protectionsSort)
     {
         if (m_Obfuscation.NotifyProtections)
@@ -35,7 +36,7 @@ public class ProtectionsNotifier
             {
                 m_Logger.Warning("Skip deprecated protections: {0}", string.Join(", ", protectionsSort.DeprecatedProtections.Select(p => p?.GetName())));
             }
-            if (protectionsSort.ProtectionsResolve.DisabledProtections.Any())
+            if (protectionsSort.ProtectionsResolve!.DisabledProtections.Any())
             {
                 m_Logger.Warning("Disabled protections: {0}", string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
             }

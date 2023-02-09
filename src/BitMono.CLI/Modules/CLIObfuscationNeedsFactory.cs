@@ -11,7 +11,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
 
     public ObfuscationNeeds Create()
     {
-        var fileName = new CLIBitMonoModuleFileResolver().Resolve(m_Args);
+        var fileName = CLIBitMonoModuleFileResolver.Resolve(m_Args);
         var specifyingFile = true;
         while (specifyingFile)
         {
@@ -24,7 +24,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
                     if (File.Exists(fileName))
                     {
                         specifyingFile = false;
-                        Console.WriteLine("File succesfully specified: {0}", fileName);
+                        Console.WriteLine("File successfully specified: {0}", fileName);
                     }
                     else
                     {
@@ -57,7 +57,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
                     {
                         if (Directory.Exists(dependenciesDirectoryName))
                         {
-                            Console.WriteLine("Dependencies (libs) succesfully specified: {0}!", dependenciesDirectoryName);
+                            Console.WriteLine("Dependencies (libs) successfully specified: {0}!", dependenciesDirectoryName);
                             specifyingDependencies = false;
                         }
                         else
@@ -87,7 +87,9 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
 
         return new ObfuscationNeeds
         {
+#pragma warning disable CS8601
             FileName = fileName,
+#pragma warning restore CS8601
             FileBaseDirectory = fileBaseDirectory,
             DependenciesDirectoryName = dependenciesDirectoryName,
             OutputDirectoryName = outputDirectoryName

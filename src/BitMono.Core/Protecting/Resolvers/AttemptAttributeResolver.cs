@@ -9,7 +9,7 @@ public class AttemptAttributeResolver
         m_CustomAttributesResolver = customAttributesResolver;
     }
 
-    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, [AllowNull] out IEnumerable<CustomAttributeResolve> attributesResolve)
+    public bool TryResolve(IHasCustomAttribute from, string @namespace, string name, out IEnumerable<CustomAttributeResolve>? attributesResolve)
     {
         attributesResolve = m_CustomAttributesResolver.Resolve(from, @namespace, name);
         return attributesResolve.IsNullOrEmpty() == false;
