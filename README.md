@@ -77,7 +77,7 @@ Credits
 
 **[Elliesaur][author_ellisaur]** for his acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
 
-**[Weka][author_weka]** for his advices, help and motivation. 
+**[Weka][author_naweka]** for his advices, help and motivation. 
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
@@ -98,7 +98,7 @@ Credits
 [author_0x59r11]: https://github.com/0x59R11
 [author_gazzi]: https://github.com/GazziFX
 [author_ellisaur]: https://github.com/Elliesaur
-[author_weka]: https://github.com/sasharumega
+[author_naweka]: https://github.com/naweka
 [author_kao_blog]: https://lifeinhex.com/
 [author_sunnamed434]: https://github.com/sunnamed434
 [appveyor_main_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main
