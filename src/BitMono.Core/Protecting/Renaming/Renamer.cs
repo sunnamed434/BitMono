@@ -1,4 +1,5 @@
-﻿namespace BitMono.Core.Protecting.Renaming;
+﻿#pragma warning disable CS8602
+namespace BitMono.Core.Protecting.Renaming;
 
 public class Renamer : IRenamer
 {

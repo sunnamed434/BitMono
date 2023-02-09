@@ -15,7 +15,7 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
         m_AttributeName = nameof(ObfuscationAttribute);
     }
 
-    public override bool Resolve(string featureName, IHasCustomAttribute from, [AllowNull] out ObfuscationAttributeData model)
+    public override bool Resolve(string? featureName, IHasCustomAttribute from, out ObfuscationAttributeData? model)
     {
         model = null;
         if (m_Obfuscation.ObfuscationAttributeObfuscationExclude == false)
@@ -28,7 +28,7 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
         }
         foreach (var attribute in attributesResolve)
         {
-            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string feature))
+            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature))
             {
                 if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase))
                 {

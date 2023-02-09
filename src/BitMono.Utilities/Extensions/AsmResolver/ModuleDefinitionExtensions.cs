@@ -5,7 +5,7 @@ public static class ModuleDefinitionExtensions
     [return: AllowNull]
     public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type)
     {
-        if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out IMetadataMember metadataMember))
+        if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out var metadataMember))
         {
             if (metadataMember is TMember member)
             {
@@ -21,7 +21,7 @@ public static class ModuleDefinitionExtensions
         var members = new List<IMetadataMember>();
         members.Add(source);
         members.Add(source.Assembly);
-        foreach (var type in source.GetAllTypes())     
+        foreach (var type in source.GetAllTypes())
         {
             members.Add(type);
             members.AddRange(type.Methods);

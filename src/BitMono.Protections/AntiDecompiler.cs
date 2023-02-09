@@ -16,10 +16,9 @@ public class AntiDnSpyAnalyzer : IPhaseProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
-        var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
-            if (type.DeclaringType == moduleType && type.IsNested)
+            if (type.IsModuleType && type.IsNested)
             {
                 type.Attributes = TypeAttributes.Sealed | TypeAttributes.ExplicitLayout;
             }

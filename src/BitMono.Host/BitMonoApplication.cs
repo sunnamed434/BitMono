@@ -4,7 +4,7 @@ public class BitMonoApplication : IApplication
 {
     private readonly ContainerBuilder m_ContainerBuilder;
     private readonly List<IModule> m_Modules;
-    
+
     public BitMonoApplication()
     {
         m_ContainerBuilder = new ContainerBuilder();
@@ -21,11 +21,12 @@ public class BitMonoApplication : IApplication
         m_Modules.Add(module);
         return this;
     }
+    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     public AutofacServiceProvider Build()
     {
-        foreach (var module in m_Modules)
+        for (var i = 0; i < m_Modules.Count; i++)
         {
-            m_ContainerBuilder.RegisterModule(module);
+            m_ContainerBuilder.RegisterModule(m_Modules[i]);
         }
         var container = m_ContainerBuilder.Build();
         return new AutofacServiceProvider(container.Resolve<ILifetimeScope>());

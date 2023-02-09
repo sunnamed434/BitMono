@@ -9,7 +9,7 @@ public class NoInliningMethodMemberResolver : IMemberResolver
         m_Obfuscation = obfuscation.Value;
     }
 
-    public bool Resolve([AllowNull] IProtection protection, IMetadataMember member)
+    public bool Resolve(IProtection? protection, IMetadataMember member)
     {
         if (m_Obfuscation.NoInliningMethodObfuscationExclude == false)
         {

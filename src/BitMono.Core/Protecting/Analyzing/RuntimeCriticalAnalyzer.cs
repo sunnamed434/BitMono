@@ -16,9 +16,7 @@ public class RuntimeCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
         }
         if (member is MethodDefinition method)
         {
-            return method.IsRuntimeSpecialName && method.DeclaringType.IsForwarder
-                ? false
-                : true;
+            return method.IsRuntimeSpecialName == false || method.DeclaringType.IsForwarder == false;
         }
         if (member is EventDefinition @event)
         {

@@ -1,3 +1,5 @@
+#pragma warning disable CS8602
+#pragma warning disable CS8604
 namespace BitMono.Obfuscation;
 
 public class ObfuscationAttributesStripper
@@ -15,7 +17,7 @@ public class ObfuscationAttributesStripper
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
     }
-    
+
     public ObfuscationAttributesStrip Strip(ProtectionContext context, ProtectionsSort protectionsSort)
     {
         var obfuscationAttributesSuccessStrip = new List<CustomAttribute>();
@@ -29,7 +31,7 @@ public class ObfuscationAttributesStripper
                 var protectionName = protection.GetName();
                 if (m_Obfuscation.StripObfuscationAttributes)
                 {
-                    if (m_ObfuscationAttributeResolver.Resolve(protectionName, customAttribute, out ObfuscationAttributeData obfuscationAttributeData))
+                    if (m_ObfuscationAttributeResolver.Resolve(protectionName, customAttribute, out ObfuscationAttributeData? obfuscationAttributeData))
                     {
                         if (obfuscationAttributeData.StripAfterObfuscation)
                         {
@@ -44,7 +46,7 @@ public class ObfuscationAttributesStripper
                             }
                         }
                     }
-                    if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out ObfuscateAssemblyAttributeData obfuscateAssemblyAttributeData))
+                    if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out ObfuscateAssemblyAttributeData? obfuscateAssemblyAttributeData))
                     {
                         var attribute = obfuscateAssemblyAttributeData.CustomAttribute;
                         if (customAttribute.CustomAttributes.Remove(attribute))

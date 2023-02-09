@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.9.0-alpha](#v090-alpha18) |
 | [v0.8.0-alpha](#v080-alpha17) |
 | [v0.7.0-alpha](#v070-alpha16) |
 | [v0.6.0-alpha](#v060-alpha15) |
@@ -19,6 +20,15 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.9.0-alpha.18:
+2023-02-09
+#### Changed:
+* Bumped to the latest version of AsmResolver
+
+#### Fixed
+* Errors when launching the BitMono.CLI
+* Bug fixes and other minor improvements
+
 ### v0.8.0-alpha.17:
 2023-01-27
 #### Added
@@ -29,8 +39,8 @@
 * Moved new protections from BitDotNet to BitMono protection and added support for PE32 and PE32+
 
 #### New Contributors
-* @Gibsol made their first contribution in [#54](https://github.com/sunnamed434/BitMono/pull/54)
-* @0x59R11 made their first contribution in [#81](https://github.com/sunnamed434/BitMono/pull/81)
+* [Gibsol](https://github.com/Gibsol) made their first contribution in [#54](https://github.com/sunnamed434/BitMono/pull/54)
+* [0x59R11](https://github.com/0x59R11) made their first contribution in [#81](https://github.com/sunnamed434/BitMono/pull/81)
 
 ### v0.7.0-alpha.16:
 #### Added: 

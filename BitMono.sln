@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE
 		README.md = README.md
+		props\SharedProjectProps.props = props\SharedProjectProps.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D87066C4-1144-4BD8-96E9-9F4676001397}"
@@ -56,8 +57,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Core.TestCases.Methods", "test\TestBinaries\DotNet\BitMono.Core.TestCases.Methods\BitMono.Core.TestCases.Methods.csproj", "{4166AC73-6969-406A-ADD0-67CB70A76D9C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Core.TestCases.Types", "test\TestBinaries\DotNet\BitMono.Core.TestCases.Types\BitMono.Core.TestCases.Types.csproj", "{5DC793B1-F82B-4BC7-99C9-FE8C1545E1F7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Core.TestCases.Reflection", "test\TestBinaries\DotNet\BitMono.Core.TestCases.Reflection\BitMono.Core.TestCases.Reflection.csproj", "{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,10 +138,6 @@ Global
 		{5DC793B1-F82B-4BC7-99C9-FE8C1545E1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DC793B1-F82B-4BC7-99C9-FE8C1545E1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DC793B1-F82B-4BC7-99C9-FE8C1545E1F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,7 +163,6 @@ Global
 		{1D6B1BA7-496F-4F91-A115-EF5E5DC6E6C2} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
 		{4166AC73-6969-406A-ADD0-67CB70A76D9C} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
 		{5DC793B1-F82B-4BC7-99C9-FE8C1545E1F7} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
-		{E8ADE8C7-B148-4ACE-9BF2-6E3FCF905545} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA0BB43-C1D4-4688-BE43-A9ED2D6F78EE}

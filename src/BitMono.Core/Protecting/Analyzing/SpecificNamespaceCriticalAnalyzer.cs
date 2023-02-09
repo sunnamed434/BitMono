@@ -15,6 +15,7 @@ public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMemb
         {
             return true;
         }
+
         var specificNamespaces = m_Obfuscation.SpecificNamespaces;
         if (member is TypeDefinition type && type.HasNamespace())
         {

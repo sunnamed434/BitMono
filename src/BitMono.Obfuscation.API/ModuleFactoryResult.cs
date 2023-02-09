@@ -2,7 +2,7 @@
 
 public class ModuleFactoryResult
 {
-    public ModuleDefinition Module { get; set; }
-    public ModuleReaderParameters ModuleReaderParameters { get; set; }
-    public IPEImageBuilder PEImageBuilder { get; set; }
+    public ModuleDefinition? Module { get; set; }
+    public ModuleReaderParameters? ModuleReaderParameters { get; set; }
+    public IPEImageBuilder? PEImageBuilder { get; set; }
 }

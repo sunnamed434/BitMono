@@ -5,7 +5,7 @@ public struct Encryptor
     internal static byte[] EncryptContent(string text, byte[] saltBytes, byte[] cryptKeyBytes)
     {
         var decryptBytes = Encoding.UTF8.GetBytes(text);
-        byte[] encryptedBytes = null;
+        byte[]? encryptedBytes = null;
         using (var memoryStream = new MemoryStream())
         {
             using (var aes = new RijndaelManaged())

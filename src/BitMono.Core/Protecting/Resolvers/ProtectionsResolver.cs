@@ -30,8 +30,9 @@ public class ProtectionsResolver
                 unknownProtections.Add(protectionSettings.Name);
             }
         }
-        foreach (var protection in cachedProtections)
+        for (var i = 0; i < cachedProtections.Count; i++)
         {
+            var protection = cachedProtections[i];
             disabledProtections.Add(protection.GetName());
         }
         return new ProtectionsResolve

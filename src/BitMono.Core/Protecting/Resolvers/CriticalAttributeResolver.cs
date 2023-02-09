@@ -11,7 +11,7 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
-    public override bool Resolve([AllowNull] string feature, IHasCustomAttribute from, [AllowNull] out CustomAttributeResolve attributeResolve)
+    public override bool Resolve(string? feature, IHasCustomAttribute from, out CustomAttributeResolve? attributeResolve)
     {
         attributeResolve = null;
         if (m_Criticals.UseCriticalAttributes == false)

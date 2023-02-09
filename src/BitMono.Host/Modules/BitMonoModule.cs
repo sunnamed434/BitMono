@@ -2,34 +2,32 @@
 
 public class BitMonoModule : Module
 {
-    private readonly Action<ContainerBuilder> m_ConfigureServices;
-    private readonly Action<LoggerConfiguration> m_ConfigureLogger;
-    private readonly Action<ConfigurationBuilder> m_ConfigureConfigurationBuilder;
+    private readonly Action<ContainerBuilder>? m_ConfigureContainer;
+    private readonly Action<ServiceCollection>? m_ConfigureServices;
+    private readonly Action<LoggerConfiguration>? m_ConfigureLogger;
 
     public BitMonoModule(
-        Action<ContainerBuilder> configureServices = default,
-        Action<LoggerConfiguration> configureLogger = default,
-        Action<ConfigurationBuilder> configureConfigurationBuilder = default)
+        Action<ContainerBuilder>? configureContainer = null,
+        Action<ServiceCollection>? configureServices = null,
+        Action<LoggerConfiguration>? configureLogger = null)
     {
+        m_ConfigureContainer = configureContainer;
         m_ConfigureServices = configureServices;
         m_ConfigureLogger = configureLogger;
-        m_ConfigureConfigurationBuilder = configureConfigurationBuilder;
     }
 
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     protected override void Load(ContainerBuilder containerBuilder)
     {
-        m_ConfigureServices?.Invoke(containerBuilder);
+        m_ConfigureContainer?.Invoke(containerBuilder);
 
-        var serviceCollection = new ServiceCollection();
-        
-        var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        var fileFormat = string.Format(Path.Combine(currentAssemblyDirectory, "logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now).Replace("\\", "/");
-
+        var logsPath = string.Format(Path.Combine("logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now)
+            .ReplaceDirectorySeparatorToAlt();
         var loggerConfiguration = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Async(configure =>
             {
-                configure.File(fileFormat, rollingInterval: RollingInterval.Infinite, restrictedToMinimumLevel: LogEventLevel.Information,
+                configure.File(logsPath, rollingInterval: RollingInterval.Infinite, restrictedToMinimumLevel: LogEventLevel.Information,
                     outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}");
             });
 
@@ -38,38 +36,11 @@ public class BitMonoModule : Module
             m_ConfigureLogger.Invoke(loggerConfiguration);
 
             var logger = loggerConfiguration.CreateLogger();
-            containerBuilder.Register<ILogger>((_, _) => logger);
+            containerBuilder.Register<ILogger>(_ => logger);
         }
 
-        var configurationBuilder = new ConfigurationBuilder();
-        if (m_ConfigureConfigurationBuilder != null)
-        {
-            m_ConfigureConfigurationBuilder.Invoke(configurationBuilder);
-            var configuration = configurationBuilder.Build();
-            containerBuilder.Register(context => configuration)
-                .As<IConfiguration>()
-                .OwnedByLifetimeScope();
-        }
-        
-        serviceCollection.AddOptions();
-        var protections = new BitMonoProtectionsConfiguration();
-        var criticals = new BitMonoCriticalsConfiguration();
-        var obfuscation = new BitMonoObfuscationConfiguration();
-        serviceCollection.Configure<ProtectionSettings>(options => protections.Configuration.Bind(options));
-        serviceCollection.Configure<Criticals>(criticals.Configuration);
-        serviceCollection.Configure<Obfuscation>(obfuscation.Configuration);
-        
-        containerBuilder.Register(context => protections)
-            .As<IBitMonoProtectionsConfiguration>()
-            .OwnedByLifetimeScope();
-        
-        containerBuilder.Register(context => criticals)
-            .As<IBitMonoCriticalsConfiguration>()
-            .OwnedByLifetimeScope();
-
-        containerBuilder.Register(context => obfuscation)
-            .As<IBitMonoObfuscationConfiguration>()
-            .OwnedByLifetimeScope();
+        var serviceCollection = new ServiceCollection();
+        m_ConfigureServices?.Invoke(serviceCollection);
 
         containerBuilder.RegisterType<Renamer>()
             .As<IRenamer>()
@@ -121,13 +92,6 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IPhaseProtection)) == null && t.GetInterface(nameof(IProtection)) != null)
-            .OwnedByLifetimeScope()
-            .AsImplementedInterfaces()
-            .SingleInstance();
-        
         containerBuilder.Populate(serviceCollection);
     }
 }
