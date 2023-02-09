@@ -22,7 +22,7 @@ public class CallToCalli : IProtection
         var moduleType = context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body && method.DeclaringType != moduleType)
+            if (method.CilMethodBody is { } body && method.DeclaringType.IsModuleType == false)
             {
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
