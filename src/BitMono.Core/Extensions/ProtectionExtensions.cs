@@ -23,6 +23,19 @@ public static class ProtectionExtensions
     {
         return typeof(TProtection).TryGetDoNotResolveAttribute(out attribute);
     }
+    public static bool TryGetDependOnRuntimeAttribute(this Type source, out DependOnRuntimeAttribute? attribute, bool inherit = false)
+    {
+        attribute = source.GetCustomAttribute<DependOnRuntimeAttribute>(inherit);
+        if (attribute == null)
+        {
+            return false;
+        }
+        return true;
+    }
+    public static bool TryGetDependOnRuntimeAttribute(this IProtection source, out DependOnRuntimeAttribute? attribute)
+    {
+        return source.GetType().TryGetDependOnRuntimeAttribute(out attribute);
+    }
     public static string GetName(this Type source, bool inherit = false)
     {
         var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);

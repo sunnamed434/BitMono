@@ -19,7 +19,7 @@ public class BitDotNet : IPacker
 
             stream.Position += 0x10;
             var x64PEOptionsHeader = reader.ReadUInt16() == 0x20B;
-            
+
             stream.Position += x64PEOptionsHeader ? 0x38 : 0x28 + 0xA6;
             var dotNetVirtualAddress = reader.ReadUInt32();
 

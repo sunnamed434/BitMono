@@ -2,6 +2,32 @@
 #pragma warning disable CS8618
 namespace BitMono.Obfuscation;
 
+public interface IProtectionRunner
+{
+    Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters);
+}
+public class ProtectionRuntimeMonikerRunner : IProtectionRunner
+{
+    public async Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters)
+    {
+        if (protection.TryGetDependOnRuntimeAttribute(out var attribute))
+        {
+            var runtimeInfo = RuntimeUtilities.GetFrameworkInformation();
+            if (attribute.RuntimeMoniker == RuntimeMoniker.Mono && runtimeInfo.HasMono)
+            {
+                await protection.ExecuteAsync(context, parameters);
+            }
+        }
+    }
+}
+public class ProtectionRunner : IProtectionRunner
+{
+    public async Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters)
+    {
+        await protection.ExecuteAsync(context, parameters);
+    }
+}
+
 public class BitMonoObfuscator
 {
     private readonly ProtectionContext m_Context;

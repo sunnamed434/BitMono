@@ -1,7 +1,7 @@
-﻿#pragma warning disable CS8602
-namespace BitMono.Protections;
+﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[DependOnRuntime(RuntimeMoniker.NotMono)]
 public class CallToCalli : IProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
