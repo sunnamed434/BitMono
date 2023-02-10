@@ -1,42 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DebugSymbols>false</DebugSymbols>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DebugSymbols>false</DebugSymbols>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-        <PackageReference Include="FluentAssertions" Version="6.9.0" />
-        <PackageReference Include="xunit" Version="2.4.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="3.1.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="FluentAssertions" Version="6.9.0" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\BitMono.API\BitMono.API.csproj" />
-      <ProjectReference Include="..\..\src\BitMono.Core\BitMono.Core.csproj" />
-      <ProjectReference Include="..\..\src\BitMono.Protections\BitMono.Protections.csproj" />
-      <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.CustomAttributes\BitMono.Core.TestCases.CustomAttributes.csproj" />
-      <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Methods\BitMono.Core.TestCases.Methods.csproj" />
-      <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Reflection\BitMono.Core.TestCases.Reflection.csproj" />
-      <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Types\BitMono.Core.TestCases.Types.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BitMono.API\BitMono.API.csproj" />
+    <ProjectReference Include="..\..\src\BitMono.Core\BitMono.Core.csproj" />
+    <ProjectReference Include="..\..\src\BitMono.Protections\BitMono.Protections.csproj" />
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.CustomAttributes\BitMono.Core.TestCases.CustomAttributes.csproj" />
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Methods\BitMono.Core.TestCases.Methods.csproj" />
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Reflection\BitMono.Core.TestCases.Reflection.csproj" />
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Core.TestCases.Types\BitMono.Core.TestCases.Types.csproj" />
+  </ItemGroup>
 
 </Project>
