@@ -73,6 +73,7 @@ body:
       options:
         - CLI
         - GUI
+        - Other
     validations:
       required: false
   - type: dropdown
@@ -85,5 +86,6 @@ body:
         - Windows
         - Linux
         - Mac
+        - Other
     validations:
       required: false
