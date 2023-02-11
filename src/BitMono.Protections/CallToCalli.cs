@@ -1,9 +1,11 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-[DependOnRuntime(RuntimeMoniker.NotMono)]
 public class CallToCalli : IProtection
 {
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    [SuppressMessage("ReSharper", "InvertIf")]
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var runtimeMethodHandle = context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);

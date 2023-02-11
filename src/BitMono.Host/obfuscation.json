@@ -11,35 +11,35 @@
   // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,
 
-  // Exclude from obfuscation if type/method has [ObfuscationAttribute(..)] 
+  // Exclude from obfuscation if type/method has [ObfuscationAttribute(..)]
   // should have an [Obfuscation(Feature = "Name")] attribute with Protection name known as Feature
   // Set to true indicates whether enabled
   "ObfuscationAttributeObfuscationExclude": true,
 
-  // Exclude from obfuscation if assembly has [ObfuscateAssemblyAttribute(true)] 
+  // Exclude from obfuscation if assembly has [ObfuscateAssemblyAttribute(true)]
   // Set to true indicates whether enabled
   "ObfuscateAssemblyAttributeObfuscationExclude": true,
-  
-  // Exclude from obfuscation if member name used by: 
+
+  // Exclude from obfuscation if member name used by:
   // Type.GetMethod, Type.GetField, Type.GetProperty, Type.GetEvent, Type.GetMember
   // Set to true indicates whether enabled
   "ReflectionMembersObfuscationExclude": true,
 
-  // Strip attribute after obfuscation if assembly has [ObfuscateAssemblyAttribute(true, StripAfterObfuscation = true)] 
+  // Strip attribute after obfuscation if assembly has [ObfuscateAssemblyAttribute(true, StripAfterObfuscation = true)]
   // or member has [Obfuscation(Feature = "Some_BitMono_Feature", StripAfterObfuscation = true]
   // By default, you could just specify [Obfuscation(Feature = "Some_BitMono_Feature"] - and this will strip it
   // (StripAfterObfuscation is true by default in dotnet sources), the same with ObfuscateAssemblyAttribute
   // Set to true indicates whether enabled
   "StripObfuscationAttributes": true,
 
-  // Output errors that were registered while building the PE image. BitMono feature is that 
-  // being used vulnerabilities of decompilers and Mono and this is the most powerful of them, 
+  // Output errors that were registered while building the PE image. BitMono feature is that
+  // being used vulnerabilities of decompilers and Mono and this is the most powerful of them,
   // decompilers and other tools could think that this is cannot work fine and because of that some weird errors
   // can be outputted
   // Set to true indicates whether enabled
   "OutputPEImageBuildErrors": true,
 
-  // Sometimes when you don't have needed dependency for your app, a tons of reasons could be for that, 
+  // Sometimes when you don't have needed dependency for your app, a tons of reasons could be for that,
   // if you got an error that says you don't have needed dependency first of all at least try to add this dependency
   // otherwise if this is deprecated - you can set this as false to ignore error and continue obfuscation
   // NB! but be aware of kind a weird errors and issues that breaking you app, and it stops working after that
@@ -47,6 +47,10 @@
   // Copy asked libraries from there and feed them to BitMono
   // Stay it true to stay enabled if this is possible!
   "FailOnNoRequiredDependency": false,
+
+  // Output warnings saying that protection is intended for specific runtime
+  // Set to true indicates whether enabled
+  "OutputRuntimeMonikerWarnings": true,
 
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,

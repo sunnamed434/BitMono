@@ -1,4 +1,5 @@
-﻿namespace BitMono.CLI;
+﻿#pragma warning disable CS8604
+namespace BitMono.CLI;
 
 internal class Program
 {
@@ -33,7 +34,7 @@ internal class Program
                 .ToList();
             var logger = serviceProvider.LifetimeScope
                 .Resolve<ILogger>()
-                .ForContextFile();
+                .ForContext<Program>();
 
             var cancellationTokenSource = new CancellationTokenSource();
             var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver,

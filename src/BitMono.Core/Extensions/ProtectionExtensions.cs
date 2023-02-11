@@ -23,18 +23,31 @@ public static class ProtectionExtensions
     {
         return typeof(TProtection).TryGetDoNotResolveAttribute(out attribute);
     }
-    public static bool TryGetDependOnRuntimeAttribute(this Type source, out DependOnRuntimeAttribute? attribute, bool inherit = false)
+    public static bool TryGetRuntimeMonikerAttribute(this Type source, out RuntimeMonikerAttribute? attribute, bool inherit = false)
     {
-        attribute = source.GetCustomAttribute<DependOnRuntimeAttribute>(inherit);
+        attribute = source.GetCustomAttribute<RuntimeMonikerAttribute>(inherit);
         if (attribute == null)
         {
             return false;
         }
         return true;
     }
-    public static bool TryGetDependOnRuntimeAttribute(this IProtection source, out DependOnRuntimeAttribute? attribute)
+    public static bool TryGetRuntimeMonikerAttribute(this IProtection source, out RuntimeMonikerAttribute? attribute)
     {
-        return source.GetType().TryGetDependOnRuntimeAttribute(out attribute);
+        return source.GetType().TryGetRuntimeMonikerAttribute(out attribute);
+    }
+    public static bool TryGetObsoleteAttribute(this Type source, out ObsoleteAttribute? attribute, bool inherit = false)
+    {
+        attribute = source.GetCustomAttribute<ObsoleteAttribute>(inherit);
+        if (attribute == null)
+        {
+            return false;
+        }
+        return true;
+    }
+    public static bool TryGetObsoleteAttribute(this IProtection source, out ObsoleteAttribute? attribute)
+    {
+        return source.GetType().TryGetObsoleteAttribute(out attribute);
     }
     public static string GetName(this Type source, bool inherit = false)
     {

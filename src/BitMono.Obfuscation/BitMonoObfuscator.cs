@@ -1,32 +1,6 @@
 ﻿#pragma warning disable CS8604
-#pragma warning disable CS8618
+#pragma warning disable CS8602
 namespace BitMono.Obfuscation;
-
-public interface IProtectionRunner
-{
-    Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters);
-}
-public class ProtectionRuntimeMonikerRunner : IProtectionRunner
-{
-    public async Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters)
-    {
-        if (protection.TryGetDependOnRuntimeAttribute(out var attribute))
-        {
-            var runtimeInfo = RuntimeUtilities.GetFrameworkInformation();
-            if (attribute.RuntimeMoniker == RuntimeMoniker.Mono && runtimeInfo.HasMono)
-            {
-                await protection.ExecuteAsync(context, parameters);
-            }
-        }
-    }
-}
-public class ProtectionRunner : IProtectionRunner
-{
-    public async Task Run(IProtection protection, ProtectionContext context, ProtectionParameters parameters)
-    {
-        await protection.ExecuteAsync(context, parameters);
-    }
-}
 
 public class BitMonoObfuscator
 {
@@ -64,7 +38,7 @@ public class BitMonoObfuscator
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
         m_Obfuscation = obfuscation;
-        m_Logger = logger.ForContextFile();
+        m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);

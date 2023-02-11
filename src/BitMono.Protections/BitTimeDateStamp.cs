@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 public class BitTimeDateStamp : IPacker
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)

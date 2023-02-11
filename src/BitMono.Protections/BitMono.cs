@@ -1,5 +1,6 @@
 namespace BitMono.Protections;
 
+[RuntimeMonikerMono]
 public class BitMono : IPacker
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)

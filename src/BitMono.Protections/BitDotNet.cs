@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[RuntimeMonikerMono]
 public class BitDotNet : IPacker
 {
     private const int PEHeaderWithExtraByteHex = 0x00014550;

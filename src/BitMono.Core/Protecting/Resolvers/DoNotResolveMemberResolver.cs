@@ -7,7 +7,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
     private readonly ReflectionCriticalAnalyzer m_ReflectionCriticalAnalyzer;
 
     public DoNotResolveMemberResolver(
-        RuntimeCriticalAnalyzer runtimeCriticalAnalyzer, 
+        RuntimeCriticalAnalyzer runtimeCriticalAnalyzer,
         ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer,
         ReflectionCriticalAnalyzer reflectionCriticalAnalyzer)
     {
