@@ -11,6 +11,8 @@ public class DotNetHook : IProtection
         m_Random = runtime.Random;
     }
 
+    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
+    [SuppressMessage("ReSharper", "InvertIf")]
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         var runtimeHookingType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
@@ -37,7 +39,7 @@ public class DotNetHook : IProtection
                     {
                         var callingMethod = callingOperandMethod.Resolve();
                         if (callingMethod is { CilMethodBody: { } }
-                            && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
+                            && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false && callingMethod.Managed)
                         {
                             if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
@@ -50,8 +52,10 @@ public class DotNetHook : IProtection
                                 var parameterDefinitions = callingMethod.ParameterDefinitions;
                                 for (var j = 0; j < parameterDefinitions.Count; j++)
                                 {
-                                    var parameter = parameterDefinitions[i];
-                                    dummyMethod.ParameterDefinitions.Add(new ParameterDefinition(parameter.Sequence, parameter.Name, parameter.Attributes));
+                                    var actualParameter = parameterDefinitions[j];
+                                    var parameter = new ParameterDefinition(actualParameter.Sequence,
+                                        actualParameter.Name, actualParameter.Attributes);
+                                    dummyMethod.ParameterDefinitions.Add(parameter);
                                 }
                                 var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody(dummyMethod);
                                 if (callingMethod.Signature.ReturnsValue)
@@ -59,7 +63,6 @@ public class DotNetHook : IProtection
                                     dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
                                 }
                                 dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
-
                                 var signature = MethodSignature.CreateStatic(systemVoid);
                                 var attributes = MethodAttributes.Assembly | MethodAttributes.Static;
                                 var initializationMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), attributes, signature);
