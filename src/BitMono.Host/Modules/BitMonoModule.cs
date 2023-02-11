@@ -5,6 +5,10 @@ public class BitMonoModule : Module
     private readonly Action<ContainerBuilder>? m_ConfigureContainer;
     private readonly Action<ServiceCollection>? m_ConfigureServices;
     private readonly Action<LoggerConfiguration>? m_ConfigureLogger;
+    private const string OutputTemplate =
+        "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}";
+    private const string LogsDirectoryName = "logs";
+    private const string LogsFileName = "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log";
 
     public BitMonoModule(
         Action<ContainerBuilder>? configureContainer = null,
@@ -21,14 +25,14 @@ public class BitMonoModule : Module
     {
         m_ConfigureContainer?.Invoke(containerBuilder);
 
-        var logsPath = string.Format(Path.Combine("logs", "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log"), DateTime.Now)
+        var logsPath = string.Format(Path.Combine(LogsDirectoryName, LogsFileName), DateTime.Now)
             .ReplaceDirectorySeparatorToAlt();
         var loggerConfiguration = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Async(configure =>
             {
                 configure.File(logsPath, rollingInterval: RollingInterval.Infinite, restrictedToMinimumLevel: LogEventLevel.Information,
-                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}");
+                    outputTemplate: OutputTemplate);
             });
 
         if (m_ConfigureLogger != null)
