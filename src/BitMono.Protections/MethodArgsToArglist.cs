@@ -1,3 +1,5 @@
+using AsmResolver.DotNet.Signatures.Types;
+
 namespace BitMono.Protections;
 
 public class MethodArgsToArglist : IProtection
@@ -26,6 +28,38 @@ public class MethodArgsToArglist : IProtection
         var method1 = parameters.Members.OfType<MethodDefinition>().FirstOrDefault(m => m.Name == "DrawArgList");
         Console.WriteLine(Helper.ReflectObject(method1.Signature.ParameterTypes.GetType(), method1.Signature.ParameterTypes,
             "parameterTypes"));
+
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        {
+            if (method.CilMethodBody is { } body)
+            {
+                var instructions = body.Instructions;
+                for (var i = 0; i < instructions.Count; i++)
+                {
+                    var instruction = instructions[i];
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
+                    {
+                        var callingMethod = methodDescriptor.Resolve();
+                        if (callingMethod != null)
+                        {
+                            var parameterTypesCount = callingMethod.Signature.ParameterTypes.Count;
+                            var methodSig = new MethodSignature(callingMethod.Signature.Attributes, callingMethod.Signature.ReturnType, Array.Empty<TypeSignature>())
+                            {
+                                IsSentinel = true,
+                                IncludeSentinel = true
+                            };
+                            for (var j = 0; j < parameterTypesCount; j++)
+                            {
+                                methodSig.SentinelParameterTypes.Add(factory.String);
+                            }
+                            var reference = new MemberReference(callingMethod.DeclaringType, callingMethod.Name, methodSig).ImportWith(context.Importer);
+                            instruction.Operand = reference;
+                        }
+                    }
+                }
+            }
+        }
+
         var methods = parameters.Members.OfType<MethodDefinition>().Where(methodsFilter);
         foreach (var method in methods)
         {
@@ -90,16 +124,15 @@ public class MethodArgsToArglist : IProtection
                 }
             }
 
-            var parameterTypesCount = method.Signature.ParameterTypes.Count;
+            //var parameterTypesCount = method.Signature.ParameterTypes.Count;
             method.Signature.ParameterTypes.Clear();
+            method.ParameterDefinitions.Clear();
             method.Signature.Attributes = CallingConventionAttributes.VarArg;
-            method.Signature.IncludeSentinel = true;
-            // method.Signature.IsSentinel = true; PRODUCES AN ERROR AND instance explicit void
-            body.InitializeLocals = true;
-            for (var i = 0; i < parameterTypesCount; i++)
-            {
-                method.Signature.SentinelParameterTypes.Add(factory.String);
-            }
+            //method.Signature.IncludeSentinel = true;
+            //method.Signature.IsSentinel = true; // PRODUCES AN ERROR AND instance explicit void
+            //method.Signature.ExplicitThis = false;
+            //body.InitializeLocals = true;
+
             body.Instructions.InsertRange(0, instructions);
         }
         return Task.CompletedTask;
