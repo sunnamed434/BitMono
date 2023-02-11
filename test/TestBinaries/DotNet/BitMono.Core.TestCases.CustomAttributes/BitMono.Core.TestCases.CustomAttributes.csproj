@@ -17,4 +17,9 @@
       <ProjectReference Include="..\..\..\..\src\BitMono.Protections\BitMono.Protections.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AsmResolver" Version="5.1.0" />
+      <PackageReference Include="AsmResolver.DotNet" Version="5.1.0" />
+    </ItemGroup>
+
 </Project>

@@ -5,6 +5,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AsmResolver" Version="5.1.0" />
+    <PackageReference Include="AsmResolver.DotNet" Version="5.1.0" />
+  </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
 </Project>

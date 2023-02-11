@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Reflection.Emit;
-using AsmResolver.DotNet.Collections;
 using AsmResolver.DotNet.Signatures.Types;
 
 namespace BitMono.Protections;
 
 public class MethodArgsToArglist : IProtection
 {
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+    [SuppressMessage("ReSharper", "RedundantExplicitArrayCreation")]
+    [SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeEvident")]
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
     {
         Console.WriteLine("FLAG 1");
 
         var factory = context.Module.CorLibTypeFactory;
-        var systemObject = factory.Object;
+        var systemObject = factory.Object.ToTypeDefOrRef();
         var systemObjectArray = factory.Object.MakeSzArrayType();
         var systemInt32 = factory.Int32;
         var argIterator = context.Importer.ImportType(typeof(ArgIterator)).ToTypeSignature(isValueType: true);
@@ -28,21 +28,44 @@ public class MethodArgsToArglist : IProtection
             context.Importer.ImportMethod(typeof(TypedReference).GetMethod(nameof(TypedReference.ToObject)));
 
         var method1 = parameters.Members.OfType<MethodDefinition>().FirstOrDefault(m => m.Name == "DrawArgList");
-        Console.WriteLine(Helper.ReflectObject(method1.GetType(), method1, "method1"));
-        Console.WriteLine();
-        Console.WriteLine(Helper.ReflectObject(method1.Signature.GetType(), method1.Signature, "signature"));
-        Console.WriteLine();
-        Console.WriteLine(Helper.ReflectObject(method1.CilMethodBody.GetType(), method1.CilMethodBody, "body"));
-
+        Console.WriteLine(Helper.ReflectObject(method1.Signature.ParameterTypes.GetType(), method1.Signature.ParameterTypes,
+            "parameterTypes"));
         var methods = parameters.Members.OfType<MethodDefinition>().Where(methodsFilter);
         Console.WriteLine("FLAG 2: " + methods.Count());
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        {
+            if (method.CilMethodBody is { } body)
+            {
+                var instructions = body.Instructions;
+                for (var i = 0; i < instructions.Count; i++)
+                {
+                    var instruction = instructions[i];
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
+                    {
+                        var callingMethod = methodDescriptor.Resolve();
+                        if (callingMethod != null)
+                        {
+                            callingMethod.Signature.ParameterTypes.Clear();
+                            var memberRef =
+                                callingMethod.CreateMemberReference(callingMethod.Name, callingMethod.Signature).ImportWith(context.Importer);
 
+                            //body.ComputeMaxStackOnBuild = false;
+                            //body.InitializeLocals = true;
+                            method.Signature.IncludeSentinel = true;
+                            method.Signature.IsSentinel = true;
+                            method.Signature.Attributes = CallingConventionAttributes.VarArg;
+                            method.Signature.SentinelParameterTypes.Add(factory.Boolean);
+                            instruction.Operand = memberRef;
+                        }
+                    }
+                }
+            }
+        }
+
+        return Task.CompletedTask;
 
         foreach (var method in methods)
         {
-            method.Signature.Attributes = CallingConventionAttributes.VarArg;
-
-
             //var paramsCount = method.ParameterDefinitions.Count;
             //method.ParameterDefinitions.Clear();
 
@@ -69,7 +92,7 @@ public class MethodArgsToArglist : IProtection
             add(new CilInstruction(CilOpCodes.Ldc_I4_0));
             add(new CilInstruction(CilOpCodes.Stloc_S, indexLocalVarible));
 
-            add(new CilInstruction(CilOpCodes.Br_S));
+            add(new CilInstruction(CilOpCodes.Br_S, null));
 
             add(new CilInstruction(CilOpCodes.Ldloc_S, paramListLocalVarible));
             add(new CilInstruction(CilOpCodes.Ldloc_S, indexLocalVarible));
@@ -85,8 +108,7 @@ public class MethodArgsToArglist : IProtection
             add(new CilInstruction(CilOpCodes.Ldloca_S, iteratorLocalVarible));
             add(new CilInstruction(CilOpCodes.Call, getRemainingCount));
             add(new CilInstruction(CilOpCodes.Ldc_I4_0));
-            add(new CilInstruction(CilOpCodes.Bgt_S));
-
+            add(new CilInstruction(CilOpCodes.Bgt_S, null));
 
             var ldlocal_sLabel = instructions[20].CreateLabel();
             var ldloc_1Label = instructions[10].CreateLabel();
@@ -94,21 +116,22 @@ public class MethodArgsToArglist : IProtection
             instructions[9].Operand = ldlocal_sLabel;
             instructions[23].Operand = ldloc_1Label;
 
-
             Console.WriteLine("INSTRUCTUINS:\n" + string.Join(", ", body.Instructions.Select(i => i.OpCode)));
 
             for (int i = 0; i < body.Instructions.Count; i++)
             {
-
-                if (body.Instructions[i].OpCode == CilOpCodes.Ldarg_S || body.Instructions[i].OpCode == CilOpCodes.Ldarg)
+                var instruction = body.Instructions[i];
+                if (instruction.OpCode == CilOpCodes.Ldarg_S || instruction.OpCode == CilOpCodes.Ldarg)
                 {
-                    var operand = body.Instructions[i].Operand;
+                    var operand = instruction.Operand;
 
-                    Console.WriteLine("FLAG 55: OPERAND: " + (operand?.ToString() ?? "NULL") + " | " + (operand?.GetType()?.FullName ?? "NULL"));
+                    Console.WriteLine("FLAG 55: OPERAND: " + (operand?.ToString() ?? "NULL") + " | " +
+                                      (operand?.GetType()?.FullName ?? "NULL"));
 
                     if (operand is Parameter parameter)
                     {
-                        Console.WriteLine("FLAG 44: " + parameter.Name + " " + parameter.Index + " " + parameter.Sequence);
+                        Console.WriteLine("FLAG 44: " + parameter.Name + " " + parameter.Index + " " +
+                                          parameter.Sequence);
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldloc_S, paramListLocalVarible);
                         body.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Ldc_I4, parameter.Index));
                         body.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Ldelem_Ref));
@@ -116,18 +139,19 @@ public class MethodArgsToArglist : IProtection
                 }
             }
 
-            Console.WriteLine("FLAG 10: " + method.ParameterDefinitions.Count);
-            method.ParameterDefinitions.Clear();
-            method.Signature = MethodSignature.CreateStatic(factory.Void);
+            method.Signature.ParameterTypes.Clear();
+            body.ComputeMaxStackOnBuild = false;
+            body.InitializeLocals = true;
+            method.Signature.IncludeSentinel = true;
+            method.Signature.IsSentinel = true;
             method.Signature.Attributes = CallingConventionAttributes.VarArg;
-            Console.WriteLine("FLAG 11: " + method.ParameterDefinitions.Count);
-
-
+            method.Signature.SentinelParameterTypes.Add(factory.Boolean);
             body.Instructions.InsertRange(0, instructions);
+            var methodNew = new MethodDefinition("Hello world", MethodAttributes.Public | MethodAttributes.Static,
+                MethodSignature.CreateStatic(factory.Void));
         }
 
         Console.WriteLine("FLAG 100: FINISH");
-
         return Task.CompletedTask;
     }
 
@@ -136,7 +160,7 @@ public class MethodArgsToArglist : IProtection
         method is { CilMethodBody: { }, IsConstructor: false }
         && method.DeclaringType.IsModuleType == false
         && method.ParameterDefinitions.Count > 0
-        && method.Signature.Attributes != CallingConventionAttributes.VarArg;
+        && method.Signature.Attributes.HasFlag(CallingConventionAttributes.VarArg) == false;
 
 
 }
