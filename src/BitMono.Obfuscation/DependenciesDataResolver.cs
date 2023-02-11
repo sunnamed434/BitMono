@@ -9,10 +9,11 @@ public class DependenciesDataResolver : IDependenciesDataResolver
         m_DependenciesDirectoryName = dependenciesDirectoryName;
     }
 
+    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     public IEnumerable<byte[]> Resolve()
     {
         var dependencies = Directory.GetFiles(m_DependenciesDirectoryName);
-        for (int i = 0; i < dependencies.Length; i++)
+        for (var i = 0; i < dependencies.Length; i++)
         {
             yield return File.ReadAllBytes(dependencies[i]);
         }

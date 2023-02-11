@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS8604
-#pragma warning disable CS8618
+#pragma warning disable CS8602
 namespace BitMono.Obfuscation;
 
 public class BitMonoObfuscator
@@ -38,7 +38,7 @@ public class BitMonoObfuscator
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
         m_Obfuscation = obfuscation;
-        m_Logger = logger.ForContextFile();
+        m_Logger = logger.ForContext<BitMonoObfuscator>();
         m_InvokablePipeline = new InvokablePipeline(m_Context);
         m_MemberResolver = new MembersResolver();
         m_ProtectionExecutionNotifier = new ProtectionExecutionNotifier(m_Logger);

@@ -11,20 +11,28 @@ public class ProtectionsSorter
         m_Assembly = assembly;
     }
 
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
     {
-        var protectionsResolve = new ProtectionsResolver(protections, protectionSettings).Sort();
-        var obfuscationAttributeProtections = protectionsResolve.FoundProtections.Where(p => m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
-        var deprecatedProtections = protectionsResolve.FoundProtections.Where(p => p.GetType().GetCustomAttribute<ObsoleteAttribute>(false) != null);
-        var sortedProtections = protectionsResolve.FoundProtections.Except(obfuscationAttributeProtections)
+        var protectionsResolve = new ProtectionsResolver(protections, protectionSettings)
+            .Sort();
+        var obfuscationAttributeProtections =
+            protectionsResolve.FoundProtections.Where(p =>
+                m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
+        var deprecatedProtections =
+            protectionsResolve.FoundProtections.Where(p => p.TryGetObsoleteAttribute(out _));
+        var sortedProtections = protectionsResolve.FoundProtections
+            .Except(obfuscationAttributeProtections)
             .Except(deprecatedProtections);
-
-        var pipelineProtections = sortedProtections.Where(p => p is IPipelineProtection)
+        var pipelineProtections = sortedProtections
+            .Where(p => p is IPipelineProtection)
             .Cast<IPipelineProtection>();
-        var packers = sortedProtections.Where(p => p is IPacker)
+        var packers = sortedProtections
+            .Where(p => p is IPacker)
             .Cast<IPacker>();
-
-        sortedProtections = sortedProtections.Except(packers).Except(pipelineProtections);
+        sortedProtections = sortedProtections
+            .Except(packers)
+            .Except(pipelineProtections);
 
         var hasProtections = sortedProtections.IsEmpty() == false || packers.IsEmpty() == false;
         return new ProtectionsSort

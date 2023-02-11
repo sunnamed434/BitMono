@@ -1,5 +1,10 @@
-﻿namespace BitMono.Obfuscation;
+﻿#pragma warning disable CS8602
+#pragma warning disable CS8604
+namespace BitMono.Obfuscation;
 
+[SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class BitMonoEngine
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
@@ -25,7 +30,7 @@ public class BitMonoEngine
         m_ProtectionSettings = protectionSetting;
         m_MemberResolvers = memberResolvers;
         m_Protections = protections;
-        m_Logger = logger.ForContextFile();
+        m_Logger = logger.ForContext<BitMonoEngine>();
     }
 
     internal async Task<bool> StartAsync(ProtectionContext context, IDataWriter dataWriter)

@@ -25,5 +25,7 @@ global using System.Reflection;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using BitMono.Core.Protecting.Attributes;
+global using Microsoft.Extensions.Options;
 global using Pocket.Extensions;
 global using ILogger = Serilog.ILogger;

@@ -7,7 +7,7 @@ public class ObfuscationAttributesStripNotifier
 
     public ObfuscationAttributesStripNotifier(ILogger logger)
     {
-        m_Logger = logger.ForContextFile();
+        m_Logger = logger.ForContext<ObfuscationAttributesStripNotifier>();
     }
 
     public void Notify(ObfuscationAttributesStrip obfuscationAttributesStrip)
