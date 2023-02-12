@@ -1,5 +1,3 @@
-using AsmResolver.DotNet.Signatures.Types;
-
 namespace BitMono.Protections;
 
 public class MethodArgsToArglist : IProtection
@@ -92,14 +90,12 @@ public class MethodArgsToArglist : IProtection
                     if (operand is Parameter parameter)
                     {
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldloc_S, paramListLocalVarible);
-                        body.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Ldc_I4, parameter.Index));
-
-
-                        body.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Ldelem_Ref));
-                        body.Instructions.Insert(i + 3,
-                            new CilInstruction(CilOpCodes.Unbox_Any, parameter.ParameterType.ToTypeDefOrRef()));
-
-
+                        body.Instructions.InsertRange(i + 1, new CilInstruction[]
+                        {
+                            new CilInstruction(CilOpCodes.Ldc_I4, parameter.Index),
+                            new CilInstruction(CilOpCodes.Ldelem_Ref),
+                            new CilInstruction(CilOpCodes.Unbox_Any, parameter.ParameterType.ToTypeDefOrRef())
+                        });
                     }
                 }
             }
@@ -158,8 +154,8 @@ public class MethodArgsToArglist : IProtection
 
                                 methodSig.IncludeSentinel = true;
 
-
-                                memberReference = new MemberReference(callingMethod.DeclaringType, callingMethod.Name, methodSig).ImportWith(context.Importer);
+                                memberReference = new MemberReference(callingMethod.DeclaringType, callingMethod.Name, methodSig)
+                                    .ImportWith(context.Importer);
                                 Console.WriteLine("New reference: " + memberReference.FullName);
                                 cachedMemberRefsToMethodDefs.Add(callingMethod, memberReference);
                             }

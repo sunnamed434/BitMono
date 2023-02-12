@@ -23,5 +23,6 @@ global using System.Runtime.CompilerServices;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using AsmResolver.DotNet.Collections;
+global using AsmResolver.DotNet.Signatures.Types;
 global using MethodAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.MethodAttributes;
 global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;
