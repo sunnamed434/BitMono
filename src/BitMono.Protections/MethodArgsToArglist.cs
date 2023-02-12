@@ -19,51 +19,23 @@ public class MethodArgsToArglist : IProtection
             typeof(RuntimeArgumentHandle)
         }));
         var getRemainingCount = context.Importer.ImportMethod(typeof(ArgIterator).GetMethod(nameof(ArgIterator.GetRemainingCount)));
-        var getNextArg =
-            context.Importer.ImportMethod(typeof(ArgIterator).GetMethod(nameof(ArgIterator.GetNextArg),
-                Array.Empty<Type>()));
-        var typedReferenceToObject =
-            context.Importer.ImportMethod(typeof(TypedReference).GetMethod(nameof(TypedReference.ToObject)));
+        var getNextArg = context.Importer.ImportMethod(typeof(ArgIterator).GetMethod(nameof(ArgIterator.GetNextArg), Array.Empty<Type>()));
+        var typedReferenceToObject = context.Importer.ImportMethod(typeof(TypedReference).GetMethod(nameof(TypedReference.ToObject)));
 
-        var method1 = parameters.Members.OfType<MethodDefinition>().FirstOrDefault(m => m.Name == "DrawArgList");
-        Console.WriteLine(Helper.ReflectObject(method1.Signature.ParameterTypes.GetType(), method1.Signature.ParameterTypes,
-            "parameterTypes"));
 
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
-        {
-            if (method.CilMethodBody is { } body)
-            {
-                var instructions = body.Instructions;
-                for (var i = 0; i < instructions.Count; i++)
-                {
-                    var instruction = instructions[i];
-                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
-                    {
-                        var callingMethod = methodDescriptor.Resolve();
-                        if (callingMethod != null)
-                        {
-                            var parameterTypesCount = callingMethod.Signature.ParameterTypes.Count;
-                            var methodSig = new MethodSignature(callingMethod.Signature.Attributes, callingMethod.Signature.ReturnType, Array.Empty<TypeSignature>())
-                            {
-                                IsSentinel = true,
-                                IncludeSentinel = true
-                            };
-                            for (var j = 0; j < parameterTypesCount; j++)
-                            {
-                                methodSig.SentinelParameterTypes.Add(factory.String);
-                            }
-                            var reference = new MemberReference(callingMethod.DeclaringType, callingMethod.Name, methodSig).ImportWith(context.Importer);
-                            instruction.Operand = reference;
-                        }
-                    }
-                }
-            }
-        }
+        //var method1 = parameters.Members.OfType<MethodDefinition>().FirstOrDefault(m => m.Name == "DrawArgList");
+        //Console.WriteLine(Helper.ReflectObject(method1.Signature.ParameterTypes.GetType(), method1.Signature.ParameterTypes,
+        //    "parameterTypes"));
+
+
+        List<MethodDefinition> list = new List<MethodDefinition>();
 
         var methods = parameters.Members.OfType<MethodDefinition>().Where(methodsFilter);
         foreach (var method in methods)
         {
             var body = method.CilMethodBody;
+
+            #region InsetingCode
 
             var iteratorLocalVarible = new CilLocalVariable(argIterator);
             var paramListLocalVarible = new CilLocalVariable(systemObjectArray);
@@ -109,32 +81,98 @@ public class MethodArgsToArglist : IProtection
             instructions[9].Operand = ldlocal_sLabel;
             instructions[23].Operand = ldloc_1Label;
 
+
             for (var i = 0; i < body.Instructions.Count; i++)
             {
                 var instruction = body.Instructions[i];
-                if (instruction.OpCode == CilOpCodes.Ldarg_S || instruction.OpCode == CilOpCodes.Ldarg)
+                var isLdarga = instruction.OpCode.Code == CilCode.Ldarga || instruction.OpCode.Code == CilCode.Ldarga_S;
+                if (instruction.IsLdarg() || isLdarga)
                 {
                     var operand = instruction.Operand;
                     if (operand is Parameter parameter)
                     {
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldloc_S, paramListLocalVarible);
                         body.Instructions.Insert(i + 1, new CilInstruction(CilOpCodes.Ldc_I4, parameter.Index));
+
+
                         body.Instructions.Insert(i + 2, new CilInstruction(CilOpCodes.Ldelem_Ref));
+                        body.Instructions.Insert(i + 3,
+                            new CilInstruction(CilOpCodes.Unbox_Any, parameter.ParameterType.ToTypeDefOrRef()));
+
+
                     }
                 }
             }
 
+            #endregion
+
+
             //var parameterTypesCount = method.Signature.ParameterTypes.Count;
-            method.Signature.ParameterTypes.Clear();
-            method.ParameterDefinitions.Clear();
+
+            //method.Signature.ParameterTypes.Clear();
+            //method.ParameterDefinitions.Clear();
             method.Signature.Attributes = CallingConventionAttributes.VarArg;
+
             //method.Signature.IncludeSentinel = true;
             //method.Signature.IsSentinel = true; // PRODUCES AN ERROR AND instance explicit void
             //method.Signature.ExplicitThis = false;
             //body.InitializeLocals = true;
 
             body.Instructions.InsertRange(0, instructions);
+
+            list.Add(method);
         }
+
+
+        IDictionary<MethodDefinition, MemberReference> cachedMemberRefsToMethodDefs = new Dictionary<MethodDefinition, MemberReference>();
+
+        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        {
+            if (method.CilMethodBody is { } body)
+            {
+                var instructions = body.Instructions;
+                for (var i = 0; i < instructions.Count; i++)
+                {
+                    var instruction = instructions[i];
+                    if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
+                    {
+                        var callingMethod = methodDescriptor.Resolve();
+
+                        if (callingMethod != null && list.Contains(callingMethod))
+                        {
+                            //Console.WriteLine("Method: " + callingMethod.FullName);
+
+                            MemberReference memberReference;
+                            if (cachedMemberRefsToMethodDefs.TryGetValue(callingMethod, out memberReference) == false)
+                            {
+                                var methodSig = new MethodSignature(callingMethod.Signature.Attributes,
+                                    callingMethod.Signature.ReturnType, Array.Empty<TypeSignature>());
+
+                                foreach (var parameterSig in callingMethod.Signature.ParameterTypes)
+                                {
+                                    methodSig.SentinelParameterTypes.Add(parameterSig);
+                                }
+
+                                callingMethod.ParameterDefinitions.Clear();
+                                callingMethod.Signature.ParameterTypes.Clear();
+
+                                methodSig.IncludeSentinel = true;
+
+
+                                memberReference = new MemberReference(callingMethod.DeclaringType, callingMethod.Name, methodSig).ImportWith(context.Importer);
+                                Console.WriteLine("New reference: " + memberReference.FullName);
+                                cachedMemberRefsToMethodDefs.Add(callingMethod, memberReference);
+                            }
+                            instruction.Operand = memberReference;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
         return Task.CompletedTask;
     }
 
@@ -143,10 +181,13 @@ public class MethodArgsToArglist : IProtection
         method is { CilMethodBody: { }, IsConstructor: false }
         && method.DeclaringType.IsModuleType == false
         && method.ParameterDefinitions.Count > 0
+        && method.IsVirtual == false
+        && method.DeclaringType.FindCustomAttributes("System.Runtime.CompilerServices", "CompilerGeneratedAttribute")?.Count() == 0
         && method.Signature.Attributes.HasFlag(CallingConventionAttributes.VarArg) == false;
 
 
 }
+
 
 public static class Helper
 {
