@@ -21,7 +21,7 @@ public static class RuntimeUtilities
             var displayName = monoType.GetMethod(KnownMonoRuntimes.GetDisplayName, BindingFlags.NonPublic | BindingFlags.Static);
             if (displayName != null)
             {
-                var displayNameDelegate = (Func<string>)displayName.CreateDelegate(typeof(Func<string>), displayName);
+                var displayNameDelegate = (Func<string>)displayName.CreateDelegate(typeof(Func<string>), monoType);
                 monoDisplayName = displayNameDelegate.Invoke();
             }
         }
