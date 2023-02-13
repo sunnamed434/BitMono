@@ -26,6 +26,9 @@
 #### Added:
 * Command line arguments [#82](https://github.com/sunnamed434/BitMono/issues/82)
 
+#### Fixed:
+* DotNetHook protection
+
 ### v0.9.0-alpha.18:
 2023-02-09
 #### Changed:
