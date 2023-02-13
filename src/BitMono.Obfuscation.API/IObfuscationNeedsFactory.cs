@@ -2,5 +2,5 @@
 
 public interface IObfuscationNeedsFactory
 {
-    ObfuscationNeeds Create();
+    ObfuscationNeeds? Create();
 }

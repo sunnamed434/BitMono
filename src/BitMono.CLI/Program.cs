@@ -7,11 +7,19 @@ internal class Program
     {
         try
         {
-            var needs = new CLIObfuscationNeedsFactory(args).Create();
+            ObfuscationNeeds? needs = null;
+            needs = args.IsEmpty()
+                ? new CLIObfuscationNeedsFactory(args).Create()
+                : new CLIOptionsObfuscationNeedsFactory(args).Create();
+            if (needs == null)
+            {
+                return;
+            }
+
             Console.Clear();
             Console.WriteLine("File: {0}", needs.FileName);
             Console.WriteLine("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
-            Console.WriteLine("Everything is seems to be good, starting obfuscation..");
+            Console.WriteLine("Everything is seems to be ok, starting obfuscation..");
 
             var module = new BitMonoModule(
                 configureContainer => configureContainer.AddProtections(),
