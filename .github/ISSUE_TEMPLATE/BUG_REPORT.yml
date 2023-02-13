@@ -5,7 +5,7 @@ body:
     id: bitmono_version
     attributes:
       label: "BitMono Version"
-      description: Please enter the used version of BitMono with the bug
+      description: Please enter the used version of BitMono with the bug. You can find the version by choosing your downloaded version [here](https://github.com/sunnamed434/BitMono/releases), or using the BitMono.CLI.exe --version command
       placeholder: 0.6.0-alpha.15
     validations:
       required: true
