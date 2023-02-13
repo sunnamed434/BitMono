@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.10.0-alpha](#v0100-alpha19) |
 | [v0.9.0-alpha](#v090-alpha18) |
 | [v0.8.0-alpha](#v080-alpha17) |
 | [v0.7.0-alpha](#v070-alpha16) |
@@ -20,6 +21,11 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.10.0-alpha.19:
+2023-02-013
+#### Added:
+* Command line arguments [#82](https://github.com/sunnamed434/BitMono/issues/82)
+
 ### v0.9.0-alpha.18:
 2023-02-09
 #### Changed:
