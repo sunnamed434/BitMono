@@ -15,7 +15,6 @@ public class ProtectionsResolver
     {
         var foundProtections = new List<IProtection>();
         var cachedProtections = m_Protections.ToArray().ToList();
-        var disabledProtections = new List<string>();
         var unknownProtections = new List<string>();
         foreach (var protectionSettings in m_ProtectionSettings.Where(p => p.Enabled))
         {
@@ -30,11 +29,7 @@ public class ProtectionsResolver
                 unknownProtections.Add(protectionSettings.Name);
             }
         }
-        for (var i = 0; i < cachedProtections.Count; i++)
-        {
-            var protection = cachedProtections[i];
-            disabledProtections.Add(protection.GetName());
-        }
+        var disabledProtections = cachedProtections.Select(protection => protection.GetName()).ToList();
         return new ProtectionsResolve
         {
             FoundProtections = foundProtections,

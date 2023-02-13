@@ -1,5 +1,6 @@
 ﻿namespace BitMono.CLI.Modules;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
 {
     private readonly string[] m_Args;
@@ -87,9 +88,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
 
         return new ObfuscationNeeds
         {
-#pragma warning disable CS8601
             FileName = fileName,
-#pragma warning restore CS8601
             FileBaseDirectory = fileBaseDirectory,
             DependenciesDirectoryName = dependenciesDirectoryName,
             OutputDirectoryName = outputDirectoryName

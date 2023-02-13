@@ -2,7 +2,7 @@
 
 public class BitMonoProtectionsConfiguration : JsonConfigurationAccessor, IBitMonoProtectionsConfiguration
 {
-    public BitMonoProtectionsConfiguration() : base("protections.json")
+    public BitMonoProtectionsConfiguration(string? file = null) : base(file ?? "protections.json")
     {
     }
 }

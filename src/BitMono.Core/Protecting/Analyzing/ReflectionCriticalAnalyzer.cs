@@ -34,7 +34,6 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         if (method.CilMethodBody is { } body)
         {
             body.ConstructSymbolicFlowGraph(out var dataFlowGraph);
-
             foreach (var node in dataFlowGraph.Nodes)
             {
                 var orderedDependencies =
@@ -42,7 +41,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
                 foreach (var order in orderedDependencies)
                 {
                     var instruction = order.Contents;
-                    if (instruction.OpCode.Code == CilCode.Call && instruction.Operand is IMethodDefOrRef calledMethod)
+                    if (instruction?.OpCode.Code == CilCode.Call && instruction.Operand is IMethodDefOrRef calledMethod)
                     {
                         if (IsReflection(calledMethod))
                         {

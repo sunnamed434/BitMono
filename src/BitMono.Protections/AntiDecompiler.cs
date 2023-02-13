@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[RuntimeMonikerMono]
 public class AntiDecompiler : IPipelineProtection
 {
     public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)

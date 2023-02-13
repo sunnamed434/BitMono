@@ -2,13 +2,13 @@
 namespace BitMono.Host.Extensions;
 
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
 public static class AutofacServiceProviderExtensions
 {
     private static readonly string ProtectionsFileName = $"{typeof(BitMono.Protections.BitMono).Namespace}.dll";
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
-        var rawData = File.ReadAllBytes(file ?? ProtectionsFileName);
-        Assembly.Load(rawData);
+        File.ReadAllBytes(file ?? ProtectionsFileName); // No need to Assembly.Load(rawData) the byte[], perhaps a bug of .NET Framework
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         source.RegisterAssemblyTypes(assemblies)
@@ -22,7 +22,7 @@ public static class AutofacServiceProviderExtensions
     public static ServiceCollection AddConfigurations(this ServiceCollection source,
         string? protectionsFile = null, string? criticalsFile = null, string? obfuscationFile = null)
     {
-        var protections = new BitMonoProtectionsConfiguration();
+        var protections = new BitMonoProtectionsConfiguration(protectionsFile);
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
         var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
         source.AddOptions()

@@ -7,6 +7,7 @@
 [![Build status][image_appveyor_main_badge]][appveyor_main_build]
 [![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
+[![DeepSource][image_deepsource]][deepsource]
 [![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
 
@@ -85,6 +86,7 @@ Credits
 
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
+[deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
 [asmresolver]: https://github.com/Washi1337/AsmResolver
@@ -107,6 +109,7 @@ Credits
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
 [image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main
 [image_codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/badge/main
+[image_deepsource]: https://deepsource.io/gh/sunnamed434/BitMono.svg/?label=active+issues&show_trend=true&token=_FJf25YbtCpPyX7SRveXCaGd
 [image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
 [image_license]: https://img.shields.io/github/license/sunnamed434/bitmono
 [image_appveyor_main_badge]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j/branch/main?svg=true
