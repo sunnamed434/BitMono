@@ -11,7 +11,6 @@ public class EnvironmentRuntimeInformation
 
     public override string ToString()
     {
-        return
-            $"Running on {OperatingSystem}, {(HasMono == false ? $"{DotNetRuntimeInfo.NetFramework} v{NetFrameworkVersion}" : $"Mono: {MonoDisplayName}")}, x{Bits} bits";
+        return $"Running on {OperatingSystem}, {(HasMono == false ? $"{DotNetRuntimeInfo.NetFramework} v{NetFrameworkVersion}" : $"{MonoDisplayName}")}, x{Bits} bits";
     }
 }
