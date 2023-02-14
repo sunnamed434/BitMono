@@ -3,6 +3,15 @@ namespace BitMono.CLI;
 
 internal class Program
 {
+    private static readonly string AsciiArt = @$"
+       ___  _ __  __  ___
+      / _ )(_) /_/  |/  /__  ___  ___
+     / _  / / __/ /|_/ / _ \/ _ \/ _ \
+    /____/_/\__/_/  /_/\___/_//_/\___/
+    https://github.com/sunnamed434/BitMono
+    BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}
+                                  ";
+
     private static async Task Main(string[] args)
     {
         try
@@ -43,6 +52,8 @@ internal class Program
             var logger = serviceProvider.LifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();
+
+            logger.Information(AsciiArt);
 
             var cancellationTokenSource = new CancellationTokenSource();
             var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver,
