@@ -9,6 +9,7 @@ public class AssemblyResolver
 
         var resolvedReferences = new List<AssemblyReference>();
         var failedToResolveReferences = new List<AssemblyReference>();
+        var badImageReferences = new List<AssemblyReference>();
         var signatureComparer = new SignatureComparer(SignatureComparisonFlags.AcceptNewerVersions);
 
         foreach (var originalReference in context.Module.AssemblyReferences)
@@ -19,10 +20,17 @@ public class AssemblyResolver
             {
                 context.ThrowIfCancellationRequested();
 
-                var definition = AssemblyDefinition.FromBytes(data);
-                if (context.AssemblyResolver.HasCached(originalReference) == false && signatureComparer.Equals(originalReference, definition))
+                try
                 {
-                    context.AssemblyResolver.AddToCache(originalReference, definition);
+                    var definition = AssemblyDefinition.FromBytes(data);
+                    if (context.AssemblyResolver.HasCached(originalReference) == false && signatureComparer.Equals(originalReference, definition))
+                    {
+                        context.AssemblyResolver.AddToCache(originalReference, definition);
+                    }
+                }
+                catch (BadImageFormatException)
+                {
+                    badImageReferences.Add(originalReference);
                 }
             }
         }
@@ -43,6 +51,7 @@ public class AssemblyResolver
         {
             ResolvedReferences = resolvedReferences,
             FailedToResolveReferences = failedToResolveReferences,
+            BadImageReferences = badImageReferences,
             Succeed = succeed
         };
     }
