@@ -5,10 +5,12 @@ namespace BitMono.CLI.Modules;
 public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
 {
     private readonly string[] m_Args;
+    private readonly ILogger m_Logger;
 
-    public CLIOptionsObfuscationNeedsFactory(string[] args)
+    public CLIOptionsObfuscationNeedsFactory(string[] args, ILogger logger)
     {
         m_Args = args;
+        m_Logger = logger.ForContext<CLIOptionsObfuscationNeedsFactory>();
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
@@ -27,7 +29,7 @@ public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
         var options = parserResult.Value;
         if (File.Exists(options.File) == false)
         {
-            Console.WriteLine("File cannot be found, please, try again!");
+            m_Logger.Fatal("File cannot be found, please, try again!");
             return null;
         }
         var fileBaseDirectory = Path.GetDirectoryName(options.File);

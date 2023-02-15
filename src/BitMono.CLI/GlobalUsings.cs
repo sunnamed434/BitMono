@@ -15,7 +15,6 @@ global using System.IO;
 global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
-global using BitMono.Core.Extensions;
 global using BitMono.Host.Extensions;
 global using BitMono.Shared.Models;
 global using CommandLine;

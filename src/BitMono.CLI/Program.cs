@@ -16,20 +16,6 @@ internal class Program
     {
         try
         {
-            ObfuscationNeeds? needs = null;
-            needs = args.IsEmpty()
-                ? new CLIObfuscationNeedsFactory(args).Create()
-                : new CLIOptionsObfuscationNeedsFactory(args).Create();
-            if (needs == null)
-            {
-                return;
-            }
-
-            Console.Clear();
-            Console.WriteLine("File: {0}", needs.FileName);
-            Console.WriteLine("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
-            Console.WriteLine("Everything is seems to be ok, starting obfuscation..");
-
             var module = new BitMonoModule(
                 configureContainer => configureContainer.AddProtections(),
                 configureServices => configureServices.AddConfigurations(),
@@ -53,6 +39,18 @@ internal class Program
                 .Resolve<ILogger>()
                 .ForContext<Program>();
 
+            var needs = args.IsEmpty()
+                ? new CLIObfuscationNeedsFactory(args, logger).Create()
+                : new CLIOptionsObfuscationNeedsFactory(args, logger).Create();
+            if (needs == null)
+            {
+                return;
+            }
+
+            Console.Clear();
+            logger.Information("File: {0}", needs.FileName);
+            logger.Information("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
+            logger.Information("Everything is seems to be ok, starting obfuscation..");
             logger.Information(AsciiArt);
 
             var cancellationTokenSource = new CancellationTokenSource();
