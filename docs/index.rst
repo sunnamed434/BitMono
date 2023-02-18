@@ -19,6 +19,8 @@ Table of Contents:
    :caption: Protections
    :name: sec-protections
 
+   protections/antiildasm
    protections/bitdotnet
    protections/bitmono
+   protections/bittimedatestamp
    protections/antidecompiler
