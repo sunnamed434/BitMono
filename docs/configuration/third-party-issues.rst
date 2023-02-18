@@ -9,6 +9,7 @@ In this case you've to use ``criticals.json``, add to ``CriticalMethods``, ``Cri
 
     There is already supported all ``Unity`` methods and third-party frameworks such as ``RocketMod``, ``rust-oxide-umod``, ``OpenMod``.
 
+
 .. code-block:: json
 	{
 	  // DO NOT write here all of your methods/things because if you rename them in VS/Rider/VS Code (eg, with hotkey CTRL + R + R/without hotkey, doesn't matter)

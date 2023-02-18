@@ -8,7 +8,6 @@ Let's say you have something specific that you don't want to protect, in this ca
     Set to false the ``ObfuscationAttributeObfuscationExclude`` parameter in ``obfuscation.json``, to ignore these attributes.
 
 
-
 .. code-block:: csharp
 
 	using System;
