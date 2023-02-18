@@ -33,3 +33,11 @@ Table of Contents:
    protections/objectreturntype
    protections/stringsencryption
    protections/nonamespaces
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Configuration
+   :name: sec-configuration
+
+   configuration/exclude-obfuscation
