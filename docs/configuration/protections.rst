@@ -9,7 +9,7 @@ Use ``protections.json`` - by default all protections are configured as they sho
 
 	{
 	  "Protections": [
-	  	{
+        {
 	      "Name": "UnknownProtection", // this will be ignored and shown as unknown protection, because doesn't exist by default.
 	      "Enabled": true
 	    },
