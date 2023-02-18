@@ -41,4 +41,5 @@ Table of Contents:
    :name: sec-configuration
 
    configuration/exclude-obfuscation
+   configuration/third-party-issues
    configuration/protections
