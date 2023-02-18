@@ -1,5 +1,5 @@
-BitMono
-=======
+BitTimeDateStamp
+================
 
 How it works?
 -------------
