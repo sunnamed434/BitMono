@@ -3,7 +3,7 @@ Exclude member from being obfuscated
 
 Let's say you have something specific that you don't want to protect, in this case you can add an ``[ObfuscationAttribute]`` and specify there protection name.
 
-.. code-block:: json
+.. code-block:: csharp
 
 	using System;
 	using System.Xml.Serialization;
