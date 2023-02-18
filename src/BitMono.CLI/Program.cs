@@ -1,6 +1,4 @@
-﻿using BitMono.CLI;
-
-#pragma warning disable CS8604
+﻿#pragma warning disable CS8604
 namespace BitMono.CLI;
 
 internal class Program
@@ -13,7 +11,7 @@ internal class Program
     https://github.com/sunnamed434/BitMono
     BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}
                                   ";
-    
+
     private static async Task Main(string[] args)
     {
         try
