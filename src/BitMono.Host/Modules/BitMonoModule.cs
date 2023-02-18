@@ -1,6 +1,4 @@
-﻿using BitMono.Host.Extensions;
-
-namespace BitMono.Host.Modules;
+﻿namespace BitMono.Host.Modules;
 
 public class BitMonoModule : Module
 {

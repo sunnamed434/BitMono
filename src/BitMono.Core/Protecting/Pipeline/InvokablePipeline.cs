@@ -9,7 +9,7 @@ public class InvokablePipeline : IInvokablePipeline
 
     public bool Succeed { get; private set; } = true;
     public ProtectionContext Context { get; }
-    [AllowNull] public Action? OnFail { get; set; } = null;
+    public Action? OnFail { get; set; } = null;
 
     public async Task InvokeAsync(Func<ProtectionContext, Task<bool>> func)
     {
