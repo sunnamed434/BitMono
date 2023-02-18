@@ -20,7 +20,16 @@ Table of Contents:
    :name: sec-protections
 
    protections/antiildasm
+   protections/antide4dot
    protections/bitdotnet
    protections/bitmono
    protections/bittimedatestamp
+   protections/bitmethoddotnet
    protections/antidecompiler
+   protections/antidebugbreakpoints
+   protections/calltocalli
+   protections/dotnethook
+   protections/fullrenamer
+   protections/objectreturntype
+   protections/stringsencryption
+   protections/nonamespaces
