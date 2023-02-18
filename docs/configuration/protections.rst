@@ -5,29 +5,29 @@ Let's say you want to execute the same protection twice or even execute protecti
 
 Use ``protections.json`` - by default all protections are configured as they should, if something works not as intentionally you always may disable something or enable or even remove it.
 
-```json
-{
-  "Protections": [
-  	{
-      "Name": "UnknownProtection", // this will be ignored and shown as unknown protection because this protection doesn't exist by default.
-      "Enabled": true
-    },
-    {
-      "Name": "AntiILdasm",
-      "Enabled": true
-    },
-    {
-      "Name": "AntiDe4dot",
-      "Enabled": false
-    },
-    {
-      "Name": "BitMono",
-      "Enabled": true
-    },
-    {
-      "Name": "BitDotNet",
-      "Enabled": true,
-    }
-  ]
-}
-```
+.. code-block:: json
+
+	{
+	  "Protections": [
+	  	{
+	      "Name": "UnknownProtection", // this will be ignored and shown as unknown protection because this protection doesn't 	exist by default.
+	      "Enabled": true
+	    },
+	    {
+	      "Name": "AntiILdasm",
+	      "Enabled": true
+	    },
+	    {
+	      "Name": "AntiDe4dot",
+	      "Enabled": false
+	    },
+	    {
+	      "Name": "BitMono",
+	      "Enabled": true
+	    },
+	    {
+	      "Name": "BitDotNet",
+	      "Enabled": true,
+	    }
+	  ]
+	}
