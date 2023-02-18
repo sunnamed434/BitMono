@@ -11,6 +11,7 @@ In this case you've to use ``criticals.json``, add to ``CriticalMethods``, ``Cri
 
 
 .. code-block:: json
+
 	{
 	  // DO NOT write here all of your methods/things because if you rename them in VS/Rider/VS Code (eg, with hotkey CTRL + R + R/without hotkey, doesn't matter)
 	  // whatever else, they're not will be changed here as well.
