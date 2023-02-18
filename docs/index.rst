@@ -22,3 +22,4 @@ Table of Contents:
 
    protections/bitdotnet
    protections/bitmono
+   protections/antidecompiler
