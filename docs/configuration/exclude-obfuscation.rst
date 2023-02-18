@@ -3,6 +3,12 @@ Exclude member from being obfuscated
 
 Let's say you have something specific that you don't want to protect, in this case you can add an ``[ObfuscationAttribute]`` and specify there protection name.
 
+.. note::
+
+    Set to false the ``ObfuscationAttributeObfuscationExclude`` parameter in ``obfuscation.json``, to ignore these attributes.
+
+
+
 .. code-block:: csharp
 
 	using System;
