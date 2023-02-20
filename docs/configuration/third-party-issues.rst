@@ -1,7 +1,7 @@
 Excluding Having issues with third parties (API Libraries)
 ==========================================================
 
-Let's say you have something specific that you don't want to protect, you can specify their const "names".
+Let's say you have something specific that you don't want to protect, you can specify their constant "names".
 
 In this case you've to use ``criticals.json``, add to ``CriticalMethods``, ``CriticalInterfaces``, ``CriticalBaseTypes`` etc, your potential critical things if you have them.
 
