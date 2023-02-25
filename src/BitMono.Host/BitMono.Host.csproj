@@ -44,7 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
-    <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
+    <ProjectReference Include="..\BitMono.Core\BitMono.Core.csproj" />
   </ItemGroup>
 
 </Project>

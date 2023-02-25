@@ -1,9 +1,13 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class NoNamespaces : IProtection
+public class NoNamespaces : Protection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public NoNamespaces(ProtectionContext context) : base(context)
+    {
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {

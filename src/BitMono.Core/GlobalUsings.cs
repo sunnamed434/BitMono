@@ -16,7 +16,6 @@ global using BitMono.Core.Protecting.Injection;
 global using BitMono.Core.Protecting.Resolvers;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Extensions.AsmResolver;
-global using NullGuard;
 global using System;
 global using System.Collections.Generic;
 global using System.Diagnostics;

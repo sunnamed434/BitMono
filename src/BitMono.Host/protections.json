@@ -38,7 +38,7 @@
     },
     {
       "Name": "AntiDecompiler",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "BitMethodDotnet",
@@ -46,15 +46,15 @@
     },
     {
       "Name": "BitTimeDateStamp",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "BitDotNet",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitMono",
-      "Enabled": true
+      "Enabled": false
     }
   ]
 }
