@@ -13,13 +13,17 @@ public class AntiDecompiler : PipelineProtection
     }
     public override IEnumerable<IPhaseProtection> PopulatePipeline()
     {
-        yield return new AntiDnSpyAnalyzer();
+        yield return new AntiDnSpyAnalyzer(Context);
     }
 }
 [ProtectionName(nameof(AntiDnSpyAnalyzer))]
-public class AntiDnSpyAnalyzer : IPhaseProtection
+public class AntiDnSpyAnalyzer : PhaseProtection
 {
-    public Task ExecuteAsync(ProtectionParameters parameters)
+    public AntiDnSpyAnalyzer(ProtectionContext context) : base(context)
+    {
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
