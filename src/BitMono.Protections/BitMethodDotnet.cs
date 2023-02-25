@@ -1,16 +1,16 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class BitMethodDotnet : IProtection
+public class BitMethodDotnet : Protection
 {
     private readonly Random m_Random;
 
-    public BitMethodDotnet(RuntimeImplementations runtime)
+    public BitMethodDotnet(RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
         m_Random = runtime.Random;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {

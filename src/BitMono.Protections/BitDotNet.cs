@@ -1,12 +1,17 @@
 ﻿namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
-public class BitDotNet : IPacker
+public class BitDotNet : PackerProtection
 {
     private const int PEHeaderWithExtraByteHex = 0x00014550;
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+
+    public BitDotNet(ProtectionContext context) : base(context)
     {
-        using (var stream = File.Open(context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
+    {
+        using (var stream = File.Open(Context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
         using (var reader = new BinaryReader(stream))
         using (var writer = new BinaryWriter(stream))
         {

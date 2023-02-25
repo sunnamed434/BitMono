@@ -1,11 +1,11 @@
 ﻿namespace BitMono.Protections;
 
-public class DotNetHook : IProtection
+public class DotNetHook : Protection
 {
     private readonly IRenamer m_Renamer;
     private readonly Random m_Random;
 
-    public DotNetHook(IRenamer renamer, RuntimeImplementations runtime)
+    public DotNetHook(IRenamer renamer, RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
         m_Renamer = renamer;
         m_Random = runtime.Random;
@@ -13,20 +13,20 @@ public class DotNetHook : IProtection
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
-        var runtimeHookingType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
+        var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
         var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
-        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, context.Module);
-        var memberCloneResult = new MemberCloner(context.Module, listener)
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, Context.Module);
+        var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();
         var redirectStubMethod = memberCloneResult.GetClonedMember(runtimeRedirectStubMethod);
 
-        var factory = context.Module.CorLibTypeFactory;
+        var factory = Context.Module.CorLibTypeFactory;
         var systemVoid = factory.Void;
 
-        var moduleType = context.Module.GetOrCreateModuleType();
+        var moduleType = Context.Module.GetOrCreateModuleType();
         var moduleCctor = moduleType.GetOrCreateStaticConstructor();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
@@ -41,13 +41,13 @@ public class DotNetHook : IProtection
                         if (callingMethod is { CilMethodBody: { } }
                             && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false && callingMethod.Managed)
                         {
-                            if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
+                            if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
                                 var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
                                 {
                                     IsAssembly = true,
                                     IsStatic = true
-                                }.AssignNextAvailableToken(context.Module);
+                                }.AssignNextAvailableToken(Context.Module);
                                 moduleType.Methods.Add(dummyMethod);
                                 var parameterDefinitions = callingMethod.ParameterDefinitions;
                                 for (var j = 0; j < parameterDefinitions.Count; j++)

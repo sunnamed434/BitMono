@@ -1,11 +1,15 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class ObjectReturnType : IProtection
+public class ObjectReturnType : Protection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public ObjectReturnType(ProtectionContext context) : base(context)
     {
-        var factory = context.Module.CorLibTypeFactory;
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
+    {
+        var factory = Context.Module.CorLibTypeFactory;
         var systemBoolean = factory.Boolean;
         var systemObject = factory.Object;
         foreach (var method in parameters.Members.OfType<MethodDefinition>())

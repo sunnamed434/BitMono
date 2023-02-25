@@ -1,16 +1,16 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection)]
-public class FullRenamer : IProtection
+public class FullRenamer : Protection
 {
     private readonly IRenamer m_Renamer;
 
-    public FullRenamer(IRenamer renamer)
+    public FullRenamer(IRenamer renamer, ProtectionContext context) : base(context)
     {
         m_Renamer = renamer;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {

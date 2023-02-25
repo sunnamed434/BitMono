@@ -126,21 +126,21 @@ public class BitMonoObfuscator
         {
             context.ThrowIfCancellationRequested();
 
-            await protection.ExecuteAsync(m_Context, CreateProtectionParameters(protection));
+            await protection.ExecuteAsync(CreateProtectionParameters(protection));
             m_ProtectionExecutionNotifier.Notify(protection);
         }
         foreach (var pipeline in m_ProtectionsSort.Pipelines)
         {
             context.ThrowIfCancellationRequested();
 
-            await pipeline.ExecuteAsync(context, CreateProtectionParameters(pipeline));
+            await pipeline.ExecuteAsync(CreateProtectionParameters(pipeline));
             m_ProtectionExecutionNotifier.Notify(pipeline);
 
             foreach (var phase in pipeline.PopulatePipeline())
             {
                 context.ThrowIfCancellationRequested();
 
-                await phase.ExecuteAsync(context, CreateProtectionParameters(phase));
+                await phase.ExecuteAsync(CreateProtectionParameters(phase));
                 m_ProtectionExecutionNotifier.Notify(phase);
             }
         }
@@ -208,7 +208,7 @@ public class BitMonoObfuscator
         {
             context.ThrowIfCancellationRequested();
 
-            await packer.ExecuteAsync(m_Context, CreateProtectionParameters(packer));
+            await packer.ExecuteAsync(CreateProtectionParameters(packer));
             m_ProtectionExecutionNotifier.Notify(packer);
         }
         return true;

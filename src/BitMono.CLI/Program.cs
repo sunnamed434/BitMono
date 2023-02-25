@@ -9,8 +9,7 @@ internal class Program
      / _  / / __/ /|_/ / _ \/ _ \/ _ \
     /____/_/\__/_/  /_/\___/_//_/\___/
     https://github.com/sunnamed434/BitMono
-    BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}
-                                  ";
+    BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
 
     private static async Task Main(string[] args)
     {
@@ -25,23 +24,13 @@ internal class Program
                 .RegisterModule(module)
                 .Build();
 
-            var obfuscation = serviceProvider.LifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
-            var protectionSettings = serviceProvider.LifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value;
-            var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscationAttributeResolver>();
-            var obfuscateAssemblyAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscateAssemblyAttributeResolver>();
-            var membersResolver = serviceProvider.LifetimeScope
-                .Resolve<ICollection<IMemberResolver>>()
-                .ToList();
-            var protections = serviceProvider.LifetimeScope
-                .Resolve<ICollection<IProtection>>()
-                .ToList();
-            var logger = serviceProvider.LifetimeScope
+            var lifetimeScope = serviceProvider.LifetimeScope;
+            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();
 
-            var needs = args.IsEmpty()
-                ? new CLIObfuscationNeedsFactory(args, logger).Create()
-                : new CLIOptionsObfuscationNeedsFactory(args, logger).Create();
+            var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)
             {
                 return;
@@ -54,8 +43,7 @@ internal class Program
             logger.Information(AsciiArt);
 
             var cancellationTokenSource = new CancellationTokenSource();
-            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver,
-                obfuscation, protectionSettings.Protections, membersResolver, protections, logger);
+            var engine = new BitMonoEngine(lifetimeScope);
             var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
             if (succeed == false)
             {
@@ -73,7 +61,7 @@ internal class Program
         {
             Console.WriteLine("Something went wrong! " + ex);
         }
-        Console.WriteLine("Press any key to exit!");
+        Console.WriteLine("Enter anything to exit!");
         Console.ReadLine();
     }
 }

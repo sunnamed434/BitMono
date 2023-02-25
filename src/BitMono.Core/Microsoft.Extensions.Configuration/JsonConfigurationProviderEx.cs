@@ -45,9 +45,7 @@ public class JsonConfigurationProviderEx : FileConfigurationProvider
         {
             return;
         }
-        foreach (var keyValuePair in m_Source.Variables)
-        {
-            json = json.Replace("{{" + keyValuePair.Key + "}}", keyValuePair.Value);
-        }
+        json = m_Source.Variables.Aggregate(json,
+            (current, keyValuePair) => current.Replace("{{" + keyValuePair.Key + "}}", keyValuePair.Value));
     }
 }
