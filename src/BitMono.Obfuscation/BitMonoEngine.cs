@@ -1,6 +1,4 @@
-﻿using Autofac.Core;
-
-#pragma warning disable CS8602
+﻿#pragma warning disable CS8602
 #pragma warning disable CS8604
 namespace BitMono.Obfuscation;
 
@@ -41,7 +39,7 @@ public class BitMonoEngine
         var protections = m_LifetimeScope
             .Resolve<ICollection<IProtection>>(new TypedParameter(typeof(ProtectionContext), context))
             .ToList();
-        Console.WriteLine("Protections count: " + protections.Count());
+        Console.WriteLine("Protections count: " + protections.Count);
         var protectionsSorter = new ProtectionsSorter(m_ObfuscationAttributeResolver, context.Module.Assembly);
         var protectionsSort = protectionsSorter.Sort(protections, m_ProtectionSettings);
         if (protectionsSort.HasProtections == false)
