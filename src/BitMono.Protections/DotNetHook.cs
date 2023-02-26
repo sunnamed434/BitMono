@@ -1,32 +1,32 @@
 ﻿namespace BitMono.Protections;
 
-public class DotNetHook : IProtection
+public class DotNetHook : Protection
 {
-    private readonly IRenamer m_Renamer;
-    private readonly Random m_Random;
+    private readonly Renamer _renamer;
+    private readonly Random _random;
 
-    public DotNetHook(IRenamer renamer, RuntimeImplementations runtime)
+    public DotNetHook(Renamer renamer, RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
-        m_Renamer = renamer;
-        m_Random = runtime.Random;
+        _renamer = renamer;
+        _random = runtime.Random;
     }
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
-        var runtimeHookingType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
+        var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
         var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
-        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, context.Module);
-        var memberCloneResult = new MemberCloner(context.Module, listener)
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
+        var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();
         var redirectStubMethod = memberCloneResult.GetClonedMember(runtimeRedirectStubMethod);
 
-        var factory = context.Module.CorLibTypeFactory;
+        var factory = Context.Module.CorLibTypeFactory;
         var systemVoid = factory.Void;
 
-        var moduleType = context.Module.GetOrCreateModuleType();
+        var moduleType = Context.Module.GetOrCreateModuleType();
         var moduleCctor = moduleType.GetOrCreateStaticConstructor();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
@@ -41,13 +41,13 @@ public class DotNetHook : IProtection
                         if (callingMethod is { CilMethodBody: { } }
                             && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false && callingMethod.Managed)
                         {
-                            if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
+                            if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
-                                var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
+                                var dummyMethod = new MethodDefinition(_renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
                                 {
                                     IsAssembly = true,
                                     IsStatic = true
-                                }.AssignNextAvailableToken(context.Module);
+                                }.AssignNextAvailableToken(Context.Module);
                                 moduleType.Methods.Add(dummyMethod);
                                 var parameterDefinitions = callingMethod.ParameterDefinitions;
                                 for (var j = 0; j < parameterDefinitions.Count; j++)
@@ -65,7 +65,7 @@ public class DotNetHook : IProtection
                                 dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
                                 var signature = MethodSignature.CreateStatic(systemVoid);
                                 var attributes = MethodAttributes.Assembly | MethodAttributes.Static;
-                                var initializationMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), attributes, signature);
+                                var initializationMethod = new MethodDefinition(_renamer.RenameUnsafely(), attributes, signature);
                                 initializationMethod.CilMethodBody = new CilMethodBody(initializationMethod)
                                 {
                                     Instructions =
@@ -79,7 +79,7 @@ public class DotNetHook : IProtection
                                 moduleType.Methods.Add(initializationMethod);
 
                                 instruction.Operand = dummyMethod;
-                                var randomIndex = m_Random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
+                                var randomIndex = _random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
                                 moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }

@@ -1,53 +1,57 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class AntiDebugBreakpoints : IProtection
+public class AntiDebugBreakpoints : Protection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public AntiDebugBreakpoints(ProtectionContext context) : base(context)
+    {
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         var threadSleepMethods = new List<IMethodDescriptor>
         {
-            context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
             {
                 typeof(int)
             })),
-            context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
             {
                 typeof(TimeSpan)
             })),
-            context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
             {
                 typeof(int)
             })),
-            context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
             {
                 typeof(TimeSpan)
             })),
-            context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
             {
                 typeof(int),
                 typeof(CancellationToken),
             })),
-            context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
             {
                 typeof(TimeSpan),
                 typeof(CancellationToken),
             })),
         };
-        var dateTimeUtcNowMethod = context.Importer.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
-        var dateTimeSubtractionMethod = context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
+        var dateTimeUtcNowMethod = Context.Importer.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
+        var dateTimeSubtractionMethod = Context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
         {
             typeof(DateTime),
             typeof(DateTime)
         }));
-        var timeSpanTotalMillisecondsMethod = context.Importer.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
-        var environmentFailFast = context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
+        var timeSpanTotalMillisecondsMethod = Context.Importer.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
+        var environmentFailFast = Context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
         {
             typeof(string)
         }));
-        var dateTime = context.Importer.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
-        var timeSpan = context.Importer.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
-        var @int = context.Importer.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
+        var dateTime = Context.Importer.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
+        var timeSpan = Context.Importer.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
+        var @int = Context.Importer.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
 
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {

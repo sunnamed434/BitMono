@@ -1,30 +1,34 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class CallToCalli : IProtection
+public class CallToCalli : Protection
 {
+    public CallToCalli(ProtectionContext context) : base(context)
+    {
+    }
+
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
-        var runtimeMethodHandle = context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
-        var getTypeFromHandleMethod = context.Importer.ImportMethod(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
+        var runtimeMethodHandle = Context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
+        var getTypeFromHandleMethod = Context.Importer.ImportMethod(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new Type[]
         {
             typeof(RuntimeTypeHandle)
         }));
-        var getModuleMethod = context.Importer.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
-        var resolveMethodMethod = context.Importer.ImportMethod(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
+        var getModuleMethod = Context.Importer.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
+        var resolveMethodMethod = Context.Importer.ImportMethod(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new Type[]
         {
             typeof(int)
         }));
-        var getMethodHandleMethod = context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
-        var getFunctionPointerMethod = context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
+        var getMethodHandleMethod = Context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
+        var getFunctionPointerMethod = Context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
-        var moduleType = context.Module.GetOrCreateModuleType();
+        var moduleType = Context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body && method.DeclaringType.IsModuleType == false)
+            if (method.CilMethodBody is { } body && method.DeclaringType?.IsModuleType == false)
             {
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {
@@ -34,7 +38,7 @@ public class CallToCalli : IProtection
                         var callingMethod = methodDescriptor.Resolve();
                         if (callingMethod != null)
                         {
-                            if (context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
+                            if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
                                 var runtimeMethodHandleLocal = new CilLocalVariable(runtimeMethodHandle);
                                 body.LocalVariables.Add(runtimeMethodHandleLocal);

@@ -1,27 +1,27 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection)]
-public class FullRenamer : IProtection
+public class FullRenamer : Protection
 {
-    private readonly IRenamer m_Renamer;
+    private readonly Renamer _renamer;
 
-    public FullRenamer(IRenamer renamer)
+    public FullRenamer(Renamer renamer, ProtectionContext context) : base(context)
     {
-        m_Renamer = renamer;
+        _renamer = renamer;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
             if (method.DeclaringType.IsModuleType == false && method.IsConstructor == false && method.IsVirtual == false)
             {
-                m_Renamer.Rename(method);
+                _renamer.Rename(method);
                 if (method.HasParameters())
                 {
                     foreach (var parameter in method.Parameters)
                     {
-                        m_Renamer.Rename(parameter.Definition);
+                        _renamer.Rename(parameter.Definition);
                     }
                 }
             }
@@ -30,14 +30,14 @@ public class FullRenamer : IProtection
         {
             if (type.IsModuleType == false)
             {
-                m_Renamer.Rename(type);
+                _renamer.Rename(type);
             }
         }
         foreach (var field in parameters.Members.OfType<FieldDefinition>())
         {
             if (field.DeclaringType.IsModuleType == false)
             {
-                m_Renamer.Rename(field);
+                _renamer.Rename(field);
             }
         }
         return Task.CompletedTask;

@@ -1,28 +1,28 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class StringsEncryption : IProtection
+public class StringsEncryption : Protection
 {
-    private readonly MscorlibInjector m_Injector;
-    private readonly IRenamer m_Renamer;
+    private readonly MscorlibInjector _injector;
+    private readonly Renamer _renamer;
 
-    public StringsEncryption(RuntimeImplementations runtime, IRenamer renamer)
+    public StringsEncryption(RuntimeImplementations runtime, Renamer renamer, ProtectionContext context) : base(context)
     {
-        m_Injector = runtime.MscorlibInjector;
-        m_Renamer = renamer;
+        _injector = runtime.MscorlibInjector;
+        _renamer = renamer;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
-        var globalModuleType = context.Module.GetOrCreateModuleType();
-        m_Injector.InjectCompilerGeneratedValueType(context.Module, globalModuleType, m_Renamer.RenameUnsafely());
-        var cryptKeyField = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, Data.CryptKeyBytes, m_Renamer.RenameUnsafely());
-        var saltBytesField = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, Data.SaltBytes, m_Renamer.RenameUnsafely());
+        var globalModuleType = Context.Module.GetOrCreateModuleType();
+        _injector.InjectCompilerGeneratedValueType(Context.Module, globalModuleType, _renamer.RenameUnsafely());
+        var cryptKeyField = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
+        var saltBytesField = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
 
-        var runtimeDecryptorType = context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
+        var runtimeDecryptorType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
         var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
-        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, context.Module);
-        var memberCloneResult = new MemberCloner(context.Module, listener)
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
+        var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeDecryptorType)
             .Clone();
 
@@ -37,8 +37,8 @@ public class StringsEncryption : IProtection
                     if (body.Instructions[i].OpCode.Equals( CilOpCodes.Ldstr) && body.Instructions[i].Operand is string content)
                     {
                         var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
-                        var arrayName = m_Renamer.RenameUnsafely();
-                        var encryptedDataFieldDef = m_Injector.InjectCompilerGeneratedArray(context.Module, globalModuleType, data, arrayName);
+                        var arrayName = _renamer.RenameUnsafely();
+                        var encryptedDataFieldDef = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
 
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                         body.Instructions.InsertRange(i + 1, new CilInstruction[]

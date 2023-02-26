@@ -3,24 +3,22 @@ namespace BitMono.CLI;
 
 internal class Program
 {
+    private static readonly string BitMonoFileVersionText =
+        $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
+
+    private static readonly string AsciiArt = @$"
+       ___  _ __  __  ___
+      / _ )(_) /_/  |/  /__  ___  ___
+     / _  / / __/ /|_/ / _ \/ _ \/ _ \
+    /____/_/\__/_/  /_/\___/_//_/\___/
+    https://github.com/sunnamed434/BitMono
+    {BitMonoFileVersionText}";
+
     private static async Task Main(string[] args)
     {
         try
         {
-            ObfuscationNeeds? needs = null;
-            needs = args.IsEmpty()
-                ? new CLIObfuscationNeedsFactory(args).Create()
-                : new CLIOptionsObfuscationNeedsFactory(args).Create();
-            if (needs == null)
-            {
-                return;
-            }
-
-            Console.Clear();
-            Console.WriteLine("File: {0}", needs.FileName);
-            Console.WriteLine("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
-            Console.WriteLine("Everything is seems to be ok, starting obfuscation..");
-
+            Console.Title = BitMonoFileVersionText;
             var module = new BitMonoModule(
                 configureContainer => configureContainer.AddProtections(),
                 configureServices => configureServices.AddConfigurations(),
@@ -30,23 +28,26 @@ internal class Program
                 .RegisterModule(module)
                 .Build();
 
-            var obfuscation = serviceProvider.LifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
-            var protectionSettings = serviceProvider.LifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value;
-            var obfuscationAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscationAttributeResolver>();
-            var obfuscateAssemblyAttributeResolver = serviceProvider.LifetimeScope.Resolve<ObfuscateAssemblyAttributeResolver>();
-            var membersResolver = serviceProvider.LifetimeScope
-                .Resolve<ICollection<IMemberResolver>>()
-                .ToList();
-            var protections = serviceProvider.LifetimeScope
-                .Resolve<ICollection<IProtection>>()
-                .ToList();
-            var logger = serviceProvider.LifetimeScope
+            var lifetimeScope = serviceProvider.LifetimeScope;
+            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();
 
+            var needs = new ObfuscationNeedsFactory(args, logger).Create();
+            if (needs == null)
+            {
+                return;
+            }
+
+            Console.Clear();
+            logger.Information("File: {0}", needs.FileName);
+            logger.Information("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
+            logger.Information("Everything is seems to be ok, starting obfuscation..");
+            logger.Information(AsciiArt);
+
             var cancellationTokenSource = new CancellationTokenSource();
-            var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver,
-                obfuscation, protectionSettings.Protections, membersResolver, protections, logger);
+            var engine = new BitMonoEngine(lifetimeScope);
             var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
             if (succeed == false)
             {
@@ -64,7 +65,7 @@ internal class Program
         {
             Console.WriteLine("Something went wrong! " + ex);
         }
-        Console.WriteLine("Press any key to exit!");
+        Console.WriteLine("Enter anything to exit!");
         Console.ReadLine();
     }
 }

@@ -33,8 +33,10 @@ BitMono is an free open-source C# obfuscator that in most cases works **only** w
   alt="Configuration"
 </p>
 
+Want more previews? Click **[here][previews]**.
+
 ## Documentation 
-Open the **[wiki][bitmono_wiki]** to read protection, functionality and more.
+Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
 * Looks like C++ application but is an actual C# application
@@ -59,10 +61,64 @@ Open the **[wiki][bitmono_wiki]** to read protection, functionality and more.
 * BitMono
 
 ## Usage
-`BitMono.CLI <path to file>/drag-and-drop or use BitMono.GUI (GUI Windows only)`
+
+### Using CLI
+`BitMono.CLI <path to file>/drag-and-drop`
 
 Always drop dependencies in `libs` directory in the same path where `file` for obfuscation is located
 
+Your obfuscation directory structure will look something like this:
+```
+specially_created_folder_for_obfuscation/
+├─ your_app.exe
+└─ libs/
+  ├─ ImportantLibrary.dll
+  ├─ SuperImportantLibrary.dll
+  └─ ...
+```
+
+Copy all libraries (.dll) from the building application folder and paste them into the `libs` directory (if it doesn't exist yet create it), or even create the libs directory yourself with a custom name for example - `myLibs`, and then specify it in BitMono, however, if you will use `libs` then by default BitMono looking for a `libs` directory, so it will save your time.
+
+### Using CLI Commands
+Outputs available commands
+```console
+$ BitMono.CLI --help
+```
+
+Upper command output:
+```console
+  -f, --file         Required. Set file path.
+
+  -l, --libraries    Set libraries path.
+
+  -o, --output       Set output path.
+
+  --help             Display this help screen.
+
+  --version          Display version information.
+```
+
+Basic examples
+```console
+$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l specially_created_folder_for_obfuscation/libs
+```
+
+In case when you already have a directory with the name `libs` (specially_created_folder_for_obfuscation\libs) BitMono will catch it automatically, so, you don't need to specify it anymore, but you can in case if you made another directory with `libs` somewhere on the disk or even just for "visibility".
+```console
+$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe
+```
+
+Specify custom `libs` directory
+```console
+$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory
+```
+
+Specify file, libs and output. If output directory doesn't exist BitMono will create it automatically and even open it on the top of the screen, if you want you can disable opening of the directory on the of top of the screen in `obfuscation.json` - and set `OpenFileDestinationInFileExplorer` to false.
+```console
+$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory -o C:\specially_created_folder_for_obfuscation/output
+```
+
+Want more? Read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
 Branch        | AppVeyor
@@ -89,10 +145,11 @@ Credits
 [deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
+[previews]: https://github.com/sunnamed434/BitMono/blob/main/PREVIEWS.md
 [asmresolver]: https://github.com/Washi1337/AsmResolver
 [bitmono_issues]: https://github.com/sunnamed434/BitMono/issues
 [bitmono_releases]: https://github.com/sunnamed434/BitMono/releases
-[bitmono_wiki]: https://github.com/sunnamed434/BitMono/wiki
+[bitmono_docs]: https://bitmono.readthedocs.io/en/latest/
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook

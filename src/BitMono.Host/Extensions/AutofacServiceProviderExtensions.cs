@@ -5,10 +5,11 @@ namespace BitMono.Host.Extensions;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 public static class AutofacServiceProviderExtensions
 {
-    private static readonly string ProtectionsFileName = $"{typeof(BitMono.Protections.BitMono).Namespace}.dll";
+    private static readonly string ProtectionsFileName = "BitMono.Protections.dll";
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
-        File.ReadAllBytes(file ?? ProtectionsFileName); // No need to Assembly.Load(rawData) the byte[], perhaps a bug of .NET Framework
+        var rawData = File.ReadAllBytes(file ?? ProtectionsFileName);
+        Assembly.Load(rawData);
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         source.RegisterAssemblyTypes(assemblies)

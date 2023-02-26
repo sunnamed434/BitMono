@@ -5,10 +5,9 @@ public class BitMonoModule : Module
     private readonly Action<ContainerBuilder>? m_ConfigureContainer;
     private readonly Action<ServiceCollection>? m_ConfigureServices;
     private readonly Action<LoggerConfiguration>? m_ConfigureLogger;
-    private const string OutputTemplate =
-        "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}";
-    private const string LogsDirectoryName = "logs";
-    private const string LogsFileName = "bitmono-{0:yyyy-MM-dd-HH-mm-ss}.log";
+    private const string LoggingFileName = "logging.json";
+    private const string DateVariableName = "date";
+    private const string DateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
 
     public BitMonoModule(
         Action<ContainerBuilder>? configureContainer = null,
@@ -25,29 +24,32 @@ public class BitMonoModule : Module
     {
         m_ConfigureContainer?.Invoke(containerBuilder);
 
-        var logsPath = string.Format(Path.Combine(LogsDirectoryName, LogsFileName), DateTime.Now)
-            .ReplaceDirectorySeparatorToAlt();
-        var loggerConfiguration = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .WriteTo.Async(configure =>
-            {
-                configure.File(logsPath, rollingInterval: RollingInterval.Infinite, restrictedToMinimumLevel: LogEventLevel.Information,
-                    outputTemplate: OutputTemplate);
-            });
-
-        if (m_ConfigureLogger != null)
+        var loggingConfigurationRoot = new ConfigurationBuilder().AddJsonFileEx(configure =>
         {
-            m_ConfigureLogger.Invoke(loggerConfiguration);
+            configure.Path = LoggingFileName;
+            configure.Optional = false;
+            configure.Variables = new Dictionary<string, string>
+            {
+                {
+                    DateVariableName,
+                    DateTime.Now.ToString(DateTimeFormat)
+                }
+            };
+            configure.ResolveFileProvider();
+        }).Build();
 
-            var logger = loggerConfiguration.CreateLogger();
-            containerBuilder.Register<ILogger>(_ => logger);
-        }
+        var loggerConfiguration = new LoggerConfiguration()
+            .ReadFrom.Configuration(loggingConfigurationRoot);
+
+        m_ConfigureLogger?.Invoke(loggerConfiguration);
+
+        var logger = loggerConfiguration.CreateLogger();
+        containerBuilder.Register<ILogger>(_ => logger);
 
         var serviceCollection = new ServiceCollection();
         m_ConfigureServices?.Invoke(serviceCollection);
 
         containerBuilder.RegisterType<Renamer>()
-            .As<IRenamer>()
             .OwnedByLifetimeScope()
             .SingleInstance();
 

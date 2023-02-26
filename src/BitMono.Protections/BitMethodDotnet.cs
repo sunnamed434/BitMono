@@ -1,16 +1,16 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
-public class BitMethodDotnet : IProtection
+public class BitMethodDotnet : Protection
 {
-    private readonly Random m_Random;
+    private readonly Random _random;
 
-    public BitMethodDotnet(RuntimeImplementations runtime)
+    public BitMethodDotnet(RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
-        m_Random = runtime.Random;
+        _random = runtime.Random;
     }
 
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
@@ -19,10 +19,10 @@ public class BitMethodDotnet : IProtection
                 var randomMethodBodyIndex = 0;
                 if (body.Instructions.Count >= 3)
                 {
-                    randomMethodBodyIndex = m_Random.Next(0, body.Instructions.Count);
+                    randomMethodBodyIndex = _random.Next(0, body.Instructions.Count);
                 }
 
-                var randomValue = m_Random.Next(0, 3);
+                var randomValue = _random.Next(0, 3);
                 var randomOpCode = randomValue switch
                 {
                     0 => CilOpCodes.Readonly,

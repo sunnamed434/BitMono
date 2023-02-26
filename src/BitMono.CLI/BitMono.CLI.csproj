@@ -24,7 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
     <ProjectReference Include="..\BitMono.Host\BitMono.Host.csproj" />
-    <ProjectReference Include="..\BitMono.Obfuscation.API\BitMono.Obfuscation.API.csproj" />
     <ProjectReference Include="..\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
     <ProjectReference Include="..\BitMono.Protections\BitMono.Protections.csproj" />
     <ProjectReference Include="..\BitMono.Runtime\BitMono.Runtime.csproj" />

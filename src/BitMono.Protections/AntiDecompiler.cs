@@ -1,21 +1,31 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.API.Pipeline;
+
+namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
-public class AntiDecompiler : IPipelineProtection
+public class AntiDecompiler : PipelineProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public AntiDecompiler(ProtectionContext context) : base(context)
+    {
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         return Task.CompletedTask;
     }
-    public IEnumerable<IPhaseProtection> PopulatePipeline()
+    public override IEnumerable<IPhaseProtection> PopulatePipeline()
     {
-        yield return new AntiDnSpyAnalyzer();
+        yield return new AntiDnSpyAnalyzer(Context);
     }
 }
 [ProtectionName(nameof(AntiDnSpyAnalyzer))]
-public class AntiDnSpyAnalyzer : IPhaseProtection
+public class AntiDnSpyAnalyzer : PhaseProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public AntiDnSpyAnalyzer(ProtectionContext context) : base(context)
+    {
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {

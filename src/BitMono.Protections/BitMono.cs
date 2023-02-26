@@ -1,11 +1,15 @@
 namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
-public class BitMono : IPacker
+public class BitMono : PackerProtection
 {
-    public Task ExecuteAsync(ProtectionContext context, ProtectionParameters parameters)
+    public BitMono(ProtectionContext context) : base(context)
     {
-        using (var stream = File.Open(context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+    }
+
+    public override Task ExecuteAsync(ProtectionParameters parameters)
+    {
+        using (var stream = File.Open(Context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
         using (var reader = new BinaryReader(stream))
         using (var writer = new BinaryWriter(stream))
         {
