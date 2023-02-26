@@ -1,0 +1,7 @@
+﻿namespace BitMono.Utilities.Time;
+
+public static class KnownMonoRuntimes
+{
+    public const string MonoTypeName = "Mono.Runtime";
+    public const string GetDisplayName = "GetDisplayName";
+}

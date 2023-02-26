@@ -5,6 +5,9 @@ public class BitMonoModule : Module
     private readonly Action<ContainerBuilder>? m_ConfigureContainer;
     private readonly Action<ServiceCollection>? m_ConfigureServices;
     private readonly Action<LoggerConfiguration>? m_ConfigureLogger;
+    private const string LoggingFileName = "logging.json";
+    private const string DateVariableName = "date";
+    private const string DateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
 
     public BitMonoModule(
         Action<ContainerBuilder>? configureContainer = null,
@@ -23,13 +26,13 @@ public class BitMonoModule : Module
 
         var loggingConfigurationRoot = new ConfigurationBuilder().AddJsonFileEx(configure =>
         {
-            configure.Path = "logging.json";
+            configure.Path = LoggingFileName;
             configure.Optional = false;
             configure.Variables = new Dictionary<string, string>
             {
                 {
-                    "date",
-                    DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")
+                    DateVariableName,
+                    DateTime.Now.ToString(DateTimeFormat)
                 }
             };
             configure.ResolveFileProvider();
@@ -47,7 +50,6 @@ public class BitMonoModule : Module
         m_ConfigureServices?.Invoke(serviceCollection);
 
         containerBuilder.RegisterType<Renamer>()
-            .As<IRenamer>()
             .OwnedByLifetimeScope()
             .SingleInstance();
 

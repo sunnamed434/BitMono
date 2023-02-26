@@ -28,7 +28,7 @@ public class CallToCalli : Protection
         var moduleType = Context.Module.GetOrCreateModuleType();
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body && method.DeclaringType.IsModuleType == false)
+            if (method.CilMethodBody is { } body && method.DeclaringType?.IsModuleType == false)
             {
                 for (var i = 0; i < body.Instructions.Count; i++)
                 {

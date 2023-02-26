@@ -1,4 +1,6 @@
-﻿namespace BitMono.Protections;
+﻿using BitMono.API.Pipeline;
+
+namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
 public class AntiDecompiler : PipelineProtection

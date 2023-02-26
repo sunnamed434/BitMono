@@ -3,11 +3,11 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class BitMethodDotnet : Protection
 {
-    private readonly Random m_Random;
+    private readonly Random _random;
 
     public BitMethodDotnet(RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
-        m_Random = runtime.Random;
+        _random = runtime.Random;
     }
 
     public override Task ExecuteAsync(ProtectionParameters parameters)
@@ -19,10 +19,10 @@ public class BitMethodDotnet : Protection
                 var randomMethodBodyIndex = 0;
                 if (body.Instructions.Count >= 3)
                 {
-                    randomMethodBodyIndex = m_Random.Next(0, body.Instructions.Count);
+                    randomMethodBodyIndex = _random.Next(0, body.Instructions.Count);
                 }
 
-                var randomValue = m_Random.Next(0, 3);
+                var randomValue = _random.Next(0, 3);
                 var randomOpCode = randomValue switch
                 {
                     0 => CilOpCodes.Readonly,
