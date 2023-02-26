@@ -3,18 +3,22 @@ namespace BitMono.CLI;
 
 internal class Program
 {
+    private static readonly string BitMonoFileVersionText =
+        $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
+
     private static readonly string AsciiArt = @$"
        ___  _ __  __  ___
       / _ )(_) /_/  |/  /__  ___  ___
      / _  / / __/ /|_/ / _ \/ _ \/ _ \
     /____/_/\__/_/  /_/\___/_//_/\___/
     https://github.com/sunnamed434/BitMono
-    BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
+    {BitMonoFileVersionText}";
 
     private static async Task Main(string[] args)
     {
         try
         {
+            Console.Title = BitMonoFileVersionText;
             var module = new BitMonoModule(
                 configureContainer => configureContainer.AddProtections(),
                 configureServices => configureServices.AddConfigurations(),
