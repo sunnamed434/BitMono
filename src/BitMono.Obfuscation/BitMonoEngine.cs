@@ -39,7 +39,6 @@ public class BitMonoEngine
         var protections = m_LifetimeScope
             .Resolve<ICollection<IProtection>>(new TypedParameter(typeof(ProtectionContext), context))
             .ToList();
-        Console.WriteLine("Protections count: " + protections.Count);
         var protectionsSorter = new ProtectionsSorter(m_ObfuscationAttributeResolver, context.Module.Assembly);
         var protectionsSort = protectionsSorter.Sort(protections, m_ProtectionSettings);
         if (protectionsSort.HasProtections == false)
@@ -52,9 +51,8 @@ public class BitMonoEngine
         await obfuscator.ProtectAsync();
         return true;
     }
-    public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter, CancellationToken cancellationToken)
+    public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter, IDependenciesDataResolver dependenciesDataResolver, CancellationToken cancellationToken)
     {
-        var dependenciesDataResolver = new DependenciesDataResolver(needs.DependenciesDirectoryName);
         var bitMonoContextFactory = new BitMonoContextFactory(dependenciesDataResolver, m_Obfuscation);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
 
@@ -67,6 +65,6 @@ public class BitMonoEngine
     }
     public async Task<bool> StartAsync(ObfuscationNeeds needs, CancellationToken cancellationToken)
     {
-        return await StartAsync(needs, new ModuleFactory(File.ReadAllBytes(needs.FileName), new LogErrorListener(m_Logger)), new FileDataWriter(), cancellationToken);
+        return await StartAsync(needs, new ModuleFactory(File.ReadAllBytes(needs.FileName), new LogErrorListener(m_Logger)), new FileDataWriter(), new DependenciesDataResolver(needs.DependenciesDirectoryName), cancellationToken);
     }
 }

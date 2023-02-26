@@ -1,4 +1,7 @@
-﻿namespace BitMono.GUI.Pages.Obfuscation;
+﻿using BitMono.Obfuscation.Abstractions;
+using BitMono.Obfuscation.Factories;
+
+namespace BitMono.GUI.Pages.Obfuscation;
 
 public partial class Protect
 {

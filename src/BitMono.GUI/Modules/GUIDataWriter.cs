@@ -1,4 +1,4 @@
-﻿using BitMono.Obfuscation.API;
+﻿using BitMono.Obfuscation.Interfaces;
 
 namespace BitMono.GUI.Modules;
 

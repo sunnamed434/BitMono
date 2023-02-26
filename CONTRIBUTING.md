@@ -1,26 +1,33 @@
 # Special Thanks
-For great CONTIRUBITNG.md file that "pasted" from [AsmResolver](https://github.com/Washi1337/AsmResolver/blob/master/CONTRIBUTING.md)
+For great [CONTIRUBITNG.md](https://github.com/Washi1337/AsmResolver/blob/master/CONTRIBUTING.md) file which was "pasted" from [AsmResolver](https://github.com/Washi1337/AsmResolver)
 
-# Contirbuting
+BitMono Coding Style and Licensing
+======================================
 
-## Important for all Contributors
-When contributing to this repository, please first discuss the change you wish to make via issues or any method with the owners of this repository before making a change.
+## Aims
 
-If you make any changes to BitMono, you are agreeing to the license conditions as specified in [LICENSE](LICENSE).
+This guide is for developers who wish to contribute to the BitMono codebase. It will detail how to properly style and format code to fit this project.
+
+Following this guide and formatting your code as detailed will likely get your pull request merged much faster than if you don't (assuming the written code has no mistakes in itself).
+
+If you make any changes to BitMono, you are agreeing to the license conditions as specified in [LICENSE.md](LICENSE.md).
+
 
 ## General Workflow
+
 The BitMono project generally follows the principles of [Git Flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow), with a few variations. Below a summary:
 
-- Prefer to create a branch based on `dev`. 
-    - Do not branch from `main` unless it is a serious bug and requires a hotfix. `main` is supposed to be always in sync with the nuget feed.
+- Prefer to create a branch based on `dev`.
+  - Do not branch from `main` unless it is a serious bug and requires a hotfix. `main` is supposed to be always in sync with the nuget feed.
 - Prefix your branch accordingly, depending on what kind of change you are trying to make.
-    - For new features, use `feature/name-of-feature`.
-    - For issues and/or bug fixes, use `issue/name-of-issue-or-bug`.
+  - For new features, use `feature/name-of-feature`.
+  - For issues and/or bug fixes, use `issue/name-of-issue-or-bug`.
 - Push your changes on this branch.
-    - Make sure you are following the coding style guidelines as described in this document below.
+  - Make sure you are following the coding style guidelines as described in this document below.
 - Open a [Pull Request](https://github.com/sunnamed434/BitMono/pulls), setting the `dev` branch as a base branch to merge into.
 - Wait for your pull request to be reviewed and accepted.
-    - Pull requests into `dev` will only be accepted if all unit tests succeed and follow the guidelines as described in this document.
+  - Pull requests into `dev` will only be accepted if all unit tests succeed and follow the guidelines as described in this document.
+
 
 ## C# Coding Style
 
@@ -41,21 +48,20 @@ For editors that support EditorConfig, there is an `.editorconfig` file for you 
 
 Below an overview of the naming conventions used within the project.
 
-| Member type                          | Naming style                                 |
-|--------------------------------------|----------------------------------------------|
-| Namespaces                           | `PascalCase`                                 |
-| Classes                              | `PascalCase`                                 |
-| Structs                              | `PascalCase`                                 |
-| Interfaces                           | `IPrefixedPascalCase`                        |
-| Private instance fields              | `_camelCaseWithUnderscore`                   |
-| Private instance readonly fields     | `m_PascalCaseWithUnderscore`                 |
-| Any other field                      | `PascalCase`                                 |
-| Methods                              | `PascalCase`                                 |
-| Properties                           | `PascalCase`                                 |
-| Events                               | `PascalCase`                                 |
-| Parameters                           | `camelCase`                                  |
-| Local variables                      | `camelCase`                                  |
-| Local constants                      | `camelCase`                                  |
+| Member type                 | Naming style                        |
+|-----------------------------|-------------------------------------|
+| Namespaces                  | `PascalCase`                        |
+| Classes                     | `PascalCase`                        |
+| Structs                     | `PascalCase`                        |
+| Interfaces                  | `IPrefixedPascalCase`               |
+| Private instance fields     | `_camelCaseWithUnderscore`          |
+| Any other field             | `PascalCase`                        |
+| Methods                     | `PascalCase`                        |
+| Properties                  | `PascalCase`                        |
+| Events                      | `PascalCase`                        |
+| Parameters                  | `camelCase`                         |
+| Local variables             | `camelCase`                         |
+| Local constants             | `camelCase`                         |
 
 
 ### Prefer verbose names over abbreviations
@@ -86,7 +92,7 @@ public class PeImage { ... }
 public struct CILOpCode { ... }
 ```
 
-In the case of an interface name starting with an abbreviation, we do not count the prefix `I` when counting the letters of an abbreviation. 
+In the case of an interface name starting with an abbreviation, we do not count the prefix `I` when counting the letters of an abbreviation.
 
 Do:
 ```
@@ -159,7 +165,7 @@ if (x == y)
 {
     MethodA();
 }
-else 
+else
 {
     MethodB();
     MethodC();
@@ -197,20 +203,20 @@ Use `var` for anything that is not a primitive type for which a dedicated keywor
 
 Do:
 ```csharp
-var x = 123;
-var y = "Hello, world!";
-var array = new byte[10];
-
-MyClass instance = new MyClass(...);
-```
-
-Don't:
-```csharp
 int x = 123;
 string y = "Hello, world!";
 byte[] z = new byte[10];
 
 var instance = new MyClass(...);
+```
+
+Don't:
+```csharp
+var x = 123;
+var y = "Hello, world!";
+var array = new byte[10];
+
+MyClass instance = new MyClass(...);
 ```
 
 ### Public method, field and property typing
@@ -219,21 +225,27 @@ Prefer to use the most general type of the returned object that still conveys th
 
 Do:
 ```csharp
-public IList<MethodDefinition> Methods { get; }
+public IList<MethodDefinition> Methods
+{
+    get;
+}
 
-public IEnumerable<TypeDefinition> GetAllTypes() 
-{ 
-    // ... 
+public IEnumerable<TypeDefinition> GetAllTypes()
+{
+    // ...
 }
 ```
 
 Don't:
 ```csharp
-public List<MethodDefinition> Methods { get; }
+public List<MethodDefinition> Methods
+{
+    get;
+}
 
 public List<TypeDefinition> GetAllTypes()
-{ 
-    // ... 
+{
+    // ...
 }
 ```
 
@@ -278,7 +290,7 @@ Prefer `for` loops over `foreach` when heap allocated enumerators can be avoided
 Do:
 ```csharp
 var items = assembly.Modules;
-for (var i = 0; i < items.Count; i++)
+for (int i = 0; i < items.Count; i++)
 {
     // Use items[i]
 }
@@ -287,7 +299,7 @@ for (var i = 0; i < items.Count; i++)
 Don't:
 ```csharp
 var items = assembly.Modules;
-foreach (Module item in items) // IList<T>.GetEnumerator() returns a heap allocated enumerator
+foreach (var item in items) // IList<T>.GetEnumerator() returns a heap allocated enumerator
 {
     // Use item
 }

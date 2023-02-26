@@ -2,13 +2,13 @@
 
 public class DotNetHook : Protection
 {
-    private readonly IRenamer m_Renamer;
-    private readonly Random m_Random;
+    private readonly Renamer _renamer;
+    private readonly Random _random;
 
-    public DotNetHook(IRenamer renamer, RuntimeImplementations runtime, ProtectionContext context) : base(context)
+    public DotNetHook(Renamer renamer, RuntimeImplementations runtime, ProtectionContext context) : base(context)
     {
-        m_Renamer = renamer;
-        m_Random = runtime.Random;
+        _renamer = renamer;
+        _random = runtime.Random;
     }
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
@@ -17,7 +17,7 @@ public class DotNetHook : Protection
     {
         var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
         var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
-        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, m_Renamer, Context.Module);
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
         var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeHookingType)
             .Clone();
@@ -43,7 +43,7 @@ public class DotNetHook : Protection
                         {
                             if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
-                                var dummyMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
+                                var dummyMethod = new MethodDefinition(_renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
                                 {
                                     IsAssembly = true,
                                     IsStatic = true
@@ -65,7 +65,7 @@ public class DotNetHook : Protection
                                 dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
                                 var signature = MethodSignature.CreateStatic(systemVoid);
                                 var attributes = MethodAttributes.Assembly | MethodAttributes.Static;
-                                var initializationMethod = new MethodDefinition(m_Renamer.RenameUnsafely(), attributes, signature);
+                                var initializationMethod = new MethodDefinition(_renamer.RenameUnsafely(), attributes, signature);
                                 initializationMethod.CilMethodBody = new CilMethodBody(initializationMethod)
                                 {
                                     Instructions =
@@ -79,7 +79,7 @@ public class DotNetHook : Protection
                                 moduleType.Methods.Add(initializationMethod);
 
                                 instruction.Operand = dummyMethod;
-                                var randomIndex = m_Random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
+                                var randomIndex = _random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
                                 moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }
