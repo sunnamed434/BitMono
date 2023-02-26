@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 		props\SharedProjectProps.props = props\SharedProjectProps.props
+		PREVIEWS.md = PREVIEWS.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D87066C4-1144-4BD8-96E9-9F4676001397}"
