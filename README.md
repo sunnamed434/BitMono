@@ -33,8 +33,10 @@ BitMono is an free open-source C# obfuscator that in most cases works **only** w
   alt="Configuration"
 </p>
 
+Want more previews? Click **[here][previews]**.
+
 ## Documentation 
-Open the **[wiki][bitmono_wiki]** to read protection, functionality and more.
+Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
 * Looks like C++ application but is an actual C# application
@@ -116,7 +118,7 @@ Specify file, libs and output. If output directory doesn't exist BitMono will cr
 $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory -o C:\specially_created_folder_for_obfuscation/output
 ```
 
-Want more? Read **[wiki][bitmono_wiki]**.
+Want more? Read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
 Branch        | AppVeyor
@@ -143,10 +145,11 @@ Credits
 [deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
 [gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
+[previews]: https://github.com/sunnamed434/BitMono/blob/main/PREVIEWS.md
 [asmresolver]: https://github.com/Washi1337/AsmResolver
 [bitmono_issues]: https://github.com/sunnamed434/BitMono/issues
 [bitmono_releases]: https://github.com/sunnamed434/BitMono/releases
-[bitmono_wiki]: https://github.com/sunnamed434/BitMono/wiki
+[bitmono_docs]: https://bitmono.readthedocs.io/en/latest/
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
