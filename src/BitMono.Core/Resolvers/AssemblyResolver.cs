@@ -1,9 +1,9 @@
 ﻿#pragma warning disable CS8602
 namespace BitMono.Core.Resolvers;
 
-public class AssemblyResolver
+public static class AssemblyResolver
 {
-    public AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context)
+    public static AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, ProtectionContext context)
     {
         context.ThrowIfCancellationRequested();
 
@@ -28,8 +28,9 @@ public class AssemblyResolver
                         context.AssemblyResolver.AddToCache(originalReference, definition);
                     }
                 }
-                catch (BadImageFormatException)
+                catch (BadImageFormatException ex)
                 {
+                    Console.WriteLine("originalRef: " + originalReference.Name + ", " + ex.ToString());
                     badImageReferences.Add(originalReference);
                 }
             }
