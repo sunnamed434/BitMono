@@ -140,7 +140,7 @@ Credits
 
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
-**[drakonia][author_drakonia]** for her [costura decompressor](simple_costura_decompressor_source).
+**[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
 
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
