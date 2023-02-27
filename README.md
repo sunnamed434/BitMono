@@ -140,6 +140,8 @@ Credits
 
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
+**[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
+
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
 [deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
@@ -154,11 +156,13 @@ Credits
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
+[simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
 [author_0x59r11]: https://github.com/0x59R11
 [author_gazzi]: https://github.com/GazziFX
 [author_ellisaur]: https://github.com/Elliesaur
 [author_naweka]: https://github.com/naweka
 [author_kao_blog]: https://lifeinhex.com/
+[author_drakonia]: https://github.com/dr4k0nia
 [author_sunnamed434]: https://github.com/sunnamed434
 [appveyor_main_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev

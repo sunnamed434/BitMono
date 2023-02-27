@@ -99,7 +99,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
         {
             FileName = fileName,
             FileBaseDirectory = fileBaseDirectory,
-            DependenciesDirectoryName = dependenciesDirectoryName,
+            ReferencesDirectoryName = dependenciesDirectoryName,
             OutputDirectoryName = outputDirectoryName
         };
     }

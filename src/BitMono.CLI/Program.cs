@@ -42,7 +42,7 @@ internal class Program
 
             Console.Clear();
             logger.Information("File: {0}", needs.FileName);
-            logger.Information("Dependencies (libs): {0}", needs.DependenciesDirectoryName);
+            logger.Information("Dependencies (libs): {0}", needs.ReferencesDirectoryName);
             logger.Information("Everything is seems to be ok, starting obfuscation..");
             logger.Information(AsciiArt);
 
