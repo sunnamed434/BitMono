@@ -25,8 +25,8 @@
 ### v0.11.0-alpha.20:
 2023-02-016
 #### Added:
-* BitMono ASCII Art in CLI
-* Hiding of the pathes (file path, directory path, etc)
+* BitMono ASCII Art in CLI.
+* Hiding of the pathes (file path, directory path, etc).
 * Documentation.
 
 #### Fixed:
