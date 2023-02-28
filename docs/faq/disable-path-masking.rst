@@ -1,6 +1,8 @@
 How to disable path masking?
 ============================
 
+You're probably getting a message with the file/directory or just a path ``(***\things)``, and you might have the same folder twice somewhere, and you need to see the full path without masking if this is what you're looking for, all instructions how to do that are provided here.
+
 Open-up ``logging.json`` in the root of the downloaded BitMono, edit this file, and remove this:
 
 .. code-block:: json
