@@ -3,21 +3,19 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class StringsEncryption : Protection
 {
-    private readonly MscorlibInjector _injector;
     private readonly Renamer _renamer;
 
-    public StringsEncryption(RuntimeImplementations runtime, Renamer renamer, ProtectionContext context) : base(context)
+    public StringsEncryption(Renamer renamer, ProtectionContext context) : base(context)
     {
-        _injector = runtime.MscorlibInjector;
         _renamer = renamer;
     }
 
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         var globalModuleType = Context.Module.GetOrCreateModuleType();
-        _injector.InjectCompilerGeneratedValueType(Context.Module, globalModuleType, _renamer.RenameUnsafely());
-        var cryptKeyField = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
-        var saltBytesField = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
+        MscorlibInjector.InjectCompilerGeneratedValueType(Context.Module, globalModuleType, _renamer.RenameUnsafely());
+        var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
+        var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
 
         var runtimeDecryptorType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
         var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
@@ -38,7 +36,7 @@ public class StringsEncryption : Protection
                     {
                         var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
                         var arrayName = _renamer.RenameUnsafely();
-                        var encryptedDataFieldDef = _injector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
+                        var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
 
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                         body.Instructions.InsertRange(i + 1, new CilInstruction[]

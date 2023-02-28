@@ -29,7 +29,6 @@ global using BitMono.Obfuscation.Abstractions;
 global using BitMono.Obfuscation.Factories;
 global using BitMono.Obfuscation.Interfaces;
 global using BitMono.Obfuscation.Notifiers;
-global using BitMono.Utilities;
 global using BitMono.Utilities.AsmResolver;
 global using BitMono.Utilities.Time;
 global using Microsoft.Extensions.Options;

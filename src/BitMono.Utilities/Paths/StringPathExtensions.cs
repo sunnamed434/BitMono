@@ -1,4 +1,4 @@
-namespace BitMono.Utilities;
+namespace BitMono.Utilities.Paths;
 
 public static class StringPathExtensions
 {

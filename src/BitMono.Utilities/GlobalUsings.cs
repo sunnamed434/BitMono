@@ -15,4 +15,3 @@ global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.DotNet.Signatures.Types;
-global using BitMono.Utilities.Time;

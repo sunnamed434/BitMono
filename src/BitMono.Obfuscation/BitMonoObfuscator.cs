@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS8604
+﻿using BitMono.Utilities.Runtime;
+
+#pragma warning disable CS8604
 #pragma warning disable CS8602
 namespace BitMono.Obfuscation;
 

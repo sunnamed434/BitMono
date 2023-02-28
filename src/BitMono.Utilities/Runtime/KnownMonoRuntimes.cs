@@ -1,4 +1,4 @@
-﻿namespace BitMono.Utilities.Time;
+﻿namespace BitMono.Utilities.Runtime;
 
 public static class KnownMonoRuntimes
 {

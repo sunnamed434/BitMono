@@ -1,4 +1,4 @@
-﻿namespace BitMono.Utilities;
+﻿namespace BitMono.Utilities.Runtime;
 
 public static class RuntimeUtilities
 {

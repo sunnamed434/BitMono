@@ -5,7 +5,6 @@ global using BitMono.GUI.Data;
 global using BitMono.GUI.Shared.Alerting;
 global using BitMono.GUI.Shared.Inputs;
 global using BitMono.Host.Modules;
-global using BitMono.Obfuscation;
 global using BitMono.Shared.Models;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Forms;
