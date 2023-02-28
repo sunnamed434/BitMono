@@ -32,7 +32,7 @@
                         "MaskProperties": [ "path", "directory", "file" ],
                         "MaskingOperators": [ "BitMono.Host.Extensions.PathMaskingOperator, BitMono.Host" ]
                     }
-                },
+                }
             },
 
             "FromLogContext"
