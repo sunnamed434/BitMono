@@ -2,6 +2,7 @@ How to disable path masking?
 ============================
 
 Open-up ``logging.json`` in the root of the downloaded BitMono, edit this file, and remove this:
+
 .. code-block:: json
 
 	"Enrich": [
@@ -19,8 +20,8 @@ Open-up ``logging.json`` in the root of the downloaded BitMono, edit this file, 
 
 
 So, after edit ``logging.json`` looks like this:
-.. code-block:: json
 
+.. code-block:: json
 
 	{
 	    "Serilog": {
