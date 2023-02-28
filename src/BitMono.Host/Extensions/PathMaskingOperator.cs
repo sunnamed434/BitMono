@@ -2,7 +2,7 @@ namespace BitMono.Host.Extensions;
 
 public class PathMaskingOperator : RegexMaskingOperator
 {
-    private const string PathPattern = @"^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$";
+    private const string PathPattern = @"^(?:[a-zA-Z]\:|\\\\[\w-]+\\[\w-]+\$?|[\/][^\/\0]+)+(\\[^\\/:*?""<>|]*)*(\\?)?$";
 
     public PathMaskingOperator() : base(PathPattern)
     {
