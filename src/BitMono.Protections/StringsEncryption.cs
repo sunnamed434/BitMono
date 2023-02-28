@@ -10,6 +10,7 @@ public class StringsEncryption : Protection
         _renamer = renamer;
     }
 
+    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         var globalModuleType = Context.Module.GetOrCreateModuleType();
@@ -41,9 +42,9 @@ public class StringsEncryption : Protection
                         body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                         body.Instructions.InsertRange(i + 1, new CilInstruction[]
                         {
-                            new CilInstruction(CilOpCodes.Ldsfld, saltBytesField),
-                            new CilInstruction(CilOpCodes.Ldsfld, cryptKeyField),
-                            new CilInstruction(CilOpCodes.Call, decryptMethod),
+                            new(CilOpCodes.Ldsfld, saltBytesField),
+                            new(CilOpCodes.Ldsfld, cryptKeyField),
+                            new(CilOpCodes.Call, decryptMethod),
                         });
                     }
                 }

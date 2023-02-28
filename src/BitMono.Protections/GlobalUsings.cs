@@ -14,6 +14,7 @@ global using System.Runtime.CompilerServices;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using BitMono.API.Contexts;
+global using BitMono.API.Pipeline;
 global using BitMono.Core;
 global using BitMono.Core.Attributes;
 global using BitMono.Core.Contexts;

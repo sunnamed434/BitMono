@@ -32,12 +32,12 @@ public class MscorlibInjector
         var instructions = cctor.CilMethodBody.Instructions;
         instructions.InsertRange(0, new CilInstruction[]
         {
-            new CilInstruction(CilOpCodes.Ldc_I4, data.Length),
-            new CilInstruction(CilOpCodes.Newarr, systemByte),
-            new CilInstruction(CilOpCodes.Dup),
-            new CilInstruction(CilOpCodes.Ldtoken, fieldWithRVA),
-            new CilInstruction(CilOpCodes.Call, initializeArrayMethod),
-            new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray),
+            new(CilOpCodes.Ldc_I4, data.Length),
+            new(CilOpCodes.Newarr, systemByte),
+            new(CilOpCodes.Dup),
+            new(CilOpCodes.Ldtoken, fieldWithRVA),
+            new(CilOpCodes.Call, initializeArrayMethod),
+            new(CilOpCodes.Stsfld, fieldInjectedArray),
         });
         return fieldInjectedArray;
     }

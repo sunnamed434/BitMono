@@ -7,45 +7,47 @@ public class AntiDebugBreakpoints : Protection
     {
     }
 
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         var threadSleepMethods = new List<IMethodDescriptor>
         {
-            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
             {
                 typeof(int)
             })),
-            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new Type[]
+            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
             {
                 typeof(TimeSpan)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(int)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(TimeSpan)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(int),
                 typeof(CancellationToken),
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new Type[]
+            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(TimeSpan),
                 typeof(CancellationToken),
             })),
         };
         var dateTimeUtcNowMethod = Context.Importer.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
-        var dateTimeSubtractionMethod = Context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new Type[]
+        var dateTimeSubtractionMethod = Context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new[]
         {
             typeof(DateTime),
             typeof(DateTime)
         }));
         var timeSpanTotalMillisecondsMethod = Context.Importer.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
-        var environmentFailFast = Context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new Type[]
+        var environmentFailFast = Context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new[]
         {
             typeof(string)
         }));
@@ -90,7 +92,7 @@ public class AntiDebugBreakpoints : Protection
                     body.LocalVariables.Add(timeSpanLocal);
                     body.LocalVariables.Add(intLocal);
 
-                    body.Instructions.InsertRange(startIndex, new CilInstruction[]
+                    body.Instructions.InsertRange(startIndex, new[]
                     {
                         new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
                         new CilInstruction(CilOpCodes.Stloc_S, dateTimeLocal)
@@ -98,22 +100,22 @@ public class AntiDebugBreakpoints : Protection
 
                     var nopInstruction = new CilInstruction(CilOpCodes.Nop);
                     var nopLabel = nopInstruction.CreateLabel();
-                    body.Instructions.InsertRange(endIndex, new CilInstruction[]
+                    body.Instructions.InsertRange(endIndex, new[]
                     {
-                        new CilInstruction(CilOpCodes.Call, dateTimeUtcNowMethod),
-                        new CilInstruction(CilOpCodes.Ldloc_S, dateTimeLocal),
-                        new CilInstruction(CilOpCodes.Call, dateTimeSubtractionMethod),
-                        new CilInstruction(CilOpCodes.Stloc_S, timeSpanLocal),
-                        new CilInstruction(CilOpCodes.Ldloca_S, timeSpanLocal),
-                        new CilInstruction(CilOpCodes.Call, timeSpanTotalMillisecondsMethod),
-                        new CilInstruction(CilOpCodes.Ldc_R8, 5000.0),
-                        new CilInstruction(CilOpCodes.Ble_Un_S, nopLabel),
-                        new CilInstruction(CilOpCodes.Ldc_I4_1),
-                        new CilInstruction(CilOpCodes.Ldc_I4_0),
-                        new CilInstruction(CilOpCodes.Stloc_S, intLocal),
-                        new CilInstruction(CilOpCodes.Ldloc_S, intLocal),
-                        new CilInstruction(CilOpCodes.Div),
-                        new CilInstruction(CilOpCodes.Pop),
+                        new(CilOpCodes.Call, dateTimeUtcNowMethod),
+                        new(CilOpCodes.Ldloc_S, dateTimeLocal),
+                        new(CilOpCodes.Call, dateTimeSubtractionMethod),
+                        new(CilOpCodes.Stloc_S, timeSpanLocal),
+                        new(CilOpCodes.Ldloca_S, timeSpanLocal),
+                        new(CilOpCodes.Call, timeSpanTotalMillisecondsMethod),
+                        new(CilOpCodes.Ldc_R8, 5000.0),
+                        new(CilOpCodes.Ble_Un_S, nopLabel),
+                        new(CilOpCodes.Ldc_I4_1),
+                        new(CilOpCodes.Ldc_I4_0),
+                        new(CilOpCodes.Stloc_S, intLocal),
+                        new(CilOpCodes.Ldloc_S, intLocal),
+                        new(CilOpCodes.Div),
+                        new(CilOpCodes.Pop),
                         nopInstruction
                     });
                 }
