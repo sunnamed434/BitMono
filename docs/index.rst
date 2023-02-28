@@ -51,3 +51,4 @@ Table of Contents:
    :name: sec-faq
 
    faq/costura-support
+   faq/disable-path-masking
