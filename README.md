@@ -11,7 +11,7 @@
 [![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
 
-BitMono is an free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework but for Unity, you can still use this for a whole .NET, but be careful that something working not as intentional, etc. Which uses **[AsmResolver][asmresolver]** for assembly manipulation. If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
+BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, etc. Which uses **[AsmResolver][asmresolver]** for assembly manipulation. If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
@@ -35,7 +35,7 @@ BitMono is an free open-source C# obfuscator that in most cases works **only** w
 
 Want more previews? Click **[here][previews]**.
 
-## Documentation 
+## Documentation
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
@@ -44,7 +44,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * Broken decompilers
 * Broken IL Code
 * Invisible types
-* No code 
+* No code
 
 ## Obfuscation Features
 * StringsEncryption
@@ -122,8 +122,8 @@ Want more? Read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
 Branch        | AppVeyor
-------------- | ------------- 
-main          | [![Build status][image_appveyor_main_badge]][appveyor_main_build] 
+------------- | -------------
+main          | [![Build status][image_appveyor_main_badge]][appveyor_main_build]
 dev           | [![Build status][image_appveyor_dev_badge]][appveyor_dev_build]
 
 Credits
@@ -134,7 +134,7 @@ Credits
 
 **[Elliesaur][author_ellisaur]** for his acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
 
-**[Weka][author_naweka]** for his advices, help and motivation. 
+**[Weka][author_naweka]** for his advices, help and motivation.
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
