@@ -112,7 +112,7 @@ Specify file, libs and output. If output directory doesn't exist BitMono will cr
 $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory -o C:\specially_created_folder_for_obfuscation/output
 ```
 
-Want more? Read the **[docs][bitmono_docs]**.
+Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
 Branch        | AppVeyor
