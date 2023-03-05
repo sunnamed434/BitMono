@@ -2,7 +2,7 @@
 
 public class CustomInjector
 {
-    public CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name)
+    public static CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name)
     {
         var factory = module.CorLibTypeFactory;
         var attributeReference = new TypeReference(module, module, @namespace, name);
@@ -12,7 +12,7 @@ public class CustomInjector
         module.CustomAttributes.Add(attribute);
         return attribute;
     }
-    public CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name, string content)
+    public static CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name, string content)
     {
         var factory = module.CorLibTypeFactory;
         var attributeReference = new TypeReference(module, module, @namespace, name);

@@ -3,43 +3,43 @@ namespace BitMono.Core.Renaming;
 
 public class Renamer
 {
-    private readonly NameCriticalAnalyzer m_NameCriticalAnalyzer;
-    private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
-    private readonly Obfuscation m_Obfuscation;
-    private readonly Random m_Random;
+    private readonly NameCriticalAnalyzer _nameCriticalAnalyzer;
+    private readonly SpecificNamespaceCriticalAnalyzer _specificNamespaceCriticalAnalyzer;
+    private readonly Obfuscation _obfuscation;
+    private readonly RandomNext _randomNext;
 
     public Renamer(
         NameCriticalAnalyzer nameCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
         IOptions<Obfuscation> configuration,
-        RuntimeImplementations runtime)
+        RandomNext randomNext)
     {
-        m_NameCriticalAnalyzer = nameCriticalAnalyzer;
-        m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
-        m_Obfuscation = configuration.Value;
-        m_Random = runtime.Random;
+        _nameCriticalAnalyzer = nameCriticalAnalyzer;
+        _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
+        _obfuscation = configuration.Value;
+        _randomNext = randomNext;
     }
 
     public string RenameUnsafely()
     {
-        var strings = m_Obfuscation.RandomStrings;
-        var randomStringOne = strings[m_Random.Next(0, strings.Length - 1)] + " " + strings[m_Random.Next(0, strings.Length - 1)];
-        var randomStringTwo = strings[m_Random.Next(0, strings.Length - 1)];
-        var randomStringThree = strings[m_Random.Next(0, strings.Length - 1)];
+        var strings = _obfuscation.RandomStrings;
+        var randomStringOne = strings[_randomNext(0, strings.Length - 1)] + " " + strings[_randomNext(0, strings.Length - 1)];
+        var randomStringTwo = strings[_randomNext(0, strings.Length - 1)];
+        var randomStringThree = strings[_randomNext(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
     public void Rename(IMetadataMember member)
     {
         if (member is TypeDefinition type)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 type.Name = RenameUnsafely();
             }
         }
         if (member is MethodDefinition method)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 method.Name = RenameUnsafely();
             }
@@ -64,14 +64,14 @@ public class Renamer
     {
         if (member is TypeDefinition type)
         {
-            if (m_SpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 type.Namespace = string.Empty;
             }
         }
         if (member is MethodDefinition method)
         {
-            if (m_NameCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
                 method.DeclaringType.Namespace = string.Empty;
             }

@@ -49,22 +49,11 @@ public class BitMonoModule : Module
         var serviceCollection = new ServiceCollection();
         m_ConfigureServices?.Invoke(serviceCollection);
 
+        containerBuilder.Register<RandomNext>(_ => RandomService.RandomNext)
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
         containerBuilder.RegisterType<Renamer>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<MscorlibInjector>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<CustomInjector>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<RuntimeImplementations>()
-            .AsSelf()
             .OwnedByLifetimeScope()
             .SingleInstance();
 

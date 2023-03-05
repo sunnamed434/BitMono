@@ -21,7 +21,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
             try
             {
                 m_Logger.Information("Please, specify file or drag-and-drop in BitMono CLI");
-                fileName = Console.ReadLine();
+                fileName = PathFormatterUtility.Format(Console.ReadLine());
                 if (string.IsNullOrWhiteSpace(fileName) == false)
                 {
                     if (File.Exists(fileName))
@@ -62,7 +62,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
                     }
 
                     m_Logger.Information("Please, specify dependencies (libs) path: ");
-                    var newDependenciesDirectoryName = Console.ReadLine();
+                    var newDependenciesDirectoryName = PathFormatterUtility.Format(Console.ReadLine());
                     if (string.IsNullOrWhiteSpace(newDependenciesDirectoryName) == false)
                     {
                         if (Directory.Exists(newDependenciesDirectoryName))
@@ -99,7 +99,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
         {
             FileName = fileName,
             FileBaseDirectory = fileBaseDirectory,
-            DependenciesDirectoryName = dependenciesDirectoryName,
+            ReferencesDirectoryName = dependenciesDirectoryName,
             OutputDirectoryName = outputDirectoryName
         };
     }

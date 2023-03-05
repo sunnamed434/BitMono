@@ -43,3 +43,12 @@ Table of Contents:
    configuration/exclude-obfuscation
    configuration/third-party-issues
    configuration/protections
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Frequently Asked Questions
+   :name: sec-faq
+
+   faq/costura-support
+   faq/disable-path-masking

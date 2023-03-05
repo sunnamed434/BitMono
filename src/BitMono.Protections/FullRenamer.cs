@@ -10,11 +10,12 @@ public class FullRenamer : Protection
         _renamer = renamer;
     }
 
+    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.DeclaringType.IsModuleType == false && method.IsConstructor == false && method.IsVirtual == false)
+            if (method.DeclaringType?.IsModuleType == false && method is { IsConstructor: false, IsVirtual: false })
             {
                 _renamer.Rename(method);
                 if (method.HasParameters())
@@ -35,7 +36,7 @@ public class FullRenamer : Protection
         }
         foreach (var field in parameters.Members.OfType<FieldDefinition>())
         {
-            if (field.DeclaringType.IsModuleType == false)
+            if (field.DeclaringType?.IsModuleType == false)
             {
                 _renamer.Rename(field);
             }

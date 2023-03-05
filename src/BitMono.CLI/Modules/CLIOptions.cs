@@ -2,6 +2,7 @@ namespace BitMono.CLI.Modules;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class CLIOptions
 {
     [Option('f', "file", Required = true, HelpText = "Set file path.")]

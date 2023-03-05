@@ -3,13 +3,15 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class BitMethodDotnet : Protection
 {
-    private readonly Random _random;
+    private readonly RandomNext _randomNext;
 
-    public BitMethodDotnet(RuntimeImplementations runtime, ProtectionContext context) : base(context)
+    public BitMethodDotnet(RandomNext randomNext, ProtectionContext context) : base(context)
     {
-        _random = runtime.Random;
+        _randomNext = randomNext;
     }
 
+    [SuppressMessage("ReSharper", "InvertIf")]
+    [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
@@ -19,10 +21,10 @@ public class BitMethodDotnet : Protection
                 var randomMethodBodyIndex = 0;
                 if (body.Instructions.Count >= 3)
                 {
-                    randomMethodBodyIndex = _random.Next(0, body.Instructions.Count);
+                    randomMethodBodyIndex = _randomNext(0, body.Instructions.Count);
                 }
 
-                var randomValue = _random.Next(0, 3);
+                var randomValue = _randomNext(0, 3);
                 var randomOpCode = randomValue switch
                 {
                     0 => CilOpCodes.Readonly,

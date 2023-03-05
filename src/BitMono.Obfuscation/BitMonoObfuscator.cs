@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS8604
+﻿using BitMono.Utilities.Runtime;
+
+#pragma warning disable CS8604
 #pragma warning disable CS8602
 namespace BitMono.Obfuscation;
 
@@ -88,7 +90,8 @@ public class BitMonoObfuscator
     }
     private Task<bool> ResolveDependenciesAsync()
     {
-        var assemblyResolve = new AssemblyResolver().Resolve(_context.BitMonoContext.ReferencesData, _context);
+        _logger.Information("Starting resolving dependencies...");
+        var assemblyResolve = AssemblyResolver.Resolve(_context.BitMonoContext.ReferencesData, _context);
         foreach (var reference in assemblyResolve.ResolvedReferences)
         {
             _logger.Information("Successfully resolved dependency: {0}", reference.FullName);

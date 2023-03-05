@@ -3,12 +3,12 @@
 public class DotNetHook : Protection
 {
     private readonly Renamer _renamer;
-    private readonly Random _random;
+    private readonly RandomNext _randomNext;
 
-    public DotNetHook(Renamer renamer, RuntimeImplementations runtime, ProtectionContext context) : base(context)
+    public DotNetHook(Renamer renamer, RandomNext randomNext, ProtectionContext context) : base(context)
     {
         _renamer = renamer;
-        _random = runtime.Random;
+        _randomNext = randomNext;
     }
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
@@ -79,7 +79,7 @@ public class DotNetHook : Protection
                                 moduleType.Methods.Add(initializationMethod);
 
                                 instruction.Operand = dummyMethod;
-                                var randomIndex = _random.Next(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
+                                var randomIndex = _randomNext(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
                                 moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }

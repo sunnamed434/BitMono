@@ -11,7 +11,7 @@
 [![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
 
-BitMono is an free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework but for Unity, you can still use this for a whole .NET, but be careful that something working not as intentional, etc. Which uses **[AsmResolver][asmresolver]** for assembly manipulation. If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
+BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, etc. Which uses **[AsmResolver][asmresolver]** for assembly manipulation. If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
@@ -35,7 +35,7 @@ BitMono is an free open-source C# obfuscator that in most cases works **only** w
 
 Want more previews? Click **[here][previews]**.
 
-## Documentation 
+## Documentation
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
@@ -44,7 +44,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * Broken decompilers
 * Broken IL Code
 * Invisible types
-* No code 
+* No code
 
 ## Obfuscation Features
 * StringsEncryption
@@ -80,12 +80,6 @@ specially_created_folder_for_obfuscation/
 Copy all libraries (.dll) from the building application folder and paste them into the `libs` directory (if it doesn't exist yet create it), or even create the libs directory yourself with a custom name for example - `myLibs`, and then specify it in BitMono, however, if you will use `libs` then by default BitMono looking for a `libs` directory, so it will save your time.
 
 ### Using CLI Commands
-Outputs available commands
-```console
-$ BitMono.CLI --help
-```
-
-Upper command output:
 ```console
   -f, --file         Required. Set file path.
 
@@ -98,7 +92,7 @@ Upper command output:
   --version          Display version information.
 ```
 
-Basic examples
+Basic example
 ```console
 $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l specially_created_folder_for_obfuscation/libs
 ```
@@ -122,8 +116,8 @@ Want more? Read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
 Branch        | AppVeyor
-------------- | ------------- 
-main          | [![Build status][image_appveyor_main_badge]][appveyor_main_build] 
+------------- | -------------
+main          | [![Build status][image_appveyor_main_badge]][appveyor_main_build]
 dev           | [![Build status][image_appveyor_dev_badge]][appveyor_dev_build]
 
 Credits
@@ -134,11 +128,13 @@ Credits
 
 **[Elliesaur][author_ellisaur]** for his acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
 
-**[Weka][author_naweka]** for his advices, help and motivation. 
+**[Weka][author_naweka]** for his advices, help and motivation.
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
+
+**[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
 
 [test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
@@ -154,11 +150,13 @@ Credits
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
+[simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
 [author_0x59r11]: https://github.com/0x59R11
 [author_gazzi]: https://github.com/GazziFX
 [author_ellisaur]: https://github.com/Elliesaur
 [author_naweka]: https://github.com/naweka
 [author_kao_blog]: https://lifeinhex.com/
+[author_drakonia]: https://github.com/dr4k0nia
 [author_sunnamed434]: https://github.com/sunnamed434
 [appveyor_main_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev

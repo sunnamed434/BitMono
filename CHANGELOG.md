@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.12.0-alpha](#v0120-alpha21) |
 | [v0.11.0-alpha](#v0110-alpha20) |
 | [v0.10.0-alpha](#v0100-alpha19) |
 | [v0.9.0-alpha](#v090-alpha18) |
@@ -22,11 +23,21 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.12.0-alpha.21:
+2023-03-05
+#### Added:
+* [Costura-Fody](https://github.com/Fody/Costura) support, now references are resolved automatically, [#102](https://github.com/sunnamed434/BitMono/issues/102)
+* Support when path contains quotes (for example: "path..."), [#104](https://github.com/sunnamed434/BitMono/issues/104)
+
+#### Fixed:
+* Hiding of the paths (before paths with .exe may cause an ignore)
+* Now output directory path message shows normally (before ***\folder_before_output, now ***\output)
+
 ### v0.11.0-alpha.20:
 2023-02-016
 #### Added:
-* BitMono ASCII Art in CLI
-* Hiding of the pathes (file path, directory path, etc)
+* BitMono ASCII Art in CLI.
+* Hiding of the pathes (file path, directory path, etc).
 * Documentation.
 
 #### Fixed:

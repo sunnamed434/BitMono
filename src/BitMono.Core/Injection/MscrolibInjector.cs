@@ -3,7 +3,7 @@ namespace BitMono.Core.Injection;
 
 public class MscorlibInjector
 {
-    public FieldDefinition InjectCompilerGeneratedArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
+    public static FieldDefinition InjectCompilerGeneratedArray(ModuleDefinition module, TypeDefinition type, byte[] data, string name)
     {
         var importer = module.DefaultImporter;
         var valueType = importer.ImportType(typeof(ValueType));
@@ -32,53 +32,53 @@ public class MscorlibInjector
         var instructions = cctor.CilMethodBody.Instructions;
         instructions.InsertRange(0, new CilInstruction[]
         {
-            new CilInstruction(CilOpCodes.Ldc_I4, data.Length),
-            new CilInstruction(CilOpCodes.Newarr, systemByte),
-            new CilInstruction(CilOpCodes.Dup),
-            new CilInstruction(CilOpCodes.Ldtoken, fieldWithRVA),
-            new CilInstruction(CilOpCodes.Call, initializeArrayMethod),
-            new CilInstruction(CilOpCodes.Stsfld, fieldInjectedArray),
+            new(CilOpCodes.Ldc_I4, data.Length),
+            new(CilOpCodes.Newarr, systemByte),
+            new(CilOpCodes.Dup),
+            new(CilOpCodes.Ldtoken, fieldWithRVA),
+            new(CilOpCodes.Call, initializeArrayMethod),
+            new(CilOpCodes.Stsfld, fieldInjectedArray),
         });
         return fieldInjectedArray;
     }
-    public TypeDefinition InjectCompilerGeneratedValueType(ModuleDefinition module, TypeDefinition type, string? name = null)
+    public static TypeDefinition InjectCompilerGeneratedValueType(ModuleDefinition module, TypeDefinition type, string? name = null)
     {
         var result = CreateCompilerGeneratedValueType(module, name);
         type.NestedTypes.Add(result);
         return result;
     }
-    public CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefinition module, IHasCustomAttribute @in)
+    public static CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefinition module, IHasCustomAttribute @in)
     {
         var attribute = CreateCompilerGeneratedAttribute(module);
         @in.CustomAttributes.Add(attribute);
         return attribute;
     }
-    public CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name, IHasCustomAttribute @in)
+    public static CustomAttribute InjectAttribute(ModuleDefinition module, string @namespace, string name, IHasCustomAttribute @in)
     {
         var attribute = CreateAttribute(module, @namespace, name);
         @in.CustomAttributes.Add(attribute);
         return attribute;
     }
-    public TypeDefinition CreateCompilerGeneratedType(ModuleDefinition module, string? name = null)
+    public static TypeDefinition CreateCompilerGeneratedType(ModuleDefinition module, string? name = null)
     {
         var @object = module.CorLibTypeFactory.Object.ToTypeDefOrRef();
         var invisibleType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.Public, @object);
         InjectCompilerGeneratedAttribute(module, invisibleType);
         return invisibleType;
     }
-    public TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string? name = null)
+    public static TypeDefinition CreateCompilerGeneratedValueType(ModuleDefinition module, string? name = null)
     {
         var valueType = module.DefaultImporter.ImportType(typeof(ValueType));
         var invisibleValueType = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>", TypeAttributes.NestedPublic, valueType);
         InjectCompilerGeneratedAttribute(module, invisibleValueType);
         return invisibleValueType;
     }
-    public CustomAttribute CreateCompilerGeneratedAttribute(ModuleDefinition module)
+    public static CustomAttribute CreateCompilerGeneratedAttribute(ModuleDefinition module)
     {
         var attribute = CreateAttribute(module, typeof(CompilerGeneratedAttribute).Namespace, nameof(CompilerGeneratedAttribute));
         return attribute;
     }
-    public CustomAttribute CreateAttributeWithContent(ModuleDefinition module, string @namespace, string name, string content)
+    public static CustomAttribute CreateAttributeWithContent(ModuleDefinition module, string @namespace, string name, string content)
     {
         var factory = module.CorLibTypeFactory;
         var ctor = factory.CorLibScope
@@ -90,7 +90,7 @@ public class MscorlibInjector
         attribute.Signature.FixedArguments.Add(new CustomAttributeArgument(factory.String, content));
         return attribute;
     }
-    public CustomAttribute CreateAttribute(ModuleDefinition module, string @namespace, string name)
+    public static CustomAttribute CreateAttribute(ModuleDefinition module, string @namespace, string name)
     {
         var factory = module.CorLibTypeFactory;
         var ctor = factory.CorLibScope

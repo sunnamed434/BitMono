@@ -39,6 +39,6 @@ public static class MethodDefinitionExtensions
     }
     public static bool ReturnsValue(this MethodSignature source, TypeSignature typeSignature)
     {
-        return source.ReturnsValue && source.ReturnType.Equals(typeSignature);
+        return source.ReturnType.Equals(typeSignature);
     }
 }

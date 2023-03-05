@@ -5,7 +5,7 @@ namespace BitMono.Host.Extensions;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 public static class AutofacServiceProviderExtensions
 {
-    private static readonly string ProtectionsFileName = "BitMono.Protections.dll";
+    private const string ProtectionsFileName = "BitMono.Protections.dll";
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
         var rawData = File.ReadAllBytes(file ?? ProtectionsFileName);

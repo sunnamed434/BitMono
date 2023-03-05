@@ -12,6 +12,7 @@ global using System.Threading.Tasks;
 global using BitMono.Host.Extensions;
 global using BitMono.Obfuscation.Abstractions;
 global using BitMono.Obfuscation.Interfaces;
+global using BitMono.Utilities.Paths;
 global using CommandLine;
 global using Microsoft.Extensions.Options;
 global using Pocket.Extensions;

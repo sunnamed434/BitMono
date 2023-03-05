@@ -24,9 +24,10 @@ public class BitMonoApplication : IApplication
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     public AutofacServiceProvider Build()
     {
-        for (var i = 0; i < m_Modules.Count; i++)
+        var modules = m_Modules;
+        for (var i = 0; i < modules.Count; i++)
         {
-            m_ContainerBuilder.RegisterModule(m_Modules[i]);
+            m_ContainerBuilder.RegisterModule(modules[i]);
         }
         var container = m_ContainerBuilder.Build();
         return new AutofacServiceProvider(container.Resolve<ILifetimeScope>());

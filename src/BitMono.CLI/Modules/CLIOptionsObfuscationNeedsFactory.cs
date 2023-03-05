@@ -37,7 +37,7 @@ public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
         {
             FileName = options.File,
             FileBaseDirectory = fileBaseDirectory,
-            DependenciesDirectoryName = options.Libraries.IsNullOrEmpty() == false
+            ReferencesDirectoryName = options.Libraries.IsNullOrEmpty() == false
                 ? options.Libraries
                 : Path.Combine(fileBaseDirectory, "libs"),
             OutputDirectoryName = options.Output.IsNullOrEmpty() == false
@@ -46,7 +46,7 @@ public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
         };
 
         Directory.CreateDirectory(needs.OutputDirectoryName);
-        Directory.CreateDirectory(needs.DependenciesDirectoryName);
+        Directory.CreateDirectory(needs.ReferencesDirectoryName);
         return needs;
     }
 }
