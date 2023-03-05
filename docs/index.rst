@@ -52,3 +52,4 @@ Table of Contents:
 
    faq/costura-support
    faq/disable-path-masking
+   faq/when-and-why-use-bitmono
