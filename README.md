@@ -11,7 +11,7 @@
 [![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
 
-BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, etc. Which uses **[AsmResolver][asmresolver]** for assembly manipulation. If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
+BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, because the main target of the this project is Mono. Which uses **[AsmResolver][asmresolver]** for assembly manipulation (not a dnlib as you might already think). If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
