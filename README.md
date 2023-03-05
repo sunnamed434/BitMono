@@ -80,12 +80,6 @@ specially_created_folder_for_obfuscation/
 Copy all libraries (.dll) from the building application folder and paste them into the `libs` directory (if it doesn't exist yet create it), or even create the libs directory yourself with a custom name for example - `myLibs`, and then specify it in BitMono, however, if you will use `libs` then by default BitMono looking for a `libs` directory, so it will save your time.
 
 ### Using CLI Commands
-Outputs available commands
-```console
-$ BitMono.CLI --help
-```
-
-Upper command output:
 ```console
   -f, --file         Required. Set file path.
 
@@ -98,7 +92,7 @@ Upper command output:
   --version          Display version information.
 ```
 
-Basic examples
+Basic example
 ```console
 $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l specially_created_folder_for_obfuscation/libs
 ```
