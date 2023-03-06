@@ -18,13 +18,25 @@ public class CosturaReferencesDataResolverTest
             .HaveCount(countOfEmbeddedCosturaResources);
     }
 
-    [Fact]
-    public void WhenIsEmbeddedCosturaResource_AndResourceIsCostura_ThenShouldBeTrue()
+    [Theory]
+    [InlineData("costura.asmresolver.dll.compressed")]
+    [InlineData("costura.asmresolver.pe.dll.compressed")]
+    [InlineData("costura.asmresolver.pe.file.dll.compressed")]
+    [InlineData("costura.microsoft.entityframeworkcore.dll.compressed")]
+    [InlineData("costura.microsoft.entityframeworkcore.abstractions.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.caching.abstractions.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.caching.memory.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.dependencyinjection.abstractions.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.dependencyinjection.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.logging.abstractions.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.logging.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.options.dll.compressed")]
+    [InlineData("costura.microsoft.extensions.primitives.dll.compressed")]
+    public void WhenIsEmbeddedCosturaResource_AndResourceIsCostura_ThenShouldBeTrue(string costuraResourceName)
     {
-        const string EntityFrameworkCoreCosturaResourceName = "costura.microsoft.entityframeworkcore.dll.compressed";
         var module = ModuleDefinition.FromFile(typeof(TestCases.CosturaDecompressor.Program).Assembly.Location);
 
-        var result = module.Resources.First(r => r.Name.Value.Equals(EntityFrameworkCoreCosturaResourceName));
+        var result = module.Resources.First(r => r.Name.Value.Equals(costuraResourceName));
 
         result.IsEmbeddedCosturaResource()
             .Should()
