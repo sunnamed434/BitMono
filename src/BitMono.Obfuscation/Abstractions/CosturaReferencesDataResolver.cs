@@ -2,35 +2,21 @@ namespace BitMono.Obfuscation.Abstractions;
 
 public class CosturaReferencesDataResolver : IReferencesDataResolver
 {
-    private const string CosturaResourceNameStart = "costura.";
-    private const string CosturaResourceNameEnd = ".dll.compressed";
-    private const int MinCosturaResourceNameCharactersLenght = 19;
-
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
     [SuppressMessage("ReSharper", "InvertIf")]
     public IEnumerable<byte[]> Resolve(ModuleDefinition module)
     {
-        for (var i = 0; i < module.Resources.Count; i++)
+        var resources = module.Resources;
+        for (var i = 0; i < resources.Count; i++)
         {
-            var resource = module.Resources[i];
-            if (resource.IsEmbedded)
+            var resource = resources[i];
+            if (resource.IsEmbeddedCosturaResource())
             {
-                if (Utf8String.IsNullOrEmpty(resource.Name) == false)
+                var rawData = resource.GetData();
+                if (rawData != null)
                 {
-                    var name = resource.Name.Value;
-                    if (name.Length > MinCosturaResourceNameCharactersLenght)
-                    {
-                        if (name.StartsWith(CosturaResourceNameStart) && name.EndsWith(CosturaResourceNameEnd))
-                        {
-                            var data = resource.GetData();
-                            if (data != null)
-                            {
-                                data = Decompress(data);
-                                yield return data;
-                            }
-                        }
-                    }
+                    yield return Decompress(rawData);
                 }
             }
         }
