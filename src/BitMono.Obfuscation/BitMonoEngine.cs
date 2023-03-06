@@ -21,7 +21,7 @@ public class BitMonoEngine
         _obfuscationAttributeResolver = _lifetimeScope.Resolve<ObfuscationAttributeResolver>();
         _obfuscateAssemblyAttributeResolver = _lifetimeScope.Resolve<ObfuscateAssemblyAttributeResolver>();
         _obfuscation = _lifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
-        _protectionSettings = _lifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value.Protections;
+        _protectionSettings = _lifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value.Protections!;
         _memberResolvers = _lifetimeScope
             .Resolve<ICollection<IMemberResolver>>()
             .ToList();;
