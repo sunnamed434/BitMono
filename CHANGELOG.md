@@ -1,5 +1,6 @@
 | Versions: |
 | - |
+| [v0.12.1-alpha](#v0121-alpha22) |
 | [v0.12.0-alpha](#v0120-alpha21) |
 | [v0.11.0-alpha](#v0110-alpha20) |
 | [v0.10.0-alpha](#v0100-alpha19) |
@@ -23,6 +24,14 @@
 | [v0.1.0](#v010) |
 
 ---
+### v0.12.1-alpha.22:
+2023-03-06
+#### Added:
+* Test cases for costura decompressor.
+
+#### Fixed:
+* Costura decompressor.
+
 ### v0.12.0-alpha.21:
 2023-03-05
 #### Added:
