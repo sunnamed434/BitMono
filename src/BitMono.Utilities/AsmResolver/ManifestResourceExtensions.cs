@@ -14,7 +14,8 @@ public static class ManifestResourceExtensions
             if (source.IsEmbedded)
             {
                 var name = source.Name.Value;
-                if (name.StartsWith(CosturaResourceNameStart)
+                if (name.Length > MinCosturaResourceNameCharactersLenght
+                    && name.StartsWith(CosturaResourceNameStart)
                     && name.EndsWith(CosturaResourceNameEnd))
                 {
                     return true;
