@@ -1,29 +1,35 @@
-| Versions: |
-| - |
+| Versions:                       |
+|---------------------------------|
+| [v0.12.2-alpha](#v0122-alpha23) |
 | [v0.12.1-alpha](#v0121-alpha22) |
 | [v0.12.0-alpha](#v0120-alpha21) |
 | [v0.11.0-alpha](#v0110-alpha20) |
 | [v0.10.0-alpha](#v0100-alpha19) |
-| [v0.9.0-alpha](#v090-alpha18) |
-| [v0.8.0-alpha](#v080-alpha17) |
-| [v0.7.0-alpha](#v070-alpha16) |
-| [v0.6.0-alpha](#v060-alpha15) |
-| [v0.4.4-alpha](#v044-alpha13) |
-| [v0.4.3-alpha](#v043-alpha12) |
-| [v0.4.2-alpha](#v042-alpha11) |
-| [v0.4.1-alpha](#v041-alpha10) |
-| [v0.4.0-alpha](#v040-alpha9) |
-| [v0.3.3-alpha](#v033-alpha8) |
-| [v0.3.2-alpha](#v032-alpha7) |
-| [v0.3.1-alpha](#v031-alpha6) |
-| [v0.3.0-alpha](#v030-alpha5) |
-| [v0.2.2-alpha](#v022-alpha4) |
-| [v0.2.1-alpha](#v021-alpha3) |
-| [v0.1.3-alpha](#v013-alpha2) |
-| [v0.1.2-alpha](#v012-alpha1) |
-| [v0.1.0](#v010) |
+| [v0.9.0-alpha](#v090-alpha18)   |
+| [v0.8.0-alpha](#v080-alpha17)   |
+| [v0.7.0-alpha](#v070-alpha16)   |
+| [v0.6.0-alpha](#v060-alpha15)   |
+| [v0.4.4-alpha](#v044-alpha13)   |
+| [v0.4.3-alpha](#v043-alpha12)   |
+| [v0.4.2-alpha](#v042-alpha11)   |
+| [v0.4.1-alpha](#v041-alpha10)   |
+| [v0.4.0-alpha](#v040-alpha9)    |
+| [v0.3.3-alpha](#v033-alpha8)    |
+| [v0.3.2-alpha](#v032-alpha7)    |
+| [v0.3.1-alpha](#v031-alpha6)    |
+| [v0.3.0-alpha](#v030-alpha5)    |
+| [v0.2.2-alpha](#v022-alpha4)    |
+| [v0.2.1-alpha](#v021-alpha3)    |
+| [v0.1.3-alpha](#v013-alpha2)    |
+| [v0.1.2-alpha](#v012-alpha1)    |
+| [v0.1.0](#v010)                 |
 
 ---
+### v0.12.2-alpha.23:
+2023-03-08
+#### Fixed:
+* Error that caused issues with .NET 7.0 obfuscation (file not found, etc)
+
 ### v0.12.1-alpha.22:
 2023-03-06
 #### Added:
@@ -76,7 +82,7 @@
 2023-01-27
 #### Added
 * Reflection analysis such as in ConfuserEx [#41](https://github.com/sunnamed434/BitMono/issues/41)
-* BitMono protection 
+* BitMono protection
 
 #### Changed:
 * Moved new protections from BitDotNet to BitMono protection and added support for PE32 and PE32+
@@ -86,7 +92,7 @@
 * [0x59R11](https://github.com/0x59R11) made their first contribution in [#81](https://github.com/sunnamed434/BitMono/pull/81)
 
 ### v0.7.0-alpha.16:
-#### Added: 
+#### Added:
 * Unit Tests
 * Benchmarks
 * Support of ObfuscateAssemblyAttribute
@@ -129,7 +135,7 @@
 #### Added:
 * Before obfuscation optmizes all method bodies (macros)
 
-#### Fixed: 
+#### Fixed:
 * BitMethodDotnet Protection
 * StringsEncryption Protection
 
