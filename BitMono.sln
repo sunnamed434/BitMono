@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Core.TestCases.Refl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.Tests", "test\BitMono.Obfuscation.Tests\BitMono.Obfuscation.Tests.csproj", "{49E6076C-FEC8-4411-B7AE-4DB6112370C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.TestCases.CosturaDecompressor", "test\TestBinaries\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj", "{E73C9803-971F-4F7D-A21B-9097C2EC1A80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.TestCases.CosturaDecompressor", "test\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj", "{E73C9803-971F-4F7D-A21B-9097C2EC1A80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
