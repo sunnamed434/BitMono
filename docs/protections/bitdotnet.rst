@@ -1,4 +1,4 @@
-BitDotnet
+BitDotNet
 =========
 
 How it works?
