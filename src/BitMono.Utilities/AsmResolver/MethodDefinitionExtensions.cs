@@ -1,6 +1,4 @@
-﻿using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;
-
-namespace BitMono.Utilities.AsmResolver;
+﻿namespace BitMono.Utilities.AsmResolver;
 
 public static class MethodDefinitionExtensions
 {
@@ -37,7 +35,7 @@ public static class MethodDefinitionExtensions
     {
         return source.Parameters.Any();
     }
-    public static bool ReturnsValue(this MethodSignature source, TypeSignature typeSignature)
+    public static bool ReturnsValueOf(this MethodSignature source, TypeSignature typeSignature)
     {
         return source.ReturnType.Equals(typeSignature);
     }
