@@ -16,7 +16,9 @@ public class ReflectionCriticalAnalyzerTest
 
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
     [Fact]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
@@ -33,8 +35,14 @@ public class ReflectionCriticalAnalyzerTest
 
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Count.Should().Be(1);
-        criticalAnalyzer.CachedMethods.First().Name.Value.Should().Be(method.Name);
+        result
+            .Should()
+            .BeFalse();
+        criticalAnalyzer.CachedMethods.Count
+            .Should()
+            .Be(1);
+        criticalAnalyzer.CachedMethods.First().Name.Value
+            .Should()
+            .Be(method.Name);
     }
 }

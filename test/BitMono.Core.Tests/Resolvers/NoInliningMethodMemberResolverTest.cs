@@ -14,10 +14,12 @@ public class NoInliningMethodMemberResolverTest
         var module = ModuleDefinition.FromFile(typeof(NoInliningMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(NoInliningMethods));
         var method = type.Methods.First(m => m.Name == nameof(NoInliningMethods.NoInliningMethod));
-        
+
         var result = resolver.Resolve(null, method);
 
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
     [Fact]
     public void WhenNoInliningMethodResolving_AndMethodHasNoInliningBit_ThenShouldBeTrue()
@@ -31,9 +33,11 @@ public class NoInliningMethodMemberResolverTest
         var module = ModuleDefinition.FromFile(typeof(NoInliningMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(NoInliningMethods));
         var method = type.Methods.First(m => m.Name == nameof(NoInliningMethods.VoidMethod));
-        
+
         var result = resolver.Resolve(null, method);
 
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 }
