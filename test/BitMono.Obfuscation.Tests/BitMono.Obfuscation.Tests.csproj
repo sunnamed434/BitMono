@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
     <ProjectReference Include="..\TestBinaries\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj" />
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj" />
   </ItemGroup>
   
 </Project>
