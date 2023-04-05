@@ -96,10 +96,6 @@ public class BitMonoObfuscator
         {
             _logger.Information("Successfully resolved dependency: {0}", reference.FullName);
         }
-        foreach (var reference in assemblyResolve.BadImageReferences)
-        {
-            _logger.Warning("Failed to resolve dependency, this is not a .NET File: {0}", reference.FullName);
-        }
         foreach (var reference in assemblyResolve.FailedToResolveReferences)
         {
             _logger.Warning("Failed to resolve dependency: {0}", reference.FullName);
