@@ -16,7 +16,7 @@ internal class Program
 
     private static async Task<int> Main(string[] args)
     {
-        int errorCode = 0; //success
+        var errorCode = KnownReturnStatuses.Success;
         try
         {
             Console.Title = BitMonoFileVersionText;
@@ -37,7 +37,7 @@ internal class Program
             var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)
             {
-                errorCode = 1; //failure
+                errorCode = KnownReturnStatuses.Failure;
                 return errorCode;
             }
 
@@ -54,7 +54,7 @@ internal class Program
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");
                 Console.ReadLine();
-                errorCode = 1; //failure
+                errorCode = KnownReturnStatuses.Failure;
                 return errorCode;
             }
 
@@ -66,7 +66,7 @@ internal class Program
         catch (Exception ex)
         {
             Console.WriteLine("Something went wrong! " + ex);
-            errorCode = 1; //failure
+            errorCode = KnownReturnStatuses.Failure;
         }
         Console.WriteLine("Enter anything to exit!");
         Console.ReadLine();
