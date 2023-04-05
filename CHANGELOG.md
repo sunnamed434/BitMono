@@ -1,5 +1,6 @@
 | Versions:                       |
 |---------------------------------|
+| [v0.13.0-alpha](#v0130-alpha24) |
 | [v0.12.2-alpha](#v0122-alpha23) |
 | [v0.12.1-alpha](#v0121-alpha22) |
 | [v0.12.0-alpha](#v0120-alpha21) |
@@ -25,6 +26,18 @@
 | [v0.1.0](#v010)                 |
 
 ---
+### v0.13.0-alpha.24:
+2023-04-05
+#### Added:
+* Return obfuscation success & failure status from BitMono.CLI (0 - Success, 1 - Failure), thanks to [techei](https://github.com/techei).
+* More docs and answers to the questions.
+
+#### Fixed:
+* Assembly resolve [#113](https://github.com/sunnamed434/BitMono/issues/113), thanks to [techei](https://github.com/techei) for the bug report.
+
+#### Changed:
+* Docs information about protections.
+
 ### v0.12.2-alpha.23:
 2023-03-08
 #### Fixed:
