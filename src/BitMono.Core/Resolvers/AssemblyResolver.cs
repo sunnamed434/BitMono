@@ -9,12 +9,22 @@ public static class AssemblyResolver
 
         var resolvedReferences = new List<AssemblyReference>();
         var failedToResolveReferences = new List<AssemblyReference>();
-        var badImageReferences = new List<AssemblyReference>();
         var signatureComparer = new SignatureComparer(SignatureComparisonFlags.AcceptNewerVersions);
 
         foreach (var originalReference in context.Module.AssemblyReferences)
         {
             context.ThrowIfCancellationRequested();
+
+            var resolved = false;
+            if (context.AssemblyResolver.HasCached(originalReference))
+            {
+                resolvedReferences.Add(originalReference);
+                continue;
+            }
+            if (failedToResolveReferences.Contains(originalReference) || resolvedReferences.Contains(originalReference))
+            {
+                continue;
+            }
 
             foreach (var data in dependenciesData)
             {
@@ -23,36 +33,31 @@ public static class AssemblyResolver
                 try
                 {
                     var definition = AssemblyDefinition.FromBytes(data);
-                    if (context.AssemblyResolver.HasCached(originalReference) == false && signatureComparer.Equals(originalReference, definition))
+                    if (signatureComparer.Equals(originalReference, definition))
                     {
                         context.AssemblyResolver.AddToCache(originalReference, definition);
+                        resolvedReferences.Add(originalReference);
+                        resolved = true;
+                        break;
                     }
                 }
-                catch (BadImageFormatException ex)
+                catch (BadImageFormatException)
                 {
-                    Console.WriteLine("originalRef: " + originalReference.Name + ", " + ex.ToString());
-                    badImageReferences.Add(originalReference);
                 }
             }
-        }
-        var succeed = true;
-        foreach (var originalReference in context.Module.AssemblyReferences)
-        {
-            if (context.AssemblyResolver.HasCached(originalReference))
-            {
-                resolvedReferences.Add(originalReference);
-            }
-            else
+
+            if (resolved == false)
             {
                 failedToResolveReferences.Add(originalReference);
-                succeed = false;
             }
         }
+
+        var succeed = failedToResolveReferences.Count == 0;
+
         return new AssemblyResolve
         {
             ResolvedReferences = resolvedReferences,
             FailedToResolveReferences = failedToResolveReferences,
-            BadImageReferences = badImageReferences,
             Succeed = succeed
         };
     }
