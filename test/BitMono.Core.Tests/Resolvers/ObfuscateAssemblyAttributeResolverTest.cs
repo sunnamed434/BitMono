@@ -12,9 +12,11 @@ public class ObfuscateAssemblyAttributeResolverTest
         var options = Options.Create(obfuscation);
         var resolver = Setup.ObfuscateAssemblyAttributeResolver(options);
         var module = ModuleDefinition.FromFile(typeof(CustomAttributesInstance).Assembly.Location);
-        
+
         var result = resolver.Resolve(module.Assembly);
 
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 }

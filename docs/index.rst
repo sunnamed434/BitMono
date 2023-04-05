@@ -8,14 +8,6 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 1
-   :caption: How to use
-   :name: sec-general
-
-   overview
-
-
-.. toctree::
-   :maxdepth: 1
    :caption: Protections
    :name: sec-protections
 
@@ -52,4 +44,5 @@ Table of Contents:
 
    faq/costura-support
    faq/disable-path-masking
+   faq/unable-to-reference-after-protect
    faq/when-and-why-use-bitmono

@@ -15,7 +15,7 @@ public class ObjectReturnType : Protection
         var systemObject = factory.Object;
         foreach (var method in parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.Signature != null && method.Signature.ReturnsValue(systemBoolean))
+            if (method.Signature != null && method.Signature.ReturnsValueOf(systemBoolean))
             {
                 if (method is { IsConstructor: false, IsVirtual: false, IsSetMethod: false, IsGetMethod: false }
                     && method.NotAsync())

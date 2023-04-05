@@ -15,3 +15,4 @@ global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.DotNet.Signatures.Types;
+global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;

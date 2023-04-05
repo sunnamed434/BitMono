@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS8604
+#pragma warning disable CS8604
 namespace BitMono.CLI;
 
 internal class Program
@@ -14,8 +14,9 @@ internal class Program
     https://github.com/sunnamed434/BitMono
     {BitMonoFileVersionText}";
 
-    private static async Task Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
+        var errorCode = KnownReturnStatuses.Success;
         try
         {
             Console.Title = BitMonoFileVersionText;
@@ -33,11 +34,11 @@ internal class Program
             var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();
-
             var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)
             {
-                return;
+                errorCode = KnownReturnStatuses.Failure;
+                return errorCode;
             }
 
             Console.Clear();
@@ -53,7 +54,8 @@ internal class Program
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");
                 Console.ReadLine();
-                return;
+                errorCode = KnownReturnStatuses.Failure;
+                return errorCode;
             }
 
             if (obfuscation.OpenFileDestinationInFileExplorer)
@@ -64,8 +66,10 @@ internal class Program
         catch (Exception ex)
         {
             Console.WriteLine("Something went wrong! " + ex);
+            errorCode = KnownReturnStatuses.Failure;
         }
         Console.WriteLine("Enter anything to exit!");
         Console.ReadLine();
+        return errorCode;
     }
 }

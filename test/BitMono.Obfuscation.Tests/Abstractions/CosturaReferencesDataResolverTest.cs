@@ -38,7 +38,8 @@ public class CosturaReferencesDataResolverTest
 
         var result = module.Resources.First(r => r.Name.Value.Equals(costuraResourceName));
 
-        result.IsEmbeddedCosturaResource()
+        result
+            .IsEmbeddedCosturaResource()
             .Should()
             .BeTrue();
     }
