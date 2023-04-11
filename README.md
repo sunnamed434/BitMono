@@ -19,6 +19,11 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 </p>
 
 <p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after-2.png"
+  alt="Before and after obfuscation preview by BitMono 2"
+</p>
+
+<p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/GUI.png"
   alt="GUI"
 </p>
@@ -33,7 +38,20 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
   alt="Configuration"
 </p>
 
-Want more previews? Click **[here][previews]**.
+## Usability
+BitMono breaks the most popular tools using just one packer, such as:
+- dnspy;
+- dnlib;
+- AsmResolver;
+- MonoCecil;
+- ILSpy;
+- PEBear;
+- DetectItEasy;
+- CFF Explorer
+- Perhaps, some dumpers?
+- and many, many more...
+
+So, if you will add more protection to the file, I think it would seem like total magic. :D
 
 ## Documentation
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
@@ -132,6 +150,8 @@ Credits
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
+**[OpenMod][openmod_source]** Definitely, openmod inspired this project a lot with services and clean code, extensive similar things to openmod.
+
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
 **[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
@@ -149,6 +169,7 @@ Credits
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
+[openmod_source]: https://github.com/openmod/openmod
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
 [simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
 [author_0x59r11]: https://github.com/0x59R11
