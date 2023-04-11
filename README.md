@@ -132,6 +132,8 @@ Credits
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
+**[OpenMod][openmod_source]** Definitely, openmod inspired this project a lot with services and clean code, extensive similar things to openmod.
+
 **[Kao and his blogs][author_kao_blog]** thanks a lot of these blogs.
 
 **[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
@@ -149,6 +151,7 @@ Credits
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
+[openmod_source]: https://github.com/openmod/openmod
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
 [simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
 [author_0x59r11]: https://github.com/0x59R11
