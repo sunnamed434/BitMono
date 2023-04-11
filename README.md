@@ -19,6 +19,11 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 </p>
 
 <p align="center">
+<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after-2.png"
+  alt="Before and after obfuscation preview by BitMono 2"
+</p>
+
+<p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/GUI.png"
   alt="GUI"
 </p>
@@ -33,7 +38,20 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
   alt="Configuration"
 </p>
 
-Want more previews? Click **[here][previews]**.
+## Usability
+BitMono breaks the most popular tools using just one packer, such as:
+- dnspy;
+- dnlib;
+- AsmResolver;
+- MonoCecil;
+- ILSpy;
+- PEBear;
+- DetectItEasy;
+- CFF Explorer
+- Perhaps, some dumpers?
+- and many, many more...
+
+So, if you will add more protection to the file, I think it would seem like total magic. :D
 
 ## Documentation
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
