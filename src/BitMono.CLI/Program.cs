@@ -5,7 +5,6 @@ internal class Program
 {
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
-
     private static readonly string AsciiArt = @$"
        ___  _ __  __  ___
       / _ )(_) /_/  |/  /__  ___  ___
