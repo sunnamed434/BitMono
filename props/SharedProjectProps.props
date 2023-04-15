@@ -11,7 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <Authors>sunnamed434</Authors>
     <Version>0.13.1-alpha.25</Version>
-    <InformationalVersion>0.13.0-alpha.25</InformationalVersion>
+    <InformationalVersion>0.13.1-alpha.25</InformationalVersion>
     <Company>BitMono</Company>
     <Copyright>sunnamed434</Copyright>
     <LangVersion>10</LangVersion>
