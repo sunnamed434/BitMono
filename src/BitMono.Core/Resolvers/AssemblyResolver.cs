@@ -35,7 +35,7 @@ public static class AssemblyResolver
                     var definition = AssemblyDefinition.FromBytes(data);
                     if (signatureComparer.Equals(originalReference, definition))
                     {
-                        context.AssemblyResolver.AddToCache(originalReference, definition);
+                        context.AssemblyResolver.Resolve(definition);
                         resolvedReferences.Add(originalReference);
                         resolved = true;
                         break;
@@ -53,7 +53,6 @@ public static class AssemblyResolver
         }
 
         var succeed = failedToResolveReferences.Count == 0;
-
         return new AssemblyResolve
         {
             ResolvedReferences = resolvedReferences,
