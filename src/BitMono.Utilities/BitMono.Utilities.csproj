@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AsmResolver" Version="5.1.0" />
     <PackageReference Include="AsmResolver.DotNet" Version="5.1.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />

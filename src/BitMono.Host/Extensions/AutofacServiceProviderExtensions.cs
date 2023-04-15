@@ -29,7 +29,7 @@ public static class AutofacServiceProviderExtensions
         source.AddOptions()
             .Configure<ProtectionSettings>(protections.Configuration)
             .Configure<Criticals>(criticals.Configuration)
-            .Configure<Obfuscation>(obfuscation.Configuration);
+            .Configure<ObfuscationSettings>(obfuscation.Configuration);
         return source;
     }
 }

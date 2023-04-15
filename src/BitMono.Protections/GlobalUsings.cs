@@ -22,5 +22,6 @@ global using BitMono.Core.Injection;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Services;
 global using BitMono.Utilities.AsmResolver;
+global using JetBrains.Annotations;
 global using MethodAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.MethodAttributes;
 global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.Rows.TypeAttributes;

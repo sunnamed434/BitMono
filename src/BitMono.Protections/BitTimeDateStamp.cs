@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[UsedImplicitly]
 [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 public class BitTimeDateStamp : PackerProtection
 {

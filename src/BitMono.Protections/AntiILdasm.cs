@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[UsedImplicitly]
 public class AntiILdasm : Protection
 {
     public AntiILdasm(ProtectionContext context) : base(context)

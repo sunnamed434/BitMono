@@ -5,7 +5,7 @@ public class ObfuscateAssemblyAttributeResolverTest
     [Fact]
     public void WhenObfuscateAssemblyAttributeResolving_AndAssemblyHasObfuscateAssemblyAttributeIsPrivateTrue_ThenShouldBeTrue()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ObfuscateAssemblyAttributeObfuscationExclude = true,
         };

@@ -38,7 +38,7 @@ public partial class Protect
                 var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 var runtimeModule = ModuleDefinition.FromFile(Path.Combine(baseDirectory, ExternalComponentsFile));
 
-                var obfuscation = ServiceProvider.GetRequiredService<IOptions<BitMono.Shared.Models.Obfuscation>>().Value;
+                var obfuscation = ServiceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
                 var obfuscationAttributeResolver = ServiceProvider.GetRequiredService<ObfuscationAttributeResolver>();
 
                 var dependencies = Directory.GetFiles(_dependenciesDirectoryName);

@@ -4,13 +4,13 @@ public class BitMonoContextFactory
 {
     private readonly ModuleDefinition _module;
     private readonly IReferencesDataResolver _referencesDataResolver;
-    private readonly Shared.Models.Obfuscation _obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
 
-    public BitMonoContextFactory(ModuleDefinition module, IReferencesDataResolver referencesDataResolver, Shared.Models.Obfuscation obfuscation)
+    public BitMonoContextFactory(ModuleDefinition module, IReferencesDataResolver referencesDataResolver, ObfuscationSettings obfuscationSettings)
     {
         _module = module;
         _referencesDataResolver = referencesDataResolver;
-        _obfuscation = obfuscation;
+        _obfuscationSettings = obfuscationSettings;
     }
 
     public BitMonoContext Create(string outputDirectoryName, string fileName)
@@ -20,7 +20,7 @@ public class BitMonoContextFactory
         {
             OutputDirectoryName = outputDirectoryName,
             ReferencesData = referencesData,
-            Watermark = _obfuscation.Watermark,
+            Watermark = _obfuscationSettings.Watermark,
             FileName = fileName
         };
     }

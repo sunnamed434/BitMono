@@ -1,5 +1,6 @@
 | Versions:                       |
 |---------------------------------|
+| [v0.13.1-alpha](#v0131-alpha25) |
 | [v0.13.0-alpha](#v0130-alpha24) |
 | [v0.12.2-alpha](#v0122-alpha23) |
 | [v0.12.1-alpha](#v0121-alpha22) |
@@ -26,6 +27,11 @@
 | [v0.1.0](#v010)                 |
 
 ---
+### v0.13.1-alpha.25:
+2023-04-15
+#### Fixed:
+* Assembly Resolve, which caused problems with PE build.
+
 ### v0.13.0-alpha.24:
 2023-04-05
 #### Added:

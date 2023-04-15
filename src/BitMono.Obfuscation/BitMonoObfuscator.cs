@@ -1,9 +1,9 @@
-﻿using BitMono.Utilities.Runtime;
-
-#pragma warning disable CS8604
+﻿#pragma warning disable CS8604
 #pragma warning disable CS8602
 namespace BitMono.Obfuscation;
 
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
+[SuppressMessage("ReSharper", "InvertIf")]
 public class BitMonoObfuscator
 {
     private readonly ProtectionContext _context;
@@ -12,9 +12,8 @@ public class BitMonoObfuscator
     private readonly IDataWriter _dataWriter;
     private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
     private readonly ObfuscateAssemblyAttributeResolver _obfuscateAssemblyAttributeResolver;
-    private readonly Shared.Models.Obfuscation _obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly IInvokablePipeline _invokablePipeline;
-    private readonly MembersResolver _memberResolver;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
     private readonly ProtectionsNotifier _protectionsNotifier;
     private readonly ObfuscationAttributesStripper _obfuscationAttributesStripper;
@@ -31,7 +30,7 @@ public class BitMonoObfuscator
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
         ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver,
-        Shared.Models.Obfuscation obfuscation,
+        ObfuscationSettings obfuscationSettings,
         ILogger logger)
     {
         _context = context;
@@ -40,16 +39,15 @@ public class BitMonoObfuscator
         _dataWriter = dataWriter;
         _obfuscationAttributeResolver = obfuscationAttributeResolver;
         _obfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
-        _obfuscation = obfuscation;
+        _obfuscationSettings = obfuscationSettings;
         _logger = logger.ForContext<BitMonoObfuscator>();
         _invokablePipeline = new InvokablePipeline();
-        _memberResolver = new MembersResolver();
         _protectionExecutionNotifier = new ProtectionExecutionNotifier(_logger);
-        _protectionsNotifier = new ProtectionsNotifier(_obfuscation, _logger);
-        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(_obfuscation,
+        _protectionsNotifier = new ProtectionsNotifier(_obfuscationSettings, _logger);
+        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(_obfuscationSettings,
             _obfuscationAttributeResolver, _obfuscateAssemblyAttributeResolver);
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
-        _protectionParametersFactory = new ProtectionParametersFactory(_memberResolver, _memberResolvers);
+        _protectionParametersFactory = new ProtectionParametersFactory(_memberResolvers);
     }
 
     public async Task ProtectAsync()
@@ -92,17 +90,21 @@ public class BitMonoObfuscator
     {
         _logger.Information("Starting resolving dependencies...");
         var assemblyResolve = AssemblyResolver.Resolve(_context.BitMonoContext.ReferencesData, _context);
-        foreach (var reference in assemblyResolve.ResolvedReferences)
+        var resolvedReferences = assemblyResolve.ResolvedReferences;
+        for (var i = 0; i < resolvedReferences.Count; i++)
         {
+            var reference = resolvedReferences[i];
             _logger.Information("Successfully resolved dependency: {0}", reference.FullName);
         }
-        foreach (var reference in assemblyResolve.FailedToResolveReferences)
+        var failedToResolveReferences = assemblyResolve.FailedToResolveReferences;
+        for (var i = 0; i < failedToResolveReferences.Count; i++)
         {
+            var reference = failedToResolveReferences[i];
             _logger.Warning("Failed to resolve dependency: {0}", reference.FullName);
         }
         if (assemblyResolve.Succeed == false)
         {
-            if (_obfuscation.FailOnNoRequiredDependency)
+            if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
                 _logger.Fatal("Please, specify needed dependencies, or set in obfuscation.json FailOnNoRequiredDependency to false");
                 return Task.FromResult(false);
@@ -171,7 +173,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> OutputPEImageBuildErrorsAsync()
     {
-        if (_obfuscation.OutputPEImageBuildErrors)
+        if (_obfuscationSettings.OutputPEImageBuildErrors)
         {
             if (_imageBuild.DiagnosticBag.HasErrors)
             {

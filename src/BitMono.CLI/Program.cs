@@ -5,7 +5,6 @@ internal class Program
 {
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
-
     private static readonly string AsciiArt = @$"
        ___  _ __  __  ___
       / _ )(_) /_/  |/  /__  ___  ___
@@ -30,7 +29,7 @@ internal class Program
                 .Build();
 
             var lifetimeScope = serviceProvider.LifetimeScope;
-            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.ObfuscationSettings>>().Value;
             var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();

@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[UsedImplicitly]
 public class AntiDe4dot : Protection
 {
     public AntiDe4dot(ProtectionContext context) : base(context)

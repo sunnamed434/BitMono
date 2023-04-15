@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.7" />
     <PackageReference Include="Microsoft.JSInterop" Version="6.0.9" />
     <PackageReference Include="morelinq" Version="3.3.2" />

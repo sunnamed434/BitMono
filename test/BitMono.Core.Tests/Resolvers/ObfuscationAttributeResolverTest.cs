@@ -6,7 +6,7 @@ public class ObfuscationAttributeResolverTest
     [InlineData(nameof(CallToCalli))]
     public void WhenObfuscationAttributeResolving_AndTypeHasComplexObfuscationAttributeWithExcludeFalse_ThenShouldBeFalse(string feature)
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
@@ -27,7 +27,7 @@ public class ObfuscationAttributeResolverTest
     [InlineData(nameof(CallToCalli))]
     public void WhenObfuscationAttributeResolving_AndTypeHasObfuscationAttributeCallToCalli_ThenShouldBeTrue(string feature)
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
@@ -46,7 +46,7 @@ public class ObfuscationAttributeResolverTest
     [Fact]
     public void WhenObfuscationAttributeResolving_AndTypeHasVoidObfuscationAttribute_ThenShouldBeFalse()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
@@ -65,7 +65,7 @@ public class ObfuscationAttributeResolverTest
     [Fact]
     public void WhenObfuscationAttributeResolving_AndMethodHasVoidObfuscationAttribute_ThenShouldBeFalse()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ObfuscationAttributeObfuscationExclude = true,
         };

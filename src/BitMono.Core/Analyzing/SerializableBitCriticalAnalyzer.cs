@@ -2,16 +2,16 @@ namespace BitMono.Core.Analyzing;
 
 public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
-    private readonly Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
 
-    public SerializableBitCriticalAnalyzer(IOptions<Obfuscation> obfuscation)
+    public SerializableBitCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
     {
-        m_Obfuscation = obfuscation.Value;
+        _obfuscationSettings = obfuscation.Value;
     }
     
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (m_Obfuscation.SerializableBitObfuscationExclude == false)
+        if (_obfuscationSettings.SerializableBitObfuscationExclude == false)
         {
             return true;
         }

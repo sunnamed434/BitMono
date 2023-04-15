@@ -8,7 +8,7 @@ public class ReflectionCriticalAnalyzerTest
         var module = ModuleDefinition.FromFile(typeof(ReflectionMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(ReflectionMethods));
         var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ReflectionMembersObfuscationExclude = true
         };
@@ -27,7 +27,7 @@ public class ReflectionCriticalAnalyzerTest
         var module = ModuleDefinition.FromFile(typeof(ReflectionMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(ReflectionMethods));
         var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.Uses3Reflection));
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             ReflectionMembersObfuscationExclude = true
         };

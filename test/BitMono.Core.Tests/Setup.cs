@@ -14,20 +14,20 @@ public static class Setup
     {
         return new CriticalMethodsCriticalAnalyzer(criticals);
     }
-    public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(IOptions<Obfuscation> obfuscation)
+    public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(IOptions<ObfuscationSettings> obfuscation)
     {
         return new NoInliningMethodMemberResolver(obfuscation);
     }
-    public static ObfuscationAttributeResolver ObfuscationAttributeResolver(IOptions<Obfuscation> obfuscation)
+    public static ObfuscationAttributeResolver ObfuscationAttributeResolver(IOptions<ObfuscationSettings> obfuscation)
     {
         return new ObfuscationAttributeResolver(obfuscation, AttemptAttributeResolver());
     }
     public static ObfuscateAssemblyAttributeResolver ObfuscateAssemblyAttributeResolver(
-        IOptions<Obfuscation> obfuscation)
+        IOptions<ObfuscationSettings> obfuscation)
     {
         return new ObfuscateAssemblyAttributeResolver(obfuscation, AttemptAttributeResolver());
     }
-    public static SerializableBitCriticalAnalyzer SerializableBitCriticalAnalyzer(IOptions<Obfuscation> obfuscation)
+    public static SerializableBitCriticalAnalyzer SerializableBitCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
     {
         return new SerializableBitCriticalAnalyzer(obfuscation);
     }

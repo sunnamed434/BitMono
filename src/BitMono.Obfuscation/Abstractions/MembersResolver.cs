@@ -2,11 +2,11 @@
 
 public class MembersResolver
 {
-    public IEnumerable<IMetadataMember> Resolve(IProtection protection, IEnumerable<IMetadataMember> members, IEnumerable<IMemberResolver> resolvers)
+    public static IEnumerable<IMetadataMember> Resolve(IProtection protection, IEnumerable<IMetadataMember> members, IEnumerable<IMemberResolver> resolvers)
     {
-        return members.Where(member => canBeResolved(protection, member, resolvers));
+        return members.Where(member => CanBeResolved(protection, member, resolvers));
     }
-    private bool canBeResolved(IProtection protection, IMetadataMember member, IEnumerable<IMemberResolver> resolvers)
+    private static bool CanBeResolved(IProtection protection, IMetadataMember member, IEnumerable<IMemberResolver> resolvers)
     {
         return resolvers.All(r => r.Resolve(protection, member));
     }
