@@ -29,6 +29,14 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 1
+   :caption: Best Practices
+   :name: sec-bestpractices
+
+   bestpractices/bitmono-combo
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Configuration
    :name: sec-configuration
 
