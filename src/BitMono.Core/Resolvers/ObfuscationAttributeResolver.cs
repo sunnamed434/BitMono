@@ -2,14 +2,14 @@
 
 public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttributeData>
 {
-    private readonly Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public ObfuscationAttributeResolver(IOptions<Obfuscation> configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscationAttributeResolver(IOptions<ObfuscationSettings> configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Obfuscation = configuration.Value;
+        _obfuscationSettings = configuration.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
         m_AttributeNamespace = typeof(ObfuscationAttribute).Namespace;
         m_AttributeName = nameof(ObfuscationAttribute);
@@ -18,7 +18,7 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
     public override bool Resolve(string? featureName, IHasCustomAttribute from, out ObfuscationAttributeData? model)
     {
         model = null;
-        if (m_Obfuscation.ObfuscationAttributeObfuscationExclude == false)
+        if (_obfuscationSettings.ObfuscationAttributeObfuscationExclude == false)
         {
             return false;
         }

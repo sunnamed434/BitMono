@@ -2,14 +2,14 @@ namespace BitMono.Core.Resolvers;
 
 public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAssemblyAttributeData>
 {
-    private readonly Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public ObfuscateAssemblyAttributeResolver(IOptions<Obfuscation> configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscateAssemblyAttributeResolver(IOptions<ObfuscationSettings> configuration, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Obfuscation = configuration.Value;
+        _obfuscationSettings = configuration.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
         m_AttributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace;
         m_AttributeName = nameof(ObfuscateAssemblyAttribute);
@@ -18,7 +18,7 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
     public override bool Resolve(string? feature, IHasCustomAttribute from, out ObfuscateAssemblyAttributeData? model)
     {
         model = null;
-        if (m_Obfuscation.ObfuscateAssemblyAttributeObfuscationExclude == false)
+        if (_obfuscationSettings.ObfuscateAssemblyAttributeObfuscationExclude == false)
         {
             return false;
         }

@@ -5,7 +5,7 @@ public class NoInliningMethodMemberResolverTest
     [Fact]
     public void WhenNoInliningMethodResolving_AndMethodHasInliningBit_ThenShouldBeFalse()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             NoInliningMethodObfuscationExclude = true,
         };
@@ -24,7 +24,7 @@ public class NoInliningMethodMemberResolverTest
     [Fact]
     public void WhenNoInliningMethodResolving_AndMethodHasNoInliningBit_ThenShouldBeTrue()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             NoInliningMethodObfuscationExclude = true,
         };

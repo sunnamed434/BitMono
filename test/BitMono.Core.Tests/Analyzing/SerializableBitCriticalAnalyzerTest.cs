@@ -5,7 +5,7 @@ public class SerializableBitCriticalAnalyzerTest
     [Fact]
     public void WhenTypeSerializableBitCriticalAnalyzing_AndTypeHasSerializableBit_ThenShouldBeFalse()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             SerializableBitObfuscationExclude = true
         };
@@ -21,7 +21,7 @@ public class SerializableBitCriticalAnalyzerTest
     [Fact]
     public void WhenTypeSerializableBitCriticalAnalyzing_AndTypeHasNoSerializableBit_ThenShouldBeTrue()
     {
-        var obfuscation = new Obfuscation
+        var obfuscation = new ObfuscationSettings
         {
             SerializableBitObfuscationExclude = true
         };

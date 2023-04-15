@@ -3,19 +3,19 @@ namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsRuntimeMonikerNotifier
 {
-    private readonly Shared.Models.Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger m_Logger;
 
-    public ProtectionsRuntimeMonikerNotifier(Shared.Models.Obfuscation obfuscation, ILogger logger)
+    public ProtectionsRuntimeMonikerNotifier(ObfuscationSettings obfuscationSettings, ILogger logger)
     {
-        m_Obfuscation = obfuscation;
+        _obfuscationSettings = obfuscationSettings;
         m_Logger = logger.ForContext<ProtectionsRuntimeMonikerNotifier>();
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
     public void Notify(ProtectionsSort protectionsSort)
     {
-        if (m_Obfuscation.OutputRuntimeMonikerWarnings)
+        if (_obfuscationSettings.OutputRuntimeMonikerWarnings)
         {
             foreach (var protection in protectionsSort.SortedProtections)
             {

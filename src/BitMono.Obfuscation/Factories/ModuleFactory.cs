@@ -14,7 +14,7 @@ public class ModuleFactory : IModuleFactory
     public ModuleFactoryResult Create()
     {
         var moduleReaderParameters = new ModuleReaderParameters(_errorListener);
-        var module = SerializedModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
+        var module = ModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
         var managedPEImageBuilder = new ManagedPEImageBuilder(MetadataBuilderFlags.PreserveAll);
 
         return new ModuleFactoryResult

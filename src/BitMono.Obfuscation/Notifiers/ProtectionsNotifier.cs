@@ -3,12 +3,12 @@ namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsNotifier
 {
-    private readonly Shared.Models.Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger m_Logger;
 
-    public ProtectionsNotifier(Shared.Models.Obfuscation obfuscation, ILogger logger)
+    public ProtectionsNotifier(ObfuscationSettings obfuscationSettings, ILogger logger)
     {
-        m_Obfuscation = obfuscation;
+        _obfuscationSettings = obfuscationSettings;
         m_Logger = logger.ForContext<ProtectionsNotifier>();
     }
 
@@ -16,7 +16,7 @@ public class ProtectionsNotifier
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     public void Notify(ProtectionsSort protectionsSort)
     {
-        if (m_Obfuscation.NotifyProtections)
+        if (_obfuscationSettings.NotifyProtections)
         {
             if (protectionsSort.HasProtections)
             {
@@ -33,7 +33,7 @@ public class ProtectionsNotifier
                     stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(p => p.GetName())));
                 }
                 m_Logger.Information("Enabled protections: {0}", stringBuilder.ToString());
-                var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(m_Obfuscation, m_Logger);
+                var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, m_Logger);
                 runtimeMonikerNotifier.Notify(protectionsSort);
             }
             if (protectionsSort.DeprecatedProtections.Any())

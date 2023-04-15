@@ -4,16 +4,16 @@ namespace BitMono.Obfuscation.Abstractions;
 
 public class ObfuscationAttributesStripper
 {
-    private readonly Shared.Models.Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
     private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
 
     public ObfuscationAttributesStripper(
-        Shared.Models.Obfuscation obfuscation,
+        ObfuscationSettings obfuscationSettings,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
         ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver)
     {
-        m_Obfuscation = obfuscation;
+        _obfuscationSettings = obfuscationSettings;
         m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
         m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
     }
@@ -29,7 +29,7 @@ public class ObfuscationAttributesStripper
             foreach (var protection in protectionsSort.ProtectionsResolve.FoundProtections)
             {
                 var protectionName = protection.GetName();
-                if (m_Obfuscation.StripObfuscationAttributes)
+                if (_obfuscationSettings.StripObfuscationAttributes)
                 {
                     if (m_ObfuscationAttributeResolver.Resolve(protectionName, customAttribute, out ObfuscationAttributeData? obfuscationAttributeData))
                     {

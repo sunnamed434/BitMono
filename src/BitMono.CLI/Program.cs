@@ -29,7 +29,7 @@ internal class Program
                 .Build();
 
             var lifetimeScope = serviceProvider.LifetimeScope;
-            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.Obfuscation>>().Value;
+            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.ObfuscationSettings>>().Value;
             var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();

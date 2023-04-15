@@ -1,7 +1,7 @@
 ﻿#nullable enable
 namespace BitMono.Shared.Models;
 
-public class Obfuscation
+public class ObfuscationSettings
 {
     public bool Watermark { get; set; }
     public bool NotifyProtections { get; set; }

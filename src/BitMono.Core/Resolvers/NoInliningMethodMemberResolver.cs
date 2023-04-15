@@ -4,16 +4,16 @@ namespace BitMono.Core.Resolvers;
 
 public class NoInliningMethodMemberResolver : IMemberResolver
 {
-    private readonly Obfuscation m_Obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
 
-    public NoInliningMethodMemberResolver(IOptions<Obfuscation> obfuscation)
+    public NoInliningMethodMemberResolver(IOptions<ObfuscationSettings> obfuscation)
     {
-        m_Obfuscation = obfuscation.Value;
+        _obfuscationSettings = obfuscation.Value;
     }
 
     public bool Resolve(IProtection? protection, IMetadataMember member)
     {
-        if (m_Obfuscation.NoInliningMethodObfuscationExclude == false)
+        if (_obfuscationSettings.NoInliningMethodObfuscationExclude == false)
         {
             return true;
         }

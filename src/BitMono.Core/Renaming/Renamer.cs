@@ -5,24 +5,24 @@ public class Renamer
 {
     private readonly NameCriticalAnalyzer _nameCriticalAnalyzer;
     private readonly SpecificNamespaceCriticalAnalyzer _specificNamespaceCriticalAnalyzer;
-    private readonly Obfuscation _obfuscation;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly RandomNext _randomNext;
 
     public Renamer(
         NameCriticalAnalyzer nameCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
-        IOptions<Obfuscation> configuration,
+        IOptions<ObfuscationSettings> configuration,
         RandomNext randomNext)
     {
         _nameCriticalAnalyzer = nameCriticalAnalyzer;
         _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
-        _obfuscation = configuration.Value;
+        _obfuscationSettings = configuration.Value;
         _randomNext = randomNext;
     }
 
     public string RenameUnsafely()
     {
-        var strings = _obfuscation.RandomStrings;
+        var strings = _obfuscationSettings.RandomStrings;
         var randomStringOne = strings[_randomNext(0, strings.Length - 1)] + " " + strings[_randomNext(0, strings.Length - 1)];
         var randomStringTwo = strings[_randomNext(0, strings.Length - 1)];
         var randomStringThree = strings[_randomNext(0, strings.Length - 1)];
