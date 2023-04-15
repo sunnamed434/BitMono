@@ -1,5 +1,6 @@
 namespace BitMono.Protections;
 
+[UsedImplicitly]
 [RuntimeMonikerMono]
 public class BitMono : PackerProtection
 {

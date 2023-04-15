@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AsmResolver.DotNet" Version="5.1.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
     <PackageReference Include="Pocket" Version="0.0.3" />

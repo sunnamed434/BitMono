@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[UsedImplicitly]
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class ObjectReturnType : Protection
 {
