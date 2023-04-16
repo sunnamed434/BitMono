@@ -96,11 +96,11 @@ This is also was wrong because if you will try to get access to the ``type.Metho
 
 .. code-block:: csharp
 
-	public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
        
         foreach (var type in parameters.Members.OfType<MethodDefinition>())
         {
-
+    
         }
     }
