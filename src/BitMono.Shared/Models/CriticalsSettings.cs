@@ -1,6 +1,6 @@
 namespace BitMono.Shared.Models;
 
-public class Criticals
+public class CriticalsSettings
 {
     public bool UseCriticalAttributes { get; set; }
     public bool UseCriticalModelAttributes { get; set; }

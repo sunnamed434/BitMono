@@ -21,7 +21,7 @@ public class CriticalMethodsCriticalAnalyzerTest
     [ClassData(typeof(MethodsData))]
     public void WhenMethodCriticalAnalyzing_AndMethodIsCritical_ThenShouldBeFalse(string methodName)
     {
-        var criticals = new Criticals
+        var criticals = new CriticalsSettings
         {
             UseCriticalMethods = true,
             CriticalMethods = new List<string>
@@ -45,7 +45,7 @@ public class CriticalMethodsCriticalAnalyzerTest
     [ClassData(typeof(MethodsData))]
     public void WhenMethodCriticalAnalyzing_AndMethodIsNotCritical_ThenShouldBeTrue(string methodName)
     {
-        var criticals = new Criticals
+        var criticals = new CriticalsSettings
         {
             UseCriticalMethods = true,
             CriticalMethods = new List<string>

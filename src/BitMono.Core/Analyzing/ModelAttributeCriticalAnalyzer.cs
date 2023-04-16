@@ -4,22 +4,22 @@ namespace BitMono.Core.Analyzing;
 
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
-    private readonly Criticals m_Criticals;
+    private readonly CriticalsSettings _criticalsSettings;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals, AttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IOptions<CriticalsSettings> criticals, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Criticals = criticals.Value;
+        _criticalsSettings = criticals.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
     {
-        if (m_Criticals.UseCriticalModelAttributes == false)
+        if (_criticalsSettings.UseCriticalModelAttributes == false)
         {
             return true;
         }
-        var criticalAttributes = m_Criticals.CriticalModelAttributes;
+        var criticalAttributes = _criticalsSettings.CriticalModelAttributes;
         for (var i = 0; i < criticalAttributes.Count; i++)
         {
             var attribute = criticalAttributes[i];
