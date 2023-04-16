@@ -1,8 +1,7 @@
 Protection Runtime Moniker
 ==========================
 
-You have protection which working only with specific runtime.
-
+You have protection that works only with specific runtime and you want to let it know to the user.
 By default BitMono provides an opportunity to talk with the users, to warn them, like be careful, this protection working only with ``Mono``.
 
 .. code-block:: csharp
@@ -21,7 +20,7 @@ If you will check what's going on under the hood, you will see that it simply sp
 	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public class RuntimeMonikerMonoAttribute : RuntimeMonikerAttribute
 	{
-		// 									 public const string Mono = "Mono";
+		// public const string Mono = "Mono";
 	    public RuntimeMonikerMonoAttribute() : base(KnownRuntimeMonikers.Mono)
 	    {
 	    }

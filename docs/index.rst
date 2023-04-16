@@ -36,6 +36,8 @@ Table of Contents:
    developers/obfuscation-execution-order
    developers/which-base-protection-select
    developers/protection-runtime-moniker
+   developers/do-not-resolve-members
+   developers/configuration
 
 
 .. toctree::
