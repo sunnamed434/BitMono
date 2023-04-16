@@ -5,8 +5,8 @@ For comfort BitMono provides an API which able to do not pass specfic members in
 
 
 .. code-block:: csharp
-
-
+    
+    
 	public override Task ExecuteAsync(ProtectionParameters parameters)
 
 
@@ -14,8 +14,8 @@ Everything which is passed inside of the ``parameters`` is all members which wer
 
 
 .. code-block:: csharp
-
-
+    
+    
     public List<IMetadataMember> Members { get; }
 
 
@@ -24,8 +24,8 @@ Add attribute ``[DoNotResolve(MemberInclusionFlags.Reflection)]`` with ``MemberI
 
 
 .. code-block:: csharp
-
-
+    
+    
 	[UsedImplicitly] // This is not intentional, but suppresses warnings by ReSharper
 	[DoNotResolve(MemberInclusionFlags.Reflection)]
 	public class MagicProtection : Protection
@@ -33,8 +33,8 @@ Add attribute ``[DoNotResolve(MemberInclusionFlags.Reflection)]`` with ``MemberI
 
 
 You can specify multiple inclusion flags:
-
-
+    
+    
 .. code-block:: csharp
 	[UsedImplicitly]
 	[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
@@ -50,8 +50,8 @@ THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
 
 
 .. code-block:: csharp
-
-
+    
+    
 	public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in Context.Module.GetAllTypes())
@@ -66,8 +66,8 @@ Instead highly recommend to use this:
 
 
 .. code-block:: csharp
-
-
+    
+    
 	public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
@@ -101,7 +101,8 @@ This is also was wrong because if you will try to get access to the ``type.Metho
 
 
 .. code-block:: csharp
-
+    
+    
 	public override Task ExecuteAsync(ProtectionParameters parameters)
     {
        
