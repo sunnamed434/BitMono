@@ -1,16 +1,11 @@
-﻿using BitMono.Shared.Models;
-
-namespace BitMono.Protections;
+﻿namespace BitMono.Protections;
 
 [UsedImplicitly]
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class NoNamespaces : Protection
 {
-    private readonly ObfuscationSettings _obfuscationSettings;
-
-    public NoNamespaces(ObfuscationSettings obfuscationSettings, ProtectionContext context) : base(context)
+    public NoNamespaces(ProtectionContext context) : base(context)
     {
-        _obfuscationSettings = obfuscationSettings;
     }
 
     public override Task ExecuteAsync(ProtectionParameters parameters)
