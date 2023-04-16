@@ -29,6 +29,17 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 1
+   :caption: Developers
+   :name: sec-developers
+
+   developers/first-protection
+   developers/obfuscation-execution-order
+   developers/which-base-protection-select
+   developers/protection-runtime-moniker
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Best Practices
    :name: sec-bestpractices
 
