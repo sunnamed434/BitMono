@@ -1,5 +1,4 @@
 ﻿using BitMono.API.Resolvers;
-using BitMono.Core.Attributes;
 
 namespace BitMono.Core.Resolvers;
 

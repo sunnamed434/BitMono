@@ -22,6 +22,7 @@ global using BitMono.API.Analyzing;
 global using BitMono.API.Contexts;
 global using BitMono.API.Pipeline;
 global using BitMono.Core.Analyzing;
+global using BitMono.Core.Attributes;
 global using BitMono.Core.Contexts;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Services;

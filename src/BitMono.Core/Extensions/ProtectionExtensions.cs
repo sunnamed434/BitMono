@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Attributes;
-
-namespace BitMono.Core.Extensions;
+﻿namespace BitMono.Core.Extensions;
 
 public static class ProtectionExtensions
 {
