@@ -12,14 +12,14 @@ Here's example how to do that:
 
 
 .. code-block:: csharp
-	
-	
-	public class MagicProtection : Protection
-	{
-    	private readonly ObfuscationSettings _obfuscationSettings;
 
-    	public MagicProtection(ObfuscationSettings obfuscationSettings, ProtectionContext context) : base(context)
-    	{
-        	_obfuscationSettings = obfuscationSettings;
-    	}
-    }
+
+public class MagicProtection : Protection
+{
+	private readonly ObfuscationSettings _obfuscationSettings;
+
+	public MagicProtection(ObfuscationSettings obfuscationSettings, ProtectionContext context) : base(context)
+	{
+    	_obfuscationSettings = obfuscationSettings;
+	}
+}
