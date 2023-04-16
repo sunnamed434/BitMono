@@ -48,11 +48,11 @@ THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
 
 .. code-block:: csharp
     
-	public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in Context.Module.GetAllTypes())
         {
-
+    
         }
     }
 
@@ -63,11 +63,11 @@ Instead highly recommend to use this:
 
 .. code-block:: csharp
 
-	public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
-
+    
         }
     }
 
@@ -78,15 +78,15 @@ This is also was wrong because if you will try to get access to the ``type.Metho
 
 .. code-block:: csharp
 
-	public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync(ProtectionParameters parameters)
     {
         foreach (var type in parameters.Members.OfType<TypeDefinition>())
         {
-
+    
         }
         foreach (var type in parameters.Members.OfType<MethodDefinition>())
         {
-
+    
         }
     }
 
@@ -98,7 +98,6 @@ This is also was wrong because if you will try to get access to the ``type.Metho
 
     public override Task ExecuteAsync(ProtectionParameters parameters)
     {
-       
         foreach (var type in parameters.Members.OfType<MethodDefinition>())
         {
     

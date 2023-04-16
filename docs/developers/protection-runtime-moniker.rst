@@ -16,7 +16,6 @@ If you will check what's going on under the hood, you will see that it simply sp
 
 .. code-block:: csharp
 
-
 	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public class RuntimeMonikerMonoAttribute : RuntimeMonikerAttribute
 	{
@@ -31,7 +30,6 @@ If you will go deeper, you can see what's actually going on here, it says ``Inte
 
 
 .. code-block:: csharp
-
 
 	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
