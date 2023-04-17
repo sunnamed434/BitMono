@@ -1,5 +1,8 @@
 ﻿namespace BitMono.Core.Resolvers;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
+[SuppressMessage("ReSharper", "InvertIf")]
 public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolve>
 {
     private readonly CriticalsSettings _criticalsSettings;
@@ -18,8 +21,10 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
         {
             return false;
         }
-        foreach (var criticalAttribute in _criticalsSettings.CriticalAttributes)
+        var criticalAttributes = _criticalsSettings.CriticalAttributes;
+        for (var i = 0; i < criticalAttributes.Count; i++)
         {
+            var criticalAttribute = criticalAttributes[i];
             if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out var attributesResolve))
             {
                 attributeResolve = attributesResolve.First();

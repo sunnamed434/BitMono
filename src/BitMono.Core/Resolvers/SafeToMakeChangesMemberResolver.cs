@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS8602
 namespace BitMono.Core.Resolvers;
 
+[UsedImplicitly]
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
