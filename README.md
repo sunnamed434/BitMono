@@ -145,7 +145,7 @@ Credits
 
 **[Gazzi][author_gazzi]** for his help that [me][author_sunnamed434] asked a lot!
 
-**[Elliesaur][author_ellisaur]** for his acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
+**[Elliesaur][author_ellisaur]** for her acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
 
 **[Weka][author_naweka]** for his advices, help and motivation.
 
