@@ -17,4 +17,13 @@ public class CriticalMethods
     public void OnDrawGizmos()
     {
     }
+    public void OV_method()
+    {
+    }
+    public void OV_override()
+    {
+    }
+    public void OV_()
+    {
+    }
 }

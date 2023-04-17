@@ -10,6 +10,6 @@ public static class MembersResolver
     private static bool CanBeResolved(IProtection protection, IMetadataMember member,
         IEnumerable<IMemberResolver> resolvers)
     {
-        return resolvers.All(r => r.Resolve(protection, member));
+        return resolvers.All(m => m.Resolve(protection, member));
     }
 }

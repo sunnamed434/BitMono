@@ -14,6 +14,10 @@ public static class Setup
     {
         return new CriticalMethodsCriticalAnalyzer(criticals);
     }
+    public static CriticalMethodsStartsWithAnalyzer CriticalMethodsStartsWithCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    {
+        return new CriticalMethodsStartsWithAnalyzer(criticals);
+    }
     public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(IOptions<ObfuscationSettings> obfuscation)
     {
         return new NoInliningMethodMemberResolver(obfuscation);
