@@ -4,12 +4,13 @@
 </p>
 
 ## BitMono
-[![Build status][image_appveyor_main_badge]][appveyor_main_build]
+[![Build status][image_appveyor_main]][appveyor_main_build]
 [![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
 [![DeepSource][image_deepsource]][deepsource]
 [![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
+[![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
 BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, because the main target of the this project is Mono. Which uses **[AsmResolver][asmresolver]** for assembly manipulation (not a dnlib as you might already think). If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
 
@@ -135,8 +136,8 @@ Want more? Simply read the **[docs][bitmono_docs]**.
 ### Detailed build status
 Branch        | AppVeyor
 ------------- | -------------
-main          | [![Build status][image_appveyor_main_badge]][appveyor_main_build]
-dev           | [![Build status][image_appveyor_dev_badge]][appveyor_dev_build]
+main          | [![Build status][image_appveyor_main]][appveyor_main_build]
+dev           | [![Build status][image_appveyor_dev]][appveyor_dev_build]
 
 Credits
 -------
@@ -181,6 +182,7 @@ Credits
 [author_sunnamed434]: https://github.com/sunnamed434
 [appveyor_main_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev
+[bitmono_discord]: https://discord.gg/sFDHd47St4
 
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
 [image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main
@@ -188,5 +190,6 @@ Credits
 [image_deepsource]: https://deepsource.io/gh/sunnamed434/BitMono.svg/?label=active+issues&show_trend=true&token=_FJf25YbtCpPyX7SRveXCaGd
 [image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
 [image_license]: https://img.shields.io/github/license/sunnamed434/bitmono
-[image_appveyor_main_badge]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j/branch/main?svg=true
-[image_appveyor_dev_badge]: https://ci.appveyor.com/api/projects/status/b9rm3l7kduryjgcj/branch/dev?svg=true
+[image_appveyor_main]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j/branch/main?svg=true
+[image_appveyor_dev]: https://ci.appveyor.com/api/projects/status/b9rm3l7kduryjgcj/branch/dev?svg=true
+[image_bitmono_discord]: https://img.shields.io/discord/1086240163321106523?label=discord&logo=discord
