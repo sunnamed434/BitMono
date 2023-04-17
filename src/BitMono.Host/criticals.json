@@ -3,10 +3,10 @@
   // whatever else, they're not will be changed here as well.
   // This is not for complex things, just write here your critical things - it means: for example, imagine Unity there are a lot of methods
   // which doesn't even have an 'override' i.e 'override void Update()' (which is called every tick) - just void Update(), in such cases these methods
-  // shouldn't be renamed because this is like const things for Unity, and they're very important, 
+  // shouldn't be renamed because this is like const things for Unity, and they're very important,
   // for complex things use [ObfuscationAttribute(Feature = "ProtectionName")],
   // but if you don't have plans with the mess in your code, and you don't really have plans in near future to rename these critical things it can be done then.
-  
+
   // Exclude from obfuscation if the member has attribute
   // Set to true indicates whether enabled
   "UseCriticalAttributes": true,
@@ -26,6 +26,7 @@
     }
 
   ],
+
   // Exclude from obfuscation if the Model (type, i.e class) has [Serializable]/[JsonProperty], etc, attributes
   // Set to true indicates whether enabled
   "UseCriticalModelAttributes": true,
@@ -46,8 +47,9 @@
       "Namespace": "Newtonsoft.Json",
       "Name": "JsonPropertyAttribute"
     }
-    
+
   ],
+
   // Exclude from obfuscation if the type inherited specific interface
   // Set to true indicates whether enabled
   "UseCriticalInterfaces": true,
@@ -62,6 +64,7 @@
     "IOpenModPlugin"
 
   ],
+
   // Exclude from obfuscation if the type inherited specific base type
   // Set to true indicates whether enabled
   "UseCriticalBaseTypes": true,
@@ -78,6 +81,15 @@
     "RustPlugin"
 
   ],
+
+  // Exclude from obfuscation if the member starts with string
+  // Set to true indicates whether enabled
+  "UseCriticalMethodsStartsWith": true,
+  "CriticalMethodsStartsWith": [
+    // More known and used in Thanking cheats for Unturned, "overrides"
+    "OV_",
+  ],
+
   // Exclude from obfuscation method by name
   // Set to true indicates whether enabled
   "UseCriticalMethods": true,
