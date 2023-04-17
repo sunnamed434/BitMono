@@ -26,7 +26,7 @@ If you will check what's going on under the hood, you will see that it simply sp
 	}
 
 
-If you will go deeper, you can see what's actually going on here, it says ``Intended for Mono runtime``, so that means to the endpoint user it will output this information and warn they.
+If you will go further, you can see what's actually going on here, it says ``Intended for Mono runtime``, so that means to the endpoint user it will output this information and warn they.
 
 
 .. code-block:: csharp

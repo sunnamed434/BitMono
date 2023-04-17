@@ -4,30 +4,30 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class CallToCalli : Protection
 {
-    public CallToCalli(ProtectionContext context) : base(context)
+    public CallToCalli(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        var runtimeMethodHandle = Context.Importer.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
-        var getTypeFromHandleMethod = Context.Importer.ImportMethod(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[]
+        var runtimeMethodHandle = Context.ModuleImporter.ImportType(typeof(RuntimeMethodHandle)).ToTypeSignature(isValueType: true);
+        var getTypeFromHandleMethod = Context.ModuleImporter.ImportMethod(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[]
         {
             typeof(RuntimeTypeHandle)
         }));
-        var getModuleMethod = Context.Importer.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
-        var resolveMethodMethod = Context.Importer.ImportMethod(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new[]
+        var getModuleMethod = Context.ModuleImporter.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
+        var resolveMethodMethod = Context.ModuleImporter.ImportMethod(typeof(System.Reflection.Module).GetMethod(nameof(System.Reflection.Module.ResolveMethod), new[]
         {
             typeof(int)
         }));
-        var getMethodHandleMethod = Context.Importer.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
-        var getFunctionPointerMethod = Context.Importer.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
+        var getMethodHandleMethod = Context.ModuleImporter.ImportMethod(typeof(MethodBase).GetProperty(nameof(MethodBase.MethodHandle)).GetMethod);
+        var getFunctionPointerMethod = Context.ModuleImporter.ImportMethod(typeof(RuntimeMethodHandle).GetMethod(nameof(RuntimeMethodHandle.GetFunctionPointer)));
 
         var moduleType = Context.Module.GetOrCreateModuleType();
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body && method.DeclaringType?.IsModuleType == false)
             {

@@ -1,18 +1,18 @@
-﻿namespace BitMono.Obfuscation.Factories;
+﻿namespace BitMono.Core.Factories;
 
 public class ProtectionParametersFactory
 {
-    private readonly IEnumerable<IMemberResolver> m_MemberResolvers;
+    private readonly ICollection<IMemberResolver> _memberResolvers;
 
-    public ProtectionParametersFactory(IEnumerable<IMemberResolver> memberResolvers)
+    public ProtectionParametersFactory(ICollection<IMemberResolver> memberResolvers)
     {
-        m_MemberResolvers = memberResolvers;
+        _memberResolvers = memberResolvers;
     }
 
     public ProtectionParameters Create(IProtection protection, ModuleDefinition module)
     {
         var definitions = module.FindMembers();
-        var targets = MembersResolver.Resolve(protection, definitions, m_MemberResolvers).ToList();
+        var targets = MembersResolver.Resolve(protection, definitions, _memberResolvers).ToList();
         foreach (var method in targets.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)

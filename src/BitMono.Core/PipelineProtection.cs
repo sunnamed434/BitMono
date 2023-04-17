@@ -2,7 +2,7 @@ namespace BitMono.Core;
 
 public abstract class PipelineProtection : ProtectionBase, IPipelineProtection
 {
-    protected PipelineProtection(ProtectionContext context) : base(context)
+    protected PipelineProtection(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

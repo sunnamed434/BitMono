@@ -1,6 +1,4 @@
-﻿using BitMono.Core.Resolvers;
-
-namespace BitMono.Core.Analyzing;
+﻿namespace BitMono.Core.Analyzing;
 
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {

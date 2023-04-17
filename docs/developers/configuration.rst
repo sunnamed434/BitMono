@@ -16,10 +16,18 @@ Here's example how to do that:
 
 	public class MagicProtection : Protection
 	{
+		private readonly ProtectionSettings _protectionSettings;
+		private readonly CriticalsSettings _criticalsSettings;
 		private readonly ObfuscationSettings _obfuscationSettings;
-	
-		public MagicProtection(ObfuscationSettings obfuscationSettings, ProtectionContext context) : base(context)
+
+		public MagicProtection(
+			IOptions<ProtectionSettings> protectionSettings,
+			IOptions<CriticalsSettings> criticalsSettings,
+			IOptions<ObfuscationSettings> obfuscationSettings,
+			IServiceProvider serviceProvider) : base(serviceProvider)
 		{
-	    	_obfuscationSettings = obfuscationSettings;
-		}
+			_protectionSettings = protectionSettings.Value;
+			_criticalsSettings = criticalsSettings.Value;
+			_obfuscationSettings = obfuscationSettings.Value;
+		}	
 	}

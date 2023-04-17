@@ -6,7 +6,7 @@ public class DotNetHook : Protection
     private readonly Renamer _renamer;
     private readonly RandomNext _randomNext;
 
-    public DotNetHook(Renamer renamer, RandomNext randomNext, ProtectionContext context) : base(context)
+    public DotNetHook(Renamer renamer, RandomNext randomNext, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
         _randomNext = randomNext;
@@ -14,7 +14,7 @@ public class DotNetHook : Protection
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
         var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
@@ -29,7 +29,7 @@ public class DotNetHook : Protection
 
         var moduleType = Context.Module.GetOrCreateModuleType();
         var moduleCctor = moduleType.GetOrCreateStaticConstructor();
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)
             {

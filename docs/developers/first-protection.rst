@@ -23,11 +23,11 @@ Always create your protection ONLY in BitMono.Protections, DI (dependency inject
 	public class StandardProtection : Protection
 	{
 	    // Inject services right here
-	    public StandardProtection(ProtectionContext context) : base(context)
+	    public StandardProtection(IServiceProvider serviceProvider) : base(serviceProvider)
 	    {
 	    }
 	
-	    public override Task ExecuteAsync(ProtectionParameters parameters)
+	    public override Task ExecuteAsync()
 	    {
 	        // All protection are intended to be async, so you can simply await your things, or if you don't have,
 	        // then use Task.CompletedTask

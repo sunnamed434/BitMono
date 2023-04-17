@@ -1,13 +1,14 @@
 ﻿namespace BitMono.Obfuscation.Factories;
 
-public class ProtectionContextFactory
+public class EngineContextFactory
 {
     private readonly ModuleFactoryResult _moduleFactoryResult;
     private readonly ModuleDefinition _runtimeModule;
     private readonly BitMonoContext _context;
     private readonly CancellationToken _cancellationToken;
 
-    public ProtectionContextFactory(ModuleFactoryResult moduleFactoryResult, ModuleDefinition runtimeModule, BitMonoContext context, CancellationToken cancellationToken)
+    public EngineContextFactory(ModuleFactoryResult moduleFactoryResult, ModuleDefinition runtimeModule,
+        BitMonoContext context, CancellationToken cancellationToken)
     {
         _moduleFactoryResult = moduleFactoryResult;
         _runtimeModule = runtimeModule;
@@ -15,9 +16,9 @@ public class ProtectionContextFactory
         _cancellationToken = cancellationToken;
     }
 
-    public ProtectionContext Create()
+    public EngineContext Create()
     {
-        return new ProtectionContext
+        return new EngineContext
         {
             Module = _moduleFactoryResult.Module,
             RuntimeModule = _runtimeModule,

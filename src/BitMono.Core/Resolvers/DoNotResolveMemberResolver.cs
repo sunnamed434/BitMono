@@ -1,21 +1,20 @@
-﻿using BitMono.API.Resolvers;
+﻿namespace BitMono.Core.Resolvers;
 
-namespace BitMono.Core.Resolvers;
-
+[UsedImplicitly]
 public class DoNotResolveMemberResolver : IMemberResolver
 {
-    private readonly RuntimeCriticalAnalyzer m_RuntimeCriticalAnalyzer;
-    private readonly ModelAttributeCriticalAnalyzer m_ModelAttributeCriticalAnalyzer;
-    private readonly ReflectionCriticalAnalyzer m_ReflectionCriticalAnalyzer;
+    private readonly RuntimeCriticalAnalyzer _runtimeCriticalAnalyzer;
+    private readonly ModelAttributeCriticalAnalyzer _modelAttributeCriticalAnalyzer;
+    private readonly ReflectionCriticalAnalyzer _reflectionCriticalAnalyzer;
 
     public DoNotResolveMemberResolver(
         RuntimeCriticalAnalyzer runtimeCriticalAnalyzer,
         ModelAttributeCriticalAnalyzer modelAttributeCriticalAnalyzer,
         ReflectionCriticalAnalyzer reflectionCriticalAnalyzer)
     {
-        m_RuntimeCriticalAnalyzer = runtimeCriticalAnalyzer;
-        m_ModelAttributeCriticalAnalyzer = modelAttributeCriticalAnalyzer;
-        m_ReflectionCriticalAnalyzer = reflectionCriticalAnalyzer;
+        _runtimeCriticalAnalyzer = runtimeCriticalAnalyzer;
+        _modelAttributeCriticalAnalyzer = modelAttributeCriticalAnalyzer;
+        _reflectionCriticalAnalyzer = reflectionCriticalAnalyzer;
     }
 
     public bool Resolve(IProtection protection, IMetadataMember member)
@@ -24,9 +23,9 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             return true;
         }
-        if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.SpecialRuntime))
+        if (doNotResolveAttribute!.MemberInclusion.HasFlag(MemberInclusionFlags.SpecialRuntime))
         {
-            if (m_RuntimeCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
+            if (_runtimeCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
             {
                 return false;
             }
@@ -35,7 +34,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Model))
             {
-                if (m_ModelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute) == false)
+                if (_modelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute) == false)
                 {
                     return false;
                 }
@@ -45,7 +44,7 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Reflection))
             {
-                if (m_ReflectionCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
+                if (_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
                 {
                     return false;
                 }

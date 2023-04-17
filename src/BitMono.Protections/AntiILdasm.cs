@@ -3,11 +3,11 @@
 [UsedImplicitly]
 public class AntiILdasm : Protection
 {
-    public AntiILdasm(ProtectionContext context) : base(context)
+    public AntiILdasm(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         MscorlibInjector.InjectAttribute(Context.Module, typeof(SuppressIldasmAttribute).Namespace, nameof(SuppressIldasmAttribute), Context.Module);
         return Task.CompletedTask;

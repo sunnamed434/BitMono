@@ -6,10 +6,13 @@ For comfort BitMono provides an API which able to do not pass specfic members in
 
 .. code-block:: csharp
     
-	public override Task ExecuteAsync(ProtectionParameters parameters)
+	public override Task ExecuteAsync()
+    {
+        Context.Parameters.Members
+    }
 
 
-Everything which is passed inside of the ``parameters`` is all members which were found inside of the module and sorted by BitMono (skipped members with [ObfuscationAttributes] and not only), and passed using ``IMetadataMember`` AsmResolver's APIs.
+Everything which is passed inside of the ``Context.Parameters.Members`` is all members which were found inside of the module and sorted by BitMono (skipped members with [ObfuscationAttribute] and [DoNotResolveAttribute], etc), and passed using ``IMetadataMember`` AsmResolver's APIs.
 
 
 .. code-block:: csharp

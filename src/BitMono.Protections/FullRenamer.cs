@@ -6,15 +6,15 @@ public class FullRenamer : Protection
 {
     private readonly Renamer _renamer;
 
-    public FullRenamer(Renamer renamer, ProtectionContext context) : base(context)
+    public FullRenamer(Renamer renamer, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.DeclaringType?.IsModuleType == false && method is { IsConstructor: false, IsVirtual: false })
             {
@@ -28,14 +28,14 @@ public class FullRenamer : Protection
                 }
             }
         }
-        foreach (var type in parameters.Members.OfType<TypeDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
             if (type.IsModuleType == false)
             {
                 _renamer.Rename(type);
             }
         }
-        foreach (var field in parameters.Members.OfType<FieldDefinition>())
+        foreach (var field in Context.Parameters.Members.OfType<FieldDefinition>())
         {
             if (field.DeclaringType?.IsModuleType == false)
             {

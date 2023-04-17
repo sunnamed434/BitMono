@@ -1,6 +1,4 @@
-﻿using BitMono.API.Resolvers;
-
-namespace BitMono.Core.Resolvers;
+﻿namespace BitMono.Core.Resolvers;
 
 public class AttributeResolver<TModel> : IAttributeResolver<TModel> where TModel : class
 {

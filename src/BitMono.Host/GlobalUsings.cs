@@ -18,6 +18,7 @@ global using BitMono.API.Analyzing;
 global using BitMono.API.Pipeline;
 global using BitMono.API.Resolvers;
 global using BitMono.Core.Configuration;
+global using BitMono.Core.Factories;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Resolvers;
 global using BitMono.Core.Services;

@@ -1,7 +1,4 @@
-﻿using Autofac;
-using Microsoft.Maui.Controls;
-
-namespace BitMono.GUI
+﻿namespace BitMono.GUI
 {
     public partial class MainPage : ContentPage
     {

@@ -13,6 +13,7 @@ global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using Autofac;
 global using BitMono.API.Contexts;
 global using BitMono.API.Pipeline;
 global using BitMono.Core;

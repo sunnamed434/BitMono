@@ -6,11 +6,11 @@ public class BitDotNet : PackerProtection
 {
     private const int PEHeaderWithExtraByteHex = 0x00014550;
 
-    public BitDotNet(ProtectionContext context) : base(context)
+    public BitDotNet(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         using (var stream = File.Open(Context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
         using (var reader = new BinaryReader(stream))
