@@ -4,6 +4,7 @@ Which base Protection better to select and why?
 Since BitMono contains inside the heart 3 different types of protection, it's very necessary to understand what you're working on and what type of protection you need to select.
 
 So, 3 different type of protections:
+
 1. Protection
 2. PipelineProtection
 3. Packer
