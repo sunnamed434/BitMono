@@ -6,7 +6,7 @@
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "ObjectReturnType",
@@ -18,7 +18,7 @@
     },
     {
       "Name": "FullRenamer",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDebugBreakpoints",
@@ -34,11 +34,11 @@
     },
     {
       "Name": "CallToCalli",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDecompiler",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitMethodDotnet",
@@ -46,7 +46,7 @@
     },
     {
       "Name": "BitTimeDateStamp",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "BitDotNet",

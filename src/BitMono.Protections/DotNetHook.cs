@@ -59,7 +59,7 @@ public class DotNetHook : Protection
                                     dummyMethod.ParameterDefinitions.Add(parameter);
                                 }
                                 var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody(dummyMethod);
-                                if (callingMethod.Signature.ReturnsValue)
+                                if (callingMethod.Signature!.ReturnsValue)
                                 {
                                     dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
                                 }
@@ -80,7 +80,7 @@ public class DotNetHook : Protection
                                 moduleType.Methods.Add(initializationMethod);
 
                                 instruction.Operand = dummyMethod;
-                                var randomIndex = _randomNext(0, moduleCctor.CilMethodBody.Instructions.CountWithoutRet());
+                                var randomIndex = _randomNext(0, moduleCctor.CilMethodBody!.Instructions.CountWithoutRet());
                                 moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }

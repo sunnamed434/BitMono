@@ -1,7 +1,6 @@
 ﻿namespace BitMono.Protections;
 
 [UsedImplicitly]
-[SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 public class BitTimeDateStamp : PackerProtection
 {
     public BitTimeDateStamp(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -10,7 +9,7 @@ public class BitTimeDateStamp : PackerProtection
 
     public override Task ExecuteAsync()
     {
-        using (var stream = File.Open(Context.BitMonoContext.OutputFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+        using (var stream = File.Open(Context.BitMonoContext.OutputFile!, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
         using (var reader = new BinaryReader(stream))
         using (var writer = new BinaryWriter(stream))
         {
