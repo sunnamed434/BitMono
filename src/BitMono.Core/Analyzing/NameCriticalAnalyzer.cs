@@ -1,30 +1,35 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class NameCriticalAnalyzer :
     ICriticalAnalyzer<TypeDefinition>,
     ICriticalAnalyzer<MethodDefinition>
 {
-    private readonly CriticalInterfacesCriticalAnalyzer m_CriticalInterfacesCriticalAnalyzer;
-    private readonly CriticalBaseTypesCriticalAnalyzer m_CriticalBaseTypesCriticalAnalyzer;
-    private readonly CriticalMethodsCriticalAnalyzer m_CriticalMethodsCriticalAnalyzer;
+    private readonly CriticalInterfacesCriticalAnalyzer _criticalInterfacesCriticalAnalyzer;
+    private readonly CriticalBaseTypesCriticalAnalyzer _criticalBaseTypesCriticalAnalyzer;
+    private readonly CriticalMethodsCriticalAnalyzer _criticalMethodsCriticalAnalyzer;
+    private readonly CriticalMethodsStartsWithAnalyzer _criticalMethodsStartsWithAnalyzer;
 
     public NameCriticalAnalyzer(
         CriticalInterfacesCriticalAnalyzer criticalInterfacesCriticalAnalyzer,
         CriticalBaseTypesCriticalAnalyzer criticalBaseTypesCriticalAnalyzer,
-        CriticalMethodsCriticalAnalyzer criticalMethodsCriticalAnalyzer)
+        CriticalMethodsCriticalAnalyzer criticalMethodsCriticalAnalyzer,
+        CriticalMethodsStartsWithAnalyzer criticalMethodsStartsWithAnalyzer)
     {
-        m_CriticalInterfacesCriticalAnalyzer = criticalInterfacesCriticalAnalyzer;
-        m_CriticalBaseTypesCriticalAnalyzer = criticalBaseTypesCriticalAnalyzer;
-        m_CriticalMethodsCriticalAnalyzer = criticalMethodsCriticalAnalyzer;
+        _criticalInterfacesCriticalAnalyzer = criticalInterfacesCriticalAnalyzer;
+        _criticalBaseTypesCriticalAnalyzer = criticalBaseTypesCriticalAnalyzer;
+        _criticalMethodsCriticalAnalyzer = criticalMethodsCriticalAnalyzer;
+        _criticalMethodsStartsWithAnalyzer = criticalMethodsStartsWithAnalyzer;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (m_CriticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+        if (_criticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
         {
             return false;
         }
-        if (m_CriticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+        if (_criticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
         {
             return false;
         }
@@ -32,6 +37,14 @@ public class NameCriticalAnalyzer :
     }
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        return m_CriticalMethodsCriticalAnalyzer.NotCriticalToMakeChanges(method);
+        if (_criticalMethodsCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
+        {
+            return false;
+        }
+        if (_criticalMethodsStartsWithAnalyzer.NotCriticalToMakeChanges(method) == false)
+        {
+            return false;
+        }
+        return true;
     }
 }
