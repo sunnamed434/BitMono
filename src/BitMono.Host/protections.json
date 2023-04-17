@@ -6,7 +6,7 @@
     },
     {
       "Name": "AntiDe4dot",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "ObjectReturnType",
@@ -34,7 +34,7 @@
     },
     {
       "Name": "CallToCalli",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "AntiDecompiler",
