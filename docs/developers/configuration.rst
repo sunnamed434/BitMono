@@ -3,6 +3,7 @@ Configuration
 
 Injecting Configuration(s) in Protection constructor.
 BitMono have such configuartions and all of them you can inject in your protection constructor:
+
 - ProtectionSettings
 - CriticalsSettings
 - ObfuscationSettings
