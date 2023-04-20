@@ -1,17 +1,13 @@
-﻿#pragma warning disable CS8604
-#pragma warning disable CS8602
-namespace BitMono.Obfuscation;
+﻿namespace BitMono.Obfuscation;
 
 [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 [SuppressMessage("ReSharper", "InvertIf")]
+[SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Local")]
 public class BitMonoObfuscator
 {
     private readonly EngineContext _context;
-    private readonly IEnumerable<IMemberResolver> _memberResolvers;
     private readonly ProtectionsSort _protectionsSort;
     private readonly IDataWriter _dataWriter;
-    private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
-    private readonly ObfuscateAssemblyAttributeResolver _obfuscateAssemblyAttributeResolver;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly IInvokablePipeline _invokablePipeline;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
@@ -19,12 +15,11 @@ public class BitMonoObfuscator
     private readonly ObfuscationAttributesStripper _obfuscationAttributesStripper;
     private readonly ObfuscationAttributesStripNotifier _obfuscationAttributesStripNotifier;
     private readonly ILogger _logger;
-    private PEImageBuildResult _imageBuild;
+    private PEImageBuildResult? _imageBuild;
     private long _startTime;
 
     public BitMonoObfuscator(
         EngineContext context,
-        IEnumerable<IMemberResolver> memberResolvers,
         ProtectionsSort protectionsSortResult,
         IDataWriter dataWriter,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
@@ -33,18 +28,15 @@ public class BitMonoObfuscator
         ILogger logger)
     {
         _context = context;
-        _memberResolvers = memberResolvers;
         _protectionsSort = protectionsSortResult;
         _dataWriter = dataWriter;
-        _obfuscationAttributeResolver = obfuscationAttributeResolver;
-        _obfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
         _obfuscationSettings = obfuscationSettings;
         _logger = logger.ForContext<BitMonoObfuscator>();
         _invokablePipeline = new InvokablePipeline();
         _protectionExecutionNotifier = new ProtectionExecutionNotifier(_logger);
         _protectionsNotifier = new ProtectionsNotifier(_obfuscationSettings, _logger);
         _obfuscationAttributesStripper = new ObfuscationAttributesStripper(_obfuscationSettings,
-            _obfuscationAttributeResolver, _obfuscateAssemblyAttributeResolver);
+            obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver);
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
     }
 
@@ -173,9 +165,10 @@ public class BitMonoObfuscator
     {
         if (_obfuscationSettings.OutputPEImageBuildErrors)
         {
-            if (_imageBuild.DiagnosticBag.HasErrors)
+            if (_imageBuild?.DiagnosticBag.HasErrors == true)
             {
-                _logger.Warning("{0} error(s) were registered while building the PE", _imageBuild.DiagnosticBag.Exceptions.Count);
+                var errorsCount = _imageBuild.DiagnosticBag.Exceptions.Count;
+                _logger.Warning("{0} error(s) were registered while building the PE", errorsCount);
                 foreach (var exception in _imageBuild.DiagnosticBag.Exceptions)
                 {
                     _logger.Error(exception, exception.GetType().Name);
@@ -192,6 +185,12 @@ public class BitMonoObfuscator
     {
         try
         {
+            if (_imageBuild?.ConstructedImage == null)
+            {
+                _logger.Fatal("Unable to construct the PE image!");
+                return false;
+            }
+
             var memoryStream = new MemoryStream();
             var fileBuilder = new ManagedPEFileBuilder();
             fileBuilder

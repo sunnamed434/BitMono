@@ -15,7 +15,8 @@ public class CriticalMethodsStartsWithAnalyzer : ICriticalAnalyzer<MethodDefinit
         {
             return true;
         }
-        var criticalMethodsStartWith = _criticalsSettings.CriticalMethodsStartWith;
+
+        var criticalMethodsStartWith = _criticalsSettings.CriticalMethodsStartsWith;
         if (criticalMethodsStartWith.Any(c => c.StartsWith(method.Name)))
         {
             return false;

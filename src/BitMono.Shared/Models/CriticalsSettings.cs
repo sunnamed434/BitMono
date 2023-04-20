@@ -12,6 +12,6 @@ public class CriticalsSettings
     public List<CriticalAttribute>? CriticalModelAttributes { get; set; }
     public List<string>? CriticalInterfaces { get; set; }
     public List<string>? CriticalBaseTypes { get; set; }
-    public List<string>? CriticalMethodsStartWith { get; set; }
+    public List<string>? CriticalMethodsStartsWith { get; set; }
     public List<string>? CriticalMethods { get; set; }
 }

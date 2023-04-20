@@ -6,7 +6,8 @@ public class BitMonoContextFactory
     private readonly IReferencesDataResolver _referencesDataResolver;
     private readonly ObfuscationSettings _obfuscationSettings;
 
-    public BitMonoContextFactory(ModuleDefinition module, IReferencesDataResolver referencesDataResolver, ObfuscationSettings obfuscationSettings)
+    public BitMonoContextFactory(ModuleDefinition module, IReferencesDataResolver referencesDataResolver,
+        ObfuscationSettings obfuscationSettings)
     {
         _module = module;
         _referencesDataResolver = referencesDataResolver;

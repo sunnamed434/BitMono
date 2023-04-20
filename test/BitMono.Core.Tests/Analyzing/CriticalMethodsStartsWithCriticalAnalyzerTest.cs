@@ -23,7 +23,7 @@ public class CriticalMethodsStartsWithCriticalAnalyzerTest
         var criticals = new CriticalsSettings
         {
             UseCriticalMethodsStartsWith = true,
-            CriticalMethodsStartWith = new List<string>
+            CriticalMethodsStartsWith = new List<string>
             {
                 methodName
             }
@@ -47,7 +47,7 @@ public class CriticalMethodsStartsWithCriticalAnalyzerTest
         var criticals = new CriticalsSettings
         {
             UseCriticalMethodsStartsWith = true,
-            CriticalMethodsStartWith = new List<string>
+            CriticalMethodsStartsWith = new List<string>
             {
                 methodName
             }

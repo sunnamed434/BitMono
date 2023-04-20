@@ -22,6 +22,7 @@ global using BitMono.API.Resolvers;
 global using BitMono.Core.Contexts;
 global using BitMono.Core.Pipeline;
 global using BitMono.Core.Resolvers;
+global using BitMono.Core.Services;
 global using BitMono.Obfuscation.Abstractions;
 global using BitMono.Obfuscation.Factories;
 global using BitMono.Obfuscation.Interfaces;
