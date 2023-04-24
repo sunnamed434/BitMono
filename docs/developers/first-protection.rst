@@ -11,7 +11,6 @@ Always create your protection ONLY in BitMono.Protections, DI (dependency inject
 
 .. code-block:: csharp
 	
-	
 	// Mark the Protection as [UsedImplicitly] because for JetBrains Rider or ReSharper users protection will look kinda is not used,
 	// and other developers might delete it as an unnecessary class in the project,
 	// because protections are instantiated via DI container, so, its invisible for JetBrains Rider and ReSharper,

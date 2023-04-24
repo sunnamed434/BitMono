@@ -6,7 +6,7 @@ For comfort BitMono provides an API which able to do not pass specfic members in
 
 .. code-block:: csharp
     
-	public override Task ExecuteAsync()
+    public override Task ExecuteAsync()
     {
         Context.Parameters.Members
     }
@@ -94,7 +94,7 @@ This is also was wrong because if you will try to get access to the ``type.Metho
     }
 
 
-- Need access to the methods? Then just iterrate through the methods:
+Need access to the methods? Then just iterrate through the methods:
 
 
 .. code-block:: csharp

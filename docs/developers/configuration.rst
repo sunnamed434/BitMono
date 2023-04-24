@@ -14,13 +14,12 @@ Here's example how to do that:
 
 .. code-block:: csharp
 
-
 	public class MagicProtection : Protection
 	{
 		private readonly ProtectionSettings _protectionSettings;
 		private readonly CriticalsSettings _criticalsSettings;
 		private readonly ObfuscationSettings _obfuscationSettings;
-
+	
 		public MagicProtection(
 			IOptions<ProtectionSettings> protectionSettings,
 			IOptions<CriticalsSettings> criticalsSettings,
