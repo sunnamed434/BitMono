@@ -4,13 +4,13 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class NoNamespaces : Protection
 {
-    public NoNamespaces(ProtectionContext context) : base(context)
+    public NoNamespaces(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var type in parameters.Members.OfType<TypeDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
             if (type.HasNamespace())
             {

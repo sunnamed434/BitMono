@@ -4,29 +4,29 @@
 [RuntimeMonikerMono]
 public class AntiDecompiler : PipelineProtection
 {
-    public AntiDecompiler(ProtectionContext context) : base(context)
+    public AntiDecompiler(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         return Task.CompletedTask;
     }
     public override IEnumerable<IPhaseProtection> PopulatePipeline()
     {
-        yield return new AntiDnSpyAnalyzer(Context);
+        yield return new AntiDnSpyAnalyzer(ServiceProvider);
     }
 }
 [ProtectionName(nameof(AntiDnSpyAnalyzer))]
 public class AntiDnSpyAnalyzer : PhaseProtection
 {
-    public AntiDnSpyAnalyzer(ProtectionContext context) : base(context)
+    public AntiDnSpyAnalyzer(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var type in parameters.Members.OfType<TypeDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
             if (type.IsModuleType && type.IsNested)
             {

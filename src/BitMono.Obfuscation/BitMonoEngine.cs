@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS8602
-#pragma warning disable CS8604
-namespace BitMono.Obfuscation;
+﻿namespace BitMono.Obfuscation;
 
 [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
 [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -12,7 +10,7 @@ public class BitMonoEngine
     private readonly ObfuscateAssemblyAttributeResolver _obfuscateAssemblyAttributeResolver;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly List<ProtectionSetting> _protectionSettings;
-    private readonly List<IMemberResolver> _memberResolvers;
+    private readonly IEngineContextAccessor _engineContextAccessor;
     private readonly ILogger _logger;
 
     public BitMonoEngine(ILifetimeScope lifetimeScope)
@@ -22,24 +20,22 @@ public class BitMonoEngine
         _obfuscateAssemblyAttributeResolver = _lifetimeScope.Resolve<ObfuscateAssemblyAttributeResolver>();
         _obfuscationSettings = _lifetimeScope.Resolve<IOptions<ObfuscationSettings>>().Value;
         _protectionSettings = _lifetimeScope.Resolve<IOptions<ProtectionSettings>>().Value.Protections!;
-        _memberResolvers = _lifetimeScope
-            .Resolve<ICollection<IMemberResolver>>()
-            .ToList();;
+        _engineContextAccessor = _lifetimeScope.Resolve<IEngineContextAccessor>();
         _logger = _lifetimeScope
             .Resolve<ILogger>()
             .ForContext<BitMonoEngine>();
     }
 
-    internal async Task<bool> StartAsync(ProtectionContext context, IDataWriter dataWriter)
+    public async Task<bool> StartAsync(EngineContext engineContext, IDataWriter dataWriter)
     {
-        context.ThrowIfCancellationRequested();
+        engineContext.ThrowIfCancellationRequested();
 
-        _logger.Information("Loaded Module {0}", context.Module.Name.Value);
+        _logger.Information("Loaded Module {0}", engineContext.Module.Name!.Value);
 
         var protections = _lifetimeScope
-            .Resolve<ICollection<IProtection>>(new TypedParameter(typeof(ProtectionContext), context))
+            .Resolve<ICollection<IProtection>>()
             .ToList();
-        var protectionsSorter = new ProtectionsSorter(_obfuscationAttributeResolver, context.Module.Assembly);
+        var protectionsSorter = new ProtectionsSorter(_obfuscationAttributeResolver, engineContext.Module.Assembly!);
         var protectionsSort = protectionsSorter.Sort(protections, _protectionSettings);
         if (protectionsSort.HasProtections == false)
         {
@@ -47,23 +43,28 @@ public class BitMonoEngine
             return false;
         }
 
-        var obfuscator = new BitMonoObfuscator(context, _memberResolvers, protectionsSort, dataWriter, _obfuscationAttributeResolver, _obfuscateAssemblyAttributeResolver, _obfuscationSettings, _logger);
+        var obfuscator = new BitMonoObfuscator(engineContext, protectionsSort, dataWriter,
+            _obfuscationAttributeResolver, _obfuscateAssemblyAttributeResolver, _obfuscationSettings, _logger);
         await obfuscator.ProtectAsync();
         return true;
     }
-    public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter, IReferencesDataResolver referencesDataResolver, CancellationToken cancellationToken)
+    public async Task<bool> StartAsync(ObfuscationNeeds needs, IModuleFactory moduleFactory, IDataWriter dataWriter,
+        IReferencesDataResolver referencesDataResolver, CancellationToken cancellationToken)
     {
         var runtimeModule = ModuleDefinition.FromFile(typeof(Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
-        var bitMonoContextFactory = new BitMonoContextFactory(moduleFactoryResult.Module, referencesDataResolver, _obfuscationSettings);
+        var bitMonoContextFactory = new BitMonoContextFactory(moduleFactoryResult.Module!, referencesDataResolver, _obfuscationSettings);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
-        var protectionContextFactory = new ProtectionContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);
-        var protectionContext = protectionContextFactory.Create();
+        var engineContextFactory = new EngineContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);
+        var engineContext = engineContextFactory.Create();
+        _engineContextAccessor.Instance = engineContext;
         bitMonoContext.OutputFile = OutputFilePathFactory.Create(bitMonoContext);
-        return await StartAsync(protectionContext, dataWriter);
+        return await StartAsync(engineContext, dataWriter);
     }
     public async Task<bool> StartAsync(ObfuscationNeeds needs, CancellationToken cancellationToken)
     {
-        return await StartAsync(needs, new ModuleFactory(File.ReadAllBytes(needs.FileName), new LogErrorListener(_logger)), new FileDataWriter(), new AutomaticReferencesDataResolver(needs.ReferencesDirectoryName), cancellationToken);
+        return await StartAsync(needs,
+            new ModuleFactory(File.ReadAllBytes(needs.FileName), new LogErrorListener(_logger)), new FileDataWriter(),
+            new AutomaticReferencesDataResolver(needs.ReferencesDirectoryName), cancellationToken);
     }
 }

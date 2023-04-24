@@ -4,17 +4,17 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class ObjectReturnType : Protection
 {
-    public ObjectReturnType(ProtectionContext context) : base(context)
+    public ObjectReturnType(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         var factory = Context.Module.CorLibTypeFactory;
         var systemBoolean = factory.Boolean;
         var systemObject = factory.Object;
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.Signature != null && method.Signature.ReturnsValueOf(systemBoolean))
             {

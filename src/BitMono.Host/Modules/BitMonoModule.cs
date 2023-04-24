@@ -49,6 +49,21 @@ public class BitMonoModule : Module
         var serviceCollection = new ServiceCollection();
         m_ConfigureServices?.Invoke(serviceCollection);
 
+        containerBuilder.RegisterType<EngineContextAccessor>()
+            .As<IEngineContextAccessor>()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<ProtectionContextFactory>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
+        containerBuilder.RegisterType<ProtectionParametersFactory>()
+            .AsSelf()
+            .OwnedByLifetimeScope()
+            .SingleInstance();
+
         containerBuilder.Register<RandomNext>(_ => RandomService.RandomNext)
             .OwnedByLifetimeScope()
             .SingleInstance();

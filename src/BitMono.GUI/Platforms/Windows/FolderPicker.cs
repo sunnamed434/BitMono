@@ -1,8 +1,4 @@
-﻿using BitMono.GUI.API;
-using Microsoft.Maui;
-using System;
-using System.Threading.Tasks;
-using WinRT.Interop;
+﻿using WinRT.Interop;
 using WindowsFolderPicker = Windows.Storage.Pickers.FolderPicker;
 
 namespace BitMono.GUI.Platforms.Windows

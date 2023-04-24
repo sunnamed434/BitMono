@@ -2,20 +2,20 @@
 
 public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
-    private readonly Criticals m_Criticals;
+    private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalMethodsCriticalAnalyzer(IOptions<Criticals> criticals)
+    public CriticalMethodsCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
     {
-        m_Criticals = criticals.Value;
+        _criticalsSettings = criticals.Value;
     }
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        if (m_Criticals.UseCriticalMethods == false)
+        if (_criticalsSettings.UseCriticalMethods == false)
         {
             return true;
         }
-        var criticalMethodNames = m_Criticals.CriticalMethods;
+        var criticalMethodNames = _criticalsSettings.CriticalMethods;
         if (criticalMethodNames.Any(c => c.Equals(method.Name)))
         {
             return false;

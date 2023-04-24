@@ -6,13 +6,17 @@ public static class Setup
     {
         return new AttemptAttributeResolver(new CustomAttributeResolver());
     }
-    public static ModelAttributeCriticalAnalyzer ModelAttributeCriticalAnalyzer(IOptions<Criticals> criticals)
+    public static ModelAttributeCriticalAnalyzer ModelAttributeCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
     {
         return new ModelAttributeCriticalAnalyzer(criticals, AttemptAttributeResolver());
     }
-    public static CriticalMethodsCriticalAnalyzer CriticalMethodsCriticalAnalyzer(IOptions<Criticals> criticals)
+    public static CriticalMethodsCriticalAnalyzer CriticalMethodsCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
     {
         return new CriticalMethodsCriticalAnalyzer(criticals);
+    }
+    public static CriticalMethodsStartsWithAnalyzer CriticalMethodsStartsWithCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    {
+        return new CriticalMethodsStartsWithAnalyzer(criticals);
     }
     public static NoInliningMethodMemberResolver NoInliningMethodMemberResolver(IOptions<ObfuscationSettings> obfuscation)
     {

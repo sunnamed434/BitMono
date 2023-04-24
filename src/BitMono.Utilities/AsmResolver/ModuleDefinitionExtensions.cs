@@ -3,7 +3,8 @@
 public static class ModuleDefinitionExtensions
 {
     [return: AllowNull]
-    public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type) where TMember : class, IMetadataMember
+    public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type)
+        where TMember : class, IMetadataMember
     {
         if (source.TryLookupMember(new MetadataToken((uint)type.MetadataToken), out TMember? member))
         {

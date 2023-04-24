@@ -1,20 +1,27 @@
-﻿#pragma warning disable CS8618
-namespace BitMono.Core.Contexts;
+﻿namespace BitMono.Core.Contexts;
 
 public class ProtectionContext
 {
-    [AllowNull] public ModuleDefinition Module { get; set; }
-    [AllowNull] public ModuleReaderParameters ModuleReaderParameters { get; set; }
-    [AllowNull] public IPEImageBuilder PEImageBuilder { get; set; }
-    [AllowNull] public ModuleDefinition RuntimeModule { get; set; }
-    [AllowNull] public ReferenceImporter RuntimeImporter { get; set; }
-    [AllowNull] public BitMonoContext BitMonoContext { get; set; }
-    [AllowNull] public CancellationToken CancellationToken { get; set; }
+    public ProtectionContext(ModuleDefinition module, ModuleDefinition runtimeModule, BitMonoContext bitMonoContext,
+        ProtectionParameters parameters, CancellationToken cancellationToken)
+    {
+        Module = module;
+        RuntimeModule = runtimeModule;
+        BitMonoContext = bitMonoContext;
+        Parameters = parameters;
+        CancellationToken = cancellationToken;
+    }
 
-    [AllowNull] public IAssemblyResolver AssemblyResolver => Module.MetadataResolver.AssemblyResolver;
-    [AllowNull] public ReferenceImporter Importer => Module.DefaultImporter;
+    public ModuleDefinition Module { get; }
+    public ModuleDefinition RuntimeModule { get; }
+    public BitMonoContext BitMonoContext { get; }
+    public ProtectionParameters Parameters { get; }
+    public CancellationToken CancellationToken { get; }
 
-    public void ThrowIfCancellationRequested()
+    public ReferenceImporter ModuleImporter => Module.DefaultImporter;
+    public ReferenceImporter RuntimeImporter => Module.DefaultImporter;
+
+    public void ThrowIfCancellationTokenRequested()
     {
         CancellationToken.ThrowIfCancellationRequested();
     }

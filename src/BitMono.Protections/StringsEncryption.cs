@@ -6,13 +6,13 @@ public class StringsEncryption : Protection
 {
     private readonly Renamer _renamer;
 
-    public StringsEncryption(Renamer renamer, ProtectionContext context) : base(context)
+    public StringsEncryption(Renamer renamer, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         var globalModuleType = Context.Module.GetOrCreateModuleType();
         MscorlibInjector.InjectCompilerGeneratedValueType(Context.Module, globalModuleType, _renamer.RenameUnsafely());
@@ -28,7 +28,7 @@ public class StringsEncryption : Protection
 
         var decryptMethod = memberCloneResult.GetClonedMember(runtimeDecryptMethod);
 
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.CilMethodBody is { } body)
             {

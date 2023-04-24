@@ -2,20 +2,20 @@
 
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
-    private readonly Criticals m_Criticals;
+    private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalInterfacesCriticalAnalyzer(IOptions<Criticals> criticals)
+    public CriticalInterfacesCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
     {
-        m_Criticals = criticals.Value;
+        _criticalsSettings = criticals.Value;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (m_Criticals.UseCriticalInterfaces == false)
+        if (_criticalsSettings.UseCriticalInterfaces == false)
         {
             return true;
         }
-        var criticalInterfaces = m_Criticals.CriticalInterfaces;
+        var criticalInterfaces = _criticalsSettings.CriticalInterfaces;
         if (type.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface.Name)) != null))
         {
             return false;

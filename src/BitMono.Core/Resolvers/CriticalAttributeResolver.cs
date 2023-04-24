@@ -1,26 +1,24 @@
-﻿using BitMono.API.Resolvers;
-
-namespace BitMono.Core.Resolvers;
+﻿namespace BitMono.Core.Resolvers;
 
 public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolve>
 {
-    private readonly Criticals m_Criticals;
+    private readonly CriticalsSettings _criticalsSettings;
     private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public CriticalAttributeResolver(IOptions<Criticals> criticals, AttemptAttributeResolver attemptAttributeResolver)
+    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals, AttemptAttributeResolver attemptAttributeResolver)
     {
-        m_Criticals = criticals.Value;
+        _criticalsSettings = criticals.Value;
         m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public override bool Resolve(string? feature, IHasCustomAttribute from, out CustomAttributeResolve? attributeResolve)
     {
         attributeResolve = null;
-        if (m_Criticals.UseCriticalAttributes == false)
+        if (_criticalsSettings.UseCriticalAttributes == false)
         {
             return false;
         }
-        foreach (var criticalAttribute in m_Criticals.CriticalAttributes)
+        foreach (var criticalAttribute in _criticalsSettings.CriticalAttributes)
         {
             if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out var attributesResolve))
             {

@@ -1,5 +1,6 @@
 | Versions:                       |
 |---------------------------------|
+| [v0.14.0-alpha](#v0140-alpha26) |
 | [v0.13.1-alpha](#v0131-alpha25) |
 | [v0.13.0-alpha](#v0130-alpha24) |
 | [v0.12.2-alpha](#v0122-alpha23) |
@@ -27,6 +28,15 @@
 | [v0.1.0](#v010)                 |
 
 ---
+### v0.14.0-alpha.26:
+2023-04-24
+#### Added:
+* More docs for developers and users.
+* New parameter in `criticals.json` which allows to ignore methods starts with name, i.e `CriticalMethodsStartsWith`.
+
+#### Changed:
+* Major changes in Protections APIs.
+
 ### v0.13.1-alpha.25:
 2023-04-15
 #### Fixed:

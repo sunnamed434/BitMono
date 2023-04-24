@@ -3,11 +3,11 @@
 [UsedImplicitly]
 public class AntiDe4dot : Protection
 {
-    public AntiDe4dot(ProtectionContext context) : base(context)
+    public AntiDe4dot(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         CustomInjector.InjectAttribute(Context.Module, "SmartAssembly.Attributes", "PoweredBy", string.Empty);
         CustomInjector.InjectAttribute(Context.Module, "Xenocode.Client.Attributes.AssemblyAttributes", "PoweredBy", string.Empty);

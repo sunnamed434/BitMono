@@ -1,6 +1,4 @@
-﻿using BitMono.API.Resolvers;
-
-#pragma warning disable CS8602
+﻿#pragma warning disable CS8602
 namespace BitMono.Core.Resolvers;
 
 public class SafeToMakeChangesMemberResolver : IMemberResolver

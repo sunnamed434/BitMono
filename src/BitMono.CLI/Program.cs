@@ -1,4 +1,3 @@
-#pragma warning disable CS8604
 namespace BitMono.CLI;
 
 internal class Program
@@ -29,7 +28,7 @@ internal class Program
                 .Build();
 
             var lifetimeScope = serviceProvider.LifetimeScope;
-            var obfuscation = lifetimeScope.Resolve<IOptions<Shared.Models.ObfuscationSettings>>().Value;
+            var obfuscation = lifetimeScope.Resolve<IOptions<ObfuscationSettings>>().Value;
             var logger = lifetimeScope
                 .Resolve<ILogger>()
                 .ForContext<Program>();

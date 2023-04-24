@@ -2,5 +2,5 @@
 
 public interface IProtection
 {
-    Task ExecuteAsync(ProtectionParameters parameters);
+    Task ExecuteAsync();
 }

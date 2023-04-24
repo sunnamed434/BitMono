@@ -4,59 +4,59 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class AntiDebugBreakpoints : Protection
 {
-    public AntiDebugBreakpoints(ProtectionContext context) : base(context)
+    public AntiDebugBreakpoints(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         var threadSleepMethods = new List<IMethodDescriptor>
         {
-            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
             {
                 typeof(int)
             })),
-            Context.Importer.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Thread).GetMethod(nameof(Thread.Sleep), new[]
             {
                 typeof(TimeSpan)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(int)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(TimeSpan)
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(int),
                 typeof(CancellationToken),
             })),
-            Context.Importer.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
+            Context.ModuleImporter.ImportMethod(typeof(Task).GetMethod(nameof(Task.Delay), new[]
             {
                 typeof(TimeSpan),
                 typeof(CancellationToken),
             })),
         };
-        var dateTimeUtcNowMethod = Context.Importer.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
-        var dateTimeSubtractionMethod = Context.Importer.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new[]
+        var dateTimeUtcNowMethod = Context.ModuleImporter.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
+        var dateTimeSubtractionMethod = Context.ModuleImporter.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new[]
         {
             typeof(DateTime),
             typeof(DateTime)
         }));
-        var timeSpanTotalMillisecondsMethod = Context.Importer.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
-        var environmentFailFast = Context.Importer.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new[]
+        var timeSpanTotalMillisecondsMethod = Context.ModuleImporter.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
+        var environmentFailFast = Context.ModuleImporter.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new[]
         {
             typeof(string)
         }));
-        var dateTime = Context.Importer.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
-        var timeSpan = Context.Importer.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
-        var @int = Context.Importer.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
+        var dateTime = Context.ModuleImporter.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
+        var timeSpan = Context.ModuleImporter.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
+        var @int = Context.ModuleImporter.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
 
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.NotGetterAndSetter() && method.IsConstructor == false)
             {

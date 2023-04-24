@@ -6,16 +6,16 @@ public class BitMethodDotnet : Protection
 {
     private readonly RandomNext _randomNext;
 
-    public BitMethodDotnet(RandomNext randomNext, ProtectionContext context) : base(context)
+    public BitMethodDotnet(RandomNext randomNext, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _randomNext = randomNext;
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
     [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var method in parameters.Members.OfType<MethodDefinition>())
+        foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method is { CilMethodBody: { } body, IsConstructor: false })
             {
