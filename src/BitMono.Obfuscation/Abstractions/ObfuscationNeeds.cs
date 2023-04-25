@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Abstractions;
+﻿namespace BitMono.CLI.Modules;
 
 public class ObfuscationNeeds
 {
@@ -6,6 +6,6 @@ public class ObfuscationNeeds
     public string FileName { get; set; }
     public string FileBaseDirectory { get; set; }
     public string ReferencesDirectoryName { get; set; }
-    public string OutputDirectoryName { get; set; }
+    public string OutputPath { get; set; }
 #pragma warning restore CS8618
 }

@@ -1,6 +1,6 @@
 namespace BitMono.CLI.Modules;
 
-public class ObfuscationNeedsFactory : IObfuscationNeedsFactory
+public class ObfuscationNeedsFactory
 {
     private readonly string[] _args;
     private readonly ILogger _logger;

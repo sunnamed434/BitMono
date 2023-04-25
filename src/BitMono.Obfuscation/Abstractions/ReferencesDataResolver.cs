@@ -10,12 +10,16 @@ public class ReferencesDataResolver : IReferencesDataResolver
     }
 
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-    public IEnumerable<byte[]> Resolve(ModuleDefinition module)
+    [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+    public List<byte[]> Resolve(ModuleDefinition module)
     {
-        var dependencies = Directory.GetFiles(_referencesDirectoryName);
-        for (var i = 0; i < dependencies.Length; i++)
+        var result = new List<byte[]>();
+        var references = Directory.GetFiles(_referencesDirectoryName);
+        for (var i = 0; i < references.Length; i++)
         {
-            yield return File.ReadAllBytes(dependencies[i]);
+            var reference = references[i];
+            result.Add(File.ReadAllBytes(reference));
         }
+        return result;
     }
 }

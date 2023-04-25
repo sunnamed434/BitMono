@@ -45,9 +45,8 @@ internal class Program
             logger.Information("Everything is seems to be ok, starting obfuscation..");
             logger.Information(AsciiArt);
 
-            var cancellationTokenSource = new CancellationTokenSource();
-            var engine = new BitMonoEngine(lifetimeScope);
-            var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
+            var engine = new BitMonoEngine(serviceProvider);
+            var succeed = await engine.StartAsync(needs, CancellationToken.None);
             if (succeed == false)
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");
@@ -58,7 +57,7 @@ internal class Program
 
             if (obfuscation.OpenFileDestinationInFileExplorer)
             {
-                Process.Start(needs.OutputDirectoryName);
+                Process.Start(needs.OutputPath);
             }
         }
         catch (Exception ex)

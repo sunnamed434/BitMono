@@ -2,21 +2,23 @@ namespace BitMono.Obfuscation.Abstractions;
 
 public class AutomaticReferencesDataResolver : IReferencesDataResolver
 {
-    private readonly string _referencesDirectoryName;
+    private readonly ReferencesDataResolver _referencesDataResolver;
+    private readonly CosturaReferencesDataResolver _costuraReferencesDataResolver;
 
     public AutomaticReferencesDataResolver(string referencesDirectoryName)
     {
-        _referencesDirectoryName = referencesDirectoryName;
+        _referencesDataResolver = new ReferencesDataResolver(referencesDirectoryName);
+        _costuraReferencesDataResolver = new CosturaReferencesDataResolver();
     }
 
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
-    public IEnumerable<byte[]> Resolve(ModuleDefinition module)
+    public List<byte[]> Resolve(ModuleDefinition module)
     {
-        var referencesData = new ReferencesDataResolver(_referencesDirectoryName).Resolve(module);
-        var costuraReferencesData = new CosturaReferencesDataResolver().Resolve(module);
+        var referencesData = _referencesDataResolver.Resolve(module);
+        var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module);
         if (costuraReferencesData.IsEmpty() == false)
         {
-            return referencesData.Concat(costuraReferencesData);
+            referencesData.AddRange(costuraReferencesData);
         }
         return referencesData;
     }

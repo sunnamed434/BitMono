@@ -1,7 +1,7 @@
 namespace BitMono.CLI.Modules;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
+public class CLIOptionsObfuscationNeedsFactory
 {
     private readonly string[] _args;
     private readonly ILogger _logger;
@@ -32,19 +32,17 @@ public class CLIOptionsObfuscationNeedsFactory : IObfuscationNeedsFactory
             return null;
         }
         var fileBaseDirectory = Path.GetDirectoryName(options.File);
-        var needs = new ObfuscationNeeds
-        {
-            FileName = options.File!,
-            FileBaseDirectory = fileBaseDirectory,
-            ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
-                ? options.Libraries
-                : Path.Combine(fileBaseDirectory, "libs"),
-            OutputDirectoryName = options.Output?.IsNullOrEmpty() == false
-                ? options.Output
-                : Path.Combine(fileBaseDirectory, "output")
-        };
+        var needs = new ObfuscationNeeds();
+        needs.FileName = options.File!;
+        needs.FileBaseDirectory = fileBaseDirectory;
+        needs.ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
+            ? options.Libraries
+            : Path.Combine(fileBaseDirectory, "libs");
+        needs.OutputPath = options.Output?.IsNullOrEmpty() == false
+            ? options.Output
+            : Path.Combine(fileBaseDirectory, "output");
 
-        Directory.CreateDirectory(needs.OutputDirectoryName);
+        Directory.CreateDirectory(needs.OutputPath);
         Directory.CreateDirectory(needs.ReferencesDirectoryName);
         return needs;
     }

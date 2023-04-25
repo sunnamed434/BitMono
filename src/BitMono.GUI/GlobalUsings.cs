@@ -21,6 +21,7 @@ global using BitMono.API;
 global using BitMono.API.Resolvers;
 global using BitMono.Core.Resolvers;
 global using BitMono.GUI.Utilities.Extensions;
+global using BitMono.Host.Extensions;
 global using Microsoft.Extensions.Options;
 global using static BitMono.Utilities.Collections.CollectionExtensions;
 global using ILogger = Serilog.ILogger;

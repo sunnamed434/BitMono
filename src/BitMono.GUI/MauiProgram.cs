@@ -7,6 +7,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -16,25 +17,23 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-#if WINDOWS
-        builder.Services.AddTransient<IFolderPicker, Platforms.Windows.FolderPicker>();
-#endif
         builder.Services.AddScoped<AlertsContainer>();
         builder.Services.AddSingleton<IStoringProtections, StoringProtections>();
         var handlerLogEventSink = new HandlerLogEventSink();
         builder.Services.AddSingleton(handlerLogEventSink);
 
-        const string ProtectionsFile = "BitMono.Protections.dll";
-        Assembly.LoadFrom(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ProtectionsFile));
         builder.ConfigureContainer(new AutofacServiceProviderFactory(), configure =>
         {
-            configure.RegisterModule(new BitMonoModule(configureLogger: configureLogger =>
-            {
-                configureLogger.WriteTo.Async(configure =>
+            configure.RegisterModule(new BitMonoModule(
+                configureContainer => configureContainer.AddProtections(),
+                configureServices => configureServices.AddConfigurations(),
+                configureLogger =>
                 {
-                    configure.Sink(handlerLogEventSink);
-                });
-            }));
+                    configureLogger.WriteTo.Async(configureSink =>
+                    {
+                        configureSink.Sink(handlerLogEventSink);
+                    });
+                }));
         });
         return builder.Build();
     }

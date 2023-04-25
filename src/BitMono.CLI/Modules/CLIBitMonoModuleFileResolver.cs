@@ -1,6 +1,6 @@
 ﻿namespace BitMono.CLI.Modules;
 
-internal class CLIBitMonoModuleFileResolver
+internal static class CLIBitMonoModuleFileResolver
 {
     public static string? Resolve(string[] args)
     {

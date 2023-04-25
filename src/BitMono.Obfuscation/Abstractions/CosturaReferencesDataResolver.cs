@@ -5,8 +5,9 @@ public class CosturaReferencesDataResolver : IReferencesDataResolver
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    public IEnumerable<byte[]> Resolve(ModuleDefinition module)
+    public List<byte[]> Resolve(ModuleDefinition module)
     {
+        var result = new List<byte[]>();
         var resources = module.Resources;
         for (var i = 0; i < resources.Count; i++)
         {
@@ -16,10 +17,11 @@ public class CosturaReferencesDataResolver : IReferencesDataResolver
                 var rawData = resource.GetData();
                 if (rawData != null)
                 {
-                    yield return Decompress(rawData);
+                    result.Add(Decompress(rawData));
                 }
             }
         }
+        return result;
     }
 
     private static byte[] Decompress(byte[] data)

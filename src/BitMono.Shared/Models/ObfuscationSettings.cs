@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace BitMono.Shared.Models;
+﻿namespace BitMono.Shared.Models;
 
 public class ObfuscationSettings
 {

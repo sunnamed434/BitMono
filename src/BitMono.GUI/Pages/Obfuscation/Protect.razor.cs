@@ -1,4 +1,6 @@
-﻿using BitMono.Obfuscation.Abstractions;
+﻿using BitMono.Obfuscation;
+using BitMono.Obfuscation.Abstractions;
+using BitMono.Obfuscation.Factories;
 
 namespace BitMono.GUI.Pages.Obfuscation;
 
@@ -7,6 +9,7 @@ public partial class Protect
     private string _dependenciesDirectoryName;
     private string _outputDirectoryName;
     private IBrowserFile _obfuscationFile;
+    private CancellationToken _cancellationToken;
 
     [Inject] public ILogger Logger { get; set; }
     [Inject] public ICollection<IMemberResolver> MemberResolvers { get; set; }
@@ -22,7 +25,6 @@ public partial class Protect
         return Task.CompletedTask;
     }
 
-    const string ExternalComponentsFile = nameof(BitMono) + "." + nameof(Runtime) + ".dll";
     public async Task ObfuscateAsync()
     {
         if (ObfuscationInProcess == false)
@@ -30,28 +32,23 @@ public partial class Protect
             try
             {
                 ObfuscationInProcess = true;
+                _cancellationToken = new CancellationToken();
                 var memoryStream = new MemoryStream();
-                await _obfuscationFile.OpenReadStream().CopyToAsync(memoryStream);
-                var moduleBytes = memoryStream.ToArray();
+                await _obfuscationFile
+                    .OpenReadStream()
+                    .CopyToAsync(memoryStream, _cancellationToken);
+                var fileData = memoryStream.ToArray();
 
                 var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                var runtimeModule = ModuleDefinition.FromFile(Path.Combine(baseDirectory, ExternalComponentsFile));
 
-                var obfuscation = ServiceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
-                var obfuscationAttributeResolver = ServiceProvider.GetRequiredService<ObfuscationAttributeResolver>();
-
-                var dependencies = Directory.GetFiles(_dependenciesDirectoryName);
-                var dependeciesData = new List<byte[]>();
-                for (var i = 0; i < dependencies.Length; i++)
+                var needs = new ObfuscationNeeds
                 {
-                    dependeciesData.Add(File.ReadAllBytes(dependencies[i]));
-                }
-
-                var dataResolver = new ReferencesDataResolver(_dependenciesDirectoryName);
-                //var bitMonoContextFactory = new BitMonoContextFactory(dataResolver, obfuscation);
-                //var bitMonoContext = bitMonoContextFactory.Create(_outputDirectoryName, _obfuscationFile.Name);
-                //var engine = new BitMonoEngine(obfuscationAttributeResolver, obfuscation, StoringProtections.Protections, MemberResolvers.ToList(),  Protections.ToList(), Logger);
-                //await engine.StartAsync();
+                    FileName = _obfuscationFile.Name,
+                    FileRawData = fileData,
+                    ReferencesDirectoryName =
+                };
+                var engine = new BitMonoEngine(ServiceProvider);
+                await engine.StartAsync(needs, _cancellationToken);
             }
             catch (Exception ex)
             {

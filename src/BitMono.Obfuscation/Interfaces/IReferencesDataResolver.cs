@@ -2,5 +2,5 @@
 
 public interface IReferencesDataResolver
 {
-    IEnumerable<byte[]> Resolve(ModuleDefinition module);
+    List<byte[]> Resolve(ModuleDefinition module);
 }
