@@ -17,7 +17,7 @@ public class DotNetHook : Protection
     public override Task ExecuteAsync()
     {
         var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
-        var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name.Equals(nameof(Hooking.RedirectStub)));
+        var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name!.Equals(nameof(Hooking.RedirectStub)));
         var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
         var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeHookingType)
@@ -40,7 +40,8 @@ public class DotNetHook : Protection
                     {
                         var callingMethod = callingOperandMethod.Resolve();
                         if (callingMethod is { CilMethodBody: { } }
-                            && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false && callingMethod.Managed)
+                            && callingMethod is { Managed: true, Signature: not null }
+                            && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
                         {
                             if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
@@ -59,7 +60,7 @@ public class DotNetHook : Protection
                                     dummyMethod.ParameterDefinitions.Add(parameter);
                                 }
                                 var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody(dummyMethod);
-                                if (callingMethod.Signature!.ReturnsValue)
+                                if (callingMethod.Signature.ReturnsValue)
                                 {
                                     dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
                                 }
@@ -81,7 +82,8 @@ public class DotNetHook : Protection
 
                                 instruction.Operand = dummyMethod;
                                 var randomIndex = _randomNext(0, moduleCctor.CilMethodBody!.Instructions.CountWithoutRet());
-                                moduleCctor.CilMethodBody.Instructions.Insert(randomIndex, new CilInstruction(CilOpCodes.Call, initializationMethod));
+                                moduleCctor.CilMethodBody.Instructions.Insert(randomIndex,
+                                    new CilInstruction(CilOpCodes.Call, initializationMethod));
                             }
                         }
                     }
