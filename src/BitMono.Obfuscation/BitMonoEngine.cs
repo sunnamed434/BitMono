@@ -53,7 +53,7 @@ public class BitMonoEngine
     {
         var runtimeModule = ModuleDefinition.FromFile(typeof(Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
-        var bitMonoContextFactory = new BitMonoContextFactory(moduleFactoryResult.Module!, referencesDataResolver, _obfuscationSettings);
+        var bitMonoContextFactory = new BitMonoContextFactory(moduleFactoryResult.Module, referencesDataResolver, _obfuscationSettings);
         var bitMonoContext = bitMonoContextFactory.Create(needs.OutputDirectoryName, needs.FileName);
         var engineContextFactory = new EngineContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);
         var engineContext = engineContextFactory.Create();

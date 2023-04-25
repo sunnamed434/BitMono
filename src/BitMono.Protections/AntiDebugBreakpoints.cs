@@ -41,21 +41,21 @@ public class AntiDebugBreakpoints : Protection
                 typeof(CancellationToken),
             })),
         };
-        var dateTimeUtcNowMethod = Context.ModuleImporter.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
+        var dateTimeUtcNowMethod =
+            Context.ModuleImporter.ImportMethod(typeof(DateTime).GetProperty(nameof(DateTime.UtcNow)).GetMethod);
         var dateTimeSubtractionMethod = Context.ModuleImporter.ImportMethod(typeof(DateTime).GetMethod("op_Subtraction", new[]
         {
             typeof(DateTime),
             typeof(DateTime)
         }));
-        var timeSpanTotalMillisecondsMethod = Context.ModuleImporter.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds)).GetMethod);
-        var environmentFailFast = Context.ModuleImporter.ImportMethod(typeof(Environment).GetMethod(nameof(Environment.FailFast), new[]
-        {
-            typeof(string)
-        }));
+        var timeSpanTotalMillisecondsMethod =
+            Context.ModuleImporter.ImportMethod(typeof(TimeSpan).GetProperty(nameof(TimeSpan.TotalMilliseconds))
+                .GetMethod);
         var dateTime = Context.ModuleImporter.ImportType(typeof(DateTime)).ToTypeSignature(isValueType: true);
         var timeSpan = Context.ModuleImporter.ImportType(typeof(TimeSpan)).ToTypeSignature(isValueType: true);
         var @int = Context.ModuleImporter.ImportType(typeof(int)).ToTypeSignature(isValueType: true);
 
+        var signatureComparer = new SignatureComparer();
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method.NotGetterAndSetter() && method.IsConstructor == false)
@@ -71,7 +71,7 @@ public class AntiDebugBreakpoints : Protection
                         var instruction = body.Instructions[i];
                         if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is MemberReference member)
                         {
-                            if (threadSleepMethods.Any(t => new SignatureComparer().Equals(member, t)))
+                            if (threadSleepMethods.Any(t => signatureComparer.Equals(member, t)))
                             {
                                 methodShouldBeIgnored = true;
                                 break;
