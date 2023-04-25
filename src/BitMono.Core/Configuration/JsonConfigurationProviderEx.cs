@@ -2,7 +2,7 @@ namespace BitMono.Core.Configuration;
 
 public class JsonConfigurationProviderEx : FileConfigurationProvider
 {
-    private readonly JsonConfigurationSourceEx m_Source;
+    private readonly JsonConfigurationSourceEx _source;
     private const string ParseMethodName = "Parse";
     private const string ParserTypeName = "Microsoft.Extensions.Configuration.Json.JsonConfigurationFileParser";
     private static readonly Type ParserType = typeof(JsonConfigurationProvider).Assembly.GetType(ParserTypeName);
@@ -11,7 +11,7 @@ public class JsonConfigurationProviderEx : FileConfigurationProvider
 
     public JsonConfigurationProviderEx(JsonConfigurationSourceEx source) : base(source)
     {
-        m_Source = source;
+        _source = source;
     }
 
     public override void Load(Stream stream)
@@ -41,11 +41,11 @@ public class JsonConfigurationProviderEx : FileConfigurationProvider
     }
     private void PreProcessJson(ref string json)
     {
-        if (m_Source.Variables == null)
+        if (_source.Variables == null)
         {
             return;
         }
-        json = m_Source.Variables.Aggregate(json,
+        json = _source.Variables.Aggregate(json,
             (current, keyValuePair) => current.Replace("{{" + keyValuePair.Key + "}}", keyValuePair.Value));
     }
 }

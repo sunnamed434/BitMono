@@ -1,4 +1,4 @@
-﻿namespace BitMono.API.Ioc;
+﻿namespace BitMono.Host.Ioc;
 
 public interface IApplication
 {

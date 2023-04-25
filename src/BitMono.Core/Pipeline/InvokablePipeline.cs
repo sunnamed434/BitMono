@@ -1,9 +1,10 @@
 ﻿namespace BitMono.Core.Pipeline;
 
-public class InvokablePipeline : IInvokablePipeline
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+public class InvokablePipeline
 {
     public bool Succeed { get; private set; } = true;
-    public Action? OnFail { get; set; } = null;
+    public Func<Task>? OnFail { get; set; }
 
     public async Task InvokeAsync(Func<Task<bool>> func)
     {
@@ -14,19 +15,10 @@ public class InvokablePipeline : IInvokablePipeline
         Succeed = await func.Invoke();
         if (Succeed == false)
         {
-            OnFail?.Invoke();
-        }
-    }
-    public async Task InvokeAsync(Func<IInvokablePipeline, Task<bool>> func)
-    {
-        if (Succeed == false)
-        {
-            return;
-        }
-        Succeed = await func.Invoke(this);
-        if (Succeed == false)
-        {
-            OnFail?.Invoke();
+            if (OnFail != null)
+            {
+                await OnFail.Invoke();
+            }
         }
     }
 }

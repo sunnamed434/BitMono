@@ -2,19 +2,19 @@ namespace BitMono.CLI.Modules;
 
 public class ObfuscationNeedsFactory : IObfuscationNeedsFactory
 {
-    private readonly string[] m_Args;
-    private readonly ILogger m_Logger;
+    private readonly string[] _args;
+    private readonly ILogger _logger;
 
     public ObfuscationNeedsFactory(string[] args, ILogger logger)
     {
-        m_Args = args;
-        m_Logger = logger;
+        _args = args;
+        _logger = logger;
     }
 
     public ObfuscationNeeds? Create()
     {
-        return m_Args.IsEmpty()
-            ? new CLIObfuscationNeedsFactory(m_Args, m_Logger).Create()
-            : new CLIOptionsObfuscationNeedsFactory(m_Args, m_Logger).Create();
+        return _args.IsEmpty()
+            ? new CLIObfuscationNeedsFactory(_args, _logger).Create()
+            : new CLIOptionsObfuscationNeedsFactory(_args, _logger).Create();
     }
 }

@@ -9,7 +9,7 @@ public class BitMonoObfuscator
     private readonly ProtectionsSort _protectionsSort;
     private readonly IDataWriter _dataWriter;
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly IInvokablePipeline _invokablePipeline;
+    private readonly InvokablePipeline _invokablePipeline;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
     private readonly ProtectionsNotifier _protectionsNotifier;
     private readonly ObfuscationAttributesStripper _obfuscationAttributesStripper;
@@ -44,7 +44,7 @@ public class BitMonoObfuscator
     {
         _context.ThrowIfCancellationRequested();
 
-        _invokablePipeline.OnFail += OnFail;
+        _invokablePipeline.OnFail += OnFailHandleAsync;
 
         await _invokablePipeline.InvokeAsync(OutputProtectionsAsync);
         await _invokablePipeline.InvokeAsync(StartTimeCounterAsync);
@@ -96,7 +96,7 @@ public class BitMonoObfuscator
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
-                _logger.Fatal("Please, specify needed dependencies, or set in obfuscation.json FailOnNoRequiredDependency to false");
+                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false", "obfuscation.json");
                 return Task.FromResult(false);
             }
         }
@@ -167,10 +167,12 @@ public class BitMonoObfuscator
         {
             if (_imageBuild?.DiagnosticBag.HasErrors == true)
             {
-                var errorsCount = _imageBuild.DiagnosticBag.Exceptions.Count;
-                _logger.Warning("{0} error(s) were registered while building the PE", errorsCount);
-                foreach (var exception in _imageBuild.DiagnosticBag.Exceptions)
+                var exceptions = _imageBuild.DiagnosticBag.Exceptions;
+                var exceptionsCount = exceptions.Count;
+                _logger.Warning("{0} error(s) were registered while building the PE", exceptionsCount);
+                for (var i = 0; i < exceptionsCount; i++)
                 {
+                    var exception = exceptions[i];
                     _logger.Error(exception, exception.GetType().Name);
                 }
             }
@@ -223,8 +225,9 @@ public class BitMonoObfuscator
         _logger.Information("Since obfuscation elapsed: {0}", elapsedTime.ToString());
         return Task.FromResult(true);
     }
-    private void OnFail()
+    private Task OnFailHandleAsync()
     {
         _logger.Fatal("Obfuscation stopped! Something went wrong!");
+        return Task.CompletedTask;
     }
 }

@@ -2,7 +2,6 @@
 global using Autofac.Core;
 global using Autofac.Extensions.DependencyInjection;
 global using BitMono.API.Configuration;
-global using BitMono.API.Ioc;
 global using BitMono.Host.Configurations;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +21,7 @@ global using BitMono.Core.Factories;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Resolvers;
 global using BitMono.Core.Services;
+global using BitMono.Host.Ioc;
 global using BitMono.Shared.Models;
 global using Serilog.Enrichers.Sensitive;
 global using Module = Autofac.Module;
