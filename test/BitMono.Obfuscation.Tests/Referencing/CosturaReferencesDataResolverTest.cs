@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Tests.Abstractions;
+﻿namespace BitMono.Obfuscation.Tests.Referencing;
 
 public class CosturaReferencesDataResolverTest
 {

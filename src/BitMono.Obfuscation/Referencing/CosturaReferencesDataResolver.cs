@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Abstractions;
+namespace BitMono.Obfuscation.Referencing;
 
 public class CosturaReferencesDataResolver : IReferencesDataResolver
 {

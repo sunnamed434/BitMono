@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Factories;
+﻿namespace BitMono.Obfuscation.Engine;
 
 public class BitMonoContextFactory
 {
@@ -14,9 +14,10 @@ public class BitMonoContextFactory
         _obfuscationSettings = obfuscationSettings;
     }
 
-    public BitMonoContext Create(string outputDirectoryName, string fileName)
+    public BitMonoContext Create(string filePath, string outputDirectoryName)
     {
         var referencesData = _referencesDataResolver.Resolve(_module);
+        var fileName = Path.GetFileName(filePath);
         return new BitMonoContext
         {
             OutputDirectoryName = outputDirectoryName,

@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Factories;
+﻿namespace BitMono.Obfuscation.Files;
 
 public class OutputFilePathFactory
 {

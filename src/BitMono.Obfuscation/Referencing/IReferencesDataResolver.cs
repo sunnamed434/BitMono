@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Interfaces;
+﻿namespace BitMono.Obfuscation.Referencing;
 
 public interface IReferencesDataResolver
 {

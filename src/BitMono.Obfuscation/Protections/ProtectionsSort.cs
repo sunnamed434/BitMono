@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Abstractions;
+﻿namespace BitMono.Obfuscation.Protections;
 
 public class ProtectionsSort
 {

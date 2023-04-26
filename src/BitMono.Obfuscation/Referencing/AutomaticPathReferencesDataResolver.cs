@@ -1,13 +1,13 @@
-namespace BitMono.Obfuscation.Abstractions;
+namespace BitMono.Obfuscation.Referencing;
 
-public class AutomaticReferencesDataResolver : IReferencesDataResolver
+public class AutomaticPathReferencesDataResolver : IReferencesDataResolver
 {
     private readonly ReferencesDataResolver _referencesDataResolver;
     private readonly CosturaReferencesDataResolver _costuraReferencesDataResolver;
 
-    public AutomaticReferencesDataResolver(string referencesDirectoryName)
+    public AutomaticPathReferencesDataResolver(string referencesDirectoryPath)
     {
-        _referencesDataResolver = new ReferencesDataResolver(referencesDirectoryName);
+        _referencesDataResolver = new ReferencesDataResolver(referencesDirectoryPath);
         _costuraReferencesDataResolver = new CosturaReferencesDataResolver();
     }
 

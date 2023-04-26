@@ -1,14 +1,14 @@
-﻿namespace BitMono.Obfuscation.Abstractions;
+﻿namespace BitMono.Obfuscation.Protections;
 
 public class ProtectionsSorter
 {
-    private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly AssemblyDefinition m_Assembly;
+    private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
+    private readonly AssemblyDefinition _assemblyDefinition;
 
-    public ProtectionsSorter(ObfuscationAttributeResolver obfuscationAttributeResolver, AssemblyDefinition assembly)
+    public ProtectionsSorter(ObfuscationAttributeResolver obfuscationAttributeResolver, AssemblyDefinition assemblyDefinition)
     {
-        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_Assembly = assembly;
+        _obfuscationAttributeResolver = obfuscationAttributeResolver;
+        _assemblyDefinition = assemblyDefinition;
     }
 
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -18,7 +18,7 @@ public class ProtectionsSorter
             .Sort();
         var obfuscationAttributeProtections =
             protectionsResolve.FoundProtections.Where(p =>
-                m_ObfuscationAttributeResolver.Resolve(p.GetName(), m_Assembly));
+                _obfuscationAttributeResolver.Resolve(p.GetName(), _assemblyDefinition));
         var deprecatedProtections =
             protectionsResolve.FoundProtections.Where(p => p.TryGetObsoleteAttribute(out _));
         var sortedProtections = protectionsResolve.FoundProtections

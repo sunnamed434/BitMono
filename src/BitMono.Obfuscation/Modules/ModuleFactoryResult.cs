@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Factories;
+﻿namespace BitMono.Obfuscation.Modules;
 
 public class ModuleFactoryResult
 {

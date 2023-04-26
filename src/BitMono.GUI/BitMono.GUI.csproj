@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
@@ -90,8 +90,7 @@
 		<PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
 		<PackageReference Include="morelinq" Version="3.3.2" />
-        <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
-        <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
+    <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.1-dev-00077" />
 		<PackageReference Include="Serilog.Sinks.TextWriter" Version="2.1.0" />
 	</ItemGroup>
