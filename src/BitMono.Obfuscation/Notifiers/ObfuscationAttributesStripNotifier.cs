@@ -1,4 +1,3 @@
-#pragma warning disable CS8604
 namespace BitMono.Obfuscation.Notifiers;
 
 public class ObfuscationAttributesStripNotifier
@@ -14,19 +13,23 @@ public class ObfuscationAttributesStripNotifier
     {
         if (obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.IsEmpty() == false)
         {
-            m_Logger.Information("Successfully stripped {0} obfuscation attribute(s)!", obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.Count);
+            m_Logger.Information("Successfully stripped {0} obfuscation attribute(s)!",
+                obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.IsEmpty() == false)
         {
-            m_Logger.Information("Successfully stripped {0} assembly obfuscation attribute(s)!", obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.Count);
+            m_Logger.Information("Successfully stripped {0} assembly obfuscation attribute(s)!",
+                obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscationAttributesFailStrip.IsEmpty() == false)
         {
-            m_Logger.Information("Failed to strip {0} assembly obfuscation attribute(s)!", obfuscationAttributesStrip.ObfuscationAttributesFailStrip.Count);
+            m_Logger.Information("Failed to strip {0} assembly obfuscation attribute(s)!",
+                obfuscationAttributesStrip.ObfuscationAttributesFailStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.IsEmpty() == false)
         {
-            m_Logger.Information("Failed to strip {0} obfuscation attribute(s)!", obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.Count);
+            m_Logger.Information("Failed to strip {0} obfuscation attribute(s)!",
+                obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.Count);
         }
     }
 }

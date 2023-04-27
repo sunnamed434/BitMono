@@ -19,7 +19,7 @@ public class CallToCalli : Protection
             typeof(RuntimeTypeHandle)
         }));
         var getModuleMethod = Context.ModuleImporter.ImportMethod(typeof(Type).GetProperty(nameof(Type.Module)).GetMethod);
-        var resolveMethodMethod = Context.ModuleImporter.ImportMethod(typeof(System.Reflection.Module).GetMethod(nameof(System.Reflection.Module.ResolveMethod), new[]
+        var resolveMethodMethod = Context.ModuleImporter.ImportMethod(typeof(Module).GetMethod(nameof(Module.ResolveMethod), new[]
         {
             typeof(int)
         }));

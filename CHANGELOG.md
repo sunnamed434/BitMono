@@ -1,5 +1,6 @@
 | Versions:                       |
 |---------------------------------|
+| [v0.15.0-alpha](#v0150-alpha27) |
 | [v0.14.0-alpha](#v0140-alpha26) |
 | [v0.13.1-alpha](#v0131-alpha25) |
 | [v0.13.0-alpha](#v0130-alpha24) |
@@ -28,6 +29,19 @@
 | [v0.1.0](#v010)                 |
 
 ---
+### v0.15.0-alpha.27:
+2023-04-27
+#### Added:
+* UnmanagedString Protection.
+* More docs.
+
+#### Fixed:
+* DotNetHook Protection.
+
+#### Changed:
+* Major improvements and changes in Engine APIs.
+* Removed PreserveAll flag, now obfuscation should be more stable.
+
 ### v0.14.0-alpha.26:
 2023-04-24
 #### Added:
@@ -81,7 +95,7 @@
 2023-02-016
 #### Added:
 * BitMono ASCII Art in CLI.
-* Hiding of the pathes (file path, directory path, etc).
+* Hiding of the path (file path, directory path, etc).
 * Documentation.
 
 #### Fixed:
@@ -162,7 +176,7 @@
 
 ### v0.5.0-alpha.14:
 #### Added:
-* Before obfuscation optmizes all method bodies (macros)
+* Before obfuscation optimizes all method bodies (macros)
 
 #### Fixed:
 * BitMethodDotnet Protection

@@ -20,6 +20,7 @@ public class ProtectionContext
 
     public ReferenceImporter ModuleImporter => Module.DefaultImporter;
     public ReferenceImporter RuntimeImporter => Module.DefaultImporter;
+    public bool X86 => Module.MachineType == MachineType.I386;
 
     public void ThrowIfCancellationTokenRequested()
     {

@@ -1,47 +1,47 @@
 ﻿namespace BitMono.CLI.Modules;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
+public class CLIObfuscationNeedsFactory
 {
-    private readonly string[] m_Args;
-    private readonly ILogger m_Logger;
+    private readonly string[] _args;
+    private readonly ILogger _logger;
 
     public CLIObfuscationNeedsFactory(string[] args, ILogger logger)
     {
-        m_Args = args;
-        m_Logger = logger.ForContext<CLIObfuscationNeedsFactory>();
+        _args = args;
+        _logger = logger.ForContext<CLIObfuscationNeedsFactory>();
     }
 
     public ObfuscationNeeds Create()
     {
-        var fileName = CLIBitMonoModuleFileResolver.Resolve(m_Args);
+        var fileName = CLIBitMonoModuleFileResolver.Resolve(_args);
         var specifyingFile = true;
         while (specifyingFile)
         {
             try
             {
-                m_Logger.Information("Please, specify file or drag-and-drop in BitMono CLI");
+                _logger.Information("Please, specify file or drag-and-drop in BitMono CLI");
                 fileName = PathFormatterUtility.Format(Console.ReadLine());
                 if (string.IsNullOrWhiteSpace(fileName) == false)
                 {
                     if (File.Exists(fileName))
                     {
                         specifyingFile = false;
-                        m_Logger.Information("File successfully specified: {0}", fileName);
+                        _logger.Information("File successfully specified: {0}", fileName);
                     }
                     else
                     {
-                        m_Logger.Warning("File cannot be found, please, try again!");
+                        _logger.Warning("File cannot be found, please, try again!");
                     }
                 }
                 else
                 {
-                    m_Logger.Warning("Unable to specify empty null or whitespace file, please, try again!");
+                    _logger.Warning("Unable to specify empty null or whitespace file, please, try again!");
                 }
             }
             catch (Exception ex)
             {
-                m_Logger.Warning("Something went wrong while specifying the file: " + ex);
+                _logger.Warning("Something went wrong while specifying the file: " + ex);
             }
         }
 
@@ -56,40 +56,40 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
                 {
                     if (Directory.Exists(dependenciesDirectoryName))
                     {
-                        m_Logger.Information("Dependencies (libs) successfully found automatically: {0}!", dependenciesDirectoryName);
+                        _logger.Information("Dependencies (libs) successfully found automatically: {0}!", dependenciesDirectoryName);
                         specifyingDependencies = false;
                         break;
                     }
 
-                    m_Logger.Information("Please, specify dependencies (libs) path: ");
+                    _logger.Information("Please, specify dependencies (libs) path: ");
                     var newDependenciesDirectoryName = PathFormatterUtility.Format(Console.ReadLine());
                     if (string.IsNullOrWhiteSpace(newDependenciesDirectoryName) == false)
                     {
                         if (Directory.Exists(newDependenciesDirectoryName))
                         {
                             dependenciesDirectoryName = newDependenciesDirectoryName;
-                            m_Logger.Information("Dependencies (libs) successfully specified: {0}!", newDependenciesDirectoryName);
+                            _logger.Information("Dependencies (libs) successfully specified: {0}!", newDependenciesDirectoryName);
                             specifyingDependencies = false;
                         }
                         else
                         {
-                            m_Logger.Information("Libs directory doesn't exist, please, try again!");
+                            _logger.Information("Libs directory doesn't exist, please, try again!");
                         }
                     }
                     else
                     {
-                        m_Logger.Information("Unable to specify empty (libs), please, try again!");
+                        _logger.Information("Unable to specify empty (libs), please, try again!");
                     }
                 }
                 catch (Exception ex)
                 {
-                    m_Logger.Information("Something went wrong while specifying the dependencies (libs) path: " + ex);
+                    _logger.Information("Something went wrong while specifying the dependencies (libs) path: " + ex);
                 }
             }
         }
         else
         {
-            m_Logger.Information("Dependencies (libs) directory was automatically found in: {0}!", dependenciesDirectoryName);
+            _logger.Information("Dependencies (libs) directory was automatically found in: {0}!", dependenciesDirectoryName);
         }
 
         var outputDirectoryName = Path.Combine(fileBaseDirectory, "output");
@@ -100,7 +100,7 @@ public class CLIObfuscationNeedsFactory : IObfuscationNeedsFactory
             FileName = fileName,
             FileBaseDirectory = fileBaseDirectory,
             ReferencesDirectoryName = dependenciesDirectoryName,
-            OutputDirectoryName = outputDirectoryName
+            OutputPath = outputDirectoryName
         };
     }
 }

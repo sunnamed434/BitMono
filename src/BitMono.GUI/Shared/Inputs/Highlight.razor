@@ -1,8 +1,8 @@
 ﻿<div class="textarea-container">
-    <textarea @attributes="CapturedAttributes" @ref="TextAreaReference" value="@TextAreaText" class="form-control" rows="@Rows" />
+    <textarea @attributes="CapturedAttributes" @ref="TextAreaReference" value="@TextAreaText" class="form-control" rows="@Rows"></textarea>
     @if (ClipboardCopy)
     {
-        <button @onclick="copyTextToClipboardAsync" class="btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
+        <button @onclick="CopyTextToClipboardAsync" class="btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
             Copy
         </button>
     }
@@ -14,7 +14,7 @@
     [Parameter] public bool ClipboardCopy { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
     [Inject] public IJSRuntime JSRuntime { get; set; }
-    public string TextAreaText { get; protected set; } = string.Empty; 
+    public string TextAreaText { get; protected set; } = string.Empty;
     private ElementReference TextAreaReference { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -45,7 +45,7 @@
         return Task.CompletedTask;
     }
 
-    private async Task copyTextToClipboardAsync()
+    private async Task CopyTextToClipboardAsync()
     {
         await JSRuntime.CopyTextToClipboardAsync(TextAreaText);
     }

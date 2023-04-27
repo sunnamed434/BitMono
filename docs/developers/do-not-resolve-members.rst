@@ -1,6 +1,12 @@
 Do Not Resolve Members
 ======================
 
+
+.. warning::
+
+    Be careful, because ``Context.Module`` (ModuleDefinition) doesn't affected by ``DoNotResolveAttribute``.
+
+
 For comfort BitMono provides an API which able to do not pass specfic members inside of the protection for easier understanding and abstraction let's call ``members`` as - types/methods/fields/properties, etc.
 
 
@@ -32,18 +38,14 @@ Add attribute ``[DoNotResolve(MemberInclusionFlags.Reflection)]`` with ``MemberI
 
 
 
-You can specify multiple inclusion flags:
-    
-    
+You can specify multiple inclusion flags.
+
+
 .. code-block:: csharp
-	[UsedImplicitly]
-	[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
-	public class MagicProtection : Protection
 
-
-.. warning::
-
-    Be careful, because ``Module`` doesn't affected by ``DoNotResolveAttribute``.
+    [UsedImplicitly]
+    [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
+    public class MagicProtection : Protection
 
 
 THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
@@ -61,7 +63,7 @@ THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
 
 
 
-Instead highly recommend to use this:
+Instead highly recommend to use this.
 
 
 .. code-block:: csharp
@@ -75,8 +77,10 @@ Instead highly recommend to use this:
     }
 
 
-This is also was wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specificly what you need, for example:
-- Need access to the types and methods? Then do this:
+This is also was wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specificly what you need, for example.
+
+
+Need access to the types and methods? Then do this.
 
 
 .. code-block:: csharp
@@ -94,7 +98,7 @@ This is also was wrong because if you will try to get access to the ``type.Metho
     }
 
 
-Need access to the methods? Then just iterrate through the methods:
+Need access to the methods? Then just iterrate through the methods.
 
 
 .. code-block:: csharp

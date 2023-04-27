@@ -2,34 +2,34 @@
 
 public class BitMonoApplication : IApplication
 {
-    private readonly ContainerBuilder m_ContainerBuilder;
-    private readonly List<IModule> m_Modules;
+    private readonly ContainerBuilder _containerBuilder;
+    private readonly List<IModule> _modules;
 
     public BitMonoApplication()
     {
-        m_ContainerBuilder = new ContainerBuilder();
-        m_Modules = new List<IModule>();
+        _containerBuilder = new ContainerBuilder();
+        _modules = new List<IModule>();
     }
 
     public IApplication Populate(IEnumerable<ServiceDescriptor> descriptors)
     {
-        m_ContainerBuilder.Populate(descriptors);
+        _containerBuilder.Populate(descriptors);
         return this;
     }
     public IApplication RegisterModule(IModule module)
     {
-        m_Modules.Add(module);
+        _modules.Add(module);
         return this;
     }
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     public AutofacServiceProvider Build()
     {
-        var modules = m_Modules;
-        for (var i = 0; i < modules.Count; i++)
+        for (var i = 0; i < _modules.Count; i++)
         {
-            m_ContainerBuilder.RegisterModule(modules[i]);
+            var module = _modules[i];
+            _containerBuilder.RegisterModule(module);
         }
-        var container = m_ContainerBuilder.Build();
+        var container = _containerBuilder.Build();
         return new AutofacServiceProvider(container.Resolve<ILifetimeScope>());
     }
 }

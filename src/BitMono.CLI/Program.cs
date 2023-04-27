@@ -2,6 +2,7 @@ namespace BitMono.CLI;
 
 internal class Program
 {
+    private static readonly CancellationTokenSource CancellationTokenSource = new();
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
     private static readonly string AsciiArt = @$"
@@ -14,7 +15,8 @@ internal class Program
 
     private static async Task<int> Main(string[] args)
     {
-        var errorCode = KnownReturnStatuses.Success;
+        Console.CancelKeyPress += OnCancelKeyPress;
+        var statusCode = KnownReturnStatuses.Success;
         try
         {
             Console.Title = BitMonoFileVersionText;
@@ -35,8 +37,8 @@ internal class Program
             var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)
             {
-                errorCode = KnownReturnStatuses.Failure;
-                return errorCode;
+                statusCode = KnownReturnStatuses.Failure;
+                return statusCode;
             }
 
             Console.Clear();
@@ -45,29 +47,44 @@ internal class Program
             logger.Information("Everything is seems to be ok, starting obfuscation..");
             logger.Information(AsciiArt);
 
-            var cancellationTokenSource = new CancellationTokenSource();
-            var engine = new BitMonoEngine(lifetimeScope);
-            var succeed = await engine.StartAsync(needs, cancellationTokenSource.Token);
+            var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryName, needs.OutputPath);
+            var engine = new BitMonoEngine(serviceProvider);
+            var succeed = await engine.StartAsync(info, CancellationTokenSource.Token);
             if (succeed == false)
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");
                 Console.ReadLine();
-                errorCode = KnownReturnStatuses.Failure;
-                return errorCode;
+                statusCode = KnownReturnStatuses.Failure;
+                return statusCode;
             }
 
             if (obfuscation.OpenFileDestinationInFileExplorer)
             {
-                Process.Start(needs.OutputDirectoryName);
+                Process.Start(needs.OutputPath);
             }
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Obfuscation Canceled!");
+            statusCode = KnownReturnStatuses.Cancel;
         }
         catch (Exception ex)
         {
             Console.WriteLine("Something went wrong! " + ex);
-            errorCode = KnownReturnStatuses.Failure;
+            statusCode = KnownReturnStatuses.Failure;
         }
+
+        Console.CancelKeyPress -= OnCancelKeyPress;
+
         Console.WriteLine("Enter anything to exit!");
         Console.ReadLine();
-        return errorCode;
+        return statusCode;
+    }
+
+    private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        using var _ = CancellationTokenSource;
+        CancellationTokenSource.Cancel();
+        e.Cancel = true;
     }
 }

@@ -16,32 +16,32 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
-  alt="Before and after obfuscation preview by BitMono"
+  alt="Before and after obfuscation preview by BitMono">
 </p>
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after-2.png"
-  alt="Before and after obfuscation preview by BitMono 2"
+  alt="Before and after obfuscation preview by BitMono 2">
 </p>
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/GUI.png"
-  alt="GUI"
+  alt="GUI">
 </p>
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/CLI.png"
-  alt="CLI"
+  alt="CLI">
 </p>
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/configuration.png"
-  alt="Configuration"
+  alt="Configuration">
 </p>
 
 ## Usability
 BitMono breaks the most popular tools using just one packer, such as:
-- dnspy;
+- dnSpy;
 - dnlib;
 - AsmResolver;
 - MonoCecil;
@@ -65,8 +65,9 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * Invisible types
 * No code
 
-## Obfuscation Features
+## Features
 * StringsEncryption
+* **[UnmanagedString][unmanagedstring_source]** (based on existing protection)
 * **[BitDotNet][bitdotnet_source]** (based and improved on existing protection)
 * **[BitMethodDotnet][bitmethoddotnet_source]** (based and improved on existing protection)
 * **[DotNetHook][dotnethook_source]** (based on existing protection)
@@ -134,10 +135,10 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
-Branch        | AppVeyor
-------------- | -------------
-main          | [![Build status][image_appveyor_main]][appveyor_main_build]
-dev           | [![Build status][image_appveyor_dev]][appveyor_dev_build]
+| Branch | AppVeyor                                                    |
+|--------|-------------------------------------------------------------|
+| main   | [![Build status][image_appveyor_main]][appveyor_main_build] |
+| dev    | [![Build status][image_appveyor_dev]][appveyor_dev_build]   |
 
 Credits
 -------
@@ -148,6 +149,8 @@ Credits
 **[Elliesaur][author_ellisaur]** for her acquaintance in **[DotNetHook][dotnethook_source]** that hooks methods.
 
 **[Weka][author_naweka]** for his advices, help and motivation.
+
+**[MrakDev][author_mrakdev]** for the acquaintance in **[UnmanagedString][unmanagedstring_source]**.
 
 **[ConfuserEx and their Forks][confuserex_source]** for most things that I watched for the architecture of BitMono and the obfuscator engine as an application and solving plenty of User solutions which I would be knew in the very long future after much fail usage of BitMono and reports by other Users. Day-by-day I'm looking for something interesting there to improve myself in knowledge and BitMono also.
 
@@ -173,10 +176,12 @@ Credits
 [openmod_source]: https://github.com/openmod/openmod
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
 [simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
+[unmanagedstring_source]: https://github.com/MrakDev/UnmanagedString
 [author_0x59r11]: https://github.com/0x59R11
 [author_gazzi]: https://github.com/GazziFX
 [author_ellisaur]: https://github.com/Elliesaur
 [author_naweka]: https://github.com/naweka
+[author_mrakdev]: https://github.com/MrakDev
 [author_kao_blog]: https://lifeinhex.com/
 [author_drakonia]: https://github.com/dr4k0nia
 [author_sunnamed434]: https://github.com/sunnamed434

@@ -1,6 +1,4 @@
-﻿using BitMono.Obfuscation.Interfaces;
-
-namespace BitMono.GUI.Modules;
+﻿namespace BitMono.GUI.Modules;
 
 internal class GUIDataWriter : IDataWriter
 {
