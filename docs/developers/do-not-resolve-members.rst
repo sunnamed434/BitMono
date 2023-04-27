@@ -38,7 +38,7 @@ Add attribute ``[DoNotResolve(MemberInclusionFlags.Reflection)]`` with ``MemberI
 
 
 
-You can specify multiple inclusion flags:
+You can specify multiple inclusion flags.
 
 
 .. code-block:: csharp
