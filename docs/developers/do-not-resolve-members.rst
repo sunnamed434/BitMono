@@ -4,7 +4,7 @@ Do Not Resolve Members
 
 .. warning::
 
-    Be careful, because ``Module`` (ModuleDefinition) doesn't affected by ``DoNotResolveAttribute``.
+    Be careful, because ``Context.Module`` (ModuleDefinition) doesn't affected by ``DoNotResolveAttribute``.
 
 
 For comfort BitMono provides an API which able to do not pass specfic members inside of the protection for easier understanding and abstraction let's call ``members`` as - types/methods/fields/properties, etc.
