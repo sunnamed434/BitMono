@@ -4,11 +4,14 @@ public class ModuleFactory : IModuleFactory
 {
     private readonly byte[] _bytes;
     private readonly IErrorListener _errorListener;
+    private readonly MetadataBuilderFlags _metadataBuilderFlags;
 
-    public ModuleFactory(byte[] bytes, IErrorListener errorListener)
+    public ModuleFactory(byte[] bytes, IErrorListener errorListener,
+        MetadataBuilderFlags metadataBuilderFlags = MetadataBuilderFlags.None)
     {
         _bytes = bytes;
         _errorListener = errorListener;
+        _metadataBuilderFlags = metadataBuilderFlags;
     }
 
     public ModuleFactoryResult Create()
@@ -28,7 +31,7 @@ public class ModuleFactory : IModuleFactory
             module.PEKind = OptionalHeaderMagic.PE32Plus;
             module.MachineType = MachineType.Amd64;
         }
-        var managedPEImageBuilder = new ManagedPEImageBuilder(MetadataBuilderFlags.PreserveAll);
+        var managedPEImageBuilder = new ManagedPEImageBuilder(_metadataBuilderFlags);
 
         return new ModuleFactoryResult
         {
