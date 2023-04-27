@@ -1,4 +1,6 @@
-﻿namespace BitMono.GUI;
+﻿using CommunityToolkit.Maui.Storage;
+
+namespace BitMono.GUI;
 
 public static class MauiProgram
 {
@@ -7,6 +9,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -20,6 +23,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IStoringProtections, StoringProtections>();
         var handlerLogEventSink = new HandlerLogEventSink();
         builder.Services.AddSingleton(handlerLogEventSink);
+        builder.Services.AddSingleton(FolderPicker.Default);
+        builder.Services.AddSingleton(FilePicker.Default);
 
         builder.ConfigureContainer(new AutofacServiceProviderFactory(), configure =>
         {

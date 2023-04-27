@@ -221,7 +221,7 @@ public class BitMonoObfuscator
     {
         try
         {
-            var memoryStream = new MemoryStream();
+            using var memoryStream = new MemoryStream();
             var fileBuilder = new ManagedPEFileBuilder();
             fileBuilder
                 .CreateFile(_imageBuild!.ConstructedImage!)
