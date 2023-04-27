@@ -62,7 +62,7 @@ THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
 
 
 
-Instead highly recommend to use this:
+Instead highly recommend to use this.
 
 
 .. code-block:: csharp
@@ -76,8 +76,10 @@ Instead highly recommend to use this:
     }
 
 
-This is also was wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specificly what you need, for example:
-- Need access to the types and methods? Then do this:
+This is also was wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specificly what you need, for example.
+
+
+Need access to the types and methods? Then do this.
 
 
 .. code-block:: csharp
@@ -95,7 +97,7 @@ This is also was wrong because if you will try to get access to the ``type.Metho
     }
 
 
-Need access to the methods? Then just iterrate through the methods:
+Need access to the methods? Then just iterrate through the methods.
 
 
 .. code-block:: csharp
