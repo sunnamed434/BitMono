@@ -1,6 +1,12 @@
 Do Not Resolve Members
 ======================
 
+
+.. warning::
+
+    Be careful, because ``Module`` doesn't affected by ``DoNotResolveAttribute``.
+
+
 For comfort BitMono provides an API which able to do not pass specfic members inside of the protection for easier understanding and abstraction let's call ``members`` as - types/methods/fields/properties, etc.
 
 
@@ -39,11 +45,6 @@ You can specify multiple inclusion flags:
 	[UsedImplicitly]
 	[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
 	public class MagicProtection : Protection
-
-
-.. warning::
-
-    Be careful, because ``Module`` doesn't affected by ``DoNotResolveAttribute``.
 
 
 THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
