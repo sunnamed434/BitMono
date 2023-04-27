@@ -42,9 +42,10 @@ You can specify multiple inclusion flags.
 
 
 .. code-block:: csharp
-	[UsedImplicitly]
-	[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
-	public class MagicProtection : Protection
+
+    [UsedImplicitly]
+    [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
+    public class MagicProtection : Protection
 
 
 THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
