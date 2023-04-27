@@ -17,6 +17,7 @@ global using System.Threading.Tasks;
 global using AsmResolver.DotNet.Builder;
 global using AsmResolver.DotNet.Code.Cil;
 global using AsmResolver.DotNet.Serialized;
+global using AsmResolver.PE.File.Headers;
 global using BitMono.API;
 global using BitMono.API.Analyzing;
 global using BitMono.API.Contexts;

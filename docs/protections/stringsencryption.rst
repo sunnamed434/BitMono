@@ -3,6 +3,9 @@ StringsEncryption
 
 How it works?
 -------------
-Protection encrypts strings using basic AES encryption, but not everyone like it because it makes the worse performance of application.
+Protection encrypts strings using basic AES encryption, but not everyone like it because it makes the worse performance of application, but can be used with AntiDecompiler to crash dnSpy while analyzing the used class, also makes the RVA of the byte[] 0
 
-Had big thoughts about `Unmanaged String <https://github.com/MrakDev/UnmanagedString>`_, but, as I tested in Mono it causes problems.
+
+.. warning::
+
+    This protection slows down the application a lot.
