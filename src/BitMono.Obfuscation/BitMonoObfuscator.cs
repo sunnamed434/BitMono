@@ -6,7 +6,7 @@
 public class BitMonoObfuscator
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly EngineContext _context;
+    private readonly StarterContext _context;
     private readonly IDataWriter _dataWriter;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly InvokablePipeline _invokablePipeline;
@@ -22,7 +22,7 @@ public class BitMonoObfuscator
 
     public BitMonoObfuscator(
         IServiceProvider serviceProvider,
-        EngineContext context,
+        StarterContext context,
         IDataWriter dataWriter,
         ObfuscationSettings obfuscationSettings,
         ILogger logger)
@@ -121,6 +121,7 @@ public class BitMonoObfuscator
             var reference = failedToResolveReferences[i];
             _logger.Warning("Failed to resolve dependency: {0}", reference.FullName);
         }
+        _logger.Information("References resolve have been completed!");
         if (assemblyResolve.Succeed == false)
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
@@ -144,6 +145,7 @@ public class BitMonoObfuscator
     }
     private async Task<bool> RunProtectionsAsync()
     {
+        _logger.Information("Executing Protections... this could take for a while...");
         foreach (var protection in _protectionsSort!.SortedProtections)
         {
             _context.ThrowIfCancellationRequested();
@@ -227,7 +229,7 @@ public class BitMonoObfuscator
                 .CreateFile(_imageBuild!.ConstructedImage!)
                 .Write(memoryStream);
             await _dataWriter.WriteAsync(_context.BitMonoContext.OutputFile, memoryStream.ToArray());
-            _logger.Information("Protected module`s saved in {0}", _context.BitMonoContext.OutputDirectoryName);
+            _logger.Information("The protected module was saved in {0}", _context.BitMonoContext.OutputDirectoryName);
         }
         catch (Exception ex)
         {
@@ -245,6 +247,7 @@ public class BitMonoObfuscator
             await packer.ExecuteAsync();
             _protectionExecutionNotifier.Notify(packer);
         }
+        _logger.Information("Protections have been executed!");
         return true;
     }
     private Task<bool> OutputElapsedTimeAsync()

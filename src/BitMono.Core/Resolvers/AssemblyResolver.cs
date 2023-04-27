@@ -3,7 +3,7 @@ namespace BitMono.Core.Resolvers;
 
 public static class AssemblyResolver
 {
-    public static AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, EngineContext context)
+    public static AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, StarterContext context)
     {
         context.ThrowIfCancellationRequested();
 

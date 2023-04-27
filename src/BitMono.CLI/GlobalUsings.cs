@@ -11,6 +11,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using BitMono.Host.Extensions;
 global using BitMono.Obfuscation.Files;
+global using BitMono.Obfuscation.Starter;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Paths;
 global using CommandLine;

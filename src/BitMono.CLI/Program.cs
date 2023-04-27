@@ -48,7 +48,7 @@ internal class Program
             logger.Information(AsciiArt);
 
             var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryName, needs.OutputPath);
-            var engine = new BitMonoEngine(serviceProvider);
+            var engine = new BitMonoStarter(serviceProvider);
             var succeed = await engine.StartAsync(info, CancellationTokenSource.Token);
             if (succeed == false)
             {

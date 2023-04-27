@@ -2,5 +2,5 @@
 
 public class EngineContextAccessor : IEngineContextAccessor
 {
-    public EngineContext Instance { get; set; }
+    public StarterContext Instance { get; set; }
 }

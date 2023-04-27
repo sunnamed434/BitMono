@@ -1,13 +1,13 @@
-﻿namespace BitMono.Obfuscation.Engine;
+﻿namespace BitMono.Obfuscation.Starter;
 
-public class EngineContextFactory
+public class StarterContextFactory
 {
     private readonly ModuleFactoryResult _moduleFactoryResult;
     private readonly ModuleDefinition _runtimeModule;
     private readonly BitMonoContext _context;
     private readonly CancellationToken _cancellationToken;
 
-    public EngineContextFactory(ModuleFactoryResult moduleFactoryResult, ModuleDefinition runtimeModule,
+    public StarterContextFactory(ModuleFactoryResult moduleFactoryResult, ModuleDefinition runtimeModule,
         BitMonoContext context, CancellationToken cancellationToken)
     {
         _moduleFactoryResult = moduleFactoryResult;
@@ -16,9 +16,9 @@ public class EngineContextFactory
         _cancellationToken = cancellationToken;
     }
 
-    public EngineContext Create()
+    public StarterContext Create()
     {
-        return new EngineContext
+        return new StarterContext
         {
             Module = _moduleFactoryResult.Module,
             RuntimeModule = _runtimeModule,
