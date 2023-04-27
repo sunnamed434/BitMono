@@ -26,6 +26,7 @@ Table of Contents:
    protections/fullrenamer
    protections/objectreturntype
    protections/stringsencryption
+   protections/unmanagedstring
    protections/nonamespaces
 
 

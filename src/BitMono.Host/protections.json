@@ -29,6 +29,10 @@
       "Enabled": false
     },
     {
+      "Name": "UnmanagedString",
+      "Enabled": false
+    },
+    {
       "Name": "DotNetHook",
       "Enabled": false
     },

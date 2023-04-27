@@ -17,6 +17,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
