@@ -1,4 +1,4 @@
-﻿namespace BitMono.API.Pipeline;
+﻿namespace BitMono.API.Protections;
 
 public interface IPipelineProtection : IProtection
 {

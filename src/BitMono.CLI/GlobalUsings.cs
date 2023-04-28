@@ -15,6 +15,7 @@ global using BitMono.Obfuscation.Starter;
 global using BitMono.Shared.Models;
 global using BitMono.Utilities.Paths;
 global using CommandLine;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Pocket.Extensions;
 global using Serilog;

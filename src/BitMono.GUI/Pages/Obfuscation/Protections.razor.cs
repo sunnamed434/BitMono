@@ -1,3 +1,5 @@
+using BitMono.API.Protections;
+
 namespace BitMono.GUI.Pages.Obfuscation;
 
 public partial class Protections

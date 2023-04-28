@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS8602
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsNotifier
 {
@@ -32,10 +31,9 @@ public class ProtectionsNotifier
                     stringBuilder.Append(", ");
                     stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(p => p.GetName())));
                 }
-                var enabledProtectionsCount =
-                    protectionsSort.SortedProtections.Count()
-                    + protectionsSort.Pipelines.Count()
-                    + protectionsSort.Packers.Count();
+                var enabledProtectionsCount = protectionsSort.SortedProtections.Count()
+                                              + protectionsSort.Pipelines.Count()
+                                              + protectionsSort.Packers.Count();
                 _logger.Information("({0}) Enabled protection(s): {1}", enabledProtectionsCount, stringBuilder.ToString());
                 var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, _logger);
                 runtimeMonikerNotifier.Notify(protectionsSort);

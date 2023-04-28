@@ -7,4 +7,5 @@ global using System;
 global using System.Collections.Generic;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Threading.Tasks;
+global using BitMono.API.Protections;
 global using IModule = Autofac.Core.IModule;

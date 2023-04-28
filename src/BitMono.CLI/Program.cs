@@ -29,10 +29,9 @@ internal class Program
                 .RegisterModule(module)
                 .Build();
 
-            var lifetimeScope = serviceProvider.LifetimeScope;
-            var obfuscation = lifetimeScope.Resolve<IOptions<ObfuscationSettings>>().Value;
-            var logger = lifetimeScope
-                .Resolve<ILogger>()
+            var obfuscation = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
+            var logger = serviceProvider
+                .GetRequiredService<ILogger>()
                 .ForContext<Program>();
             var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)

@@ -2,7 +2,7 @@ namespace BitMono.Host.Extensions;
 
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
 [SuppressMessage("ReSharper", "IdentifierTypo")]
-public static class AutofacServiceProviderExtensions
+public static class AutofacContainerBuilderExtensions
 {
     private const string ProtectionsFileName = "BitMono.Protections.dll";
 

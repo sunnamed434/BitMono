@@ -1,4 +1,4 @@
-﻿namespace BitMono.API;
+﻿namespace BitMono.API.Protections;
 
 public interface IProtection
 {
