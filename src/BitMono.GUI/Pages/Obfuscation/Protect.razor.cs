@@ -1,5 +1,4 @@
-﻿using BitMono.Core.Contexts;
-using BitMono.Obfuscation;
+﻿using BitMono.API.Protections;
 
 namespace BitMono.GUI.Pages.Obfuscation;
 
@@ -39,7 +38,7 @@ public partial class Protect
                 var fileData = memoryStream.ToArray();
 
                 //var info = new CompleteFileInfo(_obfuscationFile.Name, fileData, _dependenciesDirectoryName, _outputDirectoryName)
-                var engine = new BitMonoEngine(ServiceProvider);
+                var engine = new BitMonoStarter(ServiceProvider);
                 await engine.StartAsync(new IncompleteFileInfo("", "", ""), _cancellationToken);
             }
             catch (Exception ex)

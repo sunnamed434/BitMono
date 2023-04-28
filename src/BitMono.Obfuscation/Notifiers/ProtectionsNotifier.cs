@@ -1,15 +1,14 @@
-﻿#pragma warning disable CS8602
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsNotifier
 {
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly ILogger m_Logger;
+    private readonly ILogger _logger;
 
     public ProtectionsNotifier(ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _obfuscationSettings = obfuscationSettings;
-        m_Logger = logger.ForContext<ProtectionsNotifier>();
+        _logger = logger.ForContext<ProtectionsNotifier>();
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
@@ -21,7 +20,7 @@ public class ProtectionsNotifier
             if (protectionsSort.HasProtections)
             {
                 var stringBuilder = new StringBuilder();
-                stringBuilder.Append(string.Join(", ", protectionsSort.SortedProtections.Select(p => $"{p.GetName()}")));
+                stringBuilder.Append(string.Join(", ", protectionsSort.SortedProtections.Select(p => p.GetName())));
                 if (protectionsSort.Pipelines.Any())
                 {
                     stringBuilder.Append(", ");
@@ -32,25 +31,29 @@ public class ProtectionsNotifier
                     stringBuilder.Append(", ");
                     stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(p => p.GetName())));
                 }
-                m_Logger.Information("Enabled protections: {0}", stringBuilder.ToString());
-                var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, m_Logger);
+                var enabledProtectionsCount = protectionsSort.SortedProtections.Count()
+                                              + protectionsSort.Pipelines.Count()
+                                              + protectionsSort.Packers.Count();
+                _logger.Information("({0}) Enabled protection(s): {1}", enabledProtectionsCount, stringBuilder.ToString());
+                var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, _logger);
                 runtimeMonikerNotifier.Notify(protectionsSort);
             }
             if (protectionsSort.DeprecatedProtections.Any())
             {
-                m_Logger.Warning("Skip deprecated protections: {0}", string.Join(", ", protectionsSort.DeprecatedProtections.Select(p => p?.GetName())));
+                _logger.Warning("Skip deprecated protection(s): {0}", string.Join(", ", protectionsSort.DeprecatedProtections.Select(p => p?.GetName())));
             }
             if (protectionsSort.ProtectionsResolve.DisabledProtections.Any())
             {
-                m_Logger.Warning("Disabled protections: {0}", string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
+                var disabledProtectionsCount = protectionsSort.ProtectionsResolve.DisabledProtections.Count;
+                _logger.Warning("({0}) Disabled protection(s): {1}", disabledProtectionsCount, string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
             }
             if (protectionsSort.ProtectionsResolve.UnknownProtections.Any())
             {
-                m_Logger.Warning("Unknown protections: {0}", string.Join(", ", protectionsSort.ProtectionsResolve.UnknownProtections.Select(p => p ?? "Unnamed Protection")));
+                _logger.Warning("Unknown protection(s): {0}", string.Join(", ", protectionsSort.ProtectionsResolve.UnknownProtections.Select(p => p ?? "Unnamed Protection")));
             }
             if (protectionsSort.ObfuscationAttributeExcludeProtections.Any())
             {
-                m_Logger.Warning("Skip protections with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludeProtections.Select(p => p?.GetName())));
+                _logger.Warning("Skip protection(s) with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludeProtections.Select(p => p?.GetName())));
             }
         }
     }

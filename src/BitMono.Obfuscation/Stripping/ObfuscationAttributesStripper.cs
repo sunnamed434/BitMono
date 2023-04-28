@@ -18,7 +18,7 @@ public class ObfuscationAttributesStripper
         m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
     }
 
-    public ObfuscationAttributesStrip Strip(EngineContext context, ProtectionsSort protectionsSort)
+    public ObfuscationAttributesStrip Strip(StarterContext context, ProtectionsSort protectionsSort)
     {
         var obfuscationAttributesSuccessStrip = new List<CustomAttribute>();
         var obfuscationAttributesFailStrip = new List<CustomAttribute>();

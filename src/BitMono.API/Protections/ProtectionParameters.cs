@@ -1,4 +1,4 @@
-﻿namespace BitMono.API.Contexts;
+﻿namespace BitMono.API.Protections;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
 public class ProtectionParameters

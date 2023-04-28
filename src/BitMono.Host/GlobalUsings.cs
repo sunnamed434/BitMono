@@ -14,7 +14,7 @@ global using System.Reflection;
 global using System.Text.RegularExpressions;
 global using BitMono.API;
 global using BitMono.API.Analyzing;
-global using BitMono.API.Pipeline;
+global using BitMono.API.Protections;
 global using BitMono.API.Resolvers;
 global using BitMono.Core.Configuration;
 global using BitMono.Core.Factories;

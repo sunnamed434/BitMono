@@ -23,18 +23,17 @@ public static class ProtectionExtensions
     {
         return typeof(TProtection).TryGetDoNotResolveAttribute(out attribute);
     }
-    public static bool TryGetRuntimeMonikerAttribute(this Type source, out RuntimeMonikerAttribute? attribute, bool inherit = false)
+    public static RuntimeMonikerAttribute[] GetRuntimeMonikerAttributes(this Type source, bool inherit = false)
     {
-        attribute = source.GetCustomAttribute<RuntimeMonikerAttribute>(inherit);
-        if (attribute == null)
-        {
-            return false;
-        }
-        return true;
+        return source
+            .GetCustomAttributes<RuntimeMonikerAttribute>(inherit)
+            .ToArray();
     }
-    public static bool TryGetRuntimeMonikerAttribute(this IProtection source, out RuntimeMonikerAttribute? attribute)
+    public static RuntimeMonikerAttribute[] GetRuntimeMonikerAttributes(this IProtection source)
     {
-        return source.GetType().TryGetRuntimeMonikerAttribute(out attribute);
+        return source
+            .GetType()
+            .GetRuntimeMonikerAttributes();
     }
     public static bool TryGetObsoleteAttribute(this Type source, out ObsoleteAttribute? attribute, bool inherit = false)
     {

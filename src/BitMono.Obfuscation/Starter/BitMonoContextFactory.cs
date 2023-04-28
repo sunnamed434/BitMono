@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Engine;
+﻿namespace BitMono.Obfuscation.Starter;
 
 public class BitMonoContextFactory
 {

@@ -29,10 +29,9 @@ internal class Program
                 .RegisterModule(module)
                 .Build();
 
-            var lifetimeScope = serviceProvider.LifetimeScope;
-            var obfuscation = lifetimeScope.Resolve<IOptions<ObfuscationSettings>>().Value;
-            var logger = lifetimeScope
-                .Resolve<ILogger>()
+            var obfuscation = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
+            var logger = serviceProvider
+                .GetRequiredService<ILogger>()
                 .ForContext<Program>();
             var needs = new ObfuscationNeedsFactory(args, logger).Create();
             if (needs == null)
@@ -48,7 +47,7 @@ internal class Program
             logger.Information(AsciiArt);
 
             var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryName, needs.OutputPath);
-            var engine = new BitMonoEngine(serviceProvider);
+            var engine = new BitMonoStarter(serviceProvider);
             var succeed = await engine.StartAsync(info, CancellationTokenSource.Token);
             if (succeed == false)
             {
