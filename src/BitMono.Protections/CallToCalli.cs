@@ -37,7 +37,7 @@ public class CallToCalli : Protection
                     if (instruction.OpCode == CilOpCodes.Call && instruction.Operand is IMethodDescriptor methodDescriptor)
                     {
                         var callingMethod = methodDescriptor.Resolve();
-                        if (callingMethod != null)
+                        if (callingMethod?.Signature != null)
                         {
                             if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                             {
