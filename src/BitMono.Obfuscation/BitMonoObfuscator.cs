@@ -66,7 +66,19 @@ public class BitMonoObfuscator
 
     private Task<bool> OutputLoadedModuleAsync()
     {
-        _logger.Information("Loaded Module {0}", _context.Module.Name!.Value);
+        var targetFrameworkName = "unknown";
+        if (_context.Module.Assembly!.TryGetTargetFramework(out var info))
+        {
+            targetFrameworkName = info.Name;
+        }
+
+        var assemblyInfo = _context.Module.Assembly.ToString();
+        var culture = _context.Module.Assembly.Culture ?? "unknown";
+        var timeDateStamp = _context.Module.ToPEImage().TimeDateStamp;
+        _logger.Information("Module {0}", assemblyInfo);
+        _logger.Information("Module Target Framework: {0}", targetFrameworkName);
+        _logger.Information("PE TimeDateStamp: {0}", timeDateStamp);
+        _logger.Information("Module culture: {0}", culture);
         return Task.FromResult(true);
     }
     private Task<bool> SortProtectionsAsync()
