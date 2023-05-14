@@ -59,7 +59,6 @@ public class BitMonoObfuscator
         await _invokablePipeline.InvokeAsync(OptimizeMacrosAsync);
         await _invokablePipeline.InvokeAsync(StripObfuscationAttributesAsync);
         await _invokablePipeline.InvokeAsync(CreatePEImageAsync);
-        await _invokablePipeline.InvokeAsync(OutputPEImageBuildErrorsAsync);
         await _invokablePipeline.InvokeAsync(WriteModuleAsync);
         await _invokablePipeline.InvokeAsync(PackAsync);
         await _invokablePipeline.InvokeAsync(OutputElapsedTimeAsync);
@@ -194,28 +193,6 @@ public class BitMonoObfuscator
         {
             _logger.Fatal("Unable to construct the PE image!");
             return Task.FromResult(false);
-        }
-        return Task.FromResult(true);
-    }
-    private Task<bool> OutputPEImageBuildErrorsAsync()
-    {
-        if (_obfuscationSettings.OutputPEImageBuildErrors)
-        {
-            if (_imageBuild?.DiagnosticBag.HasErrors == true)
-            {
-                var exceptions = _imageBuild.DiagnosticBag.Exceptions;
-                var exceptionsCount = exceptions.Count;
-                _logger.Warning("{0} error(s) were registered while building the PE", exceptionsCount);
-                for (var i = 0; i < exceptionsCount; i++)
-                {
-                    var exception = exceptions[i];
-                    _logger.Error(exception, exception.GetType().Name);
-                }
-            }
-            else
-            {
-                _logger.Information("No one error were registered while building the PE");
-            }
         }
         return Task.FromResult(true);
     }
