@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.16.0-alpha](#0160-alpha29) |
 | [0.15.1-alpha](#0151-alpha28) |
 | [0.15.0-alpha](#0150-alpha27) |
 | [0.14.0-alpha](#0140-alpha26) |
@@ -25,6 +26,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | [0.4.3-alpha](#043-alpha12)   |
 
 ---
+
+## 0.16.0-alpha.29
+2023-05-14
+
+### Added
+
+- New logging info about loaded module (version, PE time date stamp, token, culture and target framework)
+
+### Fixed
+
+- PE Image build errors output
+
+### Changed
+
+- Bumped to latest AsmResolver 5.3.0 version.
 
 ## 0.15.1-alpha.28
 2023-04-28
