@@ -2,11 +2,13 @@
 
 internal class LogErrorListener : IErrorListener
 {
-    private readonly ILogger m_Logger;
+    private readonly ILogger _logger;
+    private readonly ObfuscationSettings _obfuscationSettings;
 
-    public LogErrorListener(ILogger logger)
+    public LogErrorListener(ILogger logger, ObfuscationSettings obfuscationSettings)
     {
-        m_Logger = logger;
+        _logger = logger;
+        _obfuscationSettings = obfuscationSettings;
     }
 
     void IErrorListener.MarkAsFatal()
@@ -15,6 +17,9 @@ internal class LogErrorListener : IErrorListener
     }
     public void RegisterException(Exception exception)
     {
-        m_Logger.Error(exception, "Registered error!");
+        if (_obfuscationSettings.OutputPEImageBuildErrors)
+        {
+            _logger.Error(exception, "Registered error!");
+        }
     }
 }
