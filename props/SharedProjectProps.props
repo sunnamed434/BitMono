@@ -6,12 +6,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sunnamed434/BitMono</PackageProjectUrl>
     <PackageOwners>sunnamed434</PackageOwners>
-    <PackageVersion>0.15.1-alpha.28</PackageVersion>
+    <PackageVersion>0.16.0-alpha.29</PackageVersion>
     <RepositoryUrl>https://github.com/sunnamed434/BitMono</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>sunnamed434</Authors>
-    <Version>0.15.1-alpha.28</Version>
-    <InformationalVersion>0.15.1-alpha.28</InformationalVersion>
+    <Version>0.16.0-alpha.29</Version>
+    <InformationalVersion>0.16.0-alpha.29</InformationalVersion>
     <Company>BitMono</Company>
     <Copyright>sunnamed434</Copyright>
     <LangVersion>10</LangVersion>

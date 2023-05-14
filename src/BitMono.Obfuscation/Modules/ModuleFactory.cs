@@ -31,7 +31,7 @@ public class ModuleFactory : IModuleFactory
             module.PEKind = OptionalHeaderMagic.PE32Plus;
             module.MachineType = MachineType.Amd64;
         }
-        var managedPEImageBuilder = new ManagedPEImageBuilder(_metadataBuilderFlags);
+        var managedPEImageBuilder = new ManagedPEImageBuilder(new DotNetDirectoryFactory(_metadataBuilderFlags), _errorListener);
 
         return new ModuleFactoryResult
         {

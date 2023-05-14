@@ -23,9 +23,8 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 9. Optimize Macros
 10. [ObfuscationAttribute] cleanup
 11. Create PE Image
-12. Output PE Image Build Errors
-13. Write Module
-14. Run Packers
+12. Write Module
+13. Run Packers
 
 
 .. code-block:: csharp
@@ -33,4 +32,4 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 	public class Packer : PackerProtection
 
 
-15. Output Elapsed Time since obfuscation 
+14. Output Elapsed Time since obfuscation 
