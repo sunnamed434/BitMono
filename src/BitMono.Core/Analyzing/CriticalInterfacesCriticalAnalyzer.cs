@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly CriticalsSettings _criticalsSettings;

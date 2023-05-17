@@ -1,10 +1,11 @@
 namespace BitMono.Core.Analyzing;
 
+[SuppressMessage("ReSharper", "InvertIf")]
 public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly List<MethodDefinition> m_CachedMethods;
-    private static readonly string[] ReflectionMethods = new string[]
+    private static readonly string[] ReflectionMethods =
     {
         nameof(Type.GetMethod),
         nameof(Type.GetField),

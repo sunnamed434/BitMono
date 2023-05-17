@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Core.Injection;
 
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
 {
     public ModifyInjectTypeClonerListener(ModifyFlags modify, Renamer renamer, ModuleDefinition targetModule) : base(targetModule)

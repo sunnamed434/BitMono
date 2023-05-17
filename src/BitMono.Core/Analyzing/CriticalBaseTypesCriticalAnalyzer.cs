@@ -1,6 +1,7 @@
-﻿#pragma warning disable CS8602
-namespace BitMono.Core.Analyzing;
+﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "InvertIf")]
 public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly CriticalsSettings _criticalsSettings;
@@ -18,8 +19,9 @@ public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinitio
         }
         if (type.HasBaseType())
         {
-            var criticalBaseTypes = _criticalsSettings.CriticalBaseTypes;
-            if (criticalBaseTypes.FirstOrDefault(c => c.StartsWith(type.BaseType.Name.Value.Split('`')[0])) != null)
+            var criticalBaseTypes = _criticalsSettings.CriticalBaseTypes!;
+            var typeBaseTypeName = type.BaseType?.Name?.Value.Split('`')[0] ?? string.Empty;
+            if (criticalBaseTypes.FirstOrDefault(c => c.StartsWith(typeBaseTypeName)) != null)
             {
                 return false;
             }

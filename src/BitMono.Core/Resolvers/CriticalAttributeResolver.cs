@@ -1,14 +1,14 @@
 ﻿namespace BitMono.Core.Resolvers;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "InvertIf")]
 public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolve>
 {
     private readonly CriticalsSettings _criticalsSettings;
-    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals, AttemptAttributeResolver attemptAttributeResolver)
+    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals)
     {
         _criticalsSettings = criticals.Value;
-        m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public override bool Resolve(string? feature, IHasCustomAttribute from, out CustomAttributeResolve? attributeResolve)
@@ -20,9 +20,10 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
         }
         foreach (var criticalAttribute in _criticalsSettings.CriticalAttributes)
         {
-            if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out var attributesResolve))
+            if (AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name,
+                    out var attributesResolve))
             {
-                attributeResolve = attributesResolve.First();
+                attributeResolve = attributesResolve!.First();
                 return true;
             }
         }

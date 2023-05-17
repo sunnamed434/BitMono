@@ -1,6 +1,7 @@
-﻿#pragma warning disable CS8602
-namespace BitMono.Core.Resolvers;
+﻿namespace BitMono.Core.Resolvers;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
     private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
@@ -30,14 +31,14 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
             var feature = protection.GetName();
             if (m_ObfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributeData))
             {
-                if (obfuscationAttributeData.Exclude)
+                if (obfuscationAttributeData!.Exclude)
                 {
                     return false;
                 }
             }
             if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
             {
-                if (obfuscateAssemblyAttributeData.AssemblyIsPrivate)
+                if (obfuscateAssemblyAttributeData!.AssemblyIsPrivate)
                 {
                     return false;
                 }

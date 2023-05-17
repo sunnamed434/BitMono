@@ -3,16 +3,14 @@ namespace BitMono.Core.Resolvers;
 public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAssemblyAttributeData>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
-    private readonly string m_AttributeNamespace;
-    private readonly string m_AttributeName;
+    private readonly string _attributeNamespace;
+    private readonly string _attributeName;
 
-    public ObfuscateAssemblyAttributeResolver(IOptions<ObfuscationSettings> configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscateAssemblyAttributeResolver(IOptions<ObfuscationSettings> configuration)
     {
         _obfuscationSettings = configuration.Value;
-        m_AttemptAttributeResolver = attemptAttributeResolver;
-        m_AttributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace;
-        m_AttributeName = nameof(ObfuscateAssemblyAttribute);
+        _attributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace;
+        _attributeName = nameof(ObfuscateAssemblyAttribute);
     }
 
     public override bool Resolve(string? feature, IHasCustomAttribute from, out ObfuscateAssemblyAttributeData? model)
@@ -22,11 +20,11 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var attributesResolve) == false)
+        if (AttemptAttributeResolver.TryResolve(from, _attributeNamespace, _attributeName, out var attributesResolve) == false)
         {
             return false;
         }
-        var attribute = attributesResolve.First();
+        var attribute = attributesResolve!.First();
         var assemblyIsPrivate = attribute.FixedValues[0] is bool;
         var stripAfterObfuscation = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation), defaultValue: true);
         model = new ObfuscateAssemblyAttributeData

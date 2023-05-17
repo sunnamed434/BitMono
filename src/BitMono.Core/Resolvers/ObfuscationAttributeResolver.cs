@@ -1,16 +1,16 @@
 ﻿namespace BitMono.Core.Resolvers;
 
+[SuppressMessage("ReSharper", "InvertIf")]
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttributeData>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
     private readonly string m_AttributeNamespace;
     private readonly string m_AttributeName;
 
-    public ObfuscationAttributeResolver(IOptions<ObfuscationSettings> configuration, AttemptAttributeResolver attemptAttributeResolver)
+    public ObfuscationAttributeResolver(IOptions<ObfuscationSettings> configuration)
     {
         _obfuscationSettings = configuration.Value;
-        m_AttemptAttributeResolver = attemptAttributeResolver;
         m_AttributeNamespace = typeof(ObfuscationAttribute).Namespace;
         m_AttributeName = nameof(ObfuscationAttribute);
     }
@@ -22,13 +22,15 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
         {
             return false;
         }
-        if (m_AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var attributesResolve) == false)
+        if (AttemptAttributeResolver.TryResolve(from, m_AttributeNamespace, m_AttributeName, out var attributesResolve) == false)
         {
             return false;
         }
-        foreach (var attribute in attributesResolve)
+
+        for (var i = 0; i < attributesResolve.Count; i++)
         {
-            if (attribute.NamedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature))
+            var attribute = attributesResolve[i];
+            if (attribute.NamedValues?.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature) == true)
             {
                 if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -49,6 +51,7 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
                     }
                 }
             }
+
         }
         return false;
     }

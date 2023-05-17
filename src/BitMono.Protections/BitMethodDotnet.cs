@@ -32,7 +32,7 @@ public class BitMethodDotnet : Protection
                     1 => CilOpCodes.Unaligned,
                     2 => CilOpCodes.Volatile,
                     3 => CilOpCodes.Constrained,
-                    _ => throw new ArgumentOutOfRangeException(),
+                    _ => throw new ArgumentOutOfRangeException($"Random value {randomValue} cannot be selected as Random CilOpCode"),
                 };
 
                 var label = body.Instructions[randomMethodBodyIndex].CreateLabel();

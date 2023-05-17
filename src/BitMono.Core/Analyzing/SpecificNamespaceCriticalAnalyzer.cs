@@ -1,5 +1,7 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")]
 public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
@@ -16,24 +18,24 @@ public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMemb
             return true;
         }
 
-        var specificNamespaces = _obfuscationSettings.SpecificNamespaces;
+        var specificNamespaces = _obfuscationSettings.SpecificNamespaces!;
         if (member is TypeDefinition type && type.HasNamespace())
         {
-            if (specificNamespaces.Any(s => s.Equals(type.Namespace.Value)) == false)
+            if (specificNamespaces.Any(s => s.Equals(type.Namespace?.Value)) == false)
             {
                 return false;
             }
         }
-        if (member is MethodDefinition method && method.DeclaringType.HasNamespace())
+        if (member is MethodDefinition method && method.DeclaringType?.HasNamespace() == true)
         {
-            if (specificNamespaces.Any(s => s.Equals(method.DeclaringType.Namespace.Value)) == false)
+            if (specificNamespaces.Any(s => s.Equals(method.DeclaringType.Namespace?.Value)) == false)
             {
                 return false;
             }
         }
-        if (member is FieldDefinition field && field.DeclaringType.HasNamespace())
+        if (member is FieldDefinition field && field.DeclaringType?.HasNamespace() == true)
         {
-            if (specificNamespaces.Any(s => s.Equals(field.DeclaringType.Namespace.Value)) == false)
+            if (specificNamespaces.Any(s => s.Equals(field.DeclaringType.Namespace?.Value)) == false)
             {
                 return false;
             }

@@ -1,5 +1,7 @@
 ﻿namespace BitMono.Core.Resolvers;
 
+[SuppressMessage("ReSharper", "InvertIf")]
+[SuppressMessage("ReSharper", "MergeIntoPattern")]
 public class NoInliningMethodMemberResolver : IMemberResolver
 {
     private readonly ObfuscationSettings _obfuscationSettings;

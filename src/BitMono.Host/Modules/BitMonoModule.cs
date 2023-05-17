@@ -72,16 +72,6 @@ public class BitMonoModule : Module
             .OwnedByLifetimeScope()
             .SingleInstance();
 
-        containerBuilder.RegisterType<CustomAttributeResolver>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<AttemptAttributeResolver>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         containerBuilder.RegisterAssemblyTypes(assemblies)
             .PublicOnly()

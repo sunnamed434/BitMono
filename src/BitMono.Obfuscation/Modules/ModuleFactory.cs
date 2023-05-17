@@ -16,7 +16,10 @@ public class ModuleFactory : IModuleFactory
 
     public ModuleFactoryResult Create()
     {
-        var moduleReaderParameters = new ModuleReaderParameters(_errorListener);
+        var moduleReaderParameters = new ModuleReaderParameters(_errorListener)
+        {
+            PEReaderParameters = new PEReaderParameters(_errorListener)
+        };
         var module = ModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
         module.Attributes &= ~DotNetDirectoryFlags.ILOnly;
         var x86 = module.MachineType == MachineType.I386;
