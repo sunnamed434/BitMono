@@ -57,6 +57,7 @@ Table of Contents:
    :name: sec-bestpractices
 
    bestpractices/bitmono-combo
+   bestpractices/zero-risk-obfuscation
 
 
 .. toctree::
