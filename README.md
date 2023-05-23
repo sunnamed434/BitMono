@@ -58,11 +58,11 @@ So, if you will add more protection to the file, I think it would seem like tota
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
-* Looks like C++ application but is an actual C# application
-* Crash of decompilers when analyzing types
-* Broken decompilers
-* Broken IL Code
-* Invisible types
+* Looks like C++ application but is an actual C# application;
+* Crash of decompilers when analyzing types;
+* Broken decompilers;
+* Broken IL Code;
+* Invisible types;
 * No code
 
 ## Features
