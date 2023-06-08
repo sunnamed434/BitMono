@@ -8,17 +8,20 @@ public static class CustomAttributeResolver
     public static List<CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
         var attributes = new List<CustomAttributeResolve>();
-        for (var i = 0; i < from.CustomAttributes.Count; i++)
+        var customAttributes = from.CustomAttributes;
+        for (var i = 0; i < customAttributes.Count; i++)
         {
-            var customAttribute = from.CustomAttributes[i];
+            var customAttribute = customAttributes[i];
             if (customAttribute.Constructor?.DeclaringType?.IsTypeOf(@namespace, name) == true)
             {
                 if (customAttribute.Signature != null)
                 {
                     var namedValues = new Dictionary<string, object>();
                     var fixedValues = new List<object>();
-                    foreach (var namedArgument in customAttribute.Signature.NamedArguments)
+                    var namedArguments = customAttribute.Signature.NamedArguments;
+                    for (var j = 0; j < namedArguments.Count; j++)
                     {
+                        var namedArgument = namedArguments[j];
                         if (string.IsNullOrWhiteSpace(namedArgument.MemberName?.Value) == false)
                         {
                             if (namedArgument.Argument.Element is Utf8String utf8String)
@@ -33,10 +36,11 @@ public static class CustomAttributeResolver
                                 }
                             }
                         }
-
                     }
-                    foreach (var fixedArgument in customAttribute.Signature!.FixedArguments)
+                    var fixedArguments = customAttribute.Signature!.FixedArguments;
+                    for (var k = 0; k < fixedArguments.Count; k++)
                     {
+                        var fixedArgument = fixedArguments[k];
                         if (fixedArgument.Element is Utf8String utf8String)
                         {
                             fixedValues.Add(utf8String.Value);

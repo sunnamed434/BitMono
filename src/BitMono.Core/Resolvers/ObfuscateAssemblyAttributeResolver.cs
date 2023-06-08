@@ -20,19 +20,18 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
         {
             return false;
         }
-        if (AttemptAttributeResolver.TryResolve(from, _attributeNamespace, _attributeName, out var attributesResolve) == false)
+        if (AttemptAttributeResolver.TryResolve(from, _attributeNamespace,
+                _attributeName, out var attributesResolve) == false)
         {
             return false;
         }
+
         var attribute = attributesResolve!.First();
-        var assemblyIsPrivate = attribute.FixedValues[0] is bool;
-        var stripAfterObfuscation = attribute.NamedValues.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation), defaultValue: true);
-        model = new ObfuscateAssemblyAttributeData
-        {
-            AssemblyIsPrivate = assemblyIsPrivate,
-            StripAfterObfuscation = stripAfterObfuscation,
-            CustomAttribute = attribute.Attribute
-        };
+        var assemblyIsPrivate = attribute.FixedValues![0] is bool;
+        var stripAfterObfuscation =
+            attribute.NamedValues!.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation),
+                defaultValue: true);
+        model = new ObfuscateAssemblyAttributeData(assemblyIsPrivate, stripAfterObfuscation, attribute.Attribute);
         return true;
     }
 }
