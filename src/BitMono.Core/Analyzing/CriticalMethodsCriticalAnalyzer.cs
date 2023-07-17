@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
 public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
     private readonly CriticalsSettings _criticalsSettings;
@@ -16,10 +17,6 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
             return true;
         }
         var criticalMethodNames = _criticalsSettings.CriticalMethods;
-        if (criticalMethodNames.Any(c => c.Equals(method.Name)))
-        {
-            return false;
-        }
-        return true;
+        return criticalMethodNames.Any(c => c.Equals(method.Name)) == false;
     }
 }

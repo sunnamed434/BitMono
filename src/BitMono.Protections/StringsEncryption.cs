@@ -20,7 +20,7 @@ public class StringsEncryption : Protection
         var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
 
         var runtimeDecryptorType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
-        var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name.Equals(nameof(Decryptor.Decrypt)));
+        var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name!.Equals(nameof(Decryptor.Decrypt)));
         var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
         var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeDecryptorType)

@@ -1,14 +1,15 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
+[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>
 {
     private readonly CriticalsSettings _criticalsSettings;
-    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public ModelAttributeCriticalAnalyzer(IOptions<CriticalsSettings> criticals, AttemptAttributeResolver attemptAttributeResolver)
+    public ModelAttributeCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
     {
         _criticalsSettings = criticals.Value;
-        m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)
@@ -21,7 +22,7 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
         for (var i = 0; i < criticalAttributes.Count; i++)
         {
             var attribute = criticalAttributes[i];
-            if (m_AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
+            if (AttemptAttributeResolver.TryResolve(customAttribute, attribute.Namespace, attribute.Name))
             {
                 return false;
             }

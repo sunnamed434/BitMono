@@ -6,8 +6,7 @@ public class Program
     {
         // Don't try to run, it will cause errors, it just for test cases
 
+        // Just to suppress compiler optimizations
         EntityFrameworkServicesBuilder.CoreServices.Add(default!);
-
-        AsmResolver.Extensions.ToArray(default!);
     }
 }

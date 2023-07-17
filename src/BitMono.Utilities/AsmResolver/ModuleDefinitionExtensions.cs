@@ -18,7 +18,10 @@ public static class ModuleDefinitionExtensions
     {
         var members = new List<IMetadataMember>();
         members.Add(source);
-        members.Add(source.Assembly);
+        if (source.Assembly != null)
+        {
+            members.Add(source.Assembly);
+        }
         foreach (var type in source.GetAllTypes())
         {
             members.Add(type);

@@ -11,9 +11,12 @@ internal class LogErrorListener : IErrorListener
         _obfuscationSettings = obfuscationSettings;
     }
 
-    void IErrorListener.MarkAsFatal()
+    public void MarkAsFatal()
     {
-        throw new NotImplementedException();
+        if (_obfuscationSettings.OutputPEImageBuildErrors)
+        {
+            _logger.Fatal("An fatal error just occured!");
+        }
     }
     public void RegisterException(Exception exception)
     {

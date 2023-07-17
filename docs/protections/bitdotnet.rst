@@ -10,4 +10,4 @@ Mono doesn't care about the thing which dnlib care about, and because of that it
 
 .. warning::
 
-    This protection is only compatible with Mono.
+    This protection compatible only with Mono.

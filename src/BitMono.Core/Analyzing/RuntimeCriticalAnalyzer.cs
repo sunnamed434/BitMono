@@ -1,5 +1,7 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "MergeIntoPattern")]
 public class RuntimeCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
     public bool NotCriticalToMakeChanges(IMetadataMember member)
@@ -12,11 +14,11 @@ public class RuntimeCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
         {
             return field.IsRuntimeSpecialName == false
                 && field.IsLiteral == false
-                && field.DeclaringType.IsEnum == false;
+                && field.DeclaringType?.IsEnum == false;
         }
         if (member is MethodDefinition method)
         {
-            return method.IsRuntimeSpecialName == false || method.DeclaringType.IsForwarder == false;
+            return method.IsRuntimeSpecialName == false || method.DeclaringType?.IsForwarder == false;
         }
         if (member is EventDefinition @event)
         {

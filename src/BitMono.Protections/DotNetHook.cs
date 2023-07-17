@@ -39,8 +39,7 @@ public class DotNetHook : Protection
                     if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor callingOperandMethod)
                     {
                         var callingMethod = callingOperandMethod.Resolve();
-                        if (callingMethod is { CilMethodBody: { } }
-                            && callingMethod is { Managed: true, Signature: not null }
+                        if (callingMethod is { CilMethodBody: { } } and { Managed: true, Signature: not null }
                             && callingMethod.ParameterDefinitions.Any(p => p.IsIn || p.IsOut) == false)
                         {
                             if (Context.Module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
@@ -66,8 +65,8 @@ public class DotNetHook : Protection
                                 }
                                 dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
                                 var signature = MethodSignature.CreateStatic(systemVoid);
-                                var attributes = MethodAttributes.Assembly | MethodAttributes.Static;
-                                var initializationMethod = new MethodDefinition(_renamer.RenameUnsafely(), attributes, signature);
+                                const MethodAttributes initMethodAttributes = MethodAttributes.Assembly | MethodAttributes.Static;
+                                var initializationMethod = new MethodDefinition(_renamer.RenameUnsafely(), initMethodAttributes, signature);
                                 initializationMethod.CilMethodBody = new CilMethodBody(initializationMethod)
                                 {
                                     Instructions =

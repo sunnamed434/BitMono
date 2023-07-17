@@ -23,7 +23,10 @@ public class FullRenamer : Protection
                 {
                     foreach (var parameter in method.Parameters)
                     {
-                        _renamer.Rename(parameter.Definition);
+                        if (parameter.Definition != null)
+                        {
+                            _renamer.Rename(parameter.Definition);
+                        }
                     }
                 }
             }

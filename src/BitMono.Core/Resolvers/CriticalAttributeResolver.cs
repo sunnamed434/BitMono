@@ -1,31 +1,38 @@
 ﻿namespace BitMono.Core.Resolvers;
 
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "InvertIf")]
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolve>
 {
     private readonly CriticalsSettings _criticalsSettings;
-    private readonly AttemptAttributeResolver m_AttemptAttributeResolver;
 
-    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals, AttemptAttributeResolver attemptAttributeResolver)
+    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals)
     {
         _criticalsSettings = criticals.Value;
-        m_AttemptAttributeResolver = attemptAttributeResolver;
     }
 
-    public override bool Resolve(string? feature, IHasCustomAttribute from, out CustomAttributeResolve? attributeResolve)
+    public override bool Resolve(string? feature, IHasCustomAttribute from,
+        out CustomAttributeResolve? attributeResolve)
     {
         attributeResolve = null;
         if (_criticalsSettings.UseCriticalAttributes == false)
         {
             return false;
         }
-        foreach (var criticalAttribute in _criticalsSettings.CriticalAttributes)
+
+        var criticalAttributes = _criticalsSettings.CriticalAttributes;
+        for (var i = 0; i < criticalAttributes.Count; i++)
         {
-            if (m_AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name, out var attributesResolve))
+            var criticalAttribute = criticalAttributes[i];
+            if (AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name,
+                    out var attributesResolve))
             {
-                attributeResolve = attributesResolve.First();
+                attributeResolve = attributesResolve!.First();
                 return true;
             }
         }
+
         return false;
     }
 }

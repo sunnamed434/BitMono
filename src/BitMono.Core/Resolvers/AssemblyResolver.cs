@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS8602
 namespace BitMono.Core.Resolvers;
 
+[SuppressMessage("ReSharper", "InvertIf")]
 public static class AssemblyResolver
 {
     public static AssemblyResolve Resolve(IEnumerable<byte[]> dependenciesData, StarterContext context)
@@ -43,6 +44,7 @@ public static class AssemblyResolver
                 }
                 catch (BadImageFormatException)
                 {
+                    // ignored
                 }
             }
 

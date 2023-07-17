@@ -45,10 +45,19 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 1
+   :caption: Obfuscation Issues
+   :name: sec-obfuscationissues
+
+   obfuscationissues/corlib-not-found
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Best Practices
    :name: sec-bestpractices
 
    bestpractices/bitmono-combo
+   bestpractices/zero-risk-obfuscation
 
 
 .. toctree::

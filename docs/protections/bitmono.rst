@@ -10,4 +10,4 @@ Mono doesn't care about the things which decompilers/tools care about, and becau
 
 .. warning::
 
-    This protection is only compatible with Mono.
+    This protection compatible only with Mono.

@@ -5,10 +5,9 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedPackages.props" />
 
   <ItemGroup>
-    <PackageReference Include="AsmResolver" Version="5.3.0" />
-    <PackageReference Include="AsmResolver.DotNet" Version="5.3.0" />
     <PackageReference Include="Autofac" Version="6.5.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />

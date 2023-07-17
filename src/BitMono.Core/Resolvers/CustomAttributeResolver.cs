@@ -1,45 +1,68 @@
 ﻿namespace BitMono.Core.Resolvers;
 
-public class CustomAttributeResolver
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
+[SuppressMessage("ReSharper", "InvertIf")]
+public static class CustomAttributeResolver
 {
-    public IEnumerable<CustomAttributeResolve>? Resolve(IHasCustomAttribute from, string @namespace, string name)
+    [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
+    public static List<CustomAttributeResolve> Resolve(IHasCustomAttribute from, string @namespace, string name)
     {
-        for (var i = 0; i < from.CustomAttributes.Count; i++)
+        var attributes = new List<CustomAttributeResolve>();
+        var customAttributes = from.CustomAttributes;
+        for (var i = 0; i < customAttributes.Count; i++)
         {
-            var customAttribute = from.CustomAttributes[i];
-            if (customAttribute.Constructor.DeclaringType.IsTypeOf(@namespace, name))
+            var customAttribute = customAttributes[i];
+            if (customAttribute.Constructor?.DeclaringType?.IsTypeOf(@namespace, name) == true)
             {
-                var namedValues = new Dictionary<string, object>();
-                var fixedValues = new List<object>();
-                foreach (var namedArgument in customAttribute.Signature.NamedArguments)
+                if (customAttribute.Signature != null)
                 {
-                    if (namedArgument.Argument.Element is Utf8String utf8String)
+                    var namedValues = new Dictionary<string, object>();
+                    var fixedValues = new List<object>();
+                    var namedArguments = customAttribute.Signature.NamedArguments;
+                    for (var j = 0; j < namedArguments.Count; j++)
                     {
-                        namedValues.Add(namedArgument.MemberName.Value, utf8String.Value);
+                        var namedArgument = namedArguments[j];
+                        if (string.IsNullOrWhiteSpace(namedArgument.MemberName?.Value) == false)
+                        {
+                            if (namedArgument.Argument.Element is Utf8String utf8String)
+                            {
+                                namedValues.Add(namedArgument.MemberName!.Value, utf8String.Value);
+                            }
+                            else
+                            {
+                                if (namedArgument.Argument.Element != null)
+                                {
+                                    namedValues.Add(namedArgument.MemberName!.Value, namedArgument.Argument.Element);
+                                }
+                            }
+                        }
                     }
-                    else
+                    var fixedArguments = customAttribute.Signature!.FixedArguments;
+                    for (var k = 0; k < fixedArguments.Count; k++)
                     {
-                        namedValues.Add(namedArgument.MemberName.Value, namedArgument.Argument.Element);
+                        var fixedArgument = fixedArguments[k];
+                        if (fixedArgument.Element is Utf8String utf8String)
+                        {
+                            fixedValues.Add(utf8String.Value);
+                        }
+                        else
+                        {
+                            if (fixedArgument.Element != null)
+                            {
+                                fixedValues.Add(fixedArgument.Element);
+                            }
+                        }
                     }
+
+                    attributes.Add(new CustomAttributeResolve
+                    {
+                        NamedValues = namedValues,
+                        FixedValues = fixedValues,
+                        Attribute = customAttribute
+                    });
                 }
-                foreach (var fixedArgument in customAttribute.Signature.FixedArguments)
-                {
-                    if (fixedArgument.Element is Utf8String utf8String)
-                    {
-                        fixedValues.Add(utf8String.Value);
-                    }
-                    else
-                    {
-                        fixedValues.Add(fixedArgument.Element);
-                    }
-                }
-                yield return new CustomAttributeResolve
-                {
-                    NamedValues = namedValues,
-                    FixedValues = fixedValues,
-                    Attribute = customAttribute
-                };
             }
         }
+        return attributes;
     }
 }

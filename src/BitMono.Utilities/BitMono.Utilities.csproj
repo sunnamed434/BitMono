@@ -7,8 +7,6 @@
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <ItemGroup>
-    <PackageReference Include="AsmResolver" Version="5.3.0" />
-    <PackageReference Include="AsmResolver.DotNet" Version="5.3.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
@@ -17,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
-    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
   </ItemGroup>
 
 </Project>

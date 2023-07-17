@@ -1,5 +1,6 @@
 namespace BitMono.Core.Analyzing;
 
+[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
@@ -8,7 +9,7 @@ public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
     {
         _obfuscationSettings = obfuscation.Value;
     }
-    
+
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
         if (_obfuscationSettings.SerializableBitObfuscationExclude == false)

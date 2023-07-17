@@ -201,7 +201,7 @@ public class BitMonoObfuscator
     private Task<bool> CreatePEImageAsync()
     {
         _imageBuild = _context.PEImageBuilder.CreateImage(_context.Module);
-        if (_imageBuild?.ConstructedImage == null)
+        if (_imageBuild == null || _imageBuild.HasFailed)
         {
             _logger.Fatal("Unable to construct the PE image!");
             return Task.FromResult(false);

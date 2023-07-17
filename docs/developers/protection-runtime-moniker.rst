@@ -72,3 +72,13 @@ Specify Rust Runtime Moniker Attribute.
 	[UsedImplicitly]
 	[RuntimeMonikerRust] // Add this Attribute which says this protections works only with Rust Runtime
 	public class RustPacker : Packer // or instead use Protection or PipelineProtection
+
+
+
+After that user need to use the ``RustPacker`` and they will receive an message that the ``RustPacker`` "is intended for Rust runtime".
+
+
+
+.. note::
+
+	You don't need to make any services registration or instance creation for the ``RuntimeMonikerRust`` due to it will get the attribute automatically behind the hood using Reflection, and Protections Info Output in the Console/GUI (whatever is used, user will get a message notification about that). So, you don't need to care about ``RuntimeMonikerRust`` anymore, simply add it on top of the feature and have fun!

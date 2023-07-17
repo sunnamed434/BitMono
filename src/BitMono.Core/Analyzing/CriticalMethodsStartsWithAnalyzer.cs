@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Core.Analyzing;
 
+[UsedImplicitly]
 public class CriticalMethodsStartsWithAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
     private readonly CriticalsSettings _criticalsSettings;
@@ -17,10 +18,6 @@ public class CriticalMethodsStartsWithAnalyzer : ICriticalAnalyzer<MethodDefinit
         }
 
         var criticalMethodsStartWith = _criticalsSettings.CriticalMethodsStartsWith;
-        if (criticalMethodsStartWith.Any(c => c.StartsWith(method.Name)))
-        {
-            return false;
-        }
-        return true;
+        return criticalMethodsStartWith.Any(c => c.StartsWith(method.Name)) == false;
     }
 }

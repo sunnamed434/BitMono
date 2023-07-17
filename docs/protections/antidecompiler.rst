@@ -10,4 +10,4 @@ That means if someone will try to analyze the protected nested type, dnSpy will 
 
 .. warning::
 
-    This protection is only compatible with Mono.
+    This protection compatible only with Mono.
