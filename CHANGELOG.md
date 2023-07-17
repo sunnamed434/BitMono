@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- (UnmanagedString) Add unicode support, fix strings with null characters [#130](https://github.com/sunnamed434/BitMono/pull/130), thanks [GazziFX](https://github.com/GazziFX)
+- (UnmanagedString) Add unicode support, fix strings with null characters [#130](https://github.com/sunnamed434/BitMono/pull/130), by [GazziFX](https://github.com/GazziFX)
 - Other minor bug fixes.
 
 ### Changed
@@ -119,12 +119,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Return obfuscation success & failure status from BitMono.CLI (0 - Success, 1 - Failure), thanks to [techei](https://github.com/techei).
+- Return obfuscation success & failure status from BitMono.CLI (0 - Success, 1 - Failure), by [techei](https://github.com/techei)
 - More docs and answers to the questions.
 
 #### Fixed
 
-- Assembly resolve [#113](https://github.com/sunnamed434/BitMono/issues/113), thanks to [techei](https://github.com/techei) for the bug report.
+- Assembly resolve [#113](https://github.com/sunnamed434/BitMono/issues/113), by [techei](https://github.com/techei)
 
 ### Changed
 
@@ -215,8 +215,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- README text spelling [#54](https://github.com/sunnamed434/BitMono/pull/54), thanks to [Gibsol](https://github.com/Gibsol).
-- .gitignore [#81](https://github.com/sunnamed434/BitMono/pull/81), thanks to [0x59R11](https://github.com/0x59R11).
+- README text spelling [#54](https://github.com/sunnamed434/BitMono/pull/54), by [Gibsol](https://github.com/Gibsol).
+- .gitignore [#81](https://github.com/sunnamed434/BitMono/pull/81), by [0x59R11](https://github.com/0x59R11).
 
 ### 0.7.0-alpha.16
 
