@@ -6,8 +6,6 @@
 [RuntimeMonikerNETFramework]
 public class UnmanagedString : Protection
 {
-    private const int Windows1252Encoding = 1252;
-
     public UnmanagedString(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
@@ -17,6 +15,13 @@ public class UnmanagedString : Protection
         var moduleImporter = Context.ModuleImporter;
         var stringSbytePointerCtor =
             moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*) })!);
+        var stringCharPointerCtor =
+            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(char*) })!);
+        var stringSbytePointerWithLengthCtor =
+            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*), typeof(int), typeof(int) })!);
+        var stringCharPointerWithLengthCtor =
+            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(char*), typeof(int), typeof(int) })!);
+        var encodedStrings = new Dictionary<string, MethodDefinition>();
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
             if (method is { CilMethodBody: { } body })
@@ -25,14 +30,35 @@ public class UnmanagedString : Protection
                 for (var i = 0; i < instructions.Count; i++)
                 {
                     var instruction = instructions[i];
-                    if (instruction.OpCode == CilOpCodes.Ldstr && instruction.Operand is string content)
+                    if (instruction.OpCode == CilOpCodes.Ldstr && instruction.Operand is string content && content.Length > 0) // skip empty string
                     {
-                        var nativeMethod = CreateNativeMethod(content, Context.Module, Context.X86);
+                        bool useUnicode = !CanBeEncodedIn7BitASCII(content);
+                        bool addNullTerminator = !HasNullCharacter(content);
+
+                        if (!encodedStrings.TryGetValue(content, out var nativeMethod)) // reuse encoded strings
+                        {
+                            nativeMethod = CreateNativeMethod(content, Context.Module, Context.X86, useUnicode, addNullTerminator);
+                            encodedStrings.Add(content, nativeMethod);
+                        }
+
                         if (nativeMethod != null)
                         {
                             instruction.ReplaceWith(CilOpCodes.Call, nativeMethod);
-                            method.CilMethodBody.Instructions.Insert(++i,
-                                new CilInstruction(CilOpCodes.Newobj, stringSbytePointerCtor));
+
+                            if (addNullTerminator)
+                            {
+                                method.CilMethodBody.Instructions.Insert(++i,
+                                    new CilInstruction(CilOpCodes.Newobj, useUnicode ? stringCharPointerCtor : stringSbytePointerCtor));
+                            }
+                            else
+                            {
+                                method.CilMethodBody.Instructions.Insert(++i,
+                                    CilInstruction.CreateLdcI4(0));
+                                method.CilMethodBody.Instructions.Insert(++i,
+                                    CilInstruction.CreateLdcI4(content.Length));
+                                method.CilMethodBody.Instructions.Insert(++i,
+                                    new CilInstruction(CilOpCodes.Newobj, useUnicode ? stringCharPointerWithLengthCtor : stringSbytePointerWithLengthCtor));
+                            }
                         }
                     }
                 }
@@ -42,16 +68,9 @@ public class UnmanagedString : Protection
         return Task.CompletedTask;
     }
 
-    private static MethodDefinition? CreateNativeMethod(string content, ModuleDefinition module,
-        bool x86)
+    private static MethodDefinition CreateNativeMethod(string content, ModuleDefinition module,
+        bool x86, bool useUnicode, bool addNullTerminator)
     {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        var windows1252Encoding = Encoding.GetEncoding(Windows1252Encoding);
-        if (CanBeEncodedInWindows1252(content) == false)
-        {
-            return null;
-        }
-
         var factory = module.CorLibTypeFactory;
 
         var methodName = Guid.NewGuid().ToString();
@@ -64,56 +83,71 @@ public class UnmanagedString : Protection
 
         module.GetOrCreateModuleType().Methods.Add(method);
 
-        var stringBytes = windows1252Encoding.GetBytes(content);
+        if (addNullTerminator)
+            content += "\0"; // not adding on byte level as it has encoding-dependent size
 
-        NativeMethodBody body;
+        byte[] stringBytes;
+        if (useUnicode)
+            stringBytes = Encoding.Unicode.GetBytes(content);
+        else
+            stringBytes = Encoding.ASCII.GetBytes(content);
+
+        IEnumerable<byte> code;
         if (x86)
         {
-            body = new NativeMethodBody(method)
+            code = new byte[]
             {
-                Code = new byte[]
-                {
-                    0x55, // push ebp
-                    0x89, 0xE5, // mov ebp, esp
-                    0xE8, 0x05, 0x00, 0x00, 0x00, // call <jump1>
-                    0x83, 0xC0, 0x01, // add eax, 1
-                    // <jump2>:
-                    0x5D, // pop ebp
-                    0xC3, // ret
-                    // <jump1>:
-                    0x58, // pop eax
-                    0x83, 0xC0, 0x0B, // add eax, 0xb
-                    0xEB, 0xF8 // jmp <jump2>
-                }.Concat(stringBytes).Concat(new byte[] { 0x00 }).ToArray()
+                0x55, // push ebp
+                0x89, 0xE5, // mov ebp, esp
+                0xE8, 0x05, 0x00, 0x00, 0x00, // call <jump1>
+                0x83, 0xC0, 0x01, // add eax, 1
+                // <jump2>:
+                0x5D, // pop ebp
+                0xC3, // ret
+                // <jump1>:
+                0x58, // pop eax
+                0x83, 0xC0, 0x0B, // add eax, 0xb
+                0xEB, 0xF8 // jmp <jump2>
             };
         }
         else
         {
-            body = new NativeMethodBody(method)
+            code = new byte[]
             {
-                Code = new byte[]
-                {
-                    0x48, 0x8D, 0x05, 0x01, 0x00, 0x00, 0x00, // lea rax, [rip + 0x1]
-                    0xC3 // ret
-                }.Concat(stringBytes).Concat(new byte[] { 0x00 }).ToArray()
+                0x48, 0x8D, 0x05, 0x01, 0x00, 0x00, 0x00, // lea rax, [rip + 0x1]
+                0xC3 // ret
             };
         }
 
+        code = code.Concat(stringBytes);
+
+        NativeMethodBody body = new NativeMethodBody(method)
+        {
+            Code = code.ToArray()
+        };
         method.NativeMethodBody = body;
         return method;
     }
-    private static bool CanBeEncodedInWindows1252(string text)
+
+    private static bool CanBeEncodedIn7BitASCII(string text)
     {
-        try
+        for (int i = 0; i < text.Length; i++)
         {
-            _ = Encoding
-                .GetEncoding(Windows1252Encoding, EncoderFallback.ExceptionFallback, DecoderFallback.ReplacementFallback)
-                .GetBytes(text);
-            return true;
+            if (text[i] > '\x7f')
+                return false;
         }
-        catch
+
+        return true;
+    }
+
+    private static bool HasNullCharacter(string text)
+    {
+        for (int i = 0; i < text.Length; i++)
         {
-            return false;
+            if (text[i] == '\0')
+                return true;
         }
+
+        return false;
     }
 }
