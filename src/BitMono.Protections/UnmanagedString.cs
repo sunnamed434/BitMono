@@ -4,6 +4,8 @@
 [SuppressMessage("ReSharper", "InvertIf")]
 [RuntimeMonikerNETCore]
 [RuntimeMonikerNETFramework]
+[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class UnmanagedString : Protection
 {
     public UnmanagedString(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -32,10 +34,10 @@ public class UnmanagedString : Protection
                     var instruction = instructions[i];
                     if (instruction.OpCode == CilOpCodes.Ldstr && instruction.Operand is string content && content.Length > 0) // skip empty string
                     {
-                        bool useUnicode = !CanBeEncodedIn7BitASCII(content);
-                        bool addNullTerminator = !HasNullCharacter(content);
+                        var useUnicode = !CanBeEncodedIn7BitASCII(content);
+                        var addNullTerminator = !HasNullCharacter(content);
 
-                        if (!encodedStrings.TryGetValue(content, out var nativeMethod)) // reuse encoded strings
+                        if (encodedStrings.TryGetValue(content, out var nativeMethod) == false) // reuse encoded strings
                         {
                             nativeMethod = CreateNativeMethod(content, Context.Module, Context.X86, useUnicode, addNullTerminator);
                             encodedStrings.Add(content, nativeMethod);
@@ -71,9 +73,8 @@ public class UnmanagedString : Protection
     private static MethodDefinition CreateNativeMethod(string content, ModuleDefinition module,
         bool x86, bool useUnicode, bool addNullTerminator)
     {
-        var factory = module.CorLibTypeFactory;
-
         var methodName = Guid.NewGuid().ToString();
+        var factory = module.CorLibTypeFactory;
         var method = new MethodDefinition(methodName, MethodAttributes.Public | MethodAttributes.Static,
             MethodSignature.CreateStatic(factory.SByte.MakePointerType()));
 
@@ -84,13 +85,13 @@ public class UnmanagedString : Protection
         module.GetOrCreateModuleType().Methods.Add(method);
 
         if (addNullTerminator)
+        {
             content += "\0"; // not adding on byte level as it has encoding-dependent size
+        }
 
-        byte[] stringBytes;
-        if (useUnicode)
-            stringBytes = Encoding.Unicode.GetBytes(content);
-        else
-            stringBytes = Encoding.ASCII.GetBytes(content);
+        var stringBytes = useUnicode
+            ? Encoding.Unicode.GetBytes(content)
+            : Encoding.ASCII.GetBytes(content);
 
         IEnumerable<byte> code;
         if (x86)
@@ -118,36 +119,35 @@ public class UnmanagedString : Protection
                 0xC3 // ret
             };
         }
-
         code = code.Concat(stringBytes);
 
-        NativeMethodBody body = new NativeMethodBody(method)
+        var body = new NativeMethodBody(method)
         {
             Code = code.ToArray()
         };
         method.NativeMethodBody = body;
         return method;
     }
-
     private static bool CanBeEncodedIn7BitASCII(string text)
     {
-        for (int i = 0; i < text.Length; i++)
+        for (var i = 0; i < text.Length; i++)
         {
             if (text[i] > '\x7f')
+            {
                 return false;
+            }
         }
-
         return true;
     }
-
     private static bool HasNullCharacter(string text)
     {
-        for (int i = 0; i < text.Length; i++)
+        for (var i = 0; i < text.Length; i++)
         {
             if (text[i] == '\0')
+            {
                 return true;
+            }
         }
-
         return false;
     }
 }

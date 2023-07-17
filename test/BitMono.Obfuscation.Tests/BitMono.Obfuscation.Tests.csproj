@@ -16,7 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsmResolver.DotNet" Version="5.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Include="FluentAssertions" Version="6.9.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -35,5 +34,5 @@
     <ProjectReference Include="..\TestBinaries\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj" />
     <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj" />
   </ItemGroup>
-  
+
 </Project>
