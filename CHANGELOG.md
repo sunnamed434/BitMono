@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.16.1-alpha](#0161-alpha30) |
 | [0.16.0-alpha](#0160-alpha29) |
 | [0.15.1-alpha](#0151-alpha28) |
 | [0.15.0-alpha](#0150-alpha27) |
@@ -26,6 +27,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | [0.4.3-alpha](#043-alpha12)   |
 
 ---
+
+## 0.16.1-alpha.30
+2023-07-17
+
+### Added
+
+- New docs.
+
+### Fixed
+
+- (UnmanagedString) Add unicode support, fix strings with null characters [#130](https://github.com/sunnamed434/BitMono/pull/130), thanks [GazziFX](https://github.com/GazziFX)
+- Other minor bug fixes.
+
+### Changed
+
+- Bumped to the latest AsmResolver 5.4.0 version.
+- Code refactoring and possible bug fixes.
 
 ## 0.16.0-alpha.29
 2023-05-14
