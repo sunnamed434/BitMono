@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.16.2-alpha](#0162-alpha31) |
 | [0.16.1-alpha](#0161-alpha30) |
 | [0.16.0-alpha](#0160-alpha29) |
 | [0.15.1-alpha](#0151-alpha28) |
@@ -27,6 +28,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | [0.4.3-alpha](#043-alpha12)   |
 
 ---
+
+## 0.16.2-alpha.31
+2023-07-19
+
+### Fixed
+
+- Exception on the BitMono run [#132](https://github.com/sunnamed434/BitMono/issues/132)
+
+### Changed
+
+- The GitHub Issue Templates are removed now.
 
 ## 0.16.1-alpha.30
 2023-07-17
