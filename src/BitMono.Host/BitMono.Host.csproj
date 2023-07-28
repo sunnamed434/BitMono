@@ -7,25 +7,7 @@
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
-    <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
-    <PackageReference Include="Serilog.Enrichers.Sensitive" Version="1.7.1" />
-    <PackageReference Include="Serilog.Enrichers.WithCaller" Version="1.2.0" />
-    <PackageReference Include="Serilog.Extensions.Autofac.DependencyInjection" Version="5.0.0" />
-    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.1-dev-00077" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.5.0-dev-00359" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
-    <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
