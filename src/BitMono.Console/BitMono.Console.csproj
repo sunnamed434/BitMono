@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BitMono.MSBuild.Tasks" Version="0.1.0-build20230728-1025">
+    <PackageReference Include="BitMono.MSBuild.Tasks" Version="0.1.0-build20230728-1054">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
@@ -12,19 +12,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Echo.Concrete" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Concrete">
       <HintPath>..\..\lib\Echo.Concrete.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.ControlFlow" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.ControlFlow">
       <HintPath>..\..\lib\Echo.ControlFlow.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Core" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Core">
       <HintPath>..\..\lib\Echo.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.DataFlow" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.DataFlow">
       <HintPath>..\..\lib\Echo.DataFlow.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Platforms.AsmResolver" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Platforms.AsmResolver">
       <HintPath>..\..\lib\Echo.Platforms.AsmResolver.dll</HintPath>
     </Reference>
   </ItemGroup>

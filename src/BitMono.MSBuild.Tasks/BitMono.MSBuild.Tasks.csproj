@@ -43,15 +43,6 @@
     </IncludeBitMonoDependencyFilesDependsOn>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
-
   <Target Name="IncludeBitMonoDependencyFiles" DependsOnTargets="$(IncludeBitMonoDependencyFilesDependsOn)" />
 
   <Target Name="IncludeBitMonoDependencyFilesFramework" Condition="'$(TargetFramework)' == 'net462'">
