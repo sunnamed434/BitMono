@@ -33,7 +33,7 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var needs = new ObfuscationNeedsFactory(args, logger).Create();
+            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create();
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;

@@ -4,11 +4,13 @@ namespace BitMono.CLI.Modules;
 public class CLIOptionsObfuscationNeedsFactory
 {
     private readonly string[] _args;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public CLIOptionsObfuscationNeedsFactory(string[] args, ILogger logger)
+    public CLIOptionsObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
+        _obfuscationSettings = obfuscationSettings;
         _logger = logger.ForContext<CLIOptionsObfuscationNeedsFactory>();
     }
 
@@ -32,15 +34,31 @@ public class CLIOptionsObfuscationNeedsFactory
             return null;
         }
         var fileBaseDirectory = Path.GetDirectoryName(options.File);
-        var needs = new ObfuscationNeeds();
-        needs.FileName = options.File!;
-        needs.FileBaseDirectory = fileBaseDirectory;
-        needs.ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
-            ? options.Libraries
-            : Path.Combine(fileBaseDirectory, "libs");
-        needs.OutputPath = options.Output?.IsNullOrEmpty() == false
-            ? options.Output
-            : Path.Combine(fileBaseDirectory, "output");
+        ObfuscationNeeds needs;
+        if (_obfuscationSettings.ForceObfuscation)
+        {
+            needs = new ObfuscationNeeds
+            {
+                FileName = options.File!,
+                FileBaseDirectory = fileBaseDirectory,
+                ReferencesDirectoryName = fileBaseDirectory,
+                OutputPath = fileBaseDirectory
+            };
+        }
+        else
+        {
+            needs = new ObfuscationNeeds
+            {
+                FileName = options.File!,
+                FileBaseDirectory = fileBaseDirectory,
+                ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
+                    ? options.Libraries
+                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.ReferencesDirectoryName),
+                OutputPath = options.Output?.IsNullOrEmpty() == false
+                    ? options.Output
+                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName)
+            };
+        }
 
         Directory.CreateDirectory(needs.OutputPath);
         Directory.CreateDirectory(needs.ReferencesDirectoryName);

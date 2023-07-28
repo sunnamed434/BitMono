@@ -3,6 +3,17 @@
   // Set to true indicates whether enabled
   "Watermark": true,
 
+  // Don't ask the Output directory, and take the references folder as folder where specified file for obfuscation is located.
+  // In simple words, the BitMono will use File Base Directory for output/references, etc
+  // Set to true indicates whether enabled
+  "ForceObfuscation": false,
+
+  // Name of the references directory
+  "ReferencesDirectoryName": "libs",
+
+  // Name of the output directory
+  "OutputDirectoryName": "output",
+
   // Outputs information about protections (Enabled protections, disabled, deprecated, unknown, etc)
   // Set to true indicates whether enabled
   "NotifyProtections": true,
