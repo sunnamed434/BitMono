@@ -3,6 +3,10 @@
   // Set to true indicates whether enabled
   "Watermark": true,
 
+  // Clear the CLI on obfuscation start or not
+  // Set to true indicates whether enabled
+  "ClearCLI": false,
+
   // Don't ask the Output directory, and take the references folder as folder where specified file for obfuscation is located.
   // In simple words, the BitMono will use File Base Directory for output/references, etc
   // Set to true indicates whether enabled

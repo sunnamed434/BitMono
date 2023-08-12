@@ -135,6 +135,8 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
+If you want to build the BitMono by your own [click here for detailed info](https://raw.githubusercontent.com/sunnamed434/BitMono/main/build.md)
+
 | Branch | AppVeyor                                                    |
 |--------|-------------------------------------------------------------|
 | main   | [![Build status][image_appveyor_main]][appveyor_main_build] |

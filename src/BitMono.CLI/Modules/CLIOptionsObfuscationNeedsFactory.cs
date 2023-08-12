@@ -7,7 +7,8 @@ public class CLIOptionsObfuscationNeedsFactory
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public CLIOptionsObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
+    public CLIOptionsObfuscationNeedsFactory(string[] args,
+        ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
         _obfuscationSettings = obfuscationSettings;
@@ -28,18 +29,19 @@ public class CLIOptionsObfuscationNeedsFactory
             return null;
         }
         var options = parserResult.Value;
-        if (File.Exists(options.File) == false)
+        var filePath = PathFormatterUtility.Format(options.File!);
+        if (File.Exists(filePath) == false)
         {
             _logger.Fatal("File cannot be found, please, try again!");
             return null;
         }
-        var fileBaseDirectory = Path.GetDirectoryName(options.File);
         ObfuscationNeeds needs;
+        var fileBaseDirectory = Path.GetDirectoryName(filePath);
         if (_obfuscationSettings.ForceObfuscation)
         {
             needs = new ObfuscationNeeds
             {
-                FileName = options.File!,
+                FileName = filePath,
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = fileBaseDirectory,
                 OutputPath = fileBaseDirectory
@@ -49,7 +51,7 @@ public class CLIOptionsObfuscationNeedsFactory
         {
             needs = new ObfuscationNeeds
             {
-                FileName = options.File!,
+                FileName = filePath,
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
                     ? options.Libraries

@@ -3,6 +3,7 @@
 public class ObfuscationSettings
 {
     public bool Watermark { get; set; }
+    public bool ClearCLI { get; set; }
     public bool ForceObfuscation { get; set; }
     public string ReferencesDirectoryName { get; set; }
     public string OutputDirectoryName { get; set; }

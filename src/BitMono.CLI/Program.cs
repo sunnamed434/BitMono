@@ -40,7 +40,10 @@ internal class Program
                 return statusCode;
             }
 
-            Console.Clear();
+            if (obfuscation.ClearCLI)
+            {
+                Console.Clear();
+            }
             logger.Information("File: {0}", needs.FileName);
             logger.Information("Dependencies (libs): {0}", needs.ReferencesDirectoryName);
             logger.Information("Everything is seems to be ok, starting obfuscation..");
@@ -82,7 +85,6 @@ internal class Program
 
     private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
     {
-        using var _ = CancellationTokenSource;
         CancellationTokenSource.Cancel();
         e.Cancel = true;
     }
