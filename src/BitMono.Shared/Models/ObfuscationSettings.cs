@@ -3,6 +3,10 @@
 public class ObfuscationSettings
 {
     public bool Watermark { get; set; }
+    public bool ClearCLI { get; set; }
+    public bool ForceObfuscation { get; set; }
+    public string ReferencesDirectoryName { get; set; }
+    public string OutputDirectoryName { get; set; }
     public bool NotifyProtections { get; set; }
     public bool NoInliningMethodObfuscationExclude { get; set; }
     public bool SerializableBitObfuscationExclude { get; set; }

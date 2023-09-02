@@ -1,16 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
-
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />

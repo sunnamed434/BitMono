@@ -33,14 +33,17 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var needs = new ObfuscationNeedsFactory(args, logger).Create();
+            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create();
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
             }
 
-            Console.Clear();
+            if (obfuscation.ClearCLI)
+            {
+                Console.Clear();
+            }
             logger.Information("File: {0}", needs.FileName);
             logger.Information("Dependencies (libs): {0}", needs.ReferencesDirectoryName);
             logger.Information("Everything is seems to be ok, starting obfuscation..");
@@ -82,7 +85,6 @@ internal class Program
 
     private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
     {
-        using var _ = CancellationTokenSource;
         CancellationTokenSource.Cancel();
         e.Cancel = true;
     }

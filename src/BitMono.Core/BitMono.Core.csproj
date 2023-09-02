@@ -1,19 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
-  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
-
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-    <PackageReference Include="NullGuard.Fody" Version="3.1.0" />
-    <PackageReference Include="Pocket" Version="0.0.3" />
-    <PackageReference Include="Serilog" Version="3.0.0-dev-01862" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj" />
@@ -21,19 +12,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Echo.Concrete" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Concrete">
       <HintPath>..\..\lib\Echo.Concrete.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.ControlFlow" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.ControlFlow">
       <HintPath>..\..\lib\Echo.ControlFlow.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Core" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Core">
       <HintPath>..\..\lib\Echo.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.DataFlow" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.DataFlow">
       <HintPath>..\..\lib\Echo.DataFlow.dll</HintPath>
     </Reference>
-    <Reference Include="Echo.Platforms.AsmResolver" Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="Echo.Platforms.AsmResolver">
       <HintPath>..\..\lib\Echo.Platforms.AsmResolver.dll</HintPath>
     </Reference>
   </ItemGroup>

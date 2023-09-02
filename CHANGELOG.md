@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.18.0-alpha](#0180-alpha33) |
 | [0.16.2-alpha](#0162-alpha31) |
 | [0.16.1-alpha](#0161-alpha30) |
 | [0.16.0-alpha](#0160-alpha29) |
@@ -28,6 +29,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | [0.4.3-alpha](#043-alpha12)   |
 
 ---
+
+## 0.18.0-alpha.33
+2023-09-02
+
+### Added
+- Add ForceObfuscation, ReferencesDirectoryName, OutputDirectoryName, and ClearCLI options in the obfuscation.json
+- More detailed info how to build the solution
+- .NET 6.0 Support
+
+### Fixed
+- BitMono drag and drop exception [#135](https://github.com/sunnamed434/BitMono/issues/135)
+- First line of the CLI shows working directory [#137](https://github.com/sunnamed434/BitMono/issues/137)
+- .NET 5 exceptions [#138](https://github.com/sunnamed434/BitMono/issues/138)
 
 ## 0.16.2-alpha.31
 2023-07-19

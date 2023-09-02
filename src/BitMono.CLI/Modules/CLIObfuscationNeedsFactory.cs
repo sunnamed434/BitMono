@@ -4,11 +4,13 @@
 public class CLIObfuscationNeedsFactory
 {
     private readonly string[] _args;
+    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public CLIObfuscationNeedsFactory(string[] args, ILogger logger)
+    public CLIObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
+        _obfuscationSettings = obfuscationSettings;
         _logger = logger.ForContext<CLIObfuscationNeedsFactory>();
     }
 
@@ -45,54 +47,68 @@ public class CLIObfuscationNeedsFactory
             }
         }
 
+        string dependenciesDirectoryName;
+        string outputDirectoryName;
         var fileBaseDirectory = Path.GetDirectoryName(fileName);
-        var dependenciesDirectoryName = Path.Combine(fileBaseDirectory, "libs");
-        if (Directory.Exists(dependenciesDirectoryName) == false)
+        if (_obfuscationSettings.ForceObfuscation)
         {
-            var specifyingDependencies = true;
-            while (specifyingDependencies)
-            {
-                try
-                {
-                    if (Directory.Exists(dependenciesDirectoryName))
-                    {
-                        _logger.Information("Dependencies (libs) successfully found automatically: {0}!", dependenciesDirectoryName);
-                        specifyingDependencies = false;
-                        break;
-                    }
-
-                    _logger.Information("Please, specify dependencies (libs) path: ");
-                    var newDependenciesDirectoryName = PathFormatterUtility.Format(Console.ReadLine());
-                    if (string.IsNullOrWhiteSpace(newDependenciesDirectoryName) == false)
-                    {
-                        if (Directory.Exists(newDependenciesDirectoryName))
-                        {
-                            dependenciesDirectoryName = newDependenciesDirectoryName;
-                            _logger.Information("Dependencies (libs) successfully specified: {0}!", newDependenciesDirectoryName);
-                            specifyingDependencies = false;
-                        }
-                        else
-                        {
-                            _logger.Information("Libs directory doesn't exist, please, try again!");
-                        }
-                    }
-                    else
-                    {
-                        _logger.Information("Unable to specify empty (libs), please, try again!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Information("Something went wrong while specifying the dependencies (libs) path: " + ex);
-                }
-            }
+            dependenciesDirectoryName = fileBaseDirectory;
+            outputDirectoryName = fileBaseDirectory;
         }
         else
         {
-            _logger.Information("Dependencies (libs) directory was automatically found in: {0}!", dependenciesDirectoryName);
+            outputDirectoryName = Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName);
+            dependenciesDirectoryName = Path.Combine(fileBaseDirectory, _obfuscationSettings.ReferencesDirectoryName);
+            if (Directory.Exists(dependenciesDirectoryName) == false)
+            {
+                var specifyingDependencies = true;
+                while (specifyingDependencies)
+                {
+                    try
+                    {
+                        if (Directory.Exists(dependenciesDirectoryName))
+                        {
+                            _logger.Information("Dependencies (libs) successfully found automatically: {0}!",
+                                dependenciesDirectoryName);
+                            specifyingDependencies = false;
+                            break;
+                        }
+
+                        _logger.Information("Please, specify dependencies (libs) path: ");
+                        var newDependenciesDirectoryName = PathFormatterUtility.Format(Console.ReadLine());
+                        if (string.IsNullOrWhiteSpace(newDependenciesDirectoryName) == false)
+                        {
+                            if (Directory.Exists(newDependenciesDirectoryName))
+                            {
+                                dependenciesDirectoryName = newDependenciesDirectoryName;
+                                _logger.Information("Dependencies (libs) successfully specified: {0}!",
+                                    newDependenciesDirectoryName);
+                                specifyingDependencies = false;
+                            }
+                            else
+                            {
+                                _logger.Information("Libs directory doesn't exist, please, try again!");
+                            }
+                        }
+                        else
+                        {
+                            _logger.Information("Unable to specify empty (libs), please, try again!");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Information("Something went wrong while specifying the dependencies (libs) path: " +
+                                            ex);
+                    }
+                }
+            }
+            else
+            {
+                _logger.Information("Dependencies (libs) directory was automatically found in: {0}!",
+                    dependenciesDirectoryName);
+            }
         }
 
-        var outputDirectoryName = Path.Combine(fileBaseDirectory, "output");
         Directory.CreateDirectory(outputDirectoryName);
         Directory.CreateDirectory(dependenciesDirectoryName);
         return new ObfuscationNeeds

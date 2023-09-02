@@ -2,9 +2,9 @@
 
 public class CustomAttributeResolve
 {
-    [AllowNull]
+    [NullGuard.AllowNull]
     public Dictionary<string, object>? NamedValues { get; set; }
-    [AllowNull]
+    [NullGuard.AllowNull]
     public List<object>? FixedValues { get; set; }
     public CustomAttribute? Attribute { get; set; }
 }

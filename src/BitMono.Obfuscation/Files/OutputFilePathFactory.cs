@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Obfuscation.Files;
 
-public class OutputFilePathFactory
+public static class OutputFilePathFactory
 {
     private const string WatermarkText = "_bitmono";
 

@@ -2,27 +2,27 @@
 
 public class BitMonoModule : Module
 {
-    private readonly Action<ContainerBuilder>? m_ConfigureContainer;
-    private readonly Action<ServiceCollection>? m_ConfigureServices;
-    private readonly Action<LoggerConfiguration>? m_ConfigureLogger;
     private const string LoggingFileName = "logging.json";
     private const string DateVariableName = "date";
     private const string DateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
+    private readonly Action<ContainerBuilder>? _configureContainer;
+    private readonly Action<ServiceCollection>? _configureServices;
+    private readonly Action<LoggerConfiguration>? _configureLogger;
 
     public BitMonoModule(
         Action<ContainerBuilder>? configureContainer = null,
         Action<ServiceCollection>? configureServices = null,
         Action<LoggerConfiguration>? configureLogger = null)
     {
-        m_ConfigureContainer = configureContainer;
-        m_ConfigureServices = configureServices;
-        m_ConfigureLogger = configureLogger;
+        _configureContainer = configureContainer;
+        _configureServices = configureServices;
+        _configureLogger = configureLogger;
     }
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     protected override void Load(ContainerBuilder containerBuilder)
     {
-        m_ConfigureContainer?.Invoke(containerBuilder);
+        _configureContainer?.Invoke(containerBuilder);
 
         var loggingConfigurationRoot = new ConfigurationBuilder().AddJsonFileEx(configure =>
         {
@@ -41,13 +41,13 @@ public class BitMonoModule : Module
         var loggerConfiguration = new LoggerConfiguration()
             .ReadFrom.Configuration(loggingConfigurationRoot);
 
-        m_ConfigureLogger?.Invoke(loggerConfiguration);
+        _configureLogger?.Invoke(loggerConfiguration);
 
         var logger = loggerConfiguration.CreateLogger();
         containerBuilder.Register<ILogger>(_ => logger);
 
         var serviceCollection = new ServiceCollection();
-        m_ConfigureServices?.Invoke(serviceCollection);
+        _configureServices?.Invoke(serviceCollection);
 
         containerBuilder.RegisterType<EngineContextAccessor>()
             .As<IEngineContextAccessor>()

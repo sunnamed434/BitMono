@@ -8,7 +8,9 @@ public static class AutofacContainerBuilderExtensions
 
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
-        var rawData = File.ReadAllBytes(file ?? ProtectionsFileName);
+        var workingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var protectionsFilePath = Path.Combine(workingDirectory, ProtectionsFileName);
+        var rawData = File.ReadAllBytes(file ?? protectionsFilePath);
         Assembly.Load(rawData);
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();

@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/logo/BitMonoLogo.png" alt="BitMono logo" width="180" /><br>
-  Free open-source obfuscator for Mono<br>
+  Free open-source obfuscator that targetting Mono, and maybe whole .NET<br>
 </p>
 
 ## BitMono
@@ -12,7 +12,7 @@
 [![MIT License][image_license]][license]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
-BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, because the main target of the this project is Mono. Which uses **[AsmResolver][asmresolver]** for assembly manipulation (not a dnlib as you might already think). If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
+BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, because the main target of the this project is Mono (actually some protections don't work with Mono but work with .NET Core). Which uses **[AsmResolver][asmresolver]** for assembly manipulation (not a dnlib as you might already think). If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
@@ -135,10 +135,21 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
+If you want to build the BitMono by your own - [click here for detailed info](https://raw.githubusercontent.com/sunnamed434/BitMono/main/build.md)
+
 | Branch | AppVeyor                                                    |
 |--------|-------------------------------------------------------------|
 | main   | [![Build status][image_appveyor_main]][appveyor_main_build] |
 | dev    | [![Build status][image_appveyor_dev]][appveyor_dev_build]   |
+
+### Supported Frameworks
+Mono is supported obviously (some protections don't support Mono), however if you use BitMono for .NET (Core) or higher versions be careful because some protections won't work - you will be notified about that by BitMono when using not supported protections for yours running target framework.
+
+| Framework      | Version |
+|----------------|---------|
+| .NET (Core)    | 6.0     |
+| .NET Framework | 462     |
+| netstandard    | 2.0     |
 
 Credits
 -------
