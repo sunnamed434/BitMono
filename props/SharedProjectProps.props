@@ -6,7 +6,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sunnamed434/BitMono</PackageProjectUrl>
     <PackageOwners>sunnamed434</PackageOwners>
-    <BitMonoVersion>0.17.0-alpha.32</BitMonoVersion>
+    <BitMonoVersion>0.18.0-alpha.33</BitMonoVersion>
     <PackageVersion>$(BitMonoVersion)</PackageVersion>
     <Version>$(BitMonoVersion)</Version>
     <InformationalVersion>$(BitMonoVersion)</InformationalVersion>
