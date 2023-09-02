@@ -142,6 +142,15 @@ If you want to build the BitMono by your own [click here for detailed info](http
 | main   | [![Build status][image_appveyor_main]][appveyor_main_build] |
 | dev    | [![Build status][image_appveyor_dev]][appveyor_dev_build]   |
 
+### Supported Frameworks
+Mono is supported obviously (some protections don't support Mono), however if you use BitMono for .NET (Core) or higher versions be careful because some protections won't work - you will be notified about that by BitMono when using not supported protections for yours running target framework.
+
+| Framework      | Version |
+|----------------|---------|
+| .NET (Core)    | 6.0     |
+| .NET Framework | 462     |
+| netstandard    | 2.0     |
+
 Credits
 -------
 **[0x59R11][author_0x59r11]** for his acquaintance in big part of **[BitDotNet][bitdotnet_source]** that breaks files for mono executables!
