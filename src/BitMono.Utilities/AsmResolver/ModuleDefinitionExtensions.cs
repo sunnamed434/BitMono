@@ -2,7 +2,7 @@
 
 public static class ModuleDefinitionExtensions
 {
-    [return: AllowNull]
+    [return: NullGuard.AllowNull]
     public static TMember ResolveOrThrow<TMember>(this ModuleDefinition source, Type type)
         where TMember : class, IMetadataMember
     {
