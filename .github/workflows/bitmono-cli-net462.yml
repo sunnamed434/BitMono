@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: "./src/BitMono/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
+          path: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
 
   Release:
     needs: [Build]
