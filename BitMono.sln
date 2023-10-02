@@ -67,6 +67,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{09D2CF31-97DB-419E-A896-459FDF1B29F8}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\bitmono-cli-net462.yml = .github\workflows\bitmono-cli-net462.yml
+		.github\workflows\bitmono-cli-net6.0.yml = .github\workflows\bitmono-cli-net6.0.yml
+		.github\workflows\bitmono-cli-netstandard2.0.yml = .github\workflows\bitmono-cli-netstandard2.0.yml
 	EndProjectSection
 EndProject
 Global
