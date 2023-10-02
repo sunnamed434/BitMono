@@ -64,6 +64,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.TestCases.CosturaDecompressor", "test\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj", "{E73C9803-971F-4F7D-A21B-9097C2EC1A80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{09D2CF31-97DB-419E-A896-459FDF1B29F8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\bitmono-cli-net462.yml = .github\workflows\bitmono-cli-net462.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +184,7 @@ Global
 		{1683308C-36D4-49B1-8CCE-9DDE09336856} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
 		{49E6076C-FEC8-4411-B7AE-4DB6112370C1} = {1EF50257-AFD3-48A3-9E22-03BDC25550A7}
 		{E73C9803-971F-4F7D-A21B-9097C2EC1A80} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
+		{09D2CF31-97DB-419E-A896-459FDF1B29F8} = {A2890DD6-805E-4952-9E84-3F001E1829C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA0BB43-C1D4-4688-BE43-A9ED2D6F78EE}

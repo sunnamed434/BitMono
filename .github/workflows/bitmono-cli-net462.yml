@@ -44,8 +44,8 @@ jobs:
       - name: Create Release & Upload Assets
         uses: ncipollo/release-action@v1
         with:
-          name: ${{ github.ref_name }}
-          tag: ${{ github.ref_name }}
+          name: v${{ github.ref_name }}
+          tag: v${{ github.ref_name }}
           artifacts: "./src/BitMono/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
           token: ${{secrets.PAT}}
           prerelease: true
