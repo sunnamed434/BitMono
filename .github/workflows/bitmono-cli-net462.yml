@@ -46,7 +46,7 @@ jobs:
         with:
           name: v${{ github.ref_name }}
           tag: v${{ github.ref_name }}
-          artifacts: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
+          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
           token: ${{secrets.PAT}}
           prerelease: true
           allowUpdates: true
