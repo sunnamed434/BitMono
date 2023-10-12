@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

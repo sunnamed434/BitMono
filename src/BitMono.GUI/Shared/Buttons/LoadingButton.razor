@@ -1,9 +1,0 @@
-﻿<button type="button" class="btn btn-primary" disabled @attributes="CapturedAttributes">
-    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-    @Body
-</button>
-
-@code{
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> CapturedAttributes { get; set; }
-    [Parameter] public string Body { get; set; } = "Loading...";
-}

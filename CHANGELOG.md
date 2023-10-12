@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.19.0-alpha](#0190-alpha34) |
 | [0.18.0-alpha](#0180-alpha33) |
 | [0.16.2-alpha](#0162-alpha31) |
 | [0.16.1-alpha](#0161-alpha30) |
@@ -30,25 +31,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 0.19.0-alpha.34
+2023-10-12
+
+### Added
+- Artifacts creation.
+- Automatic release (CI).
+- .netstandard2.1 Support.
+- More information in `build.md` how to build BitMono.
+
+### Changed
+- Removed unused and broken GUI version of BitMono from solution.
+- Bumped to the stablest versions of NuGet Packages to don't break the compability with the target framework.
+- .csproj style.
+
+### Fixed
+- .NET 6.0 Support.
+
 ## 0.18.0-alpha.33
 2023-09-02
 
 ### Added
-- Add ForceObfuscation, ReferencesDirectoryName, OutputDirectoryName, and ClearCLI options in the obfuscation.json
-- More detailed info how to build the solution
-- .NET 6.0 Support
+- Add ForceObfuscation, ReferencesDirectoryName, OutputDirectoryName, and ClearCLI options in the obfuscation.json.
+- More detailed info how to build the solution.
+- .NET 6.0 Support.
 
 ### Fixed
-- BitMono drag and drop exception [#135](https://github.com/sunnamed434/BitMono/issues/135)
-- First line of the CLI shows working directory [#137](https://github.com/sunnamed434/BitMono/issues/137)
-- .NET 5 exceptions [#138](https://github.com/sunnamed434/BitMono/issues/138)
+- BitMono drag and drop exception [#135](https://github.com/sunnamed434/BitMono/issues/135).
+- First line of the CLI shows working directory [#137](https://github.com/sunnamed434/BitMono/issues/137).
+- .NET 5 exceptions [#138](https://github.com/sunnamed434/BitMono/issues/138).
 
 ## 0.16.2-alpha.31
 2023-07-19
 
 ### Fixed
 
-- Exception on the BitMono run [#132](https://github.com/sunnamed434/BitMono/issues/132)
+- Exception on the BitMono run [#132](https://github.com/sunnamed434/BitMono/issues/132).
 
 ### Changed
 
