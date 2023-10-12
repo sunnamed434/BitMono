@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedPackages.props" />
 
   <ItemGroup>
-    <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
+    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BitMono.Shared\BitMono.Shared.csproj" />
+    <PackageReference Include="NullGuard.Fody" Version="3.1.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
