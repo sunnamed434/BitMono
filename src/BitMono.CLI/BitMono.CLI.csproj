@@ -28,7 +28,7 @@
     <ProjectReference Include="..\BitMono.Utilities\BitMono.Utilities.csproj"/>
   </ItemGroup>
 
-  <Target Name="ZipOutputPath" AfterTargets="PostBuildEvent">
+  <Target Name="ZipOutputPath" AfterTargets="PostBuildEvent" Condition=" '$(CreateBitMonoArtifacts)' == 'true' ">
     <ZipDirectory
       SourceDirectory="$(OutDir)"
       DestinationFile="$(OutDir)..\..\..\BitMono-v$(BitMonoVersion)-CLI-$(TargetFramework).zip"

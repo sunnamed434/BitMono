@@ -19,7 +19,7 @@ jobs:
           dotnet-version: '6.x'
 
       - name: Build
-        run: dotnet build ./src/BitMono.CLI/BitMono.CLI.csproj /p:TargetFramework=net462 /p:BitMonoVersion=${{ github.ref_name }} --configuration Release
+        run: dotnet build ./src/BitMono.CLI/BitMono.CLI.csproj /p:TargetFramework=net462 /p:BitMonoVersion=${{ github.ref_name }} /p:CreateBitMonoArtifacts=true --configuration Release
 
       - name: Upload build
         uses: actions/upload-artifact@v2
