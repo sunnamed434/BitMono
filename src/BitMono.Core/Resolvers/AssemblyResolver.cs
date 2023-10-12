@@ -46,6 +46,10 @@ public static class AssemblyResolver
                 {
                     // ignored
                 }
+                catch (EndOfStreamException)
+                {
+                    // ignored
+                }
             }
 
             if (resolved == false)
