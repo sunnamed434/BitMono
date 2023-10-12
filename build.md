@@ -1,5 +1,5 @@
 ## Build the BitMono
-First of all, if you just need the compiled binaries simply install them [right here][releases] - open the dropdown button `Assets`, and select the CLI/GUI.zip/7z file
+First of all, if you just need the compiled binaries simply install them [right here][releases] - open the dropdown button `Assets`, and select the CLI.zip or GUI.zip archive
 
 ### Build the solution
 Recommended to install tools via Visual Studio installer, otherwise you can install those tools directly via provided links down below or just searching for it by yourself.
