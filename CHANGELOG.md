@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Versions:                     |
 |-------------------------------|
+| [0.20.0-alpha](#0200-alpha35) |
 | [0.19.0-alpha](#0190-alpha34) |
 | [0.18.0-alpha](#0180-alpha33) |
 | [0.16.2-alpha](#0162-alpha31) |
@@ -30,6 +31,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | [0.4.3-alpha](#043-alpha12)   |
 
 ---
+
+## 0.20.0-alpha.35
+2023-10-21
+
+### Added
+- BillionNops protection.
+- Information about BillionNops in docs.
+- XML docs for RuntimeMonikerMonoAttribute.
+
+### Fixed
+- Annoying EndOfStreamException being thrown in AssemblyResolver when file doesn't exists or this is lib/file that at the end of the stream.
+- Not being properly compiled docs.
+- DotNetHook VirtualProtect will not work on linux [#37](https://github.com/sunnamed434/BitMono/issues/37)
 
 ## 0.19.0-alpha.34
 2023-10-12
