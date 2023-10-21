@@ -26,7 +26,7 @@
     },
     {
       "Name": "BillionNops",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "StringsEncryption",
@@ -38,7 +38,7 @@
     },
     {
       "Name": "DotNetHook",
-      "Enabled": true
+      "Enabled": false
     },
     {
       "Name": "CallToCalli",
