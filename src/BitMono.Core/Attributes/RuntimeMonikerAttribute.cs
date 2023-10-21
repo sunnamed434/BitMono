@@ -6,7 +6,6 @@ namespace BitMono.Core.Attributes;
 /// If you don't see any of the attributes then it works everywhere, also, users will get a message via <see cref="GetMessage"/></remarks>
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public abstract class RuntimeMonikerAttribute : Attribute
 {
     protected RuntimeMonikerAttribute(string name)

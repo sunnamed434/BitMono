@@ -28,6 +28,7 @@ Table of Contents:
    protections/stringsencryption
    protections/unmanagedstring
    protections/nonamespaces
+   protections/billionnops
 
 
 .. toctree::

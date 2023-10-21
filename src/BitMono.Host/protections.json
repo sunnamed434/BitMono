@@ -25,6 +25,10 @@
       "Enabled": false
     },
     {
+      "Name": "BillionNops",
+      "Enabled": false
+    },
+    {
       "Name": "StringsEncryption",
       "Enabled": false
     },
@@ -58,7 +62,7 @@
     },
     {
       "Name": "BitMono",
-      "Enabled": true
+      "Enabled": false
     }
   ]
 }
