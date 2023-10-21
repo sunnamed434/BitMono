@@ -25,11 +25,6 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 </p>
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/GUI.png"
-  alt="GUI">
-</p>
-
-<p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/CLI.png"
   alt="CLI">
 </p>
@@ -79,6 +74,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * AntiDecompiler
 * BitDateTimeStamp
 * BitMono
+* BillionNops
 
 ## Usage
 
@@ -150,6 +146,7 @@ Mono is supported obviously (some protections don't support Mono), however if yo
 | .NET (Core)    | 6.0     |
 | .NET Framework | 462     |
 | netstandard    | 2.0     |
+| netstandard    | 2.1     |
 
 Credits
 -------
