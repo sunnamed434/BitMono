@@ -25,6 +25,10 @@
       "Enabled": false
     },
     {
+      "Name": "BillionNops",
+      "Enabled": false
+    },
+    {
       "Name": "StringsEncryption",
       "Enabled": false
     },
