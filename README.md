@@ -4,6 +4,7 @@
 </p>
 
 ## BitMono
+
 [![Build status][image_appveyor_main]][appveyor_main_build]
 [![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
@@ -35,6 +36,7 @@ BitMono is a free open-source C# obfuscator that in most cases works **only** wi
 </p>
 
 ## Usability
+
 BitMono breaks the most popular tools using just one packer, such as:
 - dnSpy;
 - dnlib;
@@ -50,6 +52,7 @@ BitMono breaks the most popular tools using just one packer, such as:
 So, if you will add more protection to the file, I think it would seem like total magic. :D
 
 ## Documentation
+
 Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
@@ -61,6 +64,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * No code
 
 ## Features
+
 * StringsEncryption
 * **[UnmanagedString][unmanagedstring_source]** (based on existing protection)
 * **[BitDotNet][bitdotnet_source]** (based and improved on existing protection)
@@ -79,6 +83,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 ## Usage
 
 ### Using CLI
+
 `BitMono.CLI <path to file>/drag-and-drop`
 
 Always drop dependencies in `libs` directory in the same path where `file` for obfuscation is located
@@ -96,6 +101,7 @@ specially_created_folder_for_obfuscation/
 Copy all libraries (.dll) from the building application folder and paste them into the `libs` directory (if it doesn't exist yet create it), or even create the libs directory yourself with a custom name for example - `myLibs`, and then specify it in BitMono, however, if you will use `libs` then by default BitMono looking for a `libs` directory, so it will save your time.
 
 ### Using CLI Commands
+
 ```console
   -f, --file         Required. Set file path.
 
@@ -131,6 +137,7 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Detailed build status
+
 If you want to build the BitMono by your own - [click here for detailed info][build_info]
 
 | Branch | AppVeyor                                                    |
@@ -139,6 +146,7 @@ If you want to build the BitMono by your own - [click here for detailed info][bu
 | dev    | [![Build status][image_appveyor_dev]][appveyor_dev_build]   |
 
 ### Supported Frameworks
+
 Mono is supported obviously (some protections don't support Mono), however if you use BitMono for .NET (Core) or higher versions be careful because some protections won't work - you will be notified about that by BitMono when using not supported protections for yours running target framework.
 
 | Framework      | Version |
@@ -150,6 +158,9 @@ Mono is supported obviously (some protections don't support Mono), however if yo
 
 Credits
 -------
+
+**[JetBrains][jetbrains_rider]** has kindly provided licenses for their JetBrains Rider IDE to the contributors of BitMono. This top-tier tool greatly facilitates and enhances the process of software development.
+
 **[0x59R11][author_0x59r11]** for his acquaintance in big part of **[BitDotNet][bitdotnet_source]** that breaks files for mono executables!
 
 **[Gazzi][author_gazzi]** for his help that [me][author_sunnamed434] asked a lot!
@@ -185,6 +196,7 @@ Credits
 [confuserex_source]: https://github.com/yck1509/ConfuserEx
 [simple_costura_decompressor_source]: https://github.com/dr4k0nia/Simple-Costura-Decompressor
 [unmanagedstring_source]: https://github.com/MrakDev/UnmanagedString
+[jetbrains_rider]: https://www.jetbrains.com/rider/
 [author_0x59r11]: https://github.com/0x59R11
 [author_gazzi]: https://github.com/GazziFX
 [author_ellisaur]: https://github.com/Elliesaur
