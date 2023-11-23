@@ -131,7 +131,8 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Troubleshooting
-Access Denied
+Access Denied:
+
 Try to set `OpenFileDestinationInFileExplorer` to `false` in `obfuscation.json`
 
 ### Detailed build status
