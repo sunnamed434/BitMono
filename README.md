@@ -82,6 +82,10 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ## Usage
 
+### Pre-Require
+
+Set one of setting from `protections.json` to `true`
+
 ### Using CLI
 
 `BitMono.CLI <path to file>/drag-and-drop`
