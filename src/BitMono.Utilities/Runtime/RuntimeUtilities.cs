@@ -18,11 +18,10 @@ public static class RuntimeUtilities
         string? monoDisplayName = null;
         if (hasMono)
         {
-            var displayName = monoType.GetMethod(KnownMonoRuntimes.GetDisplayName, BindingFlags.NonPublic | BindingFlags.Static);
-            if (displayName != null)
+            var displayNameMethod = monoType.GetMethod(KnownMonoRuntimes.GetDisplayName, BindingFlags.NonPublic | BindingFlags.Static);
+            if (displayNameMethod != null)
             {
-                var displayNameDelegate = (Func<string>)displayName.CreateDelegate(typeof(Func<string>), monoType);
-                monoDisplayName = displayNameDelegate.Invoke();
+                monoDisplayName = displayNameMethod.Invoke(null, null) as string;
             }
         }
         return _lastRuntimeInformation = new EnvironmentRuntimeInformation
