@@ -84,7 +84,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ### Pre-Require
 
-Set one of setting from `protections.json` to `true`
+Set one of setting from `protections.json` to `true`.
 
 ### Using CLI
 
@@ -141,9 +141,8 @@ $ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\
 Want more? Simply read the **[docs][bitmono_docs]**.
 
 ### Troubleshooting
-Access Denied:
 
-Try to set `OpenFileDestinationInFileExplorer` to `false` in `obfuscation.json`
+Having issues? Get more help **[here][troubleshooting]**.
 
 ### Detailed build status
 
@@ -156,7 +155,7 @@ If you want to build the BitMono by your own - [click here for detailed info][bu
 
 ### Supported Frameworks
 
-Mono is supported obviously (some protections don't support Mono), however if you use BitMono for .NET (Core) or higher versions be careful because some protections won't work - you will be notified about that by BitMono when using not supported protections for yours running target framework.
+Feel free to use BitMono on frameworks which described below. Be careful using some protections because some might work on .NET Framework only, some on .NET (Core) only, some on all frameworks, some on Mono only - if the protection is unique to its platform/framework you will get a notification about that.
 
 | Framework      | Version |
 |----------------|---------|
@@ -218,6 +217,7 @@ Credits
 [appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev
 [bitmono_discord]: https://discord.gg/sFDHd47St4
 
+[troubleshooting]: https://github.com/sunnamed434/BitMono/blob/main/troubleshooting.md
 [build_info]: https://github.com/sunnamed434/BitMono/blob/main/build.md
 [image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
 [image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main

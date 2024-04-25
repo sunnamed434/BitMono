@@ -45,13 +45,13 @@ public class BitMonoStarter
     public Task<bool> StartAsync(CompleteFileInfo info, CancellationToken cancellationToken)
     {
         return StartAsync(new FinalFileInfo(info.FileName, info.OutputDirectoryPath),
-            new ModuleFactory(info.FileData, new LogErrorListener(_logger, _obfuscationSettings)),
+            new ModuleFactory(info.FileData, _obfuscationSettings, new LogErrorListener(_logger, _obfuscationSettings)),
             new FileDataWriter(), new AutomaticReferencesDataResolver(info.FileReferences), cancellationToken);
     }
     public Task<bool> StartAsync(IncompleteFileInfo info, CancellationToken cancellationToken)
     {
         return StartAsync(new FinalFileInfo(info.FilePath, info.OutputDirectoryPath),
-            new ModuleFactory(File.ReadAllBytes(info.FilePath), new LogErrorListener(_logger, _obfuscationSettings)),
+            new ModuleFactory(File.ReadAllBytes(info.FilePath), _obfuscationSettings, new LogErrorListener(_logger, _obfuscationSettings)),
             new FileDataWriter(), new AutomaticPathReferencesDataResolver(info.ReferencesDirectoryPath), cancellationToken);
     }
 }
