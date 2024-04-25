@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# BitMono artifacts
+src/BitMono.CLI/BitMono-v*.zip
+
 # User-specific files
 *.rsuser
 *.suo
