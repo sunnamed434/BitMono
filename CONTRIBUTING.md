@@ -17,16 +17,15 @@ If you make any changes to BitMono, you are agreeing to the license conditions a
 
 The BitMono project generally follows the principles of [Git Flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow), with a few variations. Below a summary:
 
-- Prefer to create a branch based on `dev`.
-  - Do not branch from `main` unless it is a serious bug and requires a hotfix. `main` is supposed to be always in sync with the nuget feed.
+- Prefer to create a branch based on `main`.
 - Prefix your branch accordingly, depending on what kind of change you are trying to make.
   - For new features, use `feature/name-of-feature`.
   - For issues and/or bug fixes, use `issue/name-of-issue-or-bug`.
 - Push your changes on this branch.
   - Make sure you are following the coding style guidelines as described in this document below.
-- Open a [Pull Request](https://github.com/sunnamed434/BitMono/pulls), setting the `dev` branch as a base branch to merge into.
+- Open a [Pull Request](https://github.com/sunnamed434/BitMono/pulls), setting the `main` branch as a base branch to merge into.
 - Wait for your pull request to be reviewed and accepted.
-  - Pull requests into `dev` will only be accepted if all unit tests succeed and follow the guidelines as described in this document.
+  - Pull requests into `main` will only be accepted if all unit tests succeed and follow the guidelines as described in this document.
 
 
 ## C# Coding Style

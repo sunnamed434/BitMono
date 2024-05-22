@@ -5,11 +5,8 @@
 
 ## BitMono
 
-[![Build status][image_appveyor_main]][appveyor_main_build]
-[![Test status][image_test]][test]
 [![Codefactor][image_codefactor]][codefactor]
 [![DeepSource][image_deepsource]][deepsource]
-[![Gitter Chat][image_gitter]][gitter]
 [![MIT License][image_license]][license]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
@@ -79,6 +76,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * BitDateTimeStamp
 * BitMono
 * BillionNops
+* and you can integrate existing/make own feature ;)
 
 ## Usage
 
@@ -144,14 +142,9 @@ Want more? Simply read the **[docs][bitmono_docs]**.
 
 Having issues? Get more help **[here][troubleshooting]**.
 
-### Detailed build status
+### Building
 
 If you want to build the BitMono by your own - [click here for detailed info][build_info]
-
-| Branch | AppVeyor                                                    |
-|--------|-------------------------------------------------------------|
-| main   | [![Build status][image_appveyor_main]][appveyor_main_build] |
-| dev    | [![Build status][image_appveyor_dev]][appveyor_dev_build]   |
 
 ### Supported Frameworks
 
@@ -187,10 +180,8 @@ Credits
 
 **[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
 
-[test]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main/tests
 [codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
 [deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
-[gitter]: https://gitter.im/BitMonoSpeech/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
 [previews]: https://github.com/sunnamed434/BitMono/blob/main/PREVIEWS.md
 [asmresolver]: https://github.com/Washi1337/AsmResolver
@@ -213,18 +204,11 @@ Credits
 [author_kao_blog]: https://lifeinhex.com/
 [author_drakonia]: https://github.com/dr4k0nia
 [author_sunnamed434]: https://github.com/sunnamed434
-[appveyor_main_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/main
-[appveyor_dev_build]: https://ci.appveyor.com/project/sunnamed434/bitmono/branch/dev
 [bitmono_discord]: https://discord.gg/sFDHd47St4
 
 [troubleshooting]: https://github.com/sunnamed434/BitMono/blob/main/troubleshooting.md
 [build_info]: https://github.com/sunnamed434/BitMono/blob/main/build.md
-[image_build]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j?svg=true&style=plastic
-[image_test]: https://img.shields.io/appveyor/tests/sunnamed434/bitmono/main
 [image_codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/badge/main
 [image_deepsource]: https://deepsource.io/gh/sunnamed434/BitMono.svg/?label=active+issues&show_trend=true&token=_FJf25YbtCpPyX7SRveXCaGd
-[image_gitter]: https://badges.gitter.im/BitMonoSpeech/community.svg?style=plastic
 [image_license]: https://img.shields.io/github/license/sunnamed434/bitmono
-[image_appveyor_main]: https://ci.appveyor.com/api/projects/status/8jh35hfno6riq25j/branch/main?svg=true
-[image_appveyor_dev]: https://ci.appveyor.com/api/projects/status/b9rm3l7kduryjgcj/branch/dev?svg=true
 [image_bitmono_discord]: https://img.shields.io/discord/1086240163321106523?label=discord&logo=discord
