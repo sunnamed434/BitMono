@@ -1,7 +1,7 @@
 ﻿<Project>
   <ItemGroup>
-    <PackageReference Include="AsmResolver" Version="5.4.0" />
-    <PackageReference Include="AsmResolver.DotNet" Version="5.4.0" />
-    <PackageReference Include="AsmResolver.PE" Version="5.4.0" />
+    <PackageReference Include="AsmResolver" Version="6.0.0-beta.1" />
+    <PackageReference Include="AsmResolver.DotNet" Version="6.0.0-beta.1" />
+    <PackageReference Include="AsmResolver.PE" Version="6.0.0-beta.1" />
   </ItemGroup>
 </Project>

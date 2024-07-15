@@ -2,7 +2,6 @@
 global using AsmResolver.DotNet;
 global using AsmResolver.DotNet.Builder;
 global using AsmResolver.DotNet.Serialized;
-global using AsmResolver.PE.DotNet.Builder;
 global using BitMono.Core.Extensions;
 global using BitMono.Shared.Models;
 global using System;
@@ -16,8 +15,9 @@ global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using AsmResolver.PE;
+global using AsmResolver.PE.Builder;
 global using AsmResolver.PE.DotNet;
-global using AsmResolver.PE.File.Headers;
+global using AsmResolver.PE.File;
 global using BitMono.API;
 global using BitMono.API.Protections;
 global using BitMono.Core.Contexts;
