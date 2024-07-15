@@ -15,7 +15,7 @@
     <Authors>sunnamed434</Authors>
     <Company>BitMono</Company>
     <Copyright>sunnamed434</Copyright>
-    <LangVersion>10</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>false</IncludeSymbols>
