@@ -1,4 +1,4 @@
-name: Artifacts for the BitMono CLI .NET Standard 2.1
+name: BitMono.CLI.Release.netstandard2.1
 
 on:
   create:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   Build:
+    if: github.event_name == 'create' && github.event.ref_type == 'tag'
     runs-on: windows-latest
 
     steps:
@@ -42,12 +43,27 @@ jobs:
           name: build
           path: ./build/
 
-      - name: Create Release & Upload Assets
-        uses: ncipollo/release-action@v1
+      - name: Create version
+        id: get-version
+        run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Check Prerelease
+        id: check-prerelease
+        run: "if ${{ contains(steps.get-version.outputs.version, '-') }}; then
+                echo is_prerelease=true >> $GITHUB_OUTPUT;
+              else
+                echo is_prerelease=false >> $GITHUB_OUTPUT;
+              fi"
+        shell: bash
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.14.0
         with:
-          name: v${{ github.ref_name }}
-          tag: v${{ github.ref_name }}
+          name: BitMono Release v${{ steps.get-version.outputs.version }}
+          tag: v${{ steps.get-version.outputs.version }}
           artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-netstandard2.1.zip"
-          token: ${{secrets.PAT}}
-          prerelease: true
+          token: ${{ secrets.PAT }}
+          prerelease: ${{ steps.check-prerelease.outputs.is_prerelease }}
           allowUpdates: true
+          generateReleaseNotes: true
