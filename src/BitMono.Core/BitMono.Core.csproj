@@ -12,14 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Echo.Concrete">
-      <HintPath>..\..\lib\Echo.Concrete.dll</HintPath>
+    <Reference Include="Echo">
+      <HintPath>..\..\lib\Echo.dll</HintPath>
     </Reference>
     <Reference Include="Echo.ControlFlow">
       <HintPath>..\..\lib\Echo.ControlFlow.dll</HintPath>
-    </Reference>
-    <Reference Include="Echo.Core">
-      <HintPath>..\..\lib\Echo.Core.dll</HintPath>
     </Reference>
     <Reference Include="Echo.DataFlow">
       <HintPath>..\..\lib\Echo.DataFlow.dll</HintPath>

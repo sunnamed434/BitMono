@@ -228,7 +228,7 @@
             </summary>
             <typeparam name="TContents">The type of contents to put in each node.</typeparam>
         </member>
-        <member name="P:Echo.DataFlow.Collections.VariableDependencyCollection`1.Item(Echo.Core.Code.IVariable)">
+        <member name="P:Echo.DataFlow.Collections.VariableDependencyCollection`1.Item(Echo.Code.IVariable)">
             <summary>
             Gets or sets the variable dependency assigned to the variable.
             </summary>
@@ -248,7 +248,7 @@
         <member name="P:Echo.DataFlow.Collections.VariableDependencyCollection`1.IsReadOnly">
             <inheritdoc />
         </member>
-        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.TryGetDependency(Echo.Core.Code.IVariable,Echo.DataFlow.VariableDependency{`0}@)">
+        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.TryGetDependency(Echo.Code.IVariable,Echo.DataFlow.VariableDependency{`0}@)">
             <summary>
             Attempts to get the dependency assigned to the provided variable.
             </summary>
@@ -268,7 +268,7 @@
         <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.Contains(Echo.DataFlow.VariableDependency{`0})">
             <inheritdoc />
         </member>
-        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.ContainsVariable(Echo.Core.Code.IVariable)">
+        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.ContainsVariable(Echo.Code.IVariable)">
             <summary>
             Determines whether the provided variable is registered as a dependency.
             </summary>
@@ -278,7 +278,7 @@
         <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.CopyTo(Echo.DataFlow.VariableDependency{`0}[],System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.Remove(Echo.Core.Code.IVariable)">
+        <member name="M:Echo.DataFlow.Collections.VariableDependencyCollection`1.Remove(Echo.Code.IVariable)">
             <summary>
             Unregisters a variable as a dependency. 
             </summary>
@@ -466,7 +466,7 @@
             </summary>
             <typeparam name="TContents">The type of contents to store for each node.</typeparam>
         </member>
-        <member name="M:Echo.DataFlow.DataFlowGraph`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0})">
+        <member name="M:Echo.DataFlow.DataFlowGraph`1.#ctor(Echo.Code.IArchitecture{`0})">
             <summary>
             Creates a new data flow graph.
             </summary>
@@ -481,10 +481,10 @@
             Gets a collection of nodes that are present in the graph.
             </summary>
         </member>
-        <member name="M:Echo.DataFlow.DataFlowGraph`1.Echo#Core#Graphing#ISubGraph#GetNodes">
+        <member name="M:Echo.DataFlow.DataFlowGraph`1.Echo#Graphing#ISubGraph#GetNodes">
             <inheritdoc />
         </member>
-        <member name="M:Echo.DataFlow.DataFlowGraph`1.Echo#Core#Graphing#ISubGraph#GetSubGraphs">
+        <member name="M:Echo.DataFlow.DataFlowGraph`1.Echo#Graphing#ISubGraph#GetSubGraphs">
             <inheritdoc />
         </member>
         <member name="M:Echo.DataFlow.DataFlowGraph`1.GetEdges">
@@ -496,7 +496,7 @@
             </summary>
             <param name="writer">The output stream.</param>
             <remarks>
-            To customize the look of the resulting dot file graph, use the <see cref="T:Echo.Core.Graphing.Serialization.Dot.DotWriter"/> class
+            To customize the look of the resulting dot file graph, use the <see cref="T:Echo.Graphing.Serialization.Dot.DotWriter"/> class
             instead of this function.
             </remarks>
         </member>
@@ -624,6 +624,42 @@
             <param name="b">The second data source.</param>
             <returns><c>true</c> if they are not considered equal, <c>false</c> otherwise.</returns>
         </member>
+        <member name="T:Echo.DataFlow.Emulation.StackImbalanceException">
+            <summary>
+            The exception that is thrown when an inconsistency in the size of the stack was detected. Typically this
+            exception occurs when two or more converging control flow paths have inconsistent stack sizes, or when
+            either an insufficient or excessive amount of values were pushed onto the stack.
+            </summary>
+        </member>
+        <member name="M:Echo.DataFlow.Emulation.StackImbalanceException.#ctor">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+        </member>
+        <member name="M:Echo.DataFlow.Emulation.StackImbalanceException.#ctor(System.Int64)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="offset">The offset where the stack inconsistency was detected.</param>
+        </member>
+        <member name="M:Echo.DataFlow.Emulation.StackImbalanceException.#ctor(System.String)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="message">The message of the error that occured.</param>
+        </member>
+        <member name="M:Echo.DataFlow.Emulation.StackImbalanceException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new stack imbalance exception.
+            </summary>
+            <param name="message">The message of the error that occured.</param>
+            <param name="innerException">The inner cause of the exception.</param>
+        </member>
+        <member name="P:Echo.DataFlow.Emulation.StackImbalanceException.Offset">
+            <summary>
+            Gets the offset where the stack inconsistency was detected.
+            </summary>
+        </member>
         <member name="T:Echo.DataFlow.Emulation.SymbolicProgramState`1">
             <summary>
             Represents an immutable snapshot of a program state that is fully symbolic.  
@@ -648,14 +684,14 @@
             <param name="programCounter">The initial program counter.</param>
             <param name="stack">The initial stack state.</param>
         </member>
-        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.#ctor(System.Int64,System.Collections.Immutable.ImmutableDictionary{Echo.Core.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
+        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.#ctor(System.Int64,System.Collections.Immutable.ImmutableDictionary{Echo.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
             <summary>
             Creates a new empty program state, initialized at the provided program counter.
             </summary>
             <param name="programCounter">The initial program counter.</param>
             <param name="variables">The initial state of the variables.</param>
         </member>
-        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.#ctor(System.Int64,System.Collections.Immutable.ImmutableStack{Echo.DataFlow.Emulation.SymbolicValue{`0}},System.Collections.Immutable.ImmutableDictionary{Echo.Core.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
+        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.#ctor(System.Int64,System.Collections.Immutable.ImmutableStack{Echo.DataFlow.Emulation.SymbolicValue{`0}},System.Collections.Immutable.ImmutableDictionary{Echo.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
             <summary>
             Creates a new empty program state, initialized at the provided program counter.
             </summary>
@@ -692,7 +728,7 @@
             <param name="stack">The new stack state.</param>
             <returns>The new program state.</returns>
         </member>
-        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.WithVariables(System.Collections.Immutable.ImmutableDictionary{Echo.Core.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
+        <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.WithVariables(System.Collections.Immutable.ImmutableDictionary{Echo.Code.IVariable,Echo.DataFlow.Emulation.SymbolicValue{`0}})">
             <summary>
             Copies the current state and replaces the variables state with a new one.
             </summary>
@@ -711,7 +747,7 @@
             Copies the current state and pops the top value from the stack. 
             </summary>
             <param name="value">The popped value.</param>
-            <exception cref="T:Echo.Core.Emulation.StackImbalanceException">Occurs when the stack is empty.</exception>
+            <exception cref="T:Echo.DataFlow.Emulation.StackImbalanceException">Occurs when the stack is empty.</exception>
             <returns>The new program state.</returns>
         </member>
         <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.MergeStates(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,Echo.DataFlow.Emulation.SymbolicProgramState{`0}@)">
@@ -722,7 +758,7 @@
             <param name="newState">The newly created state.</param>
             <returns><c>true</c> if the state has changed, <c>false</c> otherwise.</returns>
             <exception cref="T:System.ArgumentException">Occurs when the program counters do not match.</exception>
-            <exception cref="T:Echo.Core.Emulation.StackImbalanceException">Occurs when the stack heights do not match.</exception>
+            <exception cref="T:Echo.DataFlow.Emulation.StackImbalanceException">Occurs when the stack heights do not match.</exception>
         </member>
         <member name="M:Echo.DataFlow.Emulation.SymbolicProgramState`1.ToString">
             <inheritdoc />
@@ -760,12 +796,6 @@
         <member name="P:Echo.DataFlow.Emulation.SymbolicValue`1.IsReadOnly">
             <inheritdoc />
         </member>
-        <member name="P:Echo.DataFlow.Emulation.SymbolicValue`1.IsKnown">
-            <inheritdoc />
-        </member>
-        <member name="P:Echo.DataFlow.Emulation.SymbolicValue`1.Size">
-            <inheritdoc />
-        </member>
         <member name="P:Echo.DataFlow.Emulation.SymbolicValue`1.HasKnownDataSources">
             <summary>
             Gets a value indicating whether the data dependency has any known data sources. 
@@ -786,7 +816,7 @@
             <param name="slotIndex">The index of the stack value that was produced by the node.</param>
             <returns>The symbolic value.</returns>
         </member>
-        <member name="M:Echo.DataFlow.Emulation.SymbolicValue`1.CreateVariableValue(Echo.DataFlow.DataFlowNode{`0},Echo.Core.Code.IVariable)">
+        <member name="M:Echo.DataFlow.Emulation.SymbolicValue`1.CreateVariableValue(Echo.DataFlow.DataFlowNode{`0},Echo.Code.IVariable)">
             <summary>
             Creates a new symbolic value referencing a variable value assigned by the provided node. 
             </summary>
@@ -805,12 +835,6 @@
             Interprets the symbolic value as a collection of variable data sources.
             </summary>
             <returns>The variable data sources.</returns>
-        </member>
-        <member name="M:Echo.DataFlow.Emulation.SymbolicValue`1.Copy">
-            <summary>
-            Creates an exact copy of the value.
-            </summary>
-            <returns>The copied value.</returns>
         </member>
         <member name="M:Echo.DataFlow.Emulation.SymbolicValue`1.Add(Echo.DataFlow.DataSource{`0})">
             <inheritdoc />
@@ -961,7 +985,7 @@
             with the variable that was referenced. 
             </summary>
         </member>
-        <member name="M:Echo.DataFlow.Serialization.Dot.DataFlowEdgeAdorner`1.GetEdgeAttributes(Echo.Core.Graphing.IEdge,System.Int64,System.Int64)">
+        <member name="M:Echo.DataFlow.Serialization.Dot.DataFlowEdgeAdorner`1.GetEdgeAttributes(Echo.Graphing.IEdge,System.Int64,System.Int64)">
             <inheritdoc />
         </member>
         <member name="T:Echo.DataFlow.Serialization.Dot.DataFlowNodeAdorner`1">
@@ -975,7 +999,7 @@
             Gets or sets the shape of the node.
             </summary>
         </member>
-        <member name="M:Echo.DataFlow.Serialization.Dot.DataFlowNodeAdorner`1.GetNodeAttributes(Echo.Core.Graphing.INode,System.Int64)">
+        <member name="M:Echo.DataFlow.Serialization.Dot.DataFlowNodeAdorner`1.GetNodeAttributes(Echo.Graphing.INode,System.Int64)">
             <inheritdoc />
         </member>
         <member name="T:Echo.DataFlow.StackDataSource`1">
@@ -1041,7 +1065,7 @@
             </summary>
             <typeparam name="TContents">The type of data stored in each data flow node.</typeparam>
         </member>
-        <member name="M:Echo.DataFlow.VariableDataSource`1.#ctor(Echo.DataFlow.DataFlowNode{`0},Echo.Core.Code.IVariable)">
+        <member name="M:Echo.DataFlow.VariableDataSource`1.#ctor(Echo.DataFlow.DataFlowNode{`0},Echo.Code.IVariable)">
             <summary>
             Creates a new variable data source referencing a variable value assigned by the provided node. 
             </summary>
@@ -1065,7 +1089,7 @@
             </summary>
             <typeparam name="TContents">The type of contents to put in a data flow node.</typeparam>
         </member>
-        <member name="M:Echo.DataFlow.VariableDependency`1.#ctor(Echo.Core.Code.IVariable)">
+        <member name="M:Echo.DataFlow.VariableDependency`1.#ctor(Echo.Code.IVariable)">
             <summary>
             Creates a new variable dependency.
             </summary>
