@@ -32,7 +32,7 @@ public class CLIOptionsObfuscationNeedsFactory
         var filePath = PathFormatterUtility.Format(options.File!);
         if (File.Exists(filePath) == false)
         {
-            _logger.Fatal("File cannot be found, please, try again!");
+            _logger.Fatal($"File {filePath} cannot be found, please, try again!");
             return null;
         }
         ObfuscationNeeds needs;
