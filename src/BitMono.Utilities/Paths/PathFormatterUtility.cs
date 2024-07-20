@@ -6,6 +6,6 @@ public static class PathFormatterUtility
 
     public static string Format(string path)
     {
-        return path.Replace(QuotesValue,string.Empty);
+        return path.Replace(QuotesValue, string.Empty);
     }
 }
