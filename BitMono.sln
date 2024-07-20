@@ -61,10 +61,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.TestCas
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{09D2CF31-97DB-419E-A896-459FDF1B29F8}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\bitmono-cli-net462.yml = .github\workflows\bitmono-cli-net462.yml
-		.github\workflows\bitmono-cli-net6.0.yml = .github\workflows\bitmono-cli-net6.0.yml
-		.github\workflows\bitmono-cli-netstandard2.0.yml = .github\workflows\bitmono-cli-netstandard2.0.yml
-		.github\workflows\bitmono-cli-netstandard2.1.yml = .github\workflows\bitmono-cli-netstandard2.1.yml
+		.github\workflows\BitMono.CLI.Release.net6.0.yml = .github\workflows\BitMono.CLI.Release.net6.0.yml
+		.github\workflows\BitMono.CLI.Release.net462.yml = .github\workflows\BitMono.CLI.Release.net462.yml
+		.github\workflows\BitMono.CLI.Release.netstandard2.0.yml = .github\workflows\BitMono.CLI.Release.netstandard2.0.yml
+		.github\workflows\BitMono.CLI.Release.netstandard2.1.yml = .github\workflows\BitMono.CLI.Release.netstandard2.1.yml
 	EndProjectSection
 EndProject
 Global

@@ -68,13 +68,13 @@
             <param name="node">The node to obtain the dominance frontier from.</param>
             <returns>A collection of nodes representing the dominance frontier.</returns>
         </member>
-        <member name="M:Echo.ControlFlow.Analysis.Domination.DominatorTree`1.Echo#Core#Graphing#ISubGraph#GetNodes">
+        <member name="M:Echo.ControlFlow.Analysis.Domination.DominatorTree`1.Echo#Graphing#ISubGraph#GetNodes">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Analysis.Domination.DominatorTree`1.GetSubGraphs">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Analysis.Domination.DominatorTree`1.Echo#Core#Graphing#IGraph#GetEdges">
+        <member name="M:Echo.ControlFlow.Analysis.Domination.DominatorTree`1.Echo#Graphing#IGraph#GetEdges">
             <inheritdoc />
         </member>
         <member name="T:Echo.ControlFlow.Analysis.Domination.DominatorTreeNode`1">
@@ -164,7 +164,7 @@
         </member>
         <member name="P:Echo.ControlFlow.Blocks.BasicBlock`1.Instructions">
             <summary>
-            Gets a collection of isntructions that are executed in sequence when this basic block is executed.
+            Gets a collection of instructions that are executed in sequence when this basic block is executed.
             </summary>
         </member>
         <member name="P:Echo.ControlFlow.Blocks.BasicBlock`1.IsEmpty">
@@ -192,6 +192,9 @@
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Blocks.BasicBlock`1.AcceptVisitor(Echo.ControlFlow.Blocks.IBlockVisitor{`0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.BasicBlock`1.AcceptVisitor``2(Echo.ControlFlow.Blocks.IBlockVisitor{`0,``0,``1},``0)">
             <inheritdoc />
         </member>
         <member name="T:Echo.ControlFlow.Blocks.BlockFormatter`1">
@@ -377,6 +380,9 @@
         <member name="M:Echo.ControlFlow.Blocks.ExceptionHandlerBlock`1.AcceptVisitor(Echo.ControlFlow.Blocks.IBlockVisitor{`0})">
             <inheritdoc />
         </member>
+        <member name="M:Echo.ControlFlow.Blocks.ExceptionHandlerBlock`1.AcceptVisitor``2(Echo.ControlFlow.Blocks.IBlockVisitor{`0,``0,``1},``0)">
+            <inheritdoc />
+        </member>
         <member name="M:Echo.ControlFlow.Blocks.ExceptionHandlerBlock`1.ToString">
             <inheritdoc />
         </member>
@@ -418,6 +424,9 @@
         <member name="M:Echo.ControlFlow.Blocks.HandlerBlock`1.AcceptVisitor(Echo.ControlFlow.Blocks.IBlockVisitor{`0})">
             <inheritdoc />
         </member>
+        <member name="M:Echo.ControlFlow.Blocks.HandlerBlock`1.AcceptVisitor``2(Echo.ControlFlow.Blocks.IBlockVisitor{`0,``0,``1},``0)">
+            <inheritdoc />
+        </member>
         <member name="T:Echo.ControlFlow.Blocks.IBlock`1">
             <summary>
             Represents a single block in structured program code. 
@@ -447,6 +456,13 @@
             Visit the current block using the provided visitor.
             </summary>
             <param name="visitor">The visitor to accept.</param>
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.IBlock`1.AcceptVisitor``2(Echo.ControlFlow.Blocks.IBlockVisitor{`0,``0,``1},``0)">
+            <summary>
+            Visit the current block using the provided visitor.
+            </summary>
+            <param name="visitor">The visitor to accept.</param>
+            <param name="state">An argument to pass onto the visitor.</param>
         </member>
         <member name="T:Echo.ControlFlow.Blocks.IBlockListener`1">
             <summary>
@@ -576,6 +592,42 @@
             </summary>
             <param name="block">The block.</param>
         </member>
+        <member name="T:Echo.ControlFlow.Blocks.IBlockVisitor`3">
+            <summary>
+            Provides members for visiting blocks in a scoped block tree. 
+            </summary>
+            <typeparam name="TInstruction">The type of instructions in the blocks.</typeparam>
+            <typeparam name="TState">The type of state to pass onto the visitor.</typeparam>
+            <typeparam name="TResult">The type of the result for every visited block.</typeparam>
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.IBlockVisitor`3.VisitBasicBlock(Echo.ControlFlow.Blocks.BasicBlock{`0},`1)">
+            <summary>
+            Visits a basic block.
+            </summary>
+            <param name="block">The block.</param>
+            <param name="state">The argument to pass along the visitor.</param>
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.IBlockVisitor`3.VisitScopeBlock(Echo.ControlFlow.Blocks.ScopeBlock{`0},`1)">
+            <summary>
+            Visits a scope block.
+            </summary>
+            <param name="block">The block.</param>
+            <param name="state">The argument to pass along the visitor.</param>
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.IBlockVisitor`3.VisitExceptionHandlerBlock(Echo.ControlFlow.Blocks.ExceptionHandlerBlock{`0},`1)">
+            <summary>
+            Visits an exception handler block.
+            </summary>
+            <param name="block">The block.</param>
+            <param name="state">The argument to pass along the visitor.</param>
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.IBlockVisitor`3.VisitHandlerBlock(Echo.ControlFlow.Blocks.HandlerBlock{`0},`1)">
+            <summary>
+            Visits a handler block inside an <see cref="T:Echo.ControlFlow.Blocks.ExceptionHandlerBlock`1"/>.
+            </summary>
+            <param name="block">The block.</param>
+            <param name="state">The argument to pass along the visitor.</param>
+        </member>
         <member name="T:Echo.ControlFlow.Blocks.ScopeBlock`1">
             <summary>
             Represents a collection of blocks grouped together into one single block. 
@@ -597,6 +649,9 @@
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Blocks.ScopeBlock`1.AcceptVisitor(Echo.ControlFlow.Blocks.IBlockVisitor{`0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Echo.ControlFlow.Blocks.ScopeBlock`1.AcceptVisitor``2(Echo.ControlFlow.Blocks.IBlockVisitor{`0,``0,``1},``0)">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Blocks.ScopeBlock`1.ToString">
@@ -998,7 +1053,7 @@
             </summary>
             <typeparam name="TInstruction">The type of instructions that were traversed.</typeparam>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.InstructionTraversalResult`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0})">
+        <member name="M:Echo.ControlFlow.Construction.InstructionTraversalResult`1.#ctor(Echo.Code.IArchitecture{`0})">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Construction.InstructionTraversalResult`1"/> class.
             </summary>
@@ -1114,7 +1169,7 @@
             this graph builder, but <c>jmp eax</c> is not.
             </remarks>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Static.StaticFlowGraphBuilder`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0},System.Collections.Generic.IEnumerable{`0},Echo.ControlFlow.Construction.Static.IStaticSuccessorResolver{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Static.StaticFlowGraphBuilder`1.#ctor(Echo.Code.IArchitecture{`0},System.Collections.Generic.IEnumerable{`0},Echo.ControlFlow.Construction.Static.IStaticSuccessorResolver{`0})">
             <summary>
             Creates a new static graph builder using the provided instruction successor resolver.
             </summary>
@@ -1123,7 +1178,7 @@
             <param name="successorResolver">The object used to determine the successors of a single instruction.</param>
             <exception cref="T:System.ArgumentNullException">Occurs when any of the arguments is <c>null</c>.</exception>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Static.StaticFlowGraphBuilder`1.#ctor(Echo.Core.Code.IStaticInstructionProvider{`0},Echo.ControlFlow.Construction.Static.IStaticSuccessorResolver{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Static.StaticFlowGraphBuilder`1.#ctor(Echo.Code.IStaticInstructionProvider{`0},Echo.ControlFlow.Construction.Static.IStaticSuccessorResolver{`0})">
             <summary>
             Creates a new static graph builder using the provided instruction successor resolver.
             </summary>
@@ -1178,7 +1233,7 @@
         <member name="M:Echo.ControlFlow.Construction.SuccessorInfo.ToString">
             <inheritdoc />
         </member>
-        <member name="T:Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver`1">
+        <member name="T:Echo.ControlFlow.Construction.Symbolic.IStateTransitioner`1">
             <summary>
             Provides members for resolving the next possible states of a program after the execution of an instruction.
             </summary>
@@ -1191,14 +1246,14 @@
             </para>
             </remarks>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver`1.GetInitialState(System.Int64)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitioner`1.GetInitialState(System.Int64)">
             <summary>
             Gets the initial state of the program at a provided entry point address.
             </summary>
             <param name="entrypointAddress">The entry point address.</param>
             <returns>The object representing the initial state of the program.</returns>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver`1.GetTransitionCount(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitioner`1.GetTransitionCount(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@)">
             <summary>
             Gets the number of transitions the current program state might transition into.
             </summary>
@@ -1206,7 +1261,7 @@
             <param name="instruction">The instruction to evaluate.</param>
             <returns>The number of transitions that the provided instruction might apply.</returns>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver`1.GetTransitions(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@,System.Span{Echo.ControlFlow.Construction.Symbolic.StateTransition{`0}})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.IStateTransitioner`1.GetTransitions(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@,System.Span{Echo.ControlFlow.Construction.Symbolic.StateTransition{`0}})">
             <summary>
             Resolves all possible program state transitions that the provided instruction can apply. 
             </summary>
@@ -1265,46 +1320,46 @@
         <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransition`1.ToString">
             <inheritdoc />
         </member>
-        <member name="T:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1">
+        <member name="T:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1">
             <summary>
             Provides a base implementation for a state transition resolver, that maintains a data flow graph (DFG) for
             resolving each program state transition an instruction might apply.  
             </summary>
             <typeparam name="TInstruction">The type of instructions to evaluate.</typeparam>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.#ctor(Echo.Code.IArchitecture{`0})">
             <summary>
             Initializes the base implementation of the state state transition resolver.
             </summary>
             <param name="architecture">The architecture that describes the instruction set.</param>
         </member>
-        <member name="P:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.Architecture">
+        <member name="P:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.Architecture">
             <summary>
             Gets the architecture for which this transition resolver is built.
             </summary>
         </member>
-        <member name="P:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.DataFlowGraph">
+        <member name="P:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.DataFlowGraph">
             <summary>
             Gets the data flow graph that was constructed during the resolution of all transitions. 
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.GetInitialState(System.Int64)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.GetInitialState(System.Int64)">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.GetTransitionCount(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.GetTransitionCount(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@)">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.GetTransitions(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@,System.Span{Echo.ControlFlow.Construction.Symbolic.StateTransition{`0}})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.GetTransitions(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0@,System.Span{Echo.ControlFlow.Construction.Symbolic.StateTransition{`0}})">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.ApplyDefaultBehaviour(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.ApplyDefaultBehaviour(Echo.DataFlow.Emulation.SymbolicProgramState{`0}@,`0)">
             <summary>
             Applies the default fallthrough transition on a symbolic program state. 
             </summary>
             <param name="currentState">The current program state to be transitioned.</param>
             <param name="instruction">The instruction invoking the state transition.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionResolverBase`1.GetOrCreateDataFlowNode(`0)">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StateTransitionerBase`1.GetOrCreateDataFlowNode(`0)">
             <summary>
             Gets or adds a new a data flow graph node in the current data flow graph (DFG) that is linked to the
             provided instruction.
@@ -1314,20 +1369,20 @@
         </member>
         <member name="T:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1">
             <summary>
-            Provides an implementation of an adapter that maps a <see cref="T:Echo.Core.Code.IStaticInstructionProvider`1"/>
+            Provides an implementation of an adapter that maps a <see cref="T:Echo.Code.IStaticInstructionProvider`1"/>
             to a <see cref="T:Echo.ControlFlow.Construction.Symbolic.ISymbolicInstructionProvider`1"/>, by using the program counter stored in the
             program state as an offset to look up the current instruction.
             </summary>
             <typeparam name="TInstruction">The type of instructions that this collection provides.</typeparam>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0},System.Collections.Generic.IEnumerable{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1.#ctor(Echo.Code.IArchitecture{`0},System.Collections.Generic.IEnumerable{`0})">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1"/> adapter.
             </summary>
             <param name="architecture">The architecture of the instructions.</param>
             <param name="instructions">The instructions.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1.#ctor(Echo.Core.Code.IStaticInstructionProvider{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1.#ctor(Echo.Code.IStaticInstructionProvider{`0})">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Construction.Symbolic.StaticToSymbolicAdapter`1"/> adapter.
             </summary>
@@ -1351,27 +1406,27 @@
             </summary>
             <typeparam name="TInstruction">The type of instructions to store in the control flow graph.</typeparam>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0},System.Collections.Generic.IEnumerable{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.Code.IArchitecture{`0},System.Collections.Generic.IEnumerable{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitioner{`0})">
             <summary>
             Creates a new symbolic control flow graph builder using the provided program state transition resolver.  
             </summary>
             <param name="architecture">The architecture of the instructions.</param>
             <param name="instructions">The instructions to traverse.</param>
-            <param name="transitionResolver">The transition resolver to use for inferring branch targets.</param>
+            <param name="transitioner">The transition resolver to use for inferring branch targets.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.Core.Code.IStaticInstructionProvider{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.Code.IStaticInstructionProvider{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitioner{`0})">
             <summary>
             Creates a new symbolic control flow graph builder using the provided program state transition resolver.  
             </summary>
             <param name="instructions">The instructions to traverse.</param>
-            <param name="transitionResolver">The transition resolver to use for inferring branch targets.</param>
+            <param name="transitioner">The transition resolver to use for inferring branch targets.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.ControlFlow.Construction.Symbolic.ISymbolicInstructionProvider{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitionResolver{`0})">
+        <member name="M:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.#ctor(Echo.ControlFlow.Construction.Symbolic.ISymbolicInstructionProvider{`0},Echo.ControlFlow.Construction.Symbolic.IStateTransitioner{`0})">
             <summary>
             Creates a new symbolic control flow graph builder using the provided program state transition resolver.  
             </summary>
             <param name="instructions">The instructions to traverse.</param>
-            <param name="transitionResolver">The transition resolver to use for inferring branch targets.</param>
+            <param name="transitioner">The transition resolver to use for inferring branch targets.</param>
         </member>
         <member name="P:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.Instructions">
             <summary>
@@ -1381,7 +1436,7 @@
         <member name="P:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.Architecture">
             <inheritdoc />
         </member>
-        <member name="P:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.TransitionResolver">
+        <member name="P:Echo.ControlFlow.Construction.Symbolic.SymbolicFlowGraphBuilder`1.StateTransitioner">
             <summary>
             Gets the object responsible for resolving every transition in the program state that an instruction might introduce. 
             </summary>
@@ -1475,13 +1530,13 @@
             </summary>
             <typeparam name="TInstruction">The type of data that each node in the graph stores.</typeparam>
         </member>
-        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.#ctor(Echo.Core.Code.IInstructionSetArchitecture{`0})">
+        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.#ctor(Echo.Code.IArchitecture{`0})">
             <summary>
             Creates a new empty graph.
             </summary>
             <param name="architecture">The architecture description of the instructions stored in the control flow graph.</param>
         </member>
-        <member name="P:Echo.ControlFlow.ControlFlowGraph`1.Entrypoint">
+        <member name="P:Echo.ControlFlow.ControlFlowGraph`1.EntryPoint">
             <summary>
             Gets or sets the node that is executed first in the control flow graph.
             </summary>
@@ -1519,10 +1574,10 @@
         <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#ControlFlow#Regions#IControlFlowRegion{TInstruction}#GetNodes">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#Core#Graphing#ISubGraph#GetNodes">
+        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#Graphing#ISubGraph#GetNodes">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#Core#Graphing#ISubGraph#GetSubGraphs">
+        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#Graphing#ISubGraph#GetSubGraphs">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.ControlFlowGraph`1.Echo#ControlFlow#Regions#IControlFlowRegion{TInstruction}#GetSubRegions">
@@ -1539,7 +1594,15 @@
             Serializes the control flow graph to the provided output stream, in graphviz dot format.
             </summary>
             <param name="writer">The output stream.</param>
-            <remarks>To customize the layout of the final graph, use the <see cref="T:Echo.Core.Graphing.Serialization.Dot.DotWriter"/> class.</remarks>
+            <remarks>To customize the layout of the final graph, use the <see cref="T:Echo.Graphing.Serialization.Dot.DotWriter"/> class.</remarks>
+        </member>
+        <member name="M:Echo.ControlFlow.ControlFlowGraph`1.ToDotGraph(System.IO.TextWriter,Echo.ControlFlow.Serialization.Dot.IInstructionFormatter{`0})">
+            <summary>
+            Serializes the control flow graph to the provided output stream, in graphviz dot format.
+            </summary>
+            <param name="formatter">The instruction formatter.</param>
+            <param name="writer">The output stream.</param>
+            <remarks>To customize the layout of the final graph, use the <see cref="T:Echo.Graphing.Serialization.Dot.DotWriter"/> class.</remarks>
         </member>
         <member name="T:Echo.ControlFlow.ControlFlowNode`1">
             <summary>
@@ -2213,7 +2276,7 @@
             Gets or sets a user-defined tag that is assigned to this region. 
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.GetEntrypoint">
+        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.GetEntryPoint">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.GetNodeByOffset(System.Int64)">
@@ -2222,13 +2285,13 @@
         <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.GetNodes">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.Echo#Core#Graphing#ISubGraph#GetNodes">
+        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.Echo#Graphing#ISubGraph#GetNodes">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.GetSubRegions">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.Echo#Core#Graphing#ISubGraph#GetSubGraphs">
+        <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.Echo#Graphing#ISubGraph#GetSubGraphs">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.ControlFlowRegion`1.RemoveNode(Echo.ControlFlow.ControlFlowNode{`0})">
@@ -2242,14 +2305,14 @@
             Represents an address range of code that is protected from exceptions by a handler block.  
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
             <param name="protectedRange">The range indicating the code that is protected by the handler.</param>
             <param name="handlerRange">The range indicating the handler code.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange,Echo.AddressRange)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
@@ -2257,7 +2320,7 @@
             <param name="prologueRange">The range indicating the prologue range that precedes the handler.</param>
             <param name="handlerRange">The range indicating the handler code.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,System.Object)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange,Echo.AddressRange,System.Object)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
@@ -2266,7 +2329,7 @@
             <param name="handlerRange">The range indicating the handler code.</param>
             <param name="userData">A user defined tag that is added to the exception handler.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange,Echo.AddressRange,Echo.AddressRange)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
@@ -2275,7 +2338,7 @@
             <param name="handlerRange">The range indicating the handler code.</param>
             <param name="epilogueRange">The range indicating the epilogue range that proceeds the handler.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,System.Object)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange,Echo.AddressRange,Echo.AddressRange,System.Object)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
@@ -2285,7 +2348,7 @@
             <param name="epilogueRange">The range indicating the epilogue range that proceeds the handler.</param>
             <param name="userData">A user defined tag that is added to the exception handler.</param>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.Core.Code.AddressRange,Echo.Core.Code.AddressRange,System.Object)">
+        <member name="M:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange.#ctor(Echo.AddressRange,Echo.AddressRange,System.Object)">
             <summary>
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.Detection.ExceptionHandlerRange"/> structure.
             </summary>
@@ -2376,7 +2439,7 @@
             Gets the regions that form the handler blocks.
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.ExceptionHandlerRegion`1.GetEntrypoint">
+        <member name="M:Echo.ControlFlow.Regions.ExceptionHandlerRegion`1.GetEntryPoint">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.ExceptionHandlerRegion`1.GetNodes">
@@ -2418,7 +2481,7 @@
             Gets the region of nodes that form the code that proceeds the handler.
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.HandlerRegion`1.GetEntrypoint">
+        <member name="M:Echo.ControlFlow.Regions.HandlerRegion`1.GetEntryPoint">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.HandlerRegion`1.GetSubRegions">
@@ -2449,7 +2512,7 @@
             When this property is set to <c>null</c> this region is the root.
             </remarks>
         </member>
-        <member name="M:Echo.ControlFlow.Regions.IControlFlowRegion`1.GetEntrypoint">
+        <member name="M:Echo.ControlFlow.Regions.IControlFlowRegion`1.GetEntryPoint">
             <summary>
             Obtains the first node that is executed in the region (if available).
             </summary>
@@ -2487,6 +2550,17 @@
             Gets the nodes that are immediate successors of any node in this region.
             </summary>
             <returns>The nodes.</returns>
+        </member>
+        <member name="T:Echo.ControlFlow.Regions.IScopeControlFlowRegion`1">
+            <summary>
+            Represents a scope of regions. 
+            </summary>
+            <typeparam name="TInstruction">The type of data that each node in the graph stores.</typeparam>
+        </member>
+        <member name="P:Echo.ControlFlow.Regions.IScopeControlFlowRegion`1.Regions">
+            <summary>
+            Gets a collection of nested sub regions that this region defines.
+            </summary>
         </member>
         <member name="T:Echo.ControlFlow.Regions.ControlFlowRegionExtensions">
             <summary>
@@ -2528,7 +2602,7 @@
             Creates a new instance of the <see cref="T:Echo.ControlFlow.Regions.ScopeRegion`1"/> class.
             </summary>
         </member>
-        <member name="P:Echo.ControlFlow.Regions.ScopeRegion`1.Entrypoint">
+        <member name="P:Echo.ControlFlow.Regions.ScopeRegion`1.EntryPoint">
             <summary>
             Gets or sets the first node that is executed in the region.
             </summary>
@@ -2549,7 +2623,7 @@
         <member name="M:Echo.ControlFlow.Regions.ScopeRegion`1.GetNodes">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Regions.ScopeRegion`1.GetEntrypoint">
+        <member name="M:Echo.ControlFlow.Regions.ScopeRegion`1.GetEntryPoint">
             <inheritdoc />
         </member>
         <member name="M:Echo.ControlFlow.Regions.ScopeRegion`1.GetSubRegions">
@@ -2608,42 +2682,6 @@
             <typeparam name="TInstruction">The type of instructions stored in the graph.</typeparam>
             <returns>The ordering.</returns>
         </member>
-        <member name="T:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1">
-            <summary>
-            Provides an implementation of a stack of which the elements can be accessed by index.
-            </summary>
-            <typeparam name="T">The type of elements in the stack.</typeparam>
-        </member>
-        <member name="P:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Count">
-            <inheritdoc />
-        </member>
-        <member name="P:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Item(System.Int32)">
-            <inheritdoc />
-        </member>
-        <member name="M:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Peek">
-            <summary>
-            Returns the top element of the stack.
-            </summary>
-            <returns>The top element.</returns>
-        </member>
-        <member name="M:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Peek(System.Int32)">
-            <summary>
-            Returns the n-th top-most element of the stack.
-            </summary>
-            <returns>The element.</returns>
-        </member>
-        <member name="M:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Pop">
-            <summary>
-            Pops a single element from the stack.
-            </summary>
-            <returns>The popped element.</returns>
-        </member>
-        <member name="M:Echo.ControlFlow.Serialization.Blocks.IndexableStack`1.Push(`0)">
-            <summary>
-            Pushes a single element onto the stack.
-            </summary>
-            <param name="value"></param>
-        </member>
         <member name="T:Echo.ControlFlow.Serialization.Dot.ControlFlowEdgeAdorner`1">
             <summary>
             Represents an adorner that styles edges in a control flow graph.
@@ -2675,7 +2713,7 @@
             Gets or sets the edge style to use for any abnormal edge.
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Serialization.Dot.ControlFlowEdgeAdorner`1.GetEdgeAttributes(Echo.Core.Graphing.IEdge,System.Int64,System.Int64)">
+        <member name="M:Echo.ControlFlow.Serialization.Dot.ControlFlowEdgeAdorner`1.GetEdgeAttributes(Echo.Graphing.IEdge,System.Int64,System.Int64)">
             <inheritdoc />
         </member>
         <member name="T:Echo.ControlFlow.Serialization.Dot.ControlFlowNodeAdorner`1">
@@ -2722,7 +2760,7 @@
             Gets or sets the formatter that will be used to format the instructions.
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Serialization.Dot.ControlFlowNodeAdorner`1.GetNodeAttributes(Echo.Core.Graphing.INode,System.Int64)">
+        <member name="M:Echo.ControlFlow.Serialization.Dot.ControlFlowNodeAdorner`1.GetNodeAttributes(Echo.Graphing.INode,System.Int64)">
             <inheritdoc />
         </member>
         <member name="T:Echo.ControlFlow.Serialization.Dot.DefaultInstructionFormatter`1">
@@ -2730,6 +2768,11 @@
             Provides a default implementation for <see cref="T:Echo.ControlFlow.Serialization.Dot.IInstructionFormatter`1"/>.
             </summary>
             <typeparam name="TInstruction">The type of the instruction to create a formatter of.</typeparam>
+        </member>
+        <member name="P:Echo.ControlFlow.Serialization.Dot.DefaultInstructionFormatter`1.Instance">
+            <summary>
+            Gets a singleton instance of the <see cref="T:Echo.ControlFlow.Serialization.Dot.DefaultInstructionFormatter`1"/> class.
+            </summary>
         </member>
         <member name="M:Echo.ControlFlow.Serialization.Dot.DefaultInstructionFormatter`1.Format(`0@)">
             <inheritdoc />
@@ -2805,10 +2848,10 @@
             Gets or sets the default style of a control flow region.
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Serialization.Dot.ExceptionHandlerAdorner`1.GetSubGraphName(Echo.Core.Graphing.ISubGraph)">
+        <member name="M:Echo.ControlFlow.Serialization.Dot.ExceptionHandlerAdorner`1.GetSubGraphName(Echo.Graphing.ISubGraph)">
             <inheritdoc />
         </member>
-        <member name="M:Echo.ControlFlow.Serialization.Dot.ExceptionHandlerAdorner`1.GetSubGraphAttributes(Echo.Core.Graphing.ISubGraph)">
+        <member name="M:Echo.ControlFlow.Serialization.Dot.ExceptionHandlerAdorner`1.GetSubGraphAttributes(Echo.Graphing.ISubGraph)">
             <inheritdoc />
         </member>
         <member name="T:Echo.ControlFlow.Serialization.Dot.IInstructionFormatter`1">
@@ -2826,7 +2869,7 @@
         </member>
         <member name="T:Echo.ControlFlow.Serialization.Dot.OffsetNodeIdentifier`1">
             <summary>
-            Provides an implementation of the <see cref="T:Echo.Core.Graphing.Serialization.Dot.INodeIdentifier"/> interface, that returns the offset of the basic
+            Provides an implementation of the <see cref="T:Echo.Graphing.Serialization.Dot.INodeIdentifier"/> interface, that returns the offset of the basic
             block as unique identifiers.
             </summary>
             <typeparam name="TInstruction">The type of instructions stored in the basic block.</typeparam>
@@ -2836,7 +2879,7 @@
             Provides a default instance of the <see cref="T:Echo.ControlFlow.Serialization.Dot.OffsetNodeIdentifier`1"/> class. 
             </summary>
         </member>
-        <member name="M:Echo.ControlFlow.Serialization.Dot.OffsetNodeIdentifier`1.GetIdentifier(Echo.Core.Graphing.INode)">
+        <member name="M:Echo.ControlFlow.Serialization.Dot.OffsetNodeIdentifier`1.GetIdentifier(Echo.Graphing.INode)">
             <inheritdoc />
         </member>
     </members>

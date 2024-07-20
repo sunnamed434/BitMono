@@ -7,8 +7,4 @@
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="all" />
-  </ItemGroup>
-
 </Project>
