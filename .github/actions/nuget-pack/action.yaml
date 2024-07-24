@@ -1,0 +1,24 @@
+name: 'NuGet Pack'
+description: 'Packs BitMono NuGet packages'
+inputs:
+  nuspec_path:
+    description: 'Path to .nuspec'
+    required: true
+  nuget_push:
+    description: 'Push to Nuget?'
+    required: false
+    default: false
+  nuget_key:
+    description: 'NuGet deploy key'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Pack
+      run: nuget pack ${{ inputs.nuspec_path }}
+      shell: bash
+    - name: Push to NuGet (Release)
+      run: if ${{ inputs.nuget_push == 'true' }}; then
+        dotnet nuget push *.nupkg --skip-duplicate --api-key ${{ inputs.nuget_key }} --source https://api.nuget.org/v3/index.json;
+        fi
+      shell: bash
