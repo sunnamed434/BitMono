@@ -24,9 +24,8 @@ public class BitMonoApplication : IApplication
     [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
     public AutofacServiceProvider Build()
     {
-        for (var i = 0; i < _modules.Count; i++)
+        foreach (var module in _modules)
         {
-            var module = _modules[i];
             _containerBuilder.RegisterModule(module);
         }
         var container = _containerBuilder.Build();

@@ -120,16 +120,16 @@ public class BitMonoObfuscator
     {
         _logger.Information("Starting resolving dependencies...");
         var assemblyResolve = AssemblyResolver.Resolve(_context.BitMonoContext.ReferencesData, _context);
-        var resolvedReferences = assemblyResolve.ResolvedReferences;
-        for (var i = 0; i < resolvedReferences.Count; i++)
+        foreach (var reference in assemblyResolve.ResolvedReferences)
         {
-            var reference = resolvedReferences[i];
+            _context.ThrowIfCancellationRequested();
+
             _logger.Information("Successfully resolved dependency: {0}", reference.FullName);
         }
-        var failedToResolveReferences = assemblyResolve.FailedToResolveReferences;
-        for (var i = 0; i < failedToResolveReferences.Count; i++)
+        foreach (var reference in assemblyResolve.FailedToResolveReferences)
         {
-            var reference = failedToResolveReferences[i];
+            _context.ThrowIfCancellationRequested();
+
             _logger.Warning("Failed to resolve dependency: {0}", reference.FullName);
         }
         _logger.Information("References resolve have been completed!");
@@ -147,10 +147,14 @@ public class BitMonoObfuscator
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body)
+            _context.ThrowIfCancellationRequested();
+
+            if (method.CilMethodBody is not { } body)
             {
-                body.Instructions.ExpandMacros();
+                continue;
             }
+
+            body.Instructions.ExpandMacros();
         }
         return Task.FromResult(true);
     }

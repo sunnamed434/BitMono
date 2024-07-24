@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
     <ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
     <SolutionDir>$([System.IO.Path]::GetFullPath($(MSBuildProjectDirectory)/../../))</SolutionDir>
   </PropertyGroup>
@@ -27,12 +27,5 @@
     </PackageReference>
     <PackageReference Include="NullGuard.Fody" Version="3.1.1"/>
   </ItemGroup>
-
-  <Target Name="ZipOutputPath" AfterTargets="PostBuildEvent" Condition=" '$(CreateBitMonoArtifacts)' == 'true' ">
-    <ZipDirectory
-      SourceDirectory="$(OutDir)"
-      DestinationFile="$(OutDir)..\..\..\BitMono-v$(BitMonoVersion)-CLI-$(TargetFramework).zip"
-      Overwrite="true"/>
-  </Target>
 
 </Project>

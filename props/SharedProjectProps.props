@@ -23,7 +23,6 @@
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);NU1701;NU1702;CS0436;CS1591</NoWarn>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <CreateBitMonoArtifacts>false</CreateBitMonoArtifacts>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
