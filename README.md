@@ -152,9 +152,9 @@ Feel free to use BitMono on frameworks which described below. Be careful using s
 
 | Framework      | Version |
 |----------------|---------|
-| .NET (Core)    | 8.0     |
-| .NET (Core)    | 7.0     |
-| .NET (Core)    | 6.0     |
+| .NET           | 8.0     |
+| .NET           | 7.0     |
+| .NET           | 6.0     |
 | .NET Framework | 462     |
 | netstandard    | 2.0     |
 | netstandard    | 2.1     |
