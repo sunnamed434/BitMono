@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          path: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
   Release:
@@ -80,7 +80,7 @@ jobs:
         with:
           name: BitMono Release v${{ steps.get-version.outputs.version }}
           tag: v${{ steps.get-version.outputs.version }}
-          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           token: ${{ secrets.PAT }}
           prerelease: ${{ steps.check-prerelease.outputs.is_prerelease }}
           allowUpdates: true
