@@ -90,7 +90,7 @@ runs:
     # Push to GitHub packages on each commit and release
     - name: Push to NuGet (Nightly)
       run: if ${{ inputs.nuget_push == 'true' && (github.event_name == 'push' || (github.event_name == 'create' && github.event.ref_type == 'tag')) }}; then
-        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/sunnamed434/index.json;
+        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/BitMono/index.json;
         fi
       shell: bash
 
