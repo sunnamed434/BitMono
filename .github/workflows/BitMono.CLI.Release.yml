@@ -1,4 +1,4 @@
-name: BitMono.CLI.Release.net462
+name: BitMono.CLI.Release
 
 on:
   create:
@@ -8,7 +8,11 @@ on:
 jobs:
   Build:
     if: github.event_name == 'create' && github.event.ref_type == 'tag'
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target-framework: [net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
+        runtime: [linux-x64, win-x64]
 
     steps:
       - name: Checkout code
@@ -25,14 +29,22 @@ jobs:
         with:
           project_path: src/BitMono.CLI
           create_artifacts: true
-          target_framework: net462
+          nuget_push: false
+          target_framework: ${{ target-framework }}
+          runtime_version: ${{ matrix.runtime }}
           github_token: ${{ secrets.PAT }}
+
+      - name: Install zip
+        run: sudo apt-get install zip
+
+      - name: Zip artifacts
+        run: "cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && zip -qq -r ./release.zip *"
 
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
+          path: "./src/BitMono.CLI/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
   Release:
@@ -68,7 +80,7 @@ jobs:
         with:
           name: BitMono Release v${{ steps.get-version.outputs.version }}
           tag: v${{ steps.get-version.outputs.version }}
-          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-net462.zip"
+          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           token: ${{ secrets.PAT }}
           prerelease: ${{ steps.check-prerelease.outputs.is_prerelease }}
           allowUpdates: true

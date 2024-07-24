@@ -10,13 +10,20 @@ inputs:
   target_framework:
     description: 'The target framework to build on'
     required: true
-  github_token:
-    description: 'GitHub token'
-    required: false
   runtime_version:
     description: 'Build runtime version default linux-x64'
     required: false
     default: 'linux-x64'
+  nuget_push:
+    description: 'Push to Nuget on release?'
+    required: false
+    default: false
+  nuget_key:
+    description: 'NuGet deploy key'
+    required: false
+  github_token:
+    description: 'GitHub token'
+    required: false
 outputs:
   version:
     description: "Generated version (SemVersion compatible)"
@@ -81,4 +88,18 @@ runs:
         pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-test }}'
       env:
         PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+      shell: bash
+
+    # Push to GitHub packages on each commit and release
+    - name: Push to NuGet (Nightly)
+      run: if ${{ inputs.nuget_push == 'true' && (github.event_name == 'push' || (github.event_name == 'create' && github.event.ref_type == 'tag')) }}; then
+        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/RocketModFix/index.json;
+        fi
+      shell: bash
+
+    # Push to NuGet on each tag, but only if the tag is not a pre-release version
+    - name: Push to NuGet (Release)
+      run: if ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}; then
+        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
+        fi
       shell: bash
