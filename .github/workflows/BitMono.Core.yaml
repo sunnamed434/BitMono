@@ -1,0 +1,39 @@
+name: BitMono.Core
+
+on:
+  create:
+    tags:
+      - "*"
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/BitMono.Core.yaml'
+      - 'src/BitMono.Core/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/BitMono.Core.yaml'
+      - 'src/BitMono.Core/**'
+
+jobs:
+  build:
+    name: "BitMono.Core Build"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v4
+      name: Setup .NET
+      with:
+        dotnet-version: 8.x
+        
+    - uses: ./.github/actions/project-build
+      id: project-build
+      with:
+        project_path: src/BitMono.Core
+        github_token: ${{ secrets.PAT }}
+        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_push: true

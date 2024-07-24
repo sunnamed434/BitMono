@@ -1,0 +1,84 @@
+name: 'Project Build'
+description: 'Builds BitMono projects'
+inputs:
+  project_path:
+    description: 'Path to project folder'
+    required: true
+  create_artifacts:
+    description: 'Creates artifacts'
+    required: false
+  target_framework:
+    description: 'The target framework to build on'
+    required: true
+  github_token:
+    description: 'GitHub token'
+    required: false
+  runtime_version:
+    description: 'Build runtime version default linux-x64'
+    required: false
+    default: 'linux-x64'
+outputs:
+  version:
+    description: "Generated version (SemVersion compatible)"
+    value: ${{ steps.get-version.outputs.version }}
+  is_prerelease:
+    description: 'Gets if the version is a prerelease'
+    value: ${{ steps.check-prerelease.outputs.is_prerelease }}
+runs:
+  using: "composite"
+  steps:
+    # Generate semver compatible version from current tag and commit hash
+    - name: Create version
+      id: get-version
+      run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Check Prerelease
+      id: check-prerelease
+      run: "if ${{ contains(steps.get-version.outputs.version, '-') }}; then
+              echo is_prerelease=true >> $GITHUB_OUTPUT;
+            else
+              echo is_prerelease=false >> $GITHUB_OUTPUT;
+            fi"
+      shell: bash
+
+    # Set execute permissions for all relevant files and directories
+    - name: Set execute permissions
+      run: chmod -R +x $GITHUB_WORKSPACE/
+      shell: bash
+
+    # Commands that are used multiple times.
+    # Placed in one place to make sure that the arguments would always be the same
+    - name: Common commands
+      id: common-commands
+      run: |
+        echo "dotnet-restore=dotnet restore \$PROJECT_PATH --runtime ${{ inputs.runtime_version }}" -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }} -p:CreateBitMonoArtifacts=${{ inputs.create_artifacts }} >> $GITHUB_OUTPUT
+        echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }} --runtime ${{ inputs.runtime_version }}" >> $GITHUB_OUTPUT
+        echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build -p:TargetFramework=${{ inputs.target_framework }} --runtime ${{ inputs.runtime_version }}" >> $GITHUB_OUTPUT
+      shell: bash
+
+    # Install dependencies (this needs to be a separate step from build for caching)
+    - name: Install dependencies
+      run: |
+        ${{ steps.common-commands.outputs.dotnet-restore }}
+        pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-restore }}'
+      env:
+        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+      shell: bash
+
+    # Build project
+    - name: Build
+      run: |
+        ${{ steps.common-commands.outputs.dotnet-build }}
+        pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-build }}'
+      env:
+        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+      shell: bash
+
+    # Test project
+    - name: Test
+      run: |
+        pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-test }}'
+      env:
+        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+      shell: bash

@@ -1,0 +1,39 @@
+name: BitMono.Utilities
+
+on:
+  create:
+    tags:
+      - "*"
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/BitMono.Utilities.yaml'
+      - 'src/BitMono.Utilities/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/BitMono.Utilities.yaml'
+      - 'src/BitMono.Utilities/**'
+
+jobs:
+  build:
+    name: "BitMono.Utilities Build"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v4
+      name: Setup .NET
+      with:
+        dotnet-version: 8.x
+        
+    - uses: ./.github/actions/project-build
+      id: project-build
+      with:
+        project_path: src/BitMono.Utilities
+        github_token: ${{ secrets.PAT }}
+        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_push: true
