@@ -30,7 +30,7 @@ jobs:
           project_path: src/BitMono.CLI
           create_artifacts: true
           nuget_push: false
-          target_framework: ${{ target-framework }}
+          target_framework: ${{ matrix.target-framework }}
           runtime_version: ${{ matrix.runtime }}
           github_token: ${{ secrets.PAT }}
 
