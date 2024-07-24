@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: "./src/BitMono.CLI/bin/Release/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
   Release:
