@@ -43,7 +43,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v3 # Do not use v4 as it is not working properly, see: https://github.com/actions/upload-artifact/issues/478
         with:
-          name: build
+          name: ${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
