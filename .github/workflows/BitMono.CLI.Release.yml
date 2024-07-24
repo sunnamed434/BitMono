@@ -47,12 +47,6 @@ jobs:
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
-      - name: Download build
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: ./build/
-          
       - name: Create version
         id: get-version
         run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
@@ -72,7 +66,7 @@ jobs:
         with:
           name: BitMono Release v${{ steps.get-version.outputs.version }}
           tag: v${{ steps.get-version.outputs.version }}
-          artifacts: "./build/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          artifacts: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           token: ${{ secrets.PAT }}
           prerelease: ${{ steps.check-prerelease.outputs.is_prerelease }}
           allowUpdates: true
