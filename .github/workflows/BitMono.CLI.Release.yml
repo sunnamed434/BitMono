@@ -47,20 +47,12 @@ jobs:
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
 
-  Release:
-    needs: [Build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Download build
         uses: actions/download-artifact@v4
         with:
           name: build
           path: ./build/
-
+          
       - name: Create version
         id: get-version
         run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
