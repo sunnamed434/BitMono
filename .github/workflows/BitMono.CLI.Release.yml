@@ -41,7 +41,7 @@ jobs:
         run: "cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && zip -qq -r ./BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *"
 
       - name: Upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: build
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ github.ref_name }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
