@@ -5,6 +5,8 @@ This is the documentation of the BitMono project. BitMono is not only a tool tha
 
 Most of the questions/problems in BitMono will be solved by just learning `AsmResolver docs <https://asmresolver.readthedocs.io>`_
 
+Join our `Discord Server <https://discord.gg/sFDHd47St4>`_ you will find there help to your question(s) or just a nice talk!
+
 Table of Contents:
 ------------------
 
