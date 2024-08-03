@@ -46,11 +46,6 @@ runs:
             fi"
       shell: bash
 
-    # Set execute permissions for all relevant files and directories
-    - name: Set execute permissions
-      run: chmod -R +x $GITHUB_WORKSPACE/
-      shell: bash
-
     # Commands that are used multiple times.
     # Placed in one place to make sure that the arguments would always be the same
     - name: Common commands
