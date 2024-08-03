@@ -1,4 +1,5 @@
 <Project>
+
   <PropertyGroup>
     <PackageId Condition=" '$(PackageId)' == '' ">RocketModFix.$(AssemblyName)</PackageId>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

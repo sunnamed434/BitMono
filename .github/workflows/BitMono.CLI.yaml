@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -37,7 +39,7 @@ jobs:
         uses: ./.github/actions/project-build
         id: project-build
         with:
-          project_path: src/BitMono.CLI
+          project_path: src/BitMono.CLI/BitMono.CLI.csproj
           nuget_push: false
           target_framework: ${{ matrix.target-framework }}
           runtime_version: ${{ matrix.runtime }}
