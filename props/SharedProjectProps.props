@@ -1,6 +1,7 @@
 <Project>
+
   <PropertyGroup>
-    <PackageId>$(AssemblyName)</PackageId>
+    <PackageId Condition=" '$(PackageId)' == '' ">RocketModFix.$(AssemblyName)</PackageId>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>BitMono Obfuscator Dotnet Unity Mono Bit AsmResolver dnlib Protector Mono-Obfuscator Dotnet-Protector</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

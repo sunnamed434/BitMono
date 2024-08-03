@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		props\SharedPackages.props = props\SharedPackages.props
 		build.md = build.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		props\SharedTestProps.props = props\SharedTestProps.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D87066C4-1144-4BD8-96E9-9F4676001397}"
