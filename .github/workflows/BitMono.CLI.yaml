@@ -1,13 +1,23 @@
-name: BitMono.CLI.Release
+name: BitMono.CLI
 
 on:
   create:
     tags:
       - "*"
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.CLI.yaml'
+      - 'src/**'
+      - 'test/**'
+  pull_request:
+    paths:
+      - '.github/workflows/BitMono.CLI.yaml'
+      - 'src/**'
+      - 'test/**'
 
 jobs:
   Build:
-    if: github.event_name == 'create' && github.event.ref_type == 'tag'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,7 +38,6 @@ jobs:
         id: project-build
         with:
           project_path: src/BitMono.CLI
-          create_artifacts: true
           nuget_push: false
           target_framework: ${{ matrix.target-framework }}
           runtime_version: ${{ matrix.runtime }}
@@ -48,11 +57,13 @@ jobs:
           if-no-files-found: error
 
       - name: Create version
+        if: github.event_name == 'create' && github.event.ref_type == 'tag'
         id: get-version
         run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Check Prerelease
+        if: github.event_name == 'create' && github.event.ref_type == 'tag'
         id: check-prerelease
         run: "if ${{ contains(steps.get-version.outputs.version, '-') }}; then
                 echo is_prerelease=true >> $GITHUB_OUTPUT;
@@ -62,6 +73,7 @@ jobs:
         shell: bash
 
       - name: Create Release
+        if: github.event_name == 'create' && github.event.ref_type == 'tag'
         uses: ncipollo/release-action@v1.14.0
         with:
           name: BitMono Release v${{ steps.get-version.outputs.version }}
