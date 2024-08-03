@@ -56,9 +56,9 @@ runs:
     - name: Common commands
       id: common-commands
       run: |
-        echo "dotnet-restore=dotnet restore \$PROJECT_PATH --runtime ${{ inputs.runtime_version }}" -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }} >> $GITHUB_OUTPUT
-        echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }} --runtime ${{ inputs.runtime_version }}" >> $GITHUB_OUTPUT
-        echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build -p:TargetFramework=${{ inputs.target_framework }} --runtime ${{ inputs.runtime_version }}" >> $GITHUB_OUTPUT
+        echo "dotnet-restore=dotnet restore \$PROJECT_PATH --runtime ${{ inputs.runtime_version }}" -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
+        echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore --runtime ${{ inputs.runtime_version }} -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+        echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build --runtime ${{ inputs.runtime_version }} -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
       shell: bash
 
     # Install dependencies (this needs to be a separate step from build for caching)
