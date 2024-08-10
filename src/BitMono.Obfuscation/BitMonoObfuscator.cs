@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Obfuscation;
 
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 [SuppressMessage("ReSharper", "InvertIf")]
 [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Local")]
 public class BitMonoObfuscator
@@ -137,7 +136,10 @@ public class BitMonoObfuscator
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
-                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false", "obfuscation.json");
+                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false",
+                    "obfuscation.json");
+                _logger.Warning(
+                    "Unresolved dependencies aren't a major issue, but keep in mind they can cause problems or might result in some parts being missed during obfuscation.");
                 return Task.FromResult(false);
             }
         }
