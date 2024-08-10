@@ -40,6 +40,8 @@ internal class Program
                 return statusCode;
             }
 
+            CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
             if (obfuscation.ClearCLI)
             {
                 Console.Clear();
@@ -62,7 +64,14 @@ internal class Program
 
             if (obfuscation.OpenFileDestinationInFileExplorer)
             {
-                Process.Start(needs.OutputPath);
+                try
+                {
+                    Process.Start(needs.OutputPath);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "An error occured while opening the destination file in explorer!");
+                }
             }
         }
         catch (OperationCanceledException)
@@ -83,7 +92,7 @@ internal class Program
         return statusCode;
     }
 
-    private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    private static void OnCancelKeyPress(object? sender, ConsoleCancelEventArgs e)
     {
         CancellationTokenSource.Cancel();
         e.Cancel = true;
