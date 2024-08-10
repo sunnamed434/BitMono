@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[UsedImplicitly]
 [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {

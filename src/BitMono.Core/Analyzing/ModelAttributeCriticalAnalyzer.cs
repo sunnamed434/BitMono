@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[UsedImplicitly]
 [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttribute>

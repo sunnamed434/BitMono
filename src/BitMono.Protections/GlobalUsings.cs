@@ -15,6 +15,7 @@ global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using AsmResolver.DotNet.Code.Native;
+global using AsmResolver.PE.File;
 global using BitMono.API.Protections;
 global using BitMono.Core;
 global using BitMono.Core.Attributes;

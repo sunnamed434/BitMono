@@ -4,11 +4,11 @@
 [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
-    private readonly ObfuscationAttributeResolver m_ObfuscationAttributeResolver;
-    private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
-    private readonly CriticalAttributeResolver m_CriticalAttributeResolver;
-    private readonly SerializableBitCriticalAnalyzer m_SerializableBitCriticalAnalyzer;
-    private readonly SpecificNamespaceCriticalAnalyzer m_SpecificNamespaceCriticalAnalyzer;
+    private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
+    private readonly ObfuscateAssemblyAttributeResolver _obfuscateAssemblyAttributeResolver;
+    private readonly CriticalAttributeResolver _criticalAttributeResolver;
+    private readonly SerializableBitCriticalAnalyzer _serializableBitCriticalAnalyzer;
+    private readonly SpecificNamespaceCriticalAnalyzer _specificNamespaceCriticalAnalyzer;
 
     public SafeToMakeChangesMemberResolver(
         ObfuscationAttributeResolver obfuscationAttributeResolver,
@@ -17,11 +17,11 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         SerializableBitCriticalAnalyzer serializableBitCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer)
     {
-        m_ObfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
-        m_CriticalAttributeResolver = criticalAttributeResolver;
-        m_SerializableBitCriticalAnalyzer = serializableBitCriticalAnalyzer;
-        m_SpecificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
+        _obfuscationAttributeResolver = obfuscationAttributeResolver;
+        _obfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
+        _criticalAttributeResolver = criticalAttributeResolver;
+        _serializableBitCriticalAnalyzer = serializableBitCriticalAnalyzer;
+        _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
     }
 
     public bool Resolve(IProtection protection, IMetadataMember member)
@@ -29,33 +29,33 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         if (member is IHasCustomAttribute customAttribute)
         {
             var feature = protection.GetName();
-            if (m_ObfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributeData))
+            if (_obfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributeData))
             {
                 if (obfuscationAttributeData!.Exclude)
                 {
                     return false;
                 }
             }
-            if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
+            if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
             {
                 if (obfuscateAssemblyAttributeData!.AssemblyIsPrivate)
                 {
                     return false;
                 }
             }
-            if (m_CriticalAttributeResolver.Resolve(feature, customAttribute))
+            if (_criticalAttributeResolver.Resolve(feature, customAttribute))
             {
                 return false;
             }
         }
         if (member is TypeDefinition type)
         {
-            if (m_SerializableBitCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+            if (_serializableBitCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
             {
                 return false;
             }
         }
-        if (m_SpecificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
+        if (_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
         {
             return false;
         }

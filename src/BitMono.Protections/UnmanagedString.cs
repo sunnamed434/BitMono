@@ -1,11 +1,7 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
-[SuppressMessage("ReSharper", "InvertIf")]
 [RuntimeMonikerNETCore]
 [RuntimeMonikerNETFramework]
-[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class UnmanagedString : Protection
 {
     public UnmanagedString(IServiceProvider serviceProvider) : base(serviceProvider)

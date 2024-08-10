@@ -23,22 +23,8 @@ public class ModuleFactory : IModuleFactory
             PEReaderParameters = new PEReaderParameters(_errorListener)
         };
         var module = ModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
-        if (_obfuscationSettings.AllowPotentialBreakingChangesToModule)
-        {
-            module.Attributes &= ~DotNetDirectoryFlags.ILOnly;
-            var x86 = module.MachineType == MachineType.I386;
-            if (x86)
-            {
-                module.PEKind = OptionalHeaderMagic.PE32;
-                module.MachineType = MachineType.I386;
-                module.Attributes |= DotNetDirectoryFlags.Bit32Required;
-            }
-            else
-            {
-                module.PEKind = OptionalHeaderMagic.PE32Plus;
-                module.MachineType = MachineType.Amd64;
-            }
-        }
+
+        ConfigureForNativeCode(module);
 
         var managedPEImageBuilder =
             new ManagedPEImageBuilder(new DotNetDirectoryFactory(_metadataBuilderFlags), _errorListener);
@@ -49,5 +35,35 @@ public class ModuleFactory : IModuleFactory
             ModuleReaderParameters = moduleReaderParameters,
             PEImageBuilder = managedPEImageBuilder,
         };
+    }
+
+    /// <summary>
+    /// This is necessary to make native code work inside the assembly.
+    /// See more here: https://docs.washi.dev/asmresolver/guides/dotnet/unmanaged-method-bodies.html
+    /// However, sometimes it causes issues with the assembly like `System.BadImageFormatException`
+    /// at the end when running the protected file, so that's why it's here but not at some startup point.
+    /// </summary>
+    private void ConfigureForNativeCode(ModuleDefinition module)
+    {
+        if (_obfuscationSettings.ConfigureForNativeCode == false)
+        {
+            return;
+        }
+
+        module.IsILOnly = false;
+        var x64 = module.MachineType == MachineType.Amd64;
+        if (x64)
+        {
+            module.PEKind = OptionalHeaderMagic.PE32Plus;
+            module.MachineType = MachineType.Amd64;
+            module.IsBit32Required = false;
+        }
+        else
+        {
+            module.PEKind = OptionalHeaderMagic.PE32;
+            module.MachineType = MachineType.I386;
+            module.IsBit32Required = true;
+            module.IsBit32Preferred = false;
+        }
     }
 }

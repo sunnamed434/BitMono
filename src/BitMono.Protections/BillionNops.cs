@@ -1,6 +1,5 @@
 namespace BitMono.Protections;
 
-[UsedImplicitly]
 public class BillionNops : Protection
 {
     private readonly Renamer _renamer;

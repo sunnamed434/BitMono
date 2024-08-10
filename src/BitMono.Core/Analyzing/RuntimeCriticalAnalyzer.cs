@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[UsedImplicitly]
 [SuppressMessage("ReSharper", "MergeIntoPattern")]
 public class RuntimeCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {

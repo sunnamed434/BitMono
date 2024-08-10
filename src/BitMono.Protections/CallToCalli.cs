@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class CallToCalli : Protection
 {

@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection)]
 public class FullRenamer : Protection
 {

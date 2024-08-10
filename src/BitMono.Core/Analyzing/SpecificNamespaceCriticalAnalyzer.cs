@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[UsedImplicitly]
 [SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")]
 public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
