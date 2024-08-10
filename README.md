@@ -5,8 +5,6 @@
 
 ## BitMono
 
-[![Codefactor][image_codefactor]][codefactor]
-[![DeepSource][image_deepsource]][deepsource]
 [![MIT License][image_license]][license]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
@@ -182,8 +180,6 @@ Credits
 
 **[drakonia][author_drakonia]** for her **[costura decompressor][simple_costura_decompressor_source]**.
 
-[codefactor]: https://www.codefactor.io/repository/github/sunnamed434/bitmono/overview/main
-[deepsource]: https://deepsource.io/gh/sunnamed434/BitMono/?ref=repository-badge
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
 [previews]: https://github.com/sunnamed434/BitMono/blob/main/PREVIEWS.md
 [asmresolver]: https://github.com/Washi1337/AsmResolver
