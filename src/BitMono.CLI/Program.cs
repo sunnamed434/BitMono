@@ -3,6 +3,7 @@ namespace BitMono.CLI;
 internal class Program
 {
     private static readonly CancellationTokenSource CancellationTokenSource = new();
+    private static CancellationToken CancellationToken => CancellationTokenSource.Token;
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
     private static readonly string AsciiArt = @$"
@@ -33,14 +34,14 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create();
+            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create(CancellationToken);
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
             }
 
-            CancellationTokenSource.Token.ThrowIfCancellationRequested();
+            CancellationToken.ThrowIfCancellationRequested();
 
             if (obfuscation.ClearCLI)
             {

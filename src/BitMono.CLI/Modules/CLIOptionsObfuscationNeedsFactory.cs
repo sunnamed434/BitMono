@@ -1,6 +1,5 @@
 namespace BitMono.CLI.Modules;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class CLIOptionsObfuscationNeedsFactory
 {
     private readonly string[] _args;
@@ -16,7 +15,7 @@ public class CLIOptionsObfuscationNeedsFactory
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    public ObfuscationNeeds? Create()
+    public ObfuscationNeeds? Create(CancellationToken cancellationToken)
     {
         var parser = new Parser(with =>
         {

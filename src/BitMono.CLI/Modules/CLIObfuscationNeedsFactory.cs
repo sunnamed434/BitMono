@@ -14,15 +14,18 @@ public class CLIObfuscationNeedsFactory
         _logger = logger.ForContext<CLIObfuscationNeedsFactory>();
     }
 
-    public ObfuscationNeeds Create()
+    public ObfuscationNeeds Create(CancellationToken cancellationToken)
     {
-        var fileName = CLIBitMonoModuleFileResolver.Resolve(_args);
+        var fileName = GetFileName(_args);
         var specifyingFile = true;
         while (specifyingFile)
         {
             try
             {
                 _logger.Information("Please, specify file or drag-and-drop in BitMono CLI");
+
+                cancellationToken.ThrowIfCancellationRequested();
+
                 fileName = PathFormatterUtility.Format(Console.ReadLine());
                 if (string.IsNullOrWhiteSpace(fileName) == false)
                 {
@@ -40,6 +43,10 @@ public class CLIObfuscationNeedsFactory
                 {
                     _logger.Warning("Unable to specify empty null or whitespace file, please, try again!");
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -66,6 +73,8 @@ public class CLIObfuscationNeedsFactory
                 {
                     try
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         if (Directory.Exists(dependenciesDirectoryName))
                         {
                             _logger.Information("Dependencies (libs) successfully found automatically: {0}!",
@@ -95,10 +104,13 @@ public class CLIObfuscationNeedsFactory
                             _logger.Information("Unable to specify empty (libs), please, try again!");
                         }
                     }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
                     catch (Exception ex)
                     {
-                        _logger.Information("Something went wrong while specifying the dependencies (libs) path: " +
-                                            ex);
+                        _logger.Error(ex, "Something went wrong while specifying the dependencies (libs) path");
                     }
                 }
             }
@@ -118,5 +130,15 @@ public class CLIObfuscationNeedsFactory
             ReferencesDirectoryName = dependenciesDirectoryName,
             OutputPath = outputDirectoryName
         };
+    }
+
+    private string GetFileName(string[] args)
+    {
+        string? file = null;
+        if (args.IsEmpty() == false)
+        {
+            file = PathFormatterUtility.Format(args[0]);
+        }
+        return file;
     }
 }

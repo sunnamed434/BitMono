@@ -14,10 +14,10 @@ public class ObfuscationNeedsFactory
         _logger = logger;
     }
 
-    public ObfuscationNeeds? Create()
+    public ObfuscationNeeds? Create(CancellationToken cancellationToken)
     {
         return _args.IsEmpty()
-            ? new CLIObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create()
-            : new CLIOptionsObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create();
+            ? new CLIObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken)
+            : new CLIOptionsObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken);
     }
 }
