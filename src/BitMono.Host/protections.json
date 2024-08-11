@@ -53,6 +53,10 @@
       "Enabled": false
     },
     {
+      "Name": "BitDecompiler",
+      "Enabled": false
+    },
+    {
       "Name": "BitTimeDateStamp",
       "Enabled": false
     },

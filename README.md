@@ -71,6 +71,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * FullRenamer
 * AntiDebugBreakpoints
 * AntiDecompiler
+* BitDecompiler (fixed version of BitDotNet for newer Unity Versions)
 * BitDateTimeStamp
 * BitMono
 * BillionNops
