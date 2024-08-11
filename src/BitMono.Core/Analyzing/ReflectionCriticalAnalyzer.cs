@@ -4,23 +4,23 @@ namespace BitMono.Core.Analyzing;
 public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly List<MethodDefinition> m_CachedMethods;
+    private readonly List<MethodDefinition> _cachedMethods;
     private static readonly string[] ReflectionMethods =
-    {
+    [
         nameof(Type.GetMethod),
         nameof(Type.GetField),
         nameof(Type.GetProperty),
         nameof(Type.GetEvent),
-        nameof(Type.GetMember),
-    };
+        nameof(Type.GetMember)
+    ];
 
     public ReflectionCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
     {
         _obfuscationSettings = obfuscation.Value;
-        m_CachedMethods = new List<MethodDefinition>();
+        _cachedMethods = new List<MethodDefinition>();
     }
 
-    public IReadOnlyList<MethodDefinition> CachedMethods => m_CachedMethods.AsReadOnly();
+    public IReadOnlyList<MethodDefinition> CachedMethods => _cachedMethods.AsReadOnly();
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
@@ -28,7 +28,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-        if (m_CachedMethods.FirstOrDefault(r => r.Name.Equals(method.Name)) != null)
+        if (_cachedMethods.FirstOrDefault(x => x.Name.Equals(method.Name)) != null)
         {
             return false;
         }
@@ -52,9 +52,9 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
                                 foreach (var possibleMethod in method.Module
                                              .FindMembers()
                                              .OfType<MethodDefinition>()
-                                             .Where(m => m.Name.Equals(traceMethodName)))
+                                             .Where(x => x.Name.Equals(traceMethodName)))
                                 {
-                                    m_CachedMethods.Add(possibleMethod);
+                                    _cachedMethods.Add(possibleMethod);
                                     return false;
                                 }
                             }

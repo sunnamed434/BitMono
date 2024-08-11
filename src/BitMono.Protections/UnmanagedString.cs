@@ -1,11 +1,7 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
-[SuppressMessage("ReSharper", "InvertIf")]
 [RuntimeMonikerNETCore]
 [RuntimeMonikerNETFramework]
-[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class UnmanagedString : Protection
 {
     public UnmanagedString(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -14,6 +10,8 @@ public class UnmanagedString : Protection
 
     public override Task ExecuteAsync()
     {
+        Context.ConfigureForNativeCode();
+
         var moduleImporter = Context.ModuleImporter;
         var stringSbytePointerCtor =
             moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*) })!);

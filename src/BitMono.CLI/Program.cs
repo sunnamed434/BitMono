@@ -3,6 +3,7 @@ namespace BitMono.CLI;
 internal class Program
 {
     private static readonly CancellationTokenSource CancellationTokenSource = new();
+    private static CancellationToken CancellationToken => CancellationTokenSource.Token;
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
     private static readonly string AsciiArt = @$"
@@ -33,12 +34,14 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create();
+            var needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create(CancellationToken);
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
             }
+
+            CancellationToken.ThrowIfCancellationRequested();
 
             if (obfuscation.ClearCLI)
             {
@@ -62,7 +65,14 @@ internal class Program
 
             if (obfuscation.OpenFileDestinationInFileExplorer)
             {
-                Process.Start(needs.OutputPath);
+                try
+                {
+                    Process.Start(needs.OutputPath);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "An error occured while opening the destination file in explorer!");
+                }
             }
         }
         catch (OperationCanceledException)
@@ -83,7 +93,7 @@ internal class Program
         return statusCode;
     }
 
-    private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    private static void OnCancelKeyPress(object? sender, ConsoleCancelEventArgs e)
     {
         CancellationTokenSource.Cancel();
         e.Cancel = true;

@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class BitMethodDotnet : Protection
 {
@@ -11,8 +10,6 @@ public class BitMethodDotnet : Protection
         _randomNext = randomNext;
     }
 
-    [SuppressMessage("ReSharper", "InvertIf")]
-    [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
     public override Task ExecuteAsync()
     {
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())

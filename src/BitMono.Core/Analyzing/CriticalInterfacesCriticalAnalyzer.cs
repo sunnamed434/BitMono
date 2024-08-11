@@ -1,7 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[UsedImplicitly]
-[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly CriticalsSettings _criticalsSettings;
@@ -18,7 +16,7 @@ public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefiniti
             return true;
         }
         var criticalInterfaces = _criticalsSettings.CriticalInterfaces;
-        if (type.Interfaces.Any(i => criticalInterfaces.FirstOrDefault(c => c.Equals(i.Interface?.Name)) != null))
+        if (type.Interfaces.Any(x => criticalInterfaces.FirstOrDefault(xx => xx.Equals(x.Interface?.Name)) != null))
         {
             return false;
         }

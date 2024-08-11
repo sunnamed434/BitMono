@@ -2,7 +2,7 @@
   "Protections": [
     {
       "Name": "AntiILdasm",
-      "Enabled": false
+      "Enabled": true
     },
     {
       "Name": "AntiDe4dot",
@@ -50,6 +50,10 @@
     },
     {
       "Name": "BitMethodDotnet",
+      "Enabled": false
+    },
+    {
+      "Name": "BitDecompiler",
       "Enabled": false
     },
     {

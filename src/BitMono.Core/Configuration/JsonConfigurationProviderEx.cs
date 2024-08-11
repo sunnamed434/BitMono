@@ -16,27 +16,23 @@ public class JsonConfigurationProviderEx : FileConfigurationProvider
 
     public override void Load(Stream stream)
     {
-        using (var streamReader = new StreamReader(stream, true))
+        using var streamReader = new StreamReader(stream, true);
+        var text = streamReader.ReadToEnd();
+        PreProcessJson(ref text);
+        using var memoryStream = new MemoryStream();
+        using var streamWriter = new StreamWriter(memoryStream, streamReader.CurrentEncoding);
+        streamWriter.Write(text);
+        streamWriter.Flush();
+        memoryStream.Seek(0L, SeekOrigin.Begin);
+        try
         {
-            var text = streamReader.ReadToEnd();
-            PreProcessJson(ref text);
-            using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream, streamReader.CurrentEncoding))
-            {
-                streamWriter.Write(text);
-                streamWriter.Flush();
-                memoryStream.Seek(0L, SeekOrigin.Begin);
-                try
-                {
-                    var parseMethod = (Func<MemoryStream, IDictionary<string, string>>)Delegate.CreateDelegate(
-                        typeof(Func<MemoryStream, IDictionary<string, string>>), ParseMethodInfo);
-                    Data = parseMethod.Invoke(memoryStream);
-                }
-                catch (JsonException ex)
-                {
-                    throw new FormatException("Could not parse the JSON file: " + ex.Message + ".", ex);
-                }
-            }
+            var parseMethod = (Func<MemoryStream, IDictionary<string, string>>)Delegate.CreateDelegate(
+                typeof(Func<MemoryStream, IDictionary<string, string>>), ParseMethodInfo);
+            Data = parseMethod.Invoke(memoryStream);
+        }
+        catch (JsonException ex)
+        {
+            throw new FormatException("Could not parse the JSON file", ex);
         }
     }
     private void PreProcessJson(ref string json)

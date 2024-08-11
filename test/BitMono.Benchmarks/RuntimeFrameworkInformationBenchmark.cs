@@ -6,6 +6,6 @@ public class RuntimeFrameworkInformationBenchmark
     [Benchmark]
     public void RuntimeInformation()
     {
-        RuntimeUtilities.GetFrameworkInformation();
+        EnvironmentRuntimeInformation.Create();
     }
 }

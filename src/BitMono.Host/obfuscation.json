@@ -70,9 +70,6 @@
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,
 
-  // Allow changes to next properties like: bits, machine type to the module (sometimes it cause issues so disabling it may help)
-  "AllowPotentialBreakingChangesToModule": true,
-
   // Set to true to enable, in cases when you want to obfuscate only the specific namespace(s)
   "SpecificNamespacesObfuscationOnly": false,
   "SpecificNamespaces": [

@@ -18,7 +18,6 @@ public class ObfuscationSettings
     public bool FailOnNoRequiredDependency { get; set; }
     public bool OutputRuntimeMonikerWarnings { get; set; }
     public bool OpenFileDestinationInFileExplorer { get; set; }
-    public bool AllowPotentialBreakingChangesToModule { get; set; }
     public bool SpecificNamespacesObfuscationOnly { get; set; }
     public string[]? SpecificNamespaces { get; set; }
     public string[]? RandomStrings { get; set; }

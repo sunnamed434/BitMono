@@ -11,8 +11,6 @@ public class ProtectionsNotifier
         _logger = logger.ForContext<ProtectionsNotifier>();
     }
 
-    [SuppressMessage("ReSharper", "InvertIf")]
-    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     public void Notify(ProtectionsSort protectionsSort)
     {
         if (_obfuscationSettings.NotifyProtections)
@@ -45,7 +43,7 @@ public class ProtectionsNotifier
             if (protectionsSort.ProtectionsResolve.DisabledProtections.Any())
             {
                 var disabledProtectionsCount = protectionsSort.ProtectionsResolve.DisabledProtections.Count;
-                _logger.Warning("({0}) Disabled protection(s): {1}", disabledProtectionsCount, string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
+                _logger.Information("({0}) Disabled protection(s): {1}", disabledProtectionsCount, string.Join(", ", protectionsSort.ProtectionsResolve.DisabledProtections.Select(p => p ?? "Unnamed Protection")));
             }
             if (protectionsSort.ProtectionsResolve.UnknownProtections.Any())
             {
@@ -53,7 +51,7 @@ public class ProtectionsNotifier
             }
             if (protectionsSort.ObfuscationAttributeExcludeProtections.Any())
             {
-                _logger.Warning("Skip protection(s) with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludeProtections.Select(p => p?.GetName())));
+                _logger.Information("Skip protection(s) with obfuscation attribute: {0}", string.Join(", ", protectionsSort.ObfuscationAttributeExcludeProtections.Select(p => p?.GetName())));
             }
         }
     }

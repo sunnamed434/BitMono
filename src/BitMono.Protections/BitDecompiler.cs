@@ -1,11 +1,9 @@
-﻿namespace BitMono.Protections;
+namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
-public class BitDotNet : PackerProtection
+public class BitDecompiler : PackerProtection
 {
-    private const int PEHeaderWithExtraByteHex = 0x00014550;
-
-    public BitDotNet(IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitDecompiler(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
@@ -18,9 +16,9 @@ public class BitDotNet : PackerProtection
             stream.Position = 0x3C;
             var peHeader = reader.ReadUInt32();
             stream.Position = peHeader;
-            writer.Write(PEHeaderWithExtraByteHex);
 
-            stream.Position += 0x2;
+            //stream.Position += 0x2;
+            stream.Position += 0x6;
             var numberOfSections = reader.ReadUInt16();
 
             stream.Position += 0x10;

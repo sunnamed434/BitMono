@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Obfuscation;
 
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 [SuppressMessage("ReSharper", "InvertIf")]
 [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Local")]
 public class BitMonoObfuscator
@@ -49,10 +48,11 @@ public class BitMonoObfuscator
         _invokablePipeline.OnFail += OnFailHandleAsync;
 
         await _invokablePipeline.InvokeAsync(OutputLoadedModuleAsync);
+        await _invokablePipeline.InvokeAsync(OutputBitMonoInfoAsync);
+        await _invokablePipeline.InvokeAsync(OutputCompatibilityIssuesAsync);
         await _invokablePipeline.InvokeAsync(SortProtectionsAsync);
         await _invokablePipeline.InvokeAsync(OutputProtectionsAsync);
         await _invokablePipeline.InvokeAsync(StartTimeCounterAsync);
-        await _invokablePipeline.InvokeAsync(OutputFrameworkInformationAsync);
         await _invokablePipeline.InvokeAsync(ResolveDependenciesAsync);
         await _invokablePipeline.InvokeAsync(ExpandMacrosAsync);
         await _invokablePipeline.InvokeAsync(RunProtectionsAsync);
@@ -66,19 +66,54 @@ public class BitMonoObfuscator
 
     private Task<bool> OutputLoadedModuleAsync()
     {
-        var targetFrameworkName = "unknown";
-        if (_context.Module.Assembly!.TryGetTargetFramework(out var info))
+        var targetFrameworkText = "unknown";
+        var module = _context.Module;
+        var assembly = module.Assembly;
+        if (assembly!.TryGetTargetFramework(out var info))
         {
-            targetFrameworkName = info.Name;
+            targetFrameworkText = $"{info.Name} {info.Version}";
         }
 
-        var assemblyInfo = _context.Module.Assembly.ToString();
-        var culture = _context.Module.Assembly.Culture ?? "unknown";
-        var timeDateStamp = _context.Module.ToPEImage().TimeDateStamp;
+        var assemblyInfo = assembly.ToString();
+        var culture = assembly.Culture?.ToString() ?? "unknown";
+        var timeDateStamp = module.ToPEImage().TimeDateStamp;
         _logger.Information("Module {0}", assemblyInfo);
-        _logger.Information("Module Target Framework: {0}", targetFrameworkName);
-        _logger.Information("PE TimeDateStamp: {0}", timeDateStamp);
+        _logger.Information("Module Target Framework: {0}", targetFrameworkText);
+        _logger.Information("Module PE TimeDateStamp: {0}", timeDateStamp);
         _logger.Information("Module culture: {0}", culture);
+        return Task.FromResult(true);
+    }
+    private Task<bool> OutputBitMonoInfoAsync()
+    {
+        _logger.Information(EnvironmentRuntimeInformation.Create().ToString());
+        return Task.FromResult(true);
+    }
+    /// <summary>
+    /// Outputs information in case of module is built for .NET Framework,
+    /// but BitMono is running on .NET Core, or vice versa.
+    /// See more info: https://bitmono.readthedocs.io/en/latest/obfuscationissues/corlib-not-found.html
+    /// </summary>
+    private Task<bool> OutputCompatibilityIssuesAsync()
+    {
+        if (_context.Module.Assembly!.TryGetTargetFramework(out var targetAssemblyRuntime) == false)
+        {
+            return Task.FromResult(true);
+        }
+        if (targetAssemblyRuntime.IsNetCoreApp && DotNetRuntimeInfoEx.IsNetFramework())
+        {
+            _logger.Warning(
+                "The module is built for .NET (Core), but you're using a version of BitMono intended for .NET Framework." +
+                " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
+                "or switch to a .NET Core build of BitMono.");
+            return Task.FromResult(true);
+        }
+        if (targetAssemblyRuntime.IsNetFramework && DotNetRuntimeInfoEx.IsNetCoreOrLater())
+        {
+            _logger.Warning(
+                "The module is built for .NET Framework, but you're using a version of BitMono intended for .NET (Core)." +
+                " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
+                "or switch to a .NET Framework build of BitMono.");
+        }
         return Task.FromResult(true);
     }
     private Task<bool> SortProtectionsAsync()
@@ -111,11 +146,6 @@ public class BitMonoObfuscator
         _startTime = Stopwatch.GetTimestamp();
         return Task.FromResult(true);
     }
-    private Task<bool> OutputFrameworkInformationAsync()
-    {
-        _logger.Information(RuntimeUtilities.GetFrameworkInformation().ToString());
-        return Task.FromResult(true);
-    }
     private Task<bool> ResolveDependenciesAsync()
     {
         _logger.Information("Starting resolving dependencies...");
@@ -137,7 +167,10 @@ public class BitMonoObfuscator
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
-                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false", "obfuscation.json");
+                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false",
+                    "obfuscation.json");
+                _logger.Warning(
+                    "Unresolved dependencies aren't a major issue, but keep in mind they can cause problems or might result in some parts being missed during obfuscation.");
                 return Task.FromResult(false);
             }
         }

@@ -26,4 +26,27 @@ public class ProtectionContext
     {
         CancellationToken.ThrowIfCancellationRequested();
     }
+    /// <summary>
+    /// This is necessary to make native code work inside the assembly.
+    /// See more here: https://docs.washi.dev/asmresolver/guides/dotnet/unmanaged-method-bodies.html
+    /// However, sometimes it causes issues with the assembly like `System.BadImageFormatException`
+    /// at the end when running the protected file, so that's why it's here but not at some startup point.
+    /// </summary>
+    public void ConfigureForNativeCode()
+    {
+        Module.IsILOnly = false;
+        var x64 = Module.MachineType == MachineType.Amd64;
+        if (x64)
+        {
+            Module.PEKind = OptionalHeaderMagic.PE32Plus;
+            Module.MachineType = MachineType.Amd64;
+            Module.IsBit32Required = false;
+        }
+        else
+        {
+            Module.PEKind = OptionalHeaderMagic.PE32;
+            Module.MachineType = MachineType.I386;
+            Module.IsBit32Required = true;
+        }
+    }
 }

@@ -23,22 +23,6 @@ public class ModuleFactory : IModuleFactory
             PEReaderParameters = new PEReaderParameters(_errorListener)
         };
         var module = ModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
-        if (_obfuscationSettings.AllowPotentialBreakingChangesToModule)
-        {
-            module.Attributes &= ~DotNetDirectoryFlags.ILOnly;
-            var x86 = module.MachineType == MachineType.I386;
-            if (x86)
-            {
-                module.PEKind = OptionalHeaderMagic.PE32;
-                module.MachineType = MachineType.I386;
-                module.Attributes |= DotNetDirectoryFlags.Bit32Required;
-            }
-            else
-            {
-                module.PEKind = OptionalHeaderMagic.PE32Plus;
-                module.MachineType = MachineType.Amd64;
-            }
-        }
 
         var managedPEImageBuilder =
             new ManagedPEImageBuilder(new DotNetDirectoryFactory(_metadataBuilderFlags), _errorListener);

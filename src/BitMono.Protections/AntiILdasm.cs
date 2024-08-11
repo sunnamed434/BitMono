@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
 public class AntiILdasm : Protection
 {
     public AntiILdasm(IServiceProvider serviceProvider) : base(serviceProvider)

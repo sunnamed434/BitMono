@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Protections;
 
-[UsedImplicitly]
 public class BitTimeDateStamp : PackerProtection
 {
     public BitTimeDateStamp(IServiceProvider serviceProvider) : base(serviceProvider)
