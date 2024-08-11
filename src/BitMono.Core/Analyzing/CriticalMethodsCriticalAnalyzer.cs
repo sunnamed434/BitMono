@@ -17,6 +17,6 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
             return true;
         }
         var criticalMethodNames = _criticalsSettings.CriticalMethods;
-        return criticalMethodNames.Any(c => c.Equals(method.Name)) == false;
+        return criticalMethodNames.Any(x => x.Equals(method.Name)) == false;
     }
 }

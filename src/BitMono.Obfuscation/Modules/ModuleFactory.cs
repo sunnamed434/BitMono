@@ -63,7 +63,6 @@ public class ModuleFactory : IModuleFactory
             module.PEKind = OptionalHeaderMagic.PE32;
             module.MachineType = MachineType.I386;
             module.IsBit32Required = true;
-            module.IsBit32Preferred = false;
         }
     }
 }

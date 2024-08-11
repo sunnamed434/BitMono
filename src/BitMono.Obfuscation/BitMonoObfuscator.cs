@@ -65,18 +65,20 @@ public class BitMonoObfuscator
 
     private Task<bool> OutputLoadedModuleAsync()
     {
-        var targetFrameworkName = "unknown";
-        if (_context.Module.Assembly!.TryGetTargetFramework(out var info))
+        var targetFrameworkText = "unknown";
+        var module = _context.Module;
+        var assembly = module.Assembly;
+        if (assembly!.TryGetTargetFramework(out var info))
         {
-            targetFrameworkName = info.Name;
+            targetFrameworkText = $"{info.Name} {info.Version}";
         }
 
-        var assemblyInfo = _context.Module.Assembly.ToString();
-        var culture = _context.Module.Assembly.Culture ?? "unknown";
-        var timeDateStamp = _context.Module.ToPEImage().TimeDateStamp;
+        var assemblyInfo = assembly.ToString();
+        var culture = assembly.Culture?.ToString() ?? "unknown";
+        var timeDateStamp = module.ToPEImage().TimeDateStamp;
         _logger.Information("Module {0}", assemblyInfo);
-        _logger.Information("Module Target Framework: {0}", targetFrameworkName);
-        _logger.Information("PE TimeDateStamp: {0}", timeDateStamp);
+        _logger.Information("Module Target Framework: {0}", targetFrameworkText);
+        _logger.Information("Module PE TimeDateStamp: {0}", timeDateStamp);
         _logger.Information("Module culture: {0}", culture);
         return Task.FromResult(true);
     }
@@ -112,7 +114,7 @@ public class BitMonoObfuscator
     }
     private Task<bool> OutputFrameworkInformationAsync()
     {
-        _logger.Information(RuntimeUtilities.GetFrameworkInformation().ToString());
+        _logger.Information(EnvironmentRuntimeInformation.Create().ToString());
         return Task.FromResult(true);
     }
     private Task<bool> ResolveDependenciesAsync()

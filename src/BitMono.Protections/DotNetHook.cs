@@ -11,12 +11,10 @@ public class DotNetHook : Protection
         _randomNext = randomNext;
     }
 
-    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync()
     {
         var runtimeHookingType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Hooking));
-        var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(c => c.Name!.Equals(nameof(Hooking.RedirectStub)));
+        var runtimeRedirectStubMethod = runtimeHookingType.Methods.Single(x => x.Name!.Equals(nameof(Hooking.RedirectStub)));
         var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
         var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeHookingType)
