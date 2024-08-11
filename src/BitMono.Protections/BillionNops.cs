@@ -20,6 +20,8 @@ public class BillionNops : Protection
         var body = method.CilMethodBody = new CilMethodBody(method);
         for (var i = 0; i < 100000; i++)
         {
+            Context.ThrowIfCancellationTokenRequested();
+
             body.Instructions.Insert(0, new CilInstruction(CilOpCodes.Nop));
         }
         body.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
