@@ -38,14 +38,16 @@ public static class DotNetRuntimeInfoEx
     public static bool IsNetCoreOrLater()
     {
         var frameworkDescription = GetFrameworkDescription();
-        return frameworkDescription.StartsWith(".NET Core") || frameworkDescription.StartsWith(".NET ");
+        return frameworkDescription.StartsWith(".NET Core") ||
+               frameworkDescription.StartsWith(".NET ") && char.IsDigit(frameworkDescription[5]);
     }
     /// <summary>
     /// Checks if Runtime is .NET Framework.
     /// </summary>
     public static bool IsNetFramework()
     {
-        return GetFrameworkDescription().StartsWith(".NET Framework");
+        var frameworkDescription = GetFrameworkDescription();
+        return frameworkDescription.StartsWith(".NET Framework");
     }
     /// <summary>
     /// Checks if the application is running on Mono.

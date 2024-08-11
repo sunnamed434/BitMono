@@ -102,13 +102,17 @@ public class BitMonoObfuscator
         if (targetAssemblyRuntime.IsNetCoreApp && DotNetRuntimeInfoEx.IsNetFramework())
         {
             _logger.Warning(
-                "The module is built for .NET (Core), but you're using a version of BitMono intended for .NET Framework. To avoid potential issues, ensure the target framework matches the BitMono framework, or switch to a .NET Core build of BitMono.");
+                "The module is built for .NET (Core), but you're using a version of BitMono intended for .NET Framework." +
+                " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
+                "or switch to a .NET Core build of BitMono.");
             return Task.FromResult(true);
         }
         if (targetAssemblyRuntime.IsNetFramework && DotNetRuntimeInfoEx.IsNetCoreOrLater())
         {
             _logger.Warning(
-                "The module is built for .NET Framework, but you're using a version of BitMono intended for .NET (Core). To avoid potential issues, ensure the target framework matches the BitMono framework, or switch to a .NET Framework build of BitMono.");
+                "The module is built for .NET Framework, but you're using a version of BitMono intended for .NET (Core)." +
+                " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
+                "or switch to a .NET Framework build of BitMono.");
         }
         return Task.FromResult(true);
     }
