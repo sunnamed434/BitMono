@@ -70,10 +70,6 @@
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,
 
-  // Make appropriate changes to next properties like: bits, machine type to the module (sometimes it cause issues so disabling it may help).
-  // This is needed for features like UnmanagedString and/or working with native method-bodies/code.
-  "ConfigureForNativeCode": true,
-
   // Set to true to enable, in cases when you want to obfuscate only the specific namespace(s)
   "SpecificNamespacesObfuscationOnly": false,
   "SpecificNamespaces": [
