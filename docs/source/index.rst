@@ -18,6 +18,7 @@ Table of Contents:
    protections/antiildasm
    protections/antide4dot
    protections/bitdotnet
+   protections/bitdecompiler
    protections/bitmono
    protections/bittimedatestamp
    protections/bitmethoddotnet
