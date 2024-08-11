@@ -6,7 +6,6 @@ By default BitMono provides an opportunity to talk with the users, to warn them,
 
 .. code-block:: csharp
 
-	[UsedImplicitly]
 	[RuntimeMonikerMono] // Add this Attribute which says this protections works only with Mono Runtime
 	public class MonoPacker : Packer
 
@@ -69,7 +68,6 @@ Specify Rust Runtime Moniker Attribute.
 
 .. code-block:: csharp
 
-	[UsedImplicitly]
 	[RuntimeMonikerRust] // Add this Attribute which says this protections works only with Rust Runtime
 	public class RustPacker : Packer // or instead use Protection or PipelineProtection
 

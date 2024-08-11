@@ -32,7 +32,6 @@ Add attribute ``[DoNotResolve(MemberInclusionFlags.Reflection)]`` with ``MemberI
 
 .. code-block:: csharp
     
-	[UsedImplicitly] // This is not intentional, but suppresses warnings by ReSharper
 	[DoNotResolve(MemberInclusionFlags.Reflection)]
 	public class MagicProtection : Protection
 
@@ -43,7 +42,6 @@ You can specify multiple inclusion flags.
 
 .. code-block:: csharp
 
-    [UsedImplicitly]
     [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Reflection)]
     public class MagicProtection : Protection
 
