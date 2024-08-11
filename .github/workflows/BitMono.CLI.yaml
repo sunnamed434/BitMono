@@ -69,3 +69,4 @@ jobs:
           prerelease: ${{ steps.project-build.outputs.is_prerelease }}
           allowUpdates: true
           generateReleaseNotes: true
+          draft: true
