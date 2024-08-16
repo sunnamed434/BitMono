@@ -17,16 +17,18 @@ Recommended to install tools via Visual Studio installer, otherwise you can inst
 Click build button, then go to `cloned repo path..\BitMono\src\BitMono.CLI` directory and you then you will see there `zip` archive artifacts. You can easily share them, just in case.
 
 Archives examples (versions and/or naming can be a bit different):
-- .NET 8.0: `BitMono-v0.18.0-CLI-net8.0-linux-x64.zip`
-- .NET 7.0: `BitMono-v0.18.0-CLI-net7.0-win-x64.zip`
-- .NET 6.0: `BitMono-v0.18.0-CLI-net6.0-linux-x64.zip`
-- .NET 462: `BitMono-v0.18.0-CLI-net462-win-x64.zip`
-- netstandard 2.1: `BitMono-v0.18.0-CLI-netstandard2.1-linux-x64.zip`
-- netstandard 2.0: `BitMono-v0.18.0-CLI-netstandard2.0-win-x64.zip`
+- .NET 8.0: `BitMono-v0.24.2+7aaeceac-CLI-net8-linux-x64`
+- .NET 7.0: `BitMono-v0.24.2+7aaeceac-CLI-net7.0-win-x64.zip`
+- .NET 6.0: `BitMono-v0.24.2+7aaeceac-CLI-net6.0-linux-x64.zip`
+- .NET 462: `BitMono-v0.24.2+7aaeceac-CLI-net462-win-x64.zip`
+- netstandard 2.1: `BitMono-v0.24.2+7aaeceac-CLI-netstandard2.1-linux-x64.zip`
+- netstandard 2.0: `BitMono-v0.24.2+7aaeceac-CLI-netstandard2.0-win-x64.zip`
+
+To be more clear, `v0.24.2` is the version and the value `+7aaeceac` after the version is the hash of the commit.
 
 ### Help
 
-If you have any issues/questions freely ask them [here][issues], or contact via:
+If you have any issues/questions freely, ask them [here][issues], or contact via:
 - Email: sunnamed434 (at) proton.me
 
 [net462]: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net462
