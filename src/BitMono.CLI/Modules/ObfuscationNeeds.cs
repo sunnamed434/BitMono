@@ -1,6 +1,6 @@
 ﻿namespace BitMono.CLI.Modules;
 
-public class ObfuscationNeeds
+internal class ObfuscationNeeds
 {
 #pragma warning disable CS8618
     public string FileName { get; set; }

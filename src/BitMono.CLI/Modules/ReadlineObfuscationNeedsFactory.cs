@@ -1,17 +1,16 @@
 ﻿namespace BitMono.CLI.Modules;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class CLIObfuscationNeedsFactory
+internal class ReadlineObfuscationNeedsFactory
 {
     private readonly string[] _args;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public CLIObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
+    public ReadlineObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
         _obfuscationSettings = obfuscationSettings;
-        _logger = logger.ForContext<CLIObfuscationNeedsFactory>();
+        _logger = logger.ForContext<ReadlineObfuscationNeedsFactory>();
     }
 
     public ObfuscationNeeds Create(CancellationToken cancellationToken)

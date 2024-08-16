@@ -26,9 +26,8 @@ internal class Program
                 configureServices => configureServices.AddConfigurations(),
                 configureLogger => configureLogger.WriteTo.AddConsoleLogger());
 
-            await using var serviceProvider = new BitMonoApplication()
-                .RegisterModule(module)
-                .Build();
+            var app = new BitMonoApplication().RegisterModule(module);
+            await using var serviceProvider = await app.BuildAsync(CancellationToken);
 
             var obfuscation = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
             var logger = serviceProvider
