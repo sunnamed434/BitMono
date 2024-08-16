@@ -2,15 +2,15 @@
 
 public class ProtectionExecutionNotifier
 {
-    private readonly ILogger m_Logger;
+    private readonly ILogger _logger;
 
     public ProtectionExecutionNotifier(ILogger logger)
     {
-        m_Logger = logger;
+        _logger = logger;
     }
 
     public void Notify(IProtection protection)
     {
-        m_Logger.Information("{0} -> OK", protection.GetName());
+        _logger.Information("{0} -> OK", protection.GetName());
     }
 }

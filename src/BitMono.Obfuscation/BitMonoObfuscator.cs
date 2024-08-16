@@ -1,7 +1,5 @@
 ﻿namespace BitMono.Obfuscation;
 
-[SuppressMessage("ReSharper", "InvertIf")]
-[SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Local")]
 public class BitMonoObfuscator
 {
     private readonly IServiceProvider _serviceProvider;
@@ -33,7 +31,7 @@ public class BitMonoObfuscator
         _invokablePipeline = new InvokablePipeline();
         _obfuscationAttributeResolver = _serviceProvider.GetRequiredService<ObfuscationAttributeResolver>();
         var obfuscateAssemblyAttributeResolver = _serviceProvider.GetRequiredService<ObfuscateAssemblyAttributeResolver>();
-        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(_obfuscationSettings,
+        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(
             _obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver);
         _logger = logger.ForContext<BitMonoObfuscator>();
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
@@ -138,7 +136,7 @@ public class BitMonoObfuscator
             _logger.Fatal("Unable to output protections without sorted protections!");
             return Task.FromResult(false);
         }
-        _protectionsNotifier.Notify(_protectionsSort);
+        _protectionsNotifier.Notify(_protectionsSort, _context.CancellationToken);
         return Task.FromResult(true);
     }
     private Task<bool> StartTimeCounterAsync()
@@ -167,8 +165,8 @@ public class BitMonoObfuscator
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
-                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false",
-                    "obfuscation.json");
+                _logger.Fatal("Please, specify needed dependencies, or set in {0} {1} to false",
+                    "obfuscation.json", nameof(ObfuscationSettings.FailOnNoRequiredDependency));
                 _logger.Warning(
                     "Unresolved dependencies aren't a major issue, but keep in mind they can cause problems or might result in some parts being missed during obfuscation.");
                 return Task.FromResult(false);
@@ -194,7 +192,11 @@ public class BitMonoObfuscator
     private async Task<bool> RunProtectionsAsync()
     {
         _logger.Information("Executing Protections... this could take for a while...");
-        foreach (var protection in _protectionsSort!.SortedProtections)
+        if (_protectionsSort == null)
+        {
+            throw new InvalidOperationException($"{nameof(_protectionsSort)} was null!");
+        }
+        foreach (var protection in _protectionsSort.SortedProtections)
         {
             _context.ThrowIfCancellationRequested();
 
@@ -222,15 +224,24 @@ public class BitMonoObfuscator
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body)
+            _context.ThrowIfCancellationRequested();
+
+            if (method.CilMethodBody is not { } body)
             {
-                body.Instructions.OptimizeMacros();
+                return Task.FromResult(true);
             }
+
+            body.Instructions.OptimizeMacros();
         }
         return Task.FromResult(true);
     }
     private Task<bool> StripObfuscationAttributesAsync()
     {
+        if (_obfuscationSettings.StripObfuscationAttributes == false)
+        {
+            _logger.Information("Obfuscation attributes stripping is disabled (it's ok)");
+            return Task.FromResult(true);
+        }
         var obfuscationAttributesStrip = _obfuscationAttributesStripper.Strip(_context, _protectionsSort!);
         _obfuscationAttributesStripNotifier.Notify(obfuscationAttributesStrip);
         return Task.FromResult(true);
