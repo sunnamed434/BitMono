@@ -63,7 +63,7 @@ jobs:
         uses: ncipollo/release-action@v1.14.0
         with:
           name: BitMono Release v${{ steps.project-build.outputs.version }}
-          tag: v${{ steps.project-build.outputs.version }}
+          tag: ${{ steps.project-build.outputs.version }}
           artifacts: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           token: ${{ secrets.PAT }}
           prerelease: ${{ steps.project-build.outputs.is_prerelease }}
