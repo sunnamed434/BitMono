@@ -53,6 +53,8 @@ Table of Contents:
    :name: sec-obfuscationissues
 
    obfuscationissues/corlib-not-found
+   obfuscationissues/intended-for
+   obfuscationissues/compatibility
 
 
 .. toctree::
