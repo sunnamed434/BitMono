@@ -49,7 +49,7 @@ internal class ReadlineObfuscationNeedsFactory
             }
             catch (Exception ex)
             {
-                _logger.Warning("Something went wrong while specifying the file: " + ex);
+                _logger.Error(ex, "Something went wrong while specifying the file");
             }
         }
 
