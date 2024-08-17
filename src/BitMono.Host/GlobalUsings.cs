@@ -12,6 +12,8 @@ global using System.Diagnostics.CodeAnalysis;
 global using System.IO;
 global using System.Reflection;
 global using System.Text.RegularExpressions;
+global using System.Threading;
+global using System.Threading.Tasks;
 global using BitMono.API;
 global using BitMono.API.Analyzing;
 global using BitMono.API.Protections;

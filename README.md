@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/logo/BitMonoLogo.png" alt="BitMono logo" width="180" /><br>
-  Free open-source obfuscator that targetting Mono, and maybe whole .NET<br>
+  Free open-source obfuscator that targeting Mono and whole .NET<br>
 </p>
 
 ## BitMono
@@ -8,7 +8,11 @@
 [![MIT License][image_license]][license]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
-BitMono is a free open-source C# obfuscator that in most cases works **only** with Mono - well known as a fork of .NET framework (which runs popular platforms such as Unity, etc), you can still use this for a whole .NET, but be careful that something working not as intentional, because the main target of the this project is Mono (actually some protections don't work with Mono but work with .NET Core). Which uses **[AsmResolver][asmresolver]** for assembly manipulation (not a dnlib as you might already think). If you have any questions/issues please let me know **[there][bitmono_issues]**. You can install the latest version of BitMono **[here][bitmono_releases]**.
+BitMono is a free, open-source C# obfuscator designed mainly for Mono, a version of the .NET framework used by Unity and other platforms. You can use it with the full .NET framework, but some features might not work as expected. Some protections work with .NET Core but not Mono.
+
+BitMono uses [AsmResolver][asmresolver] instead of dnlib for handling assemblies. If you have questions or issues, please let us know [here][bitmono_issues]. Download the latest version of BitMono [here][bitmono_releases].
+
+You can also use BitMono as an engine to build custom obfuscators. It is built using dependency injection (DI) using Autofac and follows the latest C# best practices.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"

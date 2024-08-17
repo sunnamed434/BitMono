@@ -1,21 +1,16 @@
 namespace BitMono.Obfuscation.Stripping;
 
-[SuppressMessage("ReSharper", "InvertIf")]
-[SuppressMessage("ReSharper", "ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator")]
 public class ObfuscationAttributesStripper
 {
-    private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
-    private readonly ObfuscateAssemblyAttributeResolver m_ObfuscateAssemblyAttributeResolver;
+    private readonly ObfuscateAssemblyAttributeResolver _obfuscateAssemblyAttributeResolver;
 
     public ObfuscationAttributesStripper(
-        ObfuscationSettings obfuscationSettings,
         ObfuscationAttributeResolver obfuscationAttributeResolver,
         ObfuscateAssemblyAttributeResolver obfuscateAssemblyAttributeResolver)
     {
-        _obfuscationSettings = obfuscationSettings;
         _obfuscationAttributeResolver = obfuscationAttributeResolver;
-        m_ObfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
+        _obfuscateAssemblyAttributeResolver = obfuscateAssemblyAttributeResolver;
     }
 
     public ObfuscationAttributesStrip Strip(StarterContext context, ProtectionsSort protectionsSort)
@@ -26,41 +21,44 @@ public class ObfuscationAttributesStripper
         var obfuscateAssemblyAttributesFailStrip = new List<CustomAttribute>();
         foreach (var customAttribute in context.Module.FindMembers().OfType<IHasCustomAttribute>())
         {
+            context.ThrowIfCancellationRequested();
+
             foreach (var protection in protectionsSort.ProtectionsResolve.FoundProtections)
             {
+                context.ThrowIfCancellationRequested();
+
                 var protectionName = protection.GetName();
-                if (_obfuscationSettings.StripObfuscationAttributes)
+
+                if (_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData))
                 {
-                    if (_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData))
+                    if (obfuscationAttributeData!.StripAfterObfuscation)
                     {
-                        if (obfuscationAttributeData!.StripAfterObfuscation)
-                        {
-                            var attribute = obfuscationAttributeData.CustomAttribute;
-                            if (customAttribute.CustomAttributes.Remove(attribute))
-                            {
-                                obfuscationAttributesSuccessStrip.Add(attribute);
-                            }
-                            else
-                            {
-                                obfuscationAttributesFailStrip.Add(attribute);
-                            }
-                        }
-                    }
-                    if (m_ObfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
-                    {
-                        var attribute = obfuscateAssemblyAttributeData!.CustomAttribute;
+                        var attribute = obfuscationAttributeData.CustomAttribute;
                         if (customAttribute.CustomAttributes.Remove(attribute))
                         {
-                            obfuscateAssemblyAttributesSuccessStrip.Add(attribute);
+                            obfuscationAttributesSuccessStrip.Add(attribute);
                         }
                         else
                         {
-                            obfuscateAssemblyAttributesFailStrip.Add(attribute);
+                            obfuscationAttributesFailStrip.Add(attribute);
                         }
+                    }
+                }
+                if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
+                {
+                    var attribute = obfuscateAssemblyAttributeData!.CustomAttribute;
+                    if (customAttribute.CustomAttributes.Remove(attribute))
+                    {
+                        obfuscateAssemblyAttributesSuccessStrip.Add(attribute);
+                    }
+                    else
+                    {
+                        obfuscateAssemblyAttributesFailStrip.Add(attribute);
                     }
                 }
             }
         }
+
         return new ObfuscationAttributesStrip
         {
             ObfuscationAttributesSuccessStrip = obfuscationAttributesSuccessStrip,

@@ -1,6 +1,6 @@
 namespace BitMono.CLI.Modules;
 
-public class ObfuscationNeedsFactory
+internal class ObfuscationNeedsFactory
 {
     private readonly string[] _args;
     private readonly ObfuscationSettings _obfuscationSettings;
@@ -17,7 +17,7 @@ public class ObfuscationNeedsFactory
     public ObfuscationNeeds? Create(CancellationToken cancellationToken)
     {
         return _args.IsEmpty()
-            ? new CLIObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken)
-            : new CLIOptionsObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken);
+            ? new ReadlineObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken)
+            : new OptionsObfuscationNeedsFactory(_args, _obfuscationSettings, _logger).Create(cancellationToken);
     }
 }

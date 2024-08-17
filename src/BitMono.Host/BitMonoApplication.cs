@@ -21,14 +21,16 @@ public class BitMonoApplication : IApplication
         _modules.Add(module);
         return this;
     }
-    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-    public AutofacServiceProvider Build()
+    public Task<AutofacServiceProvider> BuildAsync(CancellationToken cancellationToken)
     {
         foreach (var module in _modules)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             _containerBuilder.RegisterModule(module);
         }
         var container = _containerBuilder.Build();
-        return new AutofacServiceProvider(container.Resolve<ILifetimeScope>());
+        var provider = new AutofacServiceProvider(container.Resolve<ILifetimeScope>());
+        return Task.FromResult(provider);
     }
 }

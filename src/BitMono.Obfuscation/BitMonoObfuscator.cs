@@ -1,7 +1,5 @@
 ﻿namespace BitMono.Obfuscation;
 
-[SuppressMessage("ReSharper", "InvertIf")]
-[SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Local")]
 public class BitMonoObfuscator
 {
     private readonly IServiceProvider _serviceProvider;
@@ -33,7 +31,7 @@ public class BitMonoObfuscator
         _invokablePipeline = new InvokablePipeline();
         _obfuscationAttributeResolver = _serviceProvider.GetRequiredService<ObfuscationAttributeResolver>();
         var obfuscateAssemblyAttributeResolver = _serviceProvider.GetRequiredService<ObfuscateAssemblyAttributeResolver>();
-        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(_obfuscationSettings,
+        _obfuscationAttributesStripper = new ObfuscationAttributesStripper(
             _obfuscationAttributeResolver, obfuscateAssemblyAttributeResolver);
         _logger = logger.ForContext<BitMonoObfuscator>();
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
@@ -47,24 +45,24 @@ public class BitMonoObfuscator
 
         _invokablePipeline.OnFail += OnFailHandleAsync;
 
-        await _invokablePipeline.InvokeAsync(OutputLoadedModuleAsync);
-        await _invokablePipeline.InvokeAsync(OutputBitMonoInfoAsync);
-        await _invokablePipeline.InvokeAsync(OutputCompatibilityIssuesAsync);
-        await _invokablePipeline.InvokeAsync(SortProtectionsAsync);
+        await _invokablePipeline.InvokeAsync(OutputLoadedModule);
+        await _invokablePipeline.InvokeAsync(OutputBitMonoInfo);
+        await _invokablePipeline.InvokeAsync(OutputCompatibilityIssues);
+        await _invokablePipeline.InvokeAsync(SortProtections);
         await _invokablePipeline.InvokeAsync(OutputProtectionsAsync);
-        await _invokablePipeline.InvokeAsync(StartTimeCounterAsync);
-        await _invokablePipeline.InvokeAsync(ResolveDependenciesAsync);
-        await _invokablePipeline.InvokeAsync(ExpandMacrosAsync);
+        await _invokablePipeline.InvokeAsync(StartTimeCounter);
+        await _invokablePipeline.InvokeAsync(ResolveDependencies);
+        await _invokablePipeline.InvokeAsync(ExpandMacros);
         await _invokablePipeline.InvokeAsync(RunProtectionsAsync);
-        await _invokablePipeline.InvokeAsync(OptimizeMacrosAsync);
-        await _invokablePipeline.InvokeAsync(StripObfuscationAttributesAsync);
-        await _invokablePipeline.InvokeAsync(CreatePEImageAsync);
+        await _invokablePipeline.InvokeAsync(OptimizeMacros);
+        await _invokablePipeline.InvokeAsync(StripObfuscationAttributes);
+        await _invokablePipeline.InvokeAsync(CreatePEImage);
         await _invokablePipeline.InvokeAsync(WriteModuleAsync);
         await _invokablePipeline.InvokeAsync(PackAsync);
-        await _invokablePipeline.InvokeAsync(OutputElapsedTimeAsync);
+        await _invokablePipeline.InvokeAsync(OutputElapsedTime);
     }
 
-    private Task<bool> OutputLoadedModuleAsync()
+    private void OutputLoadedModule()
     {
         var targetFrameworkText = "unknown";
         var module = _context.Module;
@@ -81,23 +79,21 @@ public class BitMonoObfuscator
         _logger.Information("Module Target Framework: {0}", targetFrameworkText);
         _logger.Information("Module PE TimeDateStamp: {0}", timeDateStamp);
         _logger.Information("Module culture: {0}", culture);
-        return Task.FromResult(true);
     }
-    private Task<bool> OutputBitMonoInfoAsync()
+    private void OutputBitMonoInfo()
     {
         _logger.Information(EnvironmentRuntimeInformation.Create().ToString());
-        return Task.FromResult(true);
     }
     /// <summary>
     /// Outputs information in case of module is built for .NET Framework,
     /// but BitMono is running on .NET Core, or vice versa.
     /// See more info: https://bitmono.readthedocs.io/en/latest/obfuscationissues/corlib-not-found.html
     /// </summary>
-    private Task<bool> OutputCompatibilityIssuesAsync()
+    private bool OutputCompatibilityIssues()
     {
         if (_context.Module.Assembly!.TryGetTargetFramework(out var targetAssemblyRuntime) == false)
         {
-            return Task.FromResult(true);
+            return true;
         }
         if (targetAssemblyRuntime.IsNetCoreApp && DotNetRuntimeInfoEx.IsNetFramework())
         {
@@ -105,7 +101,7 @@ public class BitMonoObfuscator
                 "The module is built for .NET (Core), but you're using a version of BitMono intended for .NET Framework." +
                 " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
                 "or switch to a .NET Core build of BitMono.");
-            return Task.FromResult(true);
+            return true;
         }
         if (targetAssemblyRuntime.IsNetFramework && DotNetRuntimeInfoEx.IsNetCoreOrLater())
         {
@@ -114,9 +110,9 @@ public class BitMonoObfuscator
                 " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
                 "or switch to a .NET Framework build of BitMono.");
         }
-        return Task.FromResult(true);
+        return true;
     }
-    private Task<bool> SortProtectionsAsync()
+    private bool SortProtections()
     {
         var protectionSettings = _serviceProvider.GetRequiredService<IOptions<ProtectionSettings>>().Value.Protections!;
         var protections = _serviceProvider
@@ -127,26 +123,25 @@ public class BitMonoObfuscator
         if (_protectionsSort.HasProtections == false)
         {
             _logger.Fatal("No one protection were detected, please specify or enable them in protections.json!");
-            return Task.FromResult(false);
+            return false;
         }
-        return Task.FromResult(true);
+        return true;
     }
-    private Task<bool> OutputProtectionsAsync()
+    private bool OutputProtectionsAsync()
     {
         if (_protectionsSort == null)
         {
             _logger.Fatal("Unable to output protections without sorted protections!");
-            return Task.FromResult(false);
+            return false;
         }
-        _protectionsNotifier.Notify(_protectionsSort);
-        return Task.FromResult(true);
+        _protectionsNotifier.Notify(_protectionsSort, _context.CancellationToken);
+        return true;
     }
-    private Task<bool> StartTimeCounterAsync()
+    private void StartTimeCounter()
     {
         _startTime = Stopwatch.GetTimestamp();
-        return Task.FromResult(true);
     }
-    private Task<bool> ResolveDependenciesAsync()
+    private bool ResolveDependencies()
     {
         _logger.Information("Starting resolving dependencies...");
         var assemblyResolve = AssemblyResolver.Resolve(_context.BitMonoContext.ReferencesData, _context);
@@ -167,16 +162,16 @@ public class BitMonoObfuscator
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
-                _logger.Fatal("Please, specify needed dependencies, or set in {0} FailOnNoRequiredDependency to false",
-                    "obfuscation.json");
+                _logger.Fatal("Please, specify needed dependencies, or set in {0} {1} to false",
+                    "obfuscation.json", nameof(ObfuscationSettings.FailOnNoRequiredDependency));
                 _logger.Warning(
                     "Unresolved dependencies aren't a major issue, but keep in mind they can cause problems or might result in some parts being missed during obfuscation.");
-                return Task.FromResult(false);
+                return false;
             }
         }
-        return Task.FromResult(true);
+        return true;
     }
-    private Task<bool> ExpandMacrosAsync()
+    private bool ExpandMacros()
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
@@ -189,12 +184,16 @@ public class BitMonoObfuscator
 
             body.Instructions.ExpandMacros();
         }
-        return Task.FromResult(true);
+        return true;
     }
     private async Task<bool> RunProtectionsAsync()
     {
         _logger.Information("Executing Protections... this could take for a while...");
-        foreach (var protection in _protectionsSort!.SortedProtections)
+        if (_protectionsSort == null)
+        {
+            throw new InvalidOperationException($"{nameof(_protectionsSort)} was null!");
+        }
+        foreach (var protection in _protectionsSort.SortedProtections)
         {
             _context.ThrowIfCancellationRequested();
 
@@ -218,32 +217,41 @@ public class BitMonoObfuscator
         }
         return true;
     }
-    private Task<bool> OptimizeMacrosAsync()
+    private bool OptimizeMacros()
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body)
+            _context.ThrowIfCancellationRequested();
+
+            if (method.CilMethodBody is not { } body)
             {
-                body.Instructions.OptimizeMacros();
+                return true;
             }
+
+            body.Instructions.OptimizeMacros();
         }
-        return Task.FromResult(true);
+        return true;
     }
-    private Task<bool> StripObfuscationAttributesAsync()
+    private bool StripObfuscationAttributes()
     {
+        if (_obfuscationSettings.StripObfuscationAttributes == false)
+        {
+            _logger.Information("Obfuscation attributes stripping is disabled (it's ok)");
+            return true;
+        }
         var obfuscationAttributesStrip = _obfuscationAttributesStripper.Strip(_context, _protectionsSort!);
         _obfuscationAttributesStripNotifier.Notify(obfuscationAttributesStrip);
-        return Task.FromResult(true);
+        return true;
     }
-    private Task<bool> CreatePEImageAsync()
+    private bool CreatePEImage()
     {
         _imageBuild = _context.PEImageBuilder.CreateImage(_context.Module);
         if (_imageBuild == null || _imageBuild.HasFailed)
         {
             _logger.Fatal("Unable to construct the PE image!");
-            return Task.FromResult(false);
+            return false;
         }
-        return Task.FromResult(true);
+        return true;
     }
     private async Task<bool> WriteModuleAsync()
     {
@@ -264,7 +272,7 @@ public class BitMonoObfuscator
         }
         return true;
     }
-    private async Task<bool> PackAsync()
+    private async Task PackAsync()
     {
         foreach (var packer in _protectionsSort!.Packers)
         {
@@ -274,13 +282,11 @@ public class BitMonoObfuscator
             _protectionExecutionNotifier.Notify(packer);
         }
         _logger.Information("Protections have been executed!");
-        return true;
     }
-    private Task<bool> OutputElapsedTimeAsync()
+    private void OutputElapsedTime()
     {
         var elapsedTime = StopwatchUtilities.GetElapsedTime(_startTime, Stopwatch.GetTimestamp());
         _logger.Information("Since obfuscation elapsed: {0}", elapsedTime.ToString());
-        return Task.FromResult(true);
     }
     private Task OnFailHandleAsync()
     {

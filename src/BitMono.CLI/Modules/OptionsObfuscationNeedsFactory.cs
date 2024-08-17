@@ -1,17 +1,17 @@
 namespace BitMono.CLI.Modules;
 
-public class CLIOptionsObfuscationNeedsFactory
+internal class OptionsObfuscationNeedsFactory
 {
     private readonly string[] _args;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public CLIOptionsObfuscationNeedsFactory(string[] args,
+    public OptionsObfuscationNeedsFactory(string[] args,
         ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
         _obfuscationSettings = obfuscationSettings;
-        _logger = logger.ForContext<CLIOptionsObfuscationNeedsFactory>();
+        _logger = logger.ForContext<OptionsObfuscationNeedsFactory>();
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
@@ -22,7 +22,7 @@ public class CLIOptionsObfuscationNeedsFactory
             with.EnableDashDash = true;
             with.HelpWriter = Console.Error;
         });
-        var parserResult = parser.ParseArguments<CLIOptions>(_args);
+        var parserResult = parser.ParseArguments<Options>(_args);
         if (parserResult.Errors.IsEmpty() == false)
         {
             return null;
