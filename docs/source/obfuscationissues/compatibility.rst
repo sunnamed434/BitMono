@@ -7,9 +7,11 @@ Examples
 --------
 
 Good:
+
 - BitMono on .NET Core and your app on .NET Core
 - BitMono on .NET Framework and your app on .NET Framework
 
 Bad (IT WON'T WORK!!!):
+
 - BitMono on .NET Core and your app on .NET Framework
 - BitMono on .NET Framework and your app on .NET Core
