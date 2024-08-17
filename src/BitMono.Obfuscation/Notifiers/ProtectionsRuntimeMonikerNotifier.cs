@@ -20,36 +20,29 @@ public class ProtectionsRuntimeMonikerNotifier
             return;
         }
 
+        var protectionsWithAttributes = _protectionsSort.SortedProtections
+            .Concat(_protectionsSort.Pipelines)
+            .Concat(_protectionsSort.Packers)
+            .Select(x => new { Protection = x, Attributes = x.GetRuntimeMonikerAttributes() })
+            .Where(x => x.Attributes.Length > 0)
+            .ToList();
+
+        if (protectionsWithAttributes.Count == 0)
+        {
+            return;
+        }
+
         _logger.Warning(
             "Protections marked as \"Intended for ...\" are designed for specific runtimes. Using them with other runtimes may cause crashes or other issues. Proceed with caution.");
 
-        foreach (var protection in _protectionsSort.SortedProtections)
+        foreach (var item in protectionsWithAttributes)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var runtimeMonikerAttribute in protection.GetRuntimeMonikerAttributes())
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+            var protection = item.Protection;
+            var attributes = item.Attributes;
 
-                _logger.Warning("[!!!] {Name} - " + runtimeMonikerAttribute.GetMessage(), protection.GetName());
-            }
-        }
-        foreach (var protection in _protectionsSort.Pipelines)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            foreach (var runtimeMonikerAttribute in protection.GetRuntimeMonikerAttributes())
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                _logger.Warning("[!!!] {Name} - " + runtimeMonikerAttribute.GetMessage(), protection.GetName());
-            }
-        }
-        foreach (var protection in _protectionsSort.Packers)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            foreach (var runtimeMonikerAttribute in protection.GetRuntimeMonikerAttributes())
+            foreach (var runtimeMonikerAttribute in attributes)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
