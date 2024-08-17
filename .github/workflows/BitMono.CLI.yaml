@@ -68,5 +68,4 @@ jobs:
           token: ${{ secrets.PAT }}
           prerelease: ${{ steps.project-build.outputs.is_prerelease }}
           allowUpdates: true
-          generateReleaseNotes: true
           draft: true
