@@ -9,11 +9,11 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
     public ObfuscateAssemblyAttributeResolver(IOptions<ObfuscationSettings> configuration)
     {
         _obfuscationSettings = configuration.Value;
-        _attributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace;
+        _attributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace!;
         _attributeName = nameof(ObfuscateAssemblyAttribute);
     }
 
-    public override bool Resolve(string? feature, IHasCustomAttribute from, out ObfuscateAssemblyAttributeData? model)
+    public override bool Resolve(string? feature, IHasCustomAttribute from, [NotNullWhen(true)] out ObfuscateAssemblyAttributeData? model)
     {
         model = null;
         if (_obfuscationSettings.ObfuscateAssemblyAttributeObfuscationExclude == false)
@@ -25,11 +25,24 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
         {
             return false;
         }
+        var attribute = attributesResolve.First();
+        var namedValues = attribute.NamedValues;
+        if (namedValues == null)
+        {
+            return false;
+        }
+        var fixedValues = attribute.FixedValues;
+        if (fixedValues == null || fixedValues.Count == 0)
+        {
+            return false;
+        }
+        if (fixedValues.ElementAtOrDefault(0) is not bool assemblyIsPrivate)
+        {
+            return false;
+        }
 
-        var attribute = attributesResolve!.First();
-        var assemblyIsPrivate = attribute.FixedValues![0] is bool;
         var stripAfterObfuscation =
-            attribute.NamedValues!.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation),
+            namedValues.GetValueOrDefault(nameof(ObfuscateAssemblyAttribute.StripAfterObfuscation),
                 defaultValue: true);
         model = new ObfuscateAssemblyAttributeData(assemblyIsPrivate, stripAfterObfuscation, attribute.Attribute);
         return true;

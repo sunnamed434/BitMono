@@ -2,7 +2,7 @@
 
 public class AttributeResolver<TModel> : IAttributeResolver<TModel> where TModel : class
 {
-    public virtual bool Resolve(string? featureName, IHasCustomAttribute from, out TModel? model)
+    public virtual bool Resolve(string? featureName, IHasCustomAttribute from, [NotNullWhen(true)] out TModel? model)
     {
         model = default;
         return false;

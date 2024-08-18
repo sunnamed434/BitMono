@@ -1,9 +1,9 @@
 ﻿namespace BitMono.API.Resolvers;
 
-public interface IAttributeResolver<TModel>
-    where TModel : class
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
+public interface IAttributeResolver<TModel> where TModel : class
 {
-    bool Resolve(string? featureName, IHasCustomAttribute from, out TModel? model);
+    bool Resolve(string? featureName, IHasCustomAttribute from, [NotNullWhen(true)] out TModel? model);
     bool Resolve(string? featureName, IHasCustomAttribute from);
     bool Resolve(IHasCustomAttribute from);
     bool Resolve(Type featureType, IHasCustomAttribute from);

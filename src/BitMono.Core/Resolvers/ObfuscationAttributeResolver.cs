@@ -1,8 +1,6 @@
 ﻿namespace BitMono.Core.Resolvers;
 
-[SuppressMessage("ReSharper", "InvertIf")]
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttributeData>
+public class ObfuscationAttributeResolver : AttributeResolver<IReadOnlyList<ObfuscationAttributeData>>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly string _attributeNamespace;
@@ -11,11 +9,11 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
     public ObfuscationAttributeResolver(IOptions<ObfuscationSettings> configuration)
     {
         _obfuscationSettings = configuration.Value;
-        _attributeNamespace = typeof(ObfuscationAttribute).Namespace;
+        _attributeNamespace = typeof(ObfuscationAttribute).Namespace!;
         _attributeName = nameof(ObfuscationAttribute);
     }
 
-    public override bool Resolve(string? featureName, IHasCustomAttribute from, out ObfuscationAttributeData? model)
+    public override bool Resolve(string? featureName, IHasCustomAttribute from, [NotNullWhen(true)] out IReadOnlyList<ObfuscationAttributeData>? model)
     {
         model = null;
         if (_obfuscationSettings.ObfuscationAttributeObfuscationExclude == false)
@@ -28,37 +26,43 @@ public class ObfuscationAttributeResolver : AttributeResolver<ObfuscationAttribu
             return false;
         }
 
-        for (var i = 0; i < attributesResolve!.Count; i++)
+        var attributes = new List<ObfuscationAttributeData>();
+        foreach (var attribute in attributesResolve)
         {
-            var attribute = attributesResolve[i];
-            if (attribute.NamedValues?.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature) == true)
+            var namedValues = attribute.NamedValues;
+            if (namedValues == null)
             {
-                if (feature!.Equals(featureName, StringComparison.OrdinalIgnoreCase))
-                {
-                    var exclude =
-                        attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
-                            defaultValue: true);
-                    var applyToMembers =
-                        attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
-                            defaultValue: true);
-                    var stripAfterObfuscation =
-                        attribute.NamedValues.GetValueOrDefault(nameof(ObfuscationAttribute.StripAfterObfuscation),
-                            defaultValue: true);
-                    if (exclude)
-                    {
-                        model = new ObfuscationAttributeData
-                        {
-                            Exclude = exclude,
-                            ApplyToMembers = applyToMembers,
-                            StripAfterObfuscation = stripAfterObfuscation,
-                            Feature = feature,
-                            CustomAttribute = attribute.Attribute
-                        };
-                        return true;
-                    }
-                }
+                continue;
             }
+            if (namedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature) == false)
+            {
+                continue;
+            }
+            if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase) == false)
+            {
+                continue;
+            }
+
+            var exclude =
+                namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
+                    defaultValue: true);
+            var applyToMembers =
+                namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
+                    defaultValue: true);
+            var stripAfterObfuscation =
+                namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.StripAfterObfuscation),
+                    defaultValue: true);
+
+            attributes.Add(new ObfuscationAttributeData
+            {
+                Exclude = exclude,
+                ApplyToMembers = applyToMembers,
+                StripAfterObfuscation = stripAfterObfuscation,
+                Feature = feature,
+                CustomAttribute = attribute.Attribute
+            });
         }
-        return false;
+        model = attributes;
+        return true;
     }
 }

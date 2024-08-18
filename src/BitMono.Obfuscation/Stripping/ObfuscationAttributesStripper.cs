@@ -19,43 +19,22 @@ public class ObfuscationAttributesStripper
         var obfuscationAttributesFailStrip = new List<CustomAttribute>();
         var obfuscateAssemblyAttributesSuccessStrip = new List<CustomAttribute>();
         var obfuscateAssemblyAttributesFailStrip = new List<CustomAttribute>();
+        var protectionNames = protectionsSort.ProtectionsResolve.FoundProtections
+            .Select(x => x.GetName())
+            .ToList()
+            .AsReadOnly();
         foreach (var customAttribute in context.Module.FindMembers().OfType<IHasCustomAttribute>())
         {
             context.ThrowIfCancellationRequested();
 
-            foreach (var protection in protectionsSort.ProtectionsResolve.FoundProtections)
+            StripAssemblyObfuscationAttribute(customAttribute, obfuscateAssemblyAttributesSuccessStrip, obfuscateAssemblyAttributesFailStrip);
+
+            foreach (var protectionName in protectionNames)
             {
                 context.ThrowIfCancellationRequested();
 
-                var protectionName = protection.GetName();
-
-                if (_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData))
-                {
-                    if (obfuscationAttributeData!.StripAfterObfuscation)
-                    {
-                        var attribute = obfuscationAttributeData.CustomAttribute;
-                        if (customAttribute.CustomAttributes.Remove(attribute))
-                        {
-                            obfuscationAttributesSuccessStrip.Add(attribute);
-                        }
-                        else
-                        {
-                            obfuscationAttributesFailStrip.Add(attribute);
-                        }
-                    }
-                }
-                if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
-                {
-                    var attribute = obfuscateAssemblyAttributeData!.CustomAttribute;
-                    if (customAttribute.CustomAttributes.Remove(attribute))
-                    {
-                        obfuscateAssemblyAttributesSuccessStrip.Add(attribute);
-                    }
-                    else
-                    {
-                        obfuscateAssemblyAttributesFailStrip.Add(attribute);
-                    }
-                }
+                StripObfuscationAttribute(protectionName, customAttribute, obfuscationAttributesSuccessStrip, obfuscationAttributesFailStrip,
+                    context.CancellationToken);
             }
         }
 
@@ -66,5 +45,56 @@ public class ObfuscationAttributesStripper
             ObfuscateAssemblyAttributesSuccessStrip = obfuscateAssemblyAttributesSuccessStrip,
             ObfuscateAssemblyAttributesFailStrip = obfuscateAssemblyAttributesFailStrip
         };
+    }
+
+    private void StripAssemblyObfuscationAttribute(IHasCustomAttribute customAttribute,
+        List<CustomAttribute> obfuscateAssemblyAttributesSuccessStrip, List<CustomAttribute> obfuscateAssemblyAttributesFailStrip)
+    {
+        if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData) == false)
+        {
+            return;
+        }
+        if (obfuscateAssemblyAttributeData.StripAfterObfuscation == false)
+        {
+            return;
+        }
+
+        var attribute = obfuscateAssemblyAttributeData.CustomAttribute;
+        if (customAttribute.CustomAttributes.Remove(attribute))
+        {
+            obfuscateAssemblyAttributesSuccessStrip.Add(attribute);
+        }
+        else
+        {
+            obfuscateAssemblyAttributesFailStrip.Add(attribute);
+        }
+    }
+    private void StripObfuscationAttribute(string protectionName, IHasCustomAttribute customAttribute,
+        List<CustomAttribute> obfuscationAttributesSuccessStrip, List<CustomAttribute> obfuscationAttributesFailStrip,
+        CancellationToken cancellationToken)
+    {
+        if (_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData) == false)
+        {
+            return;
+        }
+        foreach (var attributeData in obfuscationAttributeData)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (attributeData.StripAfterObfuscation == false)
+            {
+                continue;
+            }
+
+            var attribute = attributeData.CustomAttribute;
+            if (customAttribute.CustomAttributes.Remove(attribute))
+            {
+                obfuscationAttributesSuccessStrip.Add(attribute);
+            }
+            else
+            {
+                obfuscationAttributesFailStrip.Add(attribute);
+            }
+        }
     }
 }

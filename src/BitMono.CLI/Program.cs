@@ -6,13 +6,15 @@ internal class Program
     private static CancellationToken CancellationToken => CancellationTokenSource.Token;
     private static readonly string BitMonoFileVersionText =
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
-    private static readonly string AsciiArt = @$"
-       ___  _ __  __  ___
-      / _ )(_) /_/  |/  /__  ___  ___
-     / _  / / __/ /|_/ / _ \/ _ \/ _ \
-    /____/_/\__/_/  /_/\___/_//_/\___/
-    https://github.com/sunnamed434/BitMono
-    {BitMonoFileVersionText}";
+    private static readonly string AsciiArt = $"""
+
+                                                      ___  _ __  __  ___
+                                                     / _ )(_) /_/  |/  /__  ___  ___
+                                                    / _  / / __/ /|_/ / _ \/ _ \/ _ \
+                                                   /____/_/\__/_/  /_/\___/_//_/\___/
+                                                   https://github.com/sunnamed434/BitMono
+                                                   {BitMonoFileVersionText}
+                                               """;
 
     private static async Task<int> Main(string[] args)
     {
@@ -53,7 +55,7 @@ internal class Program
 
             var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryName, needs.OutputPath);
             var engine = new BitMonoStarter(serviceProvider);
-            var succeed = await engine.StartAsync(info, CancellationTokenSource.Token);
+            var succeed = await engine.StartAsync(info, CancellationToken);
             if (succeed == false)
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");

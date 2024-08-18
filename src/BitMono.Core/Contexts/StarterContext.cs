@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Contexts;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class StarterContext
 {
 #pragma warning disable CS8618

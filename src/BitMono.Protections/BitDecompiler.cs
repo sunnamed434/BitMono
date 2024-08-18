@@ -17,7 +17,6 @@ public class BitDecompiler : PackerProtection
             var peHeader = reader.ReadUInt32();
             stream.Position = peHeader;
 
-            //stream.Position += 0x2;
             stream.Position += 0x6;
             var numberOfSections = reader.ReadUInt16();
 

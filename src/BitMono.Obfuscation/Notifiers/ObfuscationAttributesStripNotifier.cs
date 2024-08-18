@@ -13,22 +13,22 @@ public class ObfuscationAttributesStripNotifier
     {
         if (obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.IsEmpty() == false)
         {
-            _logger.Information("Successfully stripped {0} obfuscation attribute(s)!",
+            _logger.Information("Successfully stripped {0} obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.IsEmpty() == false)
         {
-            _logger.Information("Successfully stripped {0} assembly obfuscation attribute(s)!",
+            _logger.Information("Successfully stripped {0} assembly obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscationAttributesFailStrip.IsEmpty() == false)
         {
-            _logger.Information("Failed to strip {0} assembly obfuscation attribute(s)!",
+            _logger.Information("Failed to strip {0} assembly obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscationAttributesFailStrip.Count);
         }
         if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.IsEmpty() == false)
         {
-            _logger.Information("Failed to strip {0} obfuscation attribute(s)!",
+            _logger.Information("Failed to strip {0} obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.Count);
         }
     }
