@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <PackageId Condition=" '$(PackageId)' == '' ">BitMono.$(AssemblyName)</PackageId>
+    <PackageId>$(AssemblyName)</PackageId>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>BitMono Obfuscator Dotnet Unity Mono Bit AsmResolver dnlib Protector Mono-Obfuscator Dotnet-Protector</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
