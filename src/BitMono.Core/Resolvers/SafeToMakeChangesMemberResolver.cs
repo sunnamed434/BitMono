@@ -1,7 +1,5 @@
 ﻿namespace BitMono.Core.Resolvers;
 
-[UsedImplicitly]
-[SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class SafeToMakeChangesMemberResolver : IMemberResolver
 {
     private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
@@ -29,19 +27,15 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         if (member is IHasCustomAttribute customAttribute)
         {
             var feature = protection.GetName();
-            if (_obfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributeData))
+            if (_obfuscationAttributeResolver.Resolve(feature, customAttribute, out var obfuscationAttributes)
+                && obfuscationAttributes.Any(x => x.Exclude))
             {
-                if (obfuscationAttributeData!.Exclude)
-                {
-                    return false;
-                }
+                return false;
             }
-            if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
+            if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData)
+                && obfuscateAssemblyAttributeData!.AssemblyIsPrivate)
             {
-                if (obfuscateAssemblyAttributeData!.AssemblyIsPrivate)
-                {
-                    return false;
-                }
+                return false;
             }
             if (_criticalAttributeResolver.Resolve(feature, customAttribute))
             {

@@ -1,7 +1,5 @@
 ﻿namespace BitMono.Core.Resolvers;
 
-[UsedImplicitly]
-[SuppressMessage("ReSharper", "InvertIf")]
 public class DoNotResolveMemberResolver : IMemberResolver
 {
     private readonly RuntimeCriticalAnalyzer _runtimeCriticalAnalyzer;

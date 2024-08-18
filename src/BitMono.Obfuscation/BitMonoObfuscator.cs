@@ -232,16 +232,14 @@ public class BitMonoObfuscator
         }
         return true;
     }
-    private bool StripObfuscationAttributes()
+    private void StripObfuscationAttributes()
     {
         if (_obfuscationSettings.StripObfuscationAttributes == false)
         {
-            _logger.Information("Obfuscation attributes stripping is disabled (it's ok)");
-            return true;
+            return;
         }
         var obfuscationAttributesStrip = _obfuscationAttributesStripper.Strip(_context, _protectionsSort!);
         _obfuscationAttributesStripNotifier.Notify(obfuscationAttributesStrip);
-        return true;
     }
     private bool CreatePEImage()
     {

@@ -11,7 +11,7 @@ public static class KeyValuePairsExtensions
         }
         return value;
     }
-    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, out TActual? value)
+    public static bool TryGetTypedValue<TKey, TValue, TActual>(this IDictionary<TKey, TValue> source, TKey key, [NotNullWhen(true)] out TActual? value)
         where TActual : TValue
     {
         if (source.TryGetValue(key, out var tempValue))
