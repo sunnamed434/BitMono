@@ -17,3 +17,8 @@ Cons
 ----
 
 Be careful because this protection will increase a file size a lot, and a bigger file size will cause more questions by users, most of us when see a big file size think that this file is obfuscated.
+
+Protection Type
+---------------
+
+The protection type is `Protection`.
