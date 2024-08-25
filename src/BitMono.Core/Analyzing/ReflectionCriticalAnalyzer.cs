@@ -17,7 +17,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
     public ReflectionCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
     {
         _obfuscationSettings = obfuscation.Value;
-        _cachedMethods = new List<MethodDefinition>();
+        _cachedMethods = [];
     }
 
     public IReadOnlyList<MethodDefinition> CachedMethods => _cachedMethods.AsReadOnly();

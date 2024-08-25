@@ -3,21 +3,19 @@
 public class CosturaReferencesDataResolverTest
 {
     [Fact]
-    public void
-        WhenCosturaReferencesDataResolving_AndModuleHasCostura_ThenCountOfReferencesShouldHaveCountAsInModule()
+    public void CheckSameAmountOfCostura()
     {
         var resolver = new CosturaReferencesDataResolver();
         var module = ModuleDefinition.FromFile(typeof(TestCases.CosturaDecompressor.Program).Assembly.Location);
-        var countOfEmbeddedCosturaResources = module.Resources.Count(r => r.IsEmbeddedCosturaResource());
+        var countOfEmbeddedCosturaResources = module.Resources.Count(x => x.IsEmbeddedCosturaResource());
 
-        var result = resolver.Resolve(module);
+        var result = resolver.Resolve(module, CancellationToken.None);
 
         result
             .Should()
             .NotBeEmpty().And
             .HaveCount(countOfEmbeddedCosturaResources);
     }
-
     [Theory]
     [InlineData("costura.asmresolver.dll.compressed")]
     [InlineData("costura.asmresolver.pe.dll.compressed")]
@@ -32,11 +30,11 @@ public class CosturaReferencesDataResolverTest
     [InlineData("costura.microsoft.extensions.logging.dll.compressed")]
     [InlineData("costura.microsoft.extensions.options.dll.compressed")]
     [InlineData("costura.microsoft.extensions.primitives.dll.compressed")]
-    public void WhenIsEmbeddedCosturaResource_AndResourceIsCostura_ThenShouldBeTrue(string costuraResourceName)
+    public void FindCosturaResource(string costuraResourceName)
     {
         var module = ModuleDefinition.FromFile(typeof(TestCases.CosturaDecompressor.Program).Assembly.Location);
 
-        var result = module.Resources.First(r => r.Name.Value.Equals(costuraResourceName));
+        var result = module.Resources.First(x => x.Name.Value.Equals(costuraResourceName));
 
         result
             .IsEmbeddedCosturaResource()

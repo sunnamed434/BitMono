@@ -2,24 +2,26 @@ namespace BitMono.Obfuscation.Referencing;
 
 public class CosturaReferencesDataResolver : IReferencesDataResolver
 {
-    [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
-    [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
-    [SuppressMessage("ReSharper", "InvertIf")]
-    public List<byte[]> Resolve(ModuleDefinition module)
+    public List<byte[]> Resolve(ModuleDefinition module, CancellationToken cancellationToken)
     {
         var result = new List<byte[]>();
         var resources = module.Resources;
-        for (var i = 0; i < resources.Count; i++)
+
+        foreach (var resource in resources)
         {
-            var resource = resources[i];
-            if (resource.IsEmbeddedCosturaResource())
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (resource.IsEmbeddedCosturaResource() == false)
             {
-                var rawData = resource.GetData();
-                if (rawData != null)
-                {
-                    result.Add(Decompress(rawData));
-                }
+                continue;
             }
+            var rawData = resource.GetData();
+            if (rawData == null)
+            {
+                continue;
+            }
+
+            result.Add(Decompress(rawData));
         }
         return result;
     }

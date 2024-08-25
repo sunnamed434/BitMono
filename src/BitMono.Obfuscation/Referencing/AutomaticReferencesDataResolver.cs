@@ -11,9 +11,9 @@ public class AutomaticReferencesDataResolver : IReferencesDataResolver
         _costuraReferencesDataResolver = new CosturaReferencesDataResolver();
     }
 
-    public List<byte[]> Resolve(ModuleDefinition module)
+    public List<byte[]> Resolve(ModuleDefinition module, CancellationToken cancellationToken)
     {
-        var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module);
+        var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module, cancellationToken);
         costuraReferencesData.AddRange(_referencesData);
         return costuraReferencesData;
     }

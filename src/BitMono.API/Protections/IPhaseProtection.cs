@@ -1,5 +1,3 @@
 ﻿namespace BitMono.API.Protections;
 
-public interface IPhaseProtection : IProtection
-{
-}
+public interface IPhaseProtection : IProtection;

@@ -35,6 +35,16 @@ public static class ProtectionExtensions
             .GetType()
             .GetRuntimeMonikerAttributes();
     }
+    public static ConfigureForNativeCodeAttribute? GetConfigureForNativeCodeAttribute(this Type source, bool inherit = false)
+    {
+        return source.GetCustomAttribute<ConfigureForNativeCodeAttribute>(inherit);
+    }
+    public static ConfigureForNativeCodeAttribute? GetConfigureForNativeCodeAttribute(this IProtection source)
+    {
+        return source
+            .GetType()
+            .GetConfigureForNativeCodeAttribute();
+    }
     public static bool TryGetObsoleteAttribute(this Type source, out ObsoleteAttribute? attribute, bool inherit = false)
     {
         attribute = source.GetCustomAttribute<ObsoleteAttribute>(inherit);

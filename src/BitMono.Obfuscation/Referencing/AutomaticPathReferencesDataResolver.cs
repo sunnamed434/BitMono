@@ -11,11 +11,10 @@ public class AutomaticPathReferencesDataResolver : IReferencesDataResolver
         _costuraReferencesDataResolver = new CosturaReferencesDataResolver();
     }
 
-    [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
-    public List<byte[]> Resolve(ModuleDefinition module)
+    public List<byte[]> Resolve(ModuleDefinition module, CancellationToken cancellationToken)
     {
-        var referencesData = _referencesDataResolver.Resolve(module);
-        var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module);
+        var referencesData = _referencesDataResolver.Resolve(module, cancellationToken);
+        var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module, cancellationToken);
         if (costuraReferencesData.IsEmpty() == false)
         {
             referencesData.AddRange(costuraReferencesData);

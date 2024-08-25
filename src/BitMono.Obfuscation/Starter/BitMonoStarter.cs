@@ -1,8 +1,5 @@
 ﻿namespace BitMono.Obfuscation.Starter;
 
-[SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-[SuppressMessage("ReSharper", "IdentifierTypo")]
-[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class BitMonoStarter
 {
     private readonly IServiceProvider _serviceProvider;
@@ -35,7 +32,7 @@ public class BitMonoStarter
         var runtimeModule = ModuleDefinition.FromFile(typeof(Runtime.Data).Assembly.Location);
         var moduleFactoryResult = moduleFactory.Create();
         var bitMonoContextFactory = new BitMonoContextFactory(moduleFactoryResult.Module, referencesDataResolver, _obfuscationSettings);
-        var bitMonoContext = bitMonoContextFactory.Create(info.FilePath, info.OutputDirectoryPath);
+        var bitMonoContext = bitMonoContextFactory.Create(info.FilePath, info.OutputDirectoryPath, cancellationToken);
         var engineContextFactory = new StarterContextFactory(moduleFactoryResult, runtimeModule, bitMonoContext, cancellationToken);
         var engineContext = engineContextFactory.Create();
         _engineContextAccessor.Instance = engineContext;

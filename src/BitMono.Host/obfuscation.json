@@ -67,6 +67,10 @@
   // Set to true indicates whether enabled
   "OutputRuntimeMonikerWarnings": true,
 
+  // Output warnings saying that protection is requires native code configuration
+  // Set to true indicates whether enabled
+  "OutputConfigureForNativeCodeWarnings": true,
+
   // Opens directory with protected file in file explorer in top of the screen, if set to true
   "OpenFileDestinationInFileExplorer": true,
 

@@ -8,9 +8,9 @@
 [![MIT License][image_license]][license]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
-BitMono is a free, open-source C# obfuscator designed mainly for Mono, a version of the .NET framework used by Unity and other platforms. You can use it with the full .NET framework, but some features might not work as expected. Some protections work with .NET Core but not Mono.
+BitMono is a free, open-source C# obfuscator that was initially designed and intended mainly for Mono, however, now you're feel free to use it for any .NET app, but, be careful some protections work on .NET Framework, some on .NET, some on Mono, some on Unity only.
 
-BitMono uses [AsmResolver][asmresolver] instead of dnlib for handling assemblies. If you have questions or issues, please let us know [here][bitmono_issues]. Download the latest version of BitMono [here][bitmono_releases].
+BitMono uses [AsmResolver][asmresolver] instead of [dnlib][dnlib] (which we used in the past) for handling assemblies. If you have questions or issues, please let us know [here][bitmono_issues]. Download the latest version of BitMono [here][bitmono_releases].
 
 You can also use BitMono as an engine to build custom obfuscators. It is built using dependency injection (DI) using Autofac and follows the latest C# best practices.
 
@@ -82,6 +82,16 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * and you can integrate existing/make own feature ;)
 
 ## Usage
+
+### Download
+
+Go and get [Latest BitMono Release][bitmono_latest_release] and download preferred archive file, and make sure to select the similar or same Target Framework of the app that you are going to protect, for example:
+
+- Your Target File is for .NET 8 then use BitMono for .NET 8 `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
+- Your Target File is for .netstandard then use BitMono for .NET Framework or .NET 8 `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
+- Your Target File is .NET Framework then use BitMono for .NET Framework `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
+
+If you select wrong BitMono build you have a risk that your file going to be protected incorrectly, because you use different target framework build.
 
 ### Pre-Require
 
@@ -188,6 +198,7 @@ Credits
 [license]: https://github.com/sunnamed434/BitMono/blob/main/LICENSE
 [previews]: https://github.com/sunnamed434/BitMono/blob/main/PREVIEWS.md
 [asmresolver]: https://github.com/Washi1337/AsmResolver
+[dnlib]: https://github.com/0xd4d/dnlib
 [bitmono_issues]: https://github.com/sunnamed434/BitMono/issues
 [bitmono_releases]: https://github.com/sunnamed434/BitMono/releases
 [bitmono_docs]: https://bitmono.readthedocs.io/en/latest/
@@ -207,6 +218,7 @@ Credits
 [author_kao_blog]: https://lifeinhex.com/
 [author_drakonia]: https://github.com/dr4k0nia
 [author_sunnamed434]: https://github.com/sunnamed434
+[bitmono_latest_release]: https://github.com/sunnamed434/BitMono/releases/latest
 [bitmono_discord]: https://discord.gg/sFDHd47St4
 
 [troubleshooting]: https://github.com/sunnamed434/BitMono/blob/main/troubleshooting.md
