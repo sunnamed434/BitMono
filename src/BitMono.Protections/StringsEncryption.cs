@@ -19,7 +19,7 @@ public class StringsEncryption : Protection
         var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
 
         var runtimeDecryptorType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
-        var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(c => c.Name!.Equals(nameof(Decryptor.Decrypt)));
+        var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(x => x.Name!.Equals(nameof(Decryptor.Decrypt)));
         var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
         var memberCloneResult = new MemberCloner(Context.Module, listener)
             .Include(runtimeDecryptorType)
@@ -29,25 +29,35 @@ public class StringsEncryption : Protection
 
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.CilMethodBody is { } body)
+            if (method.CilMethodBody is not { } body)
             {
-                for (var i = 0; i < body.Instructions.Count; i++)
-                {
-                    if (body.Instructions[i].OpCode.Equals( CilOpCodes.Ldstr) && body.Instructions[i].Operand is string content)
-                    {
-                        var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
-                        var arrayName = _renamer.RenameUnsafely();
-                        var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
+                continue;
+            }
 
-                        body.Instructions[i].ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
-                        body.Instructions.InsertRange(i + 1, new CilInstruction[]
-                        {
-                            new(CilOpCodes.Ldsfld, saltBytesField),
-                            new(CilOpCodes.Ldsfld, cryptKeyField),
-                            new(CilOpCodes.Call, decryptMethod),
-                        });
-                    }
+            var instructions = body.Instructions;
+            for (var i = 0; i < instructions.Count; i++)
+            {
+                var instruction = instructions[i];
+                if (instruction.OpCode.Equals(CilOpCodes.Ldstr) == false)
+                {
+                    continue;
                 }
+                if (instruction.Operand is not string content)
+                {
+                    continue;
+                }
+
+                var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
+                var arrayName = _renamer.RenameUnsafely();
+                var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
+
+                instruction.ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
+                instructions.InsertRange(i + 1,
+                [
+                    new CilInstruction(CilOpCodes.Ldsfld, saltBytesField),
+                    new CilInstruction(CilOpCodes.Ldsfld, cryptKeyField),
+                    new CilInstruction(CilOpCodes.Call, decryptMethod)
+                ]);
             }
         }
         return Task.CompletedTask;

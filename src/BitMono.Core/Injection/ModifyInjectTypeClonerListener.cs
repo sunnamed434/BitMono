@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Injection;
 
-[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
 {
     public ModifyInjectTypeClonerListener(ModifyFlags modify, Renamer renamer, ModuleDefinition targetModule) : base(targetModule)
@@ -27,9 +26,9 @@ public class ModifyInjectTypeClonerListener : InjectTypeClonerListener
             if (cloned is MethodDefinition method)
             {
                 var parameterDefinitions = method.ParameterDefinitions;
-                for (var i = 0; i < parameterDefinitions.Count; i++)
+                foreach (var parameter in parameterDefinitions)
                 {
-                    parameterDefinitions[i].Name = string.Empty;
+                    parameter.Name = string.Empty;
                 }
             }
         }
