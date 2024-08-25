@@ -147,7 +147,7 @@ public class BitMonoObfuscator
             return;
         }
 
-        _protectionsConfigureForNativeCodeNotifier.Notify(_protectionsSort);
+        _protectionsConfigureForNativeCodeNotifier.Notify(_protectionsSort, _context.CancellationToken);
 
         var module = _context.Module;
         module.IsILOnly = false;
