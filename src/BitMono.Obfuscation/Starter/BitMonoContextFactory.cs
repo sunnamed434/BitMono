@@ -14,9 +14,9 @@ public class BitMonoContextFactory
         _obfuscationSettings = obfuscationSettings;
     }
 
-    public BitMonoContext Create(string filePath, string outputDirectoryName)
+    public BitMonoContext Create(string filePath, string outputDirectoryName, CancellationToken cancellationToken)
     {
-        var referencesData = _referencesDataResolver.Resolve(_module);
+        var referencesData = _referencesDataResolver.Resolve(_module, cancellationToken);
         var fileName = Path.GetFileName(filePath);
         return new BitMonoContext
         {

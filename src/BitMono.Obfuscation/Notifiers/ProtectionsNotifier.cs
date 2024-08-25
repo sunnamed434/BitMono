@@ -34,12 +34,12 @@ public class ProtectionsNotifier
             stringBuilder.Append(", ");
             stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(x => x.GetName())));
         }
-        var enabledProtectionsCount = protectionsSort.SortedProtections.Count()
-                                      + protectionsSort.Pipelines.Count()
-                                      + protectionsSort.Packers.Count();
+        var enabledProtectionsCount = protectionsSort.SortedProtections.Count
+                                      + protectionsSort.Pipelines.Count
+                                      + protectionsSort.Packers.Count;
         _logger.Information("({0}) Enabled protection(s): {1}", enabledProtectionsCount, stringBuilder.ToString());
-        var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, protectionsSort, _logger);
-        runtimeMonikerNotifier.Notify(cancellationToken);
+        var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, _logger);
+        runtimeMonikerNotifier.Notify(protectionsSort, cancellationToken);
         if (protectionsSort.DeprecatedProtections.Any())
         {
             _logger.Warning("Skip deprecated protection(s): {0}", string.Join(", ", protectionsSort.DeprecatedProtections.Select(p => p?.GetName())));

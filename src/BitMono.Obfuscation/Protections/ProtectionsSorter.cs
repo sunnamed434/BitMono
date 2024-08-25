@@ -14,36 +14,44 @@ public class ProtectionsSorter
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
     {
-        var protectionsResolve = new ProtectionsResolver(protections, protectionSettings)
-            .Sort();
+        var protectionsResolve = new ProtectionsResolver(protections, protectionSettings).Sort();
         var obfuscationAttributeProtections =
-            protectionsResolve.FoundProtections.Where(p =>
-                _obfuscationAttributeResolver.Resolve(p.GetName(), _assemblyDefinition));
+            protectionsResolve.FoundProtections.Where(x =>
+                _obfuscationAttributeResolver.Resolve(x.GetName(), _assemblyDefinition));
         var deprecatedProtections =
-            protectionsResolve.FoundProtections.Where(p => p.TryGetObsoleteAttribute(out _));
+            protectionsResolve.FoundProtections.Where(x => x.TryGetObsoleteAttribute(out _));
         var sortedProtections = protectionsResolve.FoundProtections
             .Except(obfuscationAttributeProtections)
             .Except(deprecatedProtections);
         var pipelineProtections = sortedProtections
-            .Where(p => p is IPipelineProtection)
+            .Where(x => x is IPipelineProtection)
             .Cast<IPipelineProtection>();
         var packers = sortedProtections
-            .Where(p => p is IPacker)
+            .Where(x => x is IPacker)
             .Cast<IPacker>();
         sortedProtections = sortedProtections
             .Except(packers)
             .Except(pipelineProtections);
+        var allProtections = sortedProtections.Concat(pipelineProtections).Concat(packers);
+
+        var configureForNativeCodeProtections = allProtections.Where(
+            x => x.GetConfigureForNativeCodeAttribute() != null);
+        var runtimeMonikerProtections = allProtections
+            .Select(x => (x, x.GetRuntimeMonikerAttributes()))
+            .Where(x => x.Item2.Any());
 
         var hasProtections = sortedProtections.IsEmpty() == false || packers.IsEmpty() == false;
-        return new ProtectionsSort
-        {
-            ProtectionsResolve = protectionsResolve,
-            SortedProtections = sortedProtections,
-            Pipelines = pipelineProtections,
-            Packers = packers,
-            ObfuscationAttributeExcludeProtections = obfuscationAttributeProtections,
-            DeprecatedProtections = deprecatedProtections,
-            HasProtections = hasProtections
-        };
+
+        return new ProtectionsSort(
+            protectionsResolve,
+            allProtections.ToList(),
+            sortedProtections.ToList(),
+            pipelineProtections.ToList(),
+            packers.ToList(),
+            obfuscationAttributeProtections.ToList(),
+            deprecatedProtections.ToList(),
+            configureForNativeCodeProtections.ToList(),
+            runtimeMonikerProtections.ToList(),
+            hasProtections);
     }
 }

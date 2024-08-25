@@ -2,5 +2,5 @@
 
 public interface IReferencesDataResolver
 {
-    List<byte[]> Resolve(ModuleDefinition module);
+    List<byte[]> Resolve(ModuleDefinition module, CancellationToken cancellationToken);
 }

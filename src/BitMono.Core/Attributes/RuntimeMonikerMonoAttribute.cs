@@ -5,7 +5,7 @@ namespace BitMono.Core.Attributes;
 /// <remarks>i.e if you see this attribute on protection then only specified attributes are the supported runtime monikers for the protection.
 /// If you don't see any of the attributes then it works everywhere, also, users will get a message via <see cref="RuntimeMonikerAttribute.GetMessage"/></remarks>
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public class RuntimeMonikerMonoAttribute : RuntimeMonikerAttribute
 {
     public RuntimeMonikerMonoAttribute() : base(KnownRuntimeMonikers.Mono)

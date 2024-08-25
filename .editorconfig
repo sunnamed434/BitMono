@@ -12,3 +12,11 @@ indent_style = space
 [*.{proj,csproj,vbproj,props,targets,resx,vsixmanifest}]
 indent_size = 2
 indent_style = space
+
+[*.cs]
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0290
+csharp_style_prefer_primary_constructors = false
+dotnet_diagnostic.IDE0290.severity = none
+
+# https://www.jetbrains.com/help/rider/ConvertToPrimaryConstructor.html
+resharper_convert_to_primary_constructor_highlighting = none 

@@ -13,7 +13,6 @@ public static class ModuleDefinitionExtensions
         throw new ArgumentException($"Unable to resolve member {type.FullName}");
     }
     [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
-    [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
     public static List<IMetadataMember> FindMembers(this ModuleDefinition source)
     {
         var members = new List<IMetadataMember>();
