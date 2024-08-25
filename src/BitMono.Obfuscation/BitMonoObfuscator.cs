@@ -6,11 +6,12 @@ public class BitMonoObfuscator
     private readonly StarterContext _context;
     private readonly IDataWriter _dataWriter;
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly InvokablePipeline _invokablePipeline;
+    private readonly InvokablePipeline _pipeline;
     private readonly ObfuscationAttributeResolver _obfuscationAttributeResolver;
     private readonly ObfuscationAttributesStripper _obfuscationAttributesStripper;
     private readonly ObfuscationAttributesStripNotifier _obfuscationAttributesStripNotifier;
     private readonly ProtectionsNotifier _protectionsNotifier;
+    private readonly ProtectionsConfigureForNativeCodeNotifier _protectionsConfigureForNativeCodeNotifier;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
     private readonly ILogger _logger;
     private ProtectionsSort? _protectionsSort;
@@ -28,7 +29,7 @@ public class BitMonoObfuscator
         _context = context;
         _dataWriter = dataWriter;
         _obfuscationSettings = obfuscationSettings;
-        _invokablePipeline = new InvokablePipeline();
+        _pipeline = new InvokablePipeline();
         _obfuscationAttributeResolver = _serviceProvider.GetRequiredService<ObfuscationAttributeResolver>();
         var obfuscateAssemblyAttributeResolver = _serviceProvider.GetRequiredService<ObfuscateAssemblyAttributeResolver>();
         _obfuscationAttributesStripper = new ObfuscationAttributesStripper(
@@ -36,6 +37,7 @@ public class BitMonoObfuscator
         _logger = logger.ForContext<BitMonoObfuscator>();
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
         _protectionsNotifier = new ProtectionsNotifier(_obfuscationSettings, _logger);
+        _protectionsConfigureForNativeCodeNotifier = new ProtectionsConfigureForNativeCodeNotifier(_obfuscationSettings, _logger);
         _protectionExecutionNotifier = new ProtectionExecutionNotifier(_logger);
     }
 
@@ -43,23 +45,24 @@ public class BitMonoObfuscator
     {
         _context.ThrowIfCancellationRequested();
 
-        _invokablePipeline.OnFail += OnFailHandleAsync;
+        _pipeline.OnFail += OnFailHandleAsync;
 
-        await _invokablePipeline.InvokeAsync(OutputLoadedModule);
-        await _invokablePipeline.InvokeAsync(OutputBitMonoInfo);
-        await _invokablePipeline.InvokeAsync(OutputCompatibilityIssues);
-        await _invokablePipeline.InvokeAsync(SortProtections);
-        await _invokablePipeline.InvokeAsync(OutputProtectionsAsync);
-        await _invokablePipeline.InvokeAsync(StartTimeCounter);
-        await _invokablePipeline.InvokeAsync(ResolveDependencies);
-        await _invokablePipeline.InvokeAsync(ExpandMacros);
-        await _invokablePipeline.InvokeAsync(RunProtectionsAsync);
-        await _invokablePipeline.InvokeAsync(OptimizeMacros);
-        await _invokablePipeline.InvokeAsync(StripObfuscationAttributes);
-        await _invokablePipeline.InvokeAsync(CreatePEImage);
-        await _invokablePipeline.InvokeAsync(WriteModuleAsync);
-        await _invokablePipeline.InvokeAsync(PackAsync);
-        await _invokablePipeline.InvokeAsync(OutputElapsedTime);
+        await _pipeline.InvokeAsync(OutputLoadedModule);
+        await _pipeline.InvokeAsync(OutputBitMonoInfo);
+        await _pipeline.InvokeAsync(OutputCompatibilityIssues);
+        await _pipeline.InvokeAsync(SortProtections);
+        await _pipeline.InvokeAsync(OutputProtectionsAsync);
+        await _pipeline.InvokeAsync(ConfigureForNativeCode);
+        await _pipeline.InvokeAsync(StartTimeCounter);
+        await _pipeline.InvokeAsync(ResolveDependencies);
+        await _pipeline.InvokeAsync(ExpandMacros);
+        await _pipeline.InvokeAsync(RunProtectionsAsync);
+        await _pipeline.InvokeAsync(OptimizeMacros);
+        await _pipeline.InvokeAsync(StripObfuscationAttributes);
+        await _pipeline.InvokeAsync(CreatePEImage);
+        await _pipeline.InvokeAsync(WriteModuleAsync);
+        await _pipeline.InvokeAsync(PackAsync);
+        await _pipeline.InvokeAsync(OutputElapsedTime);
     }
 
     private void OutputLoadedModule()
@@ -89,11 +92,11 @@ public class BitMonoObfuscator
     /// but BitMono is running on .NET Core, or vice versa.
     /// See more info: https://bitmono.readthedocs.io/en/latest/obfuscationissues/corlib-not-found.html
     /// </summary>
-    private bool OutputCompatibilityIssues()
+    private void OutputCompatibilityIssues()
     {
         if (_context.Module.Assembly!.TryGetTargetFramework(out var targetAssemblyRuntime) == false)
         {
-            return true;
+            return;
         }
         if (targetAssemblyRuntime.IsNetCoreApp && DotNetRuntimeInfoEx.IsNetFramework())
         {
@@ -101,7 +104,7 @@ public class BitMonoObfuscator
                 "The module is built for .NET (Core), but you're using a version of BitMono intended for .NET Framework." +
                 " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
                 "or switch to a .NET Core build of BitMono.");
-            return true;
+            return;
         }
         if (targetAssemblyRuntime.IsNetFramework && DotNetRuntimeInfoEx.IsNetCoreOrLater())
         {
@@ -109,8 +112,8 @@ public class BitMonoObfuscator
                 "The module is built for .NET Framework, but you're using a version of BitMono intended for .NET (Core)." +
                 " To avoid potential issues, ensure the target framework matches the BitMono framework, " +
                 "or switch to a .NET Framework build of BitMono.");
+            return;
         }
-        return true;
     }
     private bool SortProtections()
     {
@@ -136,6 +139,31 @@ public class BitMonoObfuscator
         }
         _protectionsNotifier.Notify(_protectionsSort, _context.CancellationToken);
         return true;
+    }
+    private void ConfigureForNativeCode()
+    {
+        if (_protectionsSort!.ConfigureForNativeCodeProtections.Any() == false)
+        {
+            return;
+        }
+
+        _protectionsConfigureForNativeCodeNotifier.Notify(_protectionsSort);
+
+        var module = _context.Module;
+        module.IsILOnly = false;
+        var x64 = module.MachineType == MachineType.Amd64;
+        if (x64)
+        {
+            module.PEKind = OptionalHeaderMagic.PE32Plus;
+            module.MachineType = MachineType.Amd64;
+            module.IsBit32Required = false;
+        }
+        else
+        {
+            module.PEKind = OptionalHeaderMagic.PE32;
+            module.MachineType = MachineType.I386;
+            module.IsBit32Required = true;
+        }
     }
     private void StartTimeCounter()
     {
@@ -171,7 +199,7 @@ public class BitMonoObfuscator
         }
         return true;
     }
-    private bool ExpandMacros()
+    private void ExpandMacros()
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
@@ -184,9 +212,8 @@ public class BitMonoObfuscator
 
             body.Instructions.ExpandMacros();
         }
-        return true;
     }
-    private async Task<bool> RunProtectionsAsync()
+    private async Task RunProtectionsAsync()
     {
         _logger.Information("Executing Protections... this could take for a while...");
         if (_protectionsSort == null)
@@ -215,9 +242,8 @@ public class BitMonoObfuscator
                 _protectionExecutionNotifier.Notify(phase);
             }
         }
-        return true;
     }
-    private bool OptimizeMacros()
+    private void OptimizeMacros()
     {
         foreach (var method in _context.Module.FindMembers().OfType<MethodDefinition>())
         {
@@ -225,12 +251,11 @@ public class BitMonoObfuscator
 
             if (method.CilMethodBody is not { } body)
             {
-                return true;
+                continue;
             }
 
             body.Instructions.OptimizeMacros();
         }
-        return true;
     }
     private void StripObfuscationAttributes()
     {

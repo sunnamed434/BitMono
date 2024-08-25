@@ -17,6 +17,7 @@ public class ObfuscationSettings
     public bool OutputPEImageBuildErrors { get; set; }
     public bool FailOnNoRequiredDependency { get; set; }
     public bool OutputRuntimeMonikerWarnings { get; set; }
+    public bool OutputConfigureForNativeCodeWarnings { get; set; }
     public bool OpenFileDestinationInFileExplorer { get; set; }
     public bool SpecificNamespacesObfuscationOnly { get; set; }
     public string[]? SpecificNamespaces { get; set; }

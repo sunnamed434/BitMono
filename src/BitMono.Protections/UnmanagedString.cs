@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[ConfigureForNativeCode]
 [RuntimeMonikerNETCore]
 [RuntimeMonikerNETFramework]
 public class UnmanagedString : Protection
@@ -10,8 +11,6 @@ public class UnmanagedString : Protection
 
     public override Task ExecuteAsync()
     {
-        Context.ConfigureForNativeCode();
-
         var moduleImporter = Context.ModuleImporter;
         var stringSbytePointerCtor =
             moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*) })!);

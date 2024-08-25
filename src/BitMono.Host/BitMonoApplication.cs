@@ -8,7 +8,7 @@ public class BitMonoApplication : IApplication
     public BitMonoApplication()
     {
         _containerBuilder = new ContainerBuilder();
-        _modules = new List<IModule>();
+        _modules = [];
     }
 
     public IApplication Populate(IEnumerable<ServiceDescriptor> descriptors)
