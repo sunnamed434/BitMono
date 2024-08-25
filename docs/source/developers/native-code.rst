@@ -7,7 +7,7 @@ If you want to use a native code in the protection you must do the following:
 .. code-block:: csharp
 
     [ConfigureForNativeCode] // Add this attribute on top of the protection class
-	public class CustomProtection : Protection
+    public class CustomProtection : Protection
 
 
 A good example is ``UnmanagedString`` protection. It uses native code to encrypt strings. You can find the source code in the ``UnmanagedString`` file.
