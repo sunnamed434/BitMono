@@ -46,6 +46,7 @@ Table of Contents:
    developers/native-code
    developers/do-not-resolve-members
    developers/configuration
+   developers/obfuscate-build
 
 
 .. toctree::
