@@ -80,6 +80,8 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * BitDateTimeStamp
 * BitMono
 * BillionNops
+* AntiDe4dot
+* AntiILdasm
 * and you can integrate existing/make own feature ;)
 
 ## Usage
@@ -96,7 +98,7 @@ If you select wrong BitMono build you have a risk that your file going to be pro
 
 ### Pre-Require
 
-Set one of setting from `protections.json` to `true`.
+Enable one of the protection in `protections.json` file: Set `Enabled` to `true`.
 
 ### Using CLI
 
