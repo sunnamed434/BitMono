@@ -79,7 +79,7 @@ internal class Program
         catch (OperationCanceledException)
         {
             Console.WriteLine("Obfuscation Canceled!");
-            statusCode = KnownReturnStatuses.Cancel;
+            statusCode = KnownReturnStatuses.Failure;
         }
         catch (Exception ex)
         {
