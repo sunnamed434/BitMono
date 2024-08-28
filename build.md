@@ -1,6 +1,6 @@
 ## Binaries
 
-First of all, if you just need the compiled binaries simply install them [right here][releases] - open the dropdown button `Assets`, and select the preferred archive.
+If you just need the compiled binaries simply install them [from releases][releases] - open the dropdown button `Assets`, and select the preferred archive, these binaries were made automatically via CI/CD pipeline. 
 
 ### Compiling
 
