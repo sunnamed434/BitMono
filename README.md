@@ -88,13 +88,24 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 
 ### Download
 
-Go and get [Latest BitMono Release][bitmono_latest_release] and download preferred archive file, and make sure to select the similar or same Target Framework of the app that you are going to protect, for example:
+To download the latest release of BitMono, follow these steps:
 
-- Your Target File is for .NET 8 then use BitMono for .NET 8 `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
-- Your Target File is for .netstandard then use BitMono for .NET Framework or .NET 8 `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
-- Your Target File is .NET Framework then use BitMono for .NET Framework `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
+1. Go to the [Latest BitMono Release][bitmono_latest_release].
+2. Select and download the archive file that matches the Target Framework of the application you want to protect. Here are some examples:
 
-If you select wrong BitMono build you have a risk that your file going to be protected incorrectly, because you use different target framework build.
+- **Targeting .NET 8**: If your target file is built for .NET 8, download:  
+  `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
+  
+- **Targeting .NET Standard**: If your target file is built for .NET Standard, you can use either BitMono for .NET Framework or .NET 8:  
+  `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
+  
+- **Targeting .NET Framework**: If your target file is built for .NET Framework, download:  
+  `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
+  
+- **Targeting Mono or Unity Engine Runtime**: If your target file is built for .NET Framework and runs on Mono or Unity, use the .NET Framework version:  
+  `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
+
+> **Note:** Be sure to select the correct version of BitMono that matches your Target Framework. Using the wrong version could result in compatibility issues.
 
 ### Pre-Require
 
