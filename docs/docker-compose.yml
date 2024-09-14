@@ -1,0 +1,9 @@
+services:
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bitmono-docs-image:latest
+    ports:
+      - "8000:8000"
+    entrypoint: ["sh", "-c", "echo 'Documentation is available at http://localhost:8000' && python -m http.server 8000 --directory build"]
