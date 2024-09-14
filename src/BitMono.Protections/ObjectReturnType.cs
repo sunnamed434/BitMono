@@ -7,7 +7,6 @@ public class ObjectReturnType : Protection
     {
     }
 
-    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync()
     {
         var factory = Context.Module.CorLibTypeFactory;
@@ -15,17 +14,24 @@ public class ObjectReturnType : Protection
         var systemObject = factory.Object;
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.Signature != null && method.Signature.ReturnsValueOf(systemBoolean))
+            if (method.Signature == null)
             {
-                if (method is { IsConstructor: false, IsVirtual: false, IsSetMethod: false, IsGetMethod: false }
-                    && method.NotAsync())
-                {
-                    if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn) == false)
-                    {
-                        method.Signature.ReturnType = systemObject;
-                    }
-                }
+                continue;
             }
+            if (method.Signature.Returns(systemBoolean) == false)
+            {
+                continue;
+            }
+            if (method.IsConstructor || method.IsVirtual || method.IsSetMethod || method.IsGetMethod || method.IsAsync())
+            {
+                continue;
+            }
+            if (method.ParameterDefinitions.Any(p => p.IsOut || p.IsIn))
+            {
+                continue;
+            }
+
+            method.Signature.ReturnType = systemObject;
         }
         return Task.CompletedTask;
     }

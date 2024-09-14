@@ -6,11 +6,11 @@ public static class MethodDefinitionExtensions
     {
         foreach (var type in source.Module.GetAllTypes())
         {
-            foreach (var nestedType in type.NestedTypes.Where(n => n.Name.StartsWith("<")))
+            foreach (var nestedType in type.NestedTypes.Where(x => x.Name.StartsWith("<")))
             {
                 if (nestedType.IsValueType
                     && nestedType.Attributes == TypeAttributes.AutoLayout
-                    && nestedType.Interfaces.Any(i => i.Interface.Name.Equals(nameof(IAsyncStateMachine)))
+                    && nestedType.Interfaces.Any(x => x.Interface.Name.Equals(nameof(IAsyncStateMachine)))
                     && nestedType.Name.Contains(source.Name))
                 {
                     return true;
@@ -23,19 +23,11 @@ public static class MethodDefinitionExtensions
     {
         return source.IsAsync() == false;
     }
-    public static bool IsGetterAndSetter(this MethodDefinition source)
-    {
-        return source.IsGetMethod == true && source.IsSetMethod == true;
-    }
-    public static bool NotGetterAndSetter(this MethodDefinition source)
-    {
-        return source.IsGetMethod == false && source.IsSetMethod == false;
-    }
     public static bool HasParameters(this MethodDefinition source)
     {
         return source.Parameters.Any();
     }
-    public static bool ReturnsValueOf(this MethodSignature source, TypeSignature typeSignature)
+    public static bool Returns(this MethodSignature source, TypeSignature typeSignature)
     {
         return source.ReturnType.Equals(typeSignature);
     }

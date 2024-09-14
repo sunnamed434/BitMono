@@ -11,10 +11,12 @@ public class NoNamespaces : Protection
     {
         foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
-            if (type.HasNamespace())
+            if (type.HasNamespace() == false)
             {
-                type.Namespace = string.Empty;
+                continue;
             }
+
+            type.Namespace = string.Empty;
         }
         return Task.CompletedTask;
     }
