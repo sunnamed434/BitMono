@@ -11,3 +11,8 @@ python:
 
 sphinx:
   configuration: docs/source/conf.py
+
+formats:
+  - pdf
+  - epub
+  - html
