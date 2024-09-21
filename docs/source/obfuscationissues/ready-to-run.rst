@@ -25,7 +25,7 @@ Simply go to your `.csproj` file, add the `PublishReadyToRun` option and set it 
 
 Now, build the project and use `.dll` file that has a managed code, instead of native code.
 
-`For more information, visit: <https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run>`_
+For more information `see here <https://learn.microsoft.com/en-us/dotnet/core/deploying/ready-to-run>`_
 
 Use .dll File with Managed Code Instead of .exe File
 ----------------------------------------------------
