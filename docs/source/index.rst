@@ -57,6 +57,7 @@ Table of Contents:
    obfuscationissues/corlib-not-found
    obfuscationissues/intended-for
    obfuscationissues/compatibility
+   obfuscationissues/ready-to-run
 
 
 .. toctree::

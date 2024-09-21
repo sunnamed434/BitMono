@@ -15,3 +15,9 @@ Restarting the Container:
 2. To restart the container and apply any changes, execute:
    docker-compose up --build
 3. Refresh the browser page at http://localhost:8000 to see the latest updates.
+
+To edit/update docs:
+Prerequisites:
+- Use Visual Studio Code, or any other tool. https://code.visualstudio.com/
+
+Go to `source` folder and do your magic!
