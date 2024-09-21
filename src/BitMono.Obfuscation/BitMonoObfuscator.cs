@@ -115,7 +115,7 @@ public class BitMonoObfuscator
             return;
         }
     }
-    private bool SortProtections()
+    private void SortProtections()
     {
         var protectionSettings = _serviceProvider.GetRequiredService<IOptions<ProtectionSettings>>().Value.Protections!;
         var protections = _serviceProvider
@@ -125,10 +125,8 @@ public class BitMonoObfuscator
         _protectionsSort = protectionsSorter.Sort(protections, protectionSettings);
         if (_protectionsSort.HasProtections == false)
         {
-            _logger.Fatal("No one protection were detected, please specify or enable them in protections.json!");
-            return false;
+            throw new Exception("No protections were detected. Please specify or enable them in `protections.json` file.");
         }
-        return true;
     }
     private bool OutputProtectionsAsync()
     {

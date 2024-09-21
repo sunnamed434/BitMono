@@ -16,7 +16,7 @@ public static class AutofacContainerBuilderExtensions
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         source.RegisterAssemblyTypes(assemblies)
             .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IPhaseProtection)) == null && t.GetInterface(nameof(IProtection)) != null)
+            .Where(x => x.GetInterface(nameof(IPhaseProtection)) == null && x.GetInterface(nameof(IProtection)) != null)
             .OwnedByLifetimeScope()
             .AsImplementedInterfaces()
             .SingleInstance();
