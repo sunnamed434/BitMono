@@ -31,3 +31,8 @@ Use .dll File with Managed Code Instead of .exe File
 ----------------------------------------------------
 
 Usually, in the output folder of your project (if it's a `.exe`), there should be a `.dll` file with managed code. Use this `.dll` file for obfuscation instead, if there's no such file or it has a native code then use upper solution.
+
+Didn't Help?
+------------
+
+If none of the solutions worked, it likely means your file is either protected or broken. If this isn't the case, please open an issue on the BitMono GitHub repository or reach out to us on Discord for further assistance.
