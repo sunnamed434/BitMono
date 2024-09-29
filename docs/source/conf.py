@@ -3,7 +3,7 @@
 # -- Project information
 
 project = 'BitMono'
-copyright = '2023, BitMono'
+copyright = '2022-2024, BitMono'
 author = 'sunnamed434'
 
 release = '0.1'

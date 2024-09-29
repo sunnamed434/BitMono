@@ -33,6 +33,14 @@ Table of Contents:
    protections/nonamespaces
    protections/billionnops
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Protection List
+   :name: sec-protection-list
+
+   protection-list/overview
+   protection-list/unity
+
 
 .. toctree::
    :maxdepth: 1
