@@ -10,20 +10,21 @@ public class StringsEncryption : Protection
         _renamer = renamer;
     }
 
-    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync()
     {
-        var globalModuleType = Context.Module.GetOrCreateModuleType();
-        MscorlibInjector.InjectCompilerGeneratedValueType(Context.Module, globalModuleType, _renamer.RenameUnsafely());
-        var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
-        var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
+        var module = Context.Module;
+        var globalModuleType = module.GetOrCreateModuleType();
+        MscorlibInjector.InjectCompilerGeneratedValueType(module, globalModuleType, _renamer.RenameUnsafely());
+        var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
+        var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
 
-        var runtimeDecryptorType = Context.RuntimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
+        var runtimeModule = Context.RuntimeModule;
+        var runtimeDecryptorType = runtimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
         var runtimeDecryptMethod = runtimeDecryptorType.Methods.Single(x => x.Name!.Equals(nameof(Decryptor.Decrypt)));
-        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, Context.Module);
-        var memberCloneResult = new MemberCloner(Context.Module, listener)
+        var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, module);
+        var memberCloneResult = new MemberCloner(module, listener)
             .Include(runtimeDecryptorType)
-            .Clone();
+            .CloneSafely(module, runtimeModule);
 
         var decryptMethod = memberCloneResult.GetClonedMember(runtimeDecryptMethod);
 
@@ -49,7 +50,7 @@ public class StringsEncryption : Protection
 
                 var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
                 var arrayName = _renamer.RenameUnsafely();
-                var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(Context.Module, globalModuleType, data, arrayName);
+                var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, data, arrayName);
 
                 instruction.ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                 instructions.InsertRange(i + 1,
