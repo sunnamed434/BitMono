@@ -16,6 +16,7 @@ global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;
 global using System.Runtime.Versioning;
 global using System.Text;
+global using AsmResolver.DotNet.Cloning;
 global using AsmResolver.DotNet.Signatures;
 global using AsmResolver.DotNet.Signatures.Parsing;
 global using TypeAttributes = AsmResolver.PE.DotNet.Metadata.Tables.TypeAttributes;

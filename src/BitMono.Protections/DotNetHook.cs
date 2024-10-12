@@ -20,7 +20,7 @@ public class DotNetHook : Protection
         var listener = new ModifyInjectTypeClonerListener(ModifyFlags.All, _renamer, module);
         var memberCloneResult = new MemberCloner(module, listener)
             .Include(runtimeHookingType)
-            .Clone();
+            .CloneSafely(module, runtimeModule);
         var redirectStubMethod = memberCloneResult.GetClonedMember(runtimeRedirectStubMethod);
 
         var factory = module.CorLibTypeFactory;
