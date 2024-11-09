@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         target-framework: [net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
-        runtime: [linux-x64, win-x64]
+        runtime: [linux-x64, win-x64, linux-arm64, win-arm64, osx-x64, osx-arm64]
 
     steps:
       - name: Checkout code
@@ -45,11 +45,18 @@ jobs:
           runtime_version: ${{ matrix.runtime }}
           github_token: ${{ secrets.PAT }}
 
-      - name: Install zip
-        run: sudo apt-get install zip
+      - name: Install zip (for Linux/macOS)
+        run: |
+          if [[ "${{ matrix.runtime }}" == "linux-x64" || "${{ matrix.runtime }}" == "linux-arm64" ]]; then
+            sudo apt-get install zip
+          elif [[ "${{ matrix.runtime }}" == "osx-x64" || "${{ matrix.runtime }}" == "osx-arm64" ]]; then
+            brew install zip
+          fi
 
       - name: Zip artifacts
-        run: "cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *"
+        run: |
+          cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && \
+          zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *
 
       - name: Upload build
         uses: actions/upload-artifact@v4 # There were problems with v4 + matrix, but now it seems to be working ok, see here: see: https://github.com/actions/upload-artifact/issues/478
