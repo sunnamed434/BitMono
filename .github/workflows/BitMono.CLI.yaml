@@ -48,9 +48,12 @@ jobs:
       - name: Install zip (for Linux/macOS)
         run: |
           if [[ "${{ matrix.runtime }}" == "linux-x64" || "${{ matrix.runtime }}" == "linux-arm64" ]]; then
-            sudo apt-get install zip
+            sudo apt-get install -y zip
           elif [[ "${{ matrix.runtime }}" == "osx-x64" || "${{ matrix.runtime }}" == "osx-arm64" ]]; then
-            brew install zip
+            if ! command -v zip &> /dev/null; then
+              echo "zip is not available on this macOS runner, and it should be pre-installed."
+              exit 1
+            fi
           fi
 
       - name: Zip artifacts
