@@ -9,11 +9,13 @@ on:
     paths:
       - '.github/workflows/BitMono.Obfuscation.yaml'
       - 'src/BitMono.Obfuscation/**'
+      - 'src/props/**'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/workflows/BitMono.Obfuscation.yaml'
       - 'src/BitMono.Obfuscation/**'
+      - 'src/props/**'
 
 jobs:
   build:

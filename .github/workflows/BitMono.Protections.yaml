@@ -9,11 +9,13 @@ on:
     paths:
       - '.github/workflows/BitMono.Protections.yaml'
       - 'src/BitMono.Protections/**'
+      - 'src/props/**'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/workflows/BitMono.Protections.yaml'
       - 'src/BitMono.Protections/**'
+      - 'src/props/**'
 
 jobs:
   build:
