@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		CHANGELOG.md = CHANGELOG.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE
 		README.md = README.md
@@ -59,6 +58,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.Tests", "test\BitMono.Obfuscation.Tests\BitMono.Obfuscation.Tests.csproj", "{49E6076C-FEC8-4411-B7AE-4DB6112370C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitMono.Obfuscation.TestCases.CosturaDecompressor", "test\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj", "{E73C9803-971F-4F7D-A21B-9097C2EC1A80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "test\Sandbox\Sandbox.csproj", "{C5BD413C-89AF-4480-870D-985AE6C44A38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,6 +135,10 @@ Global
 		{E73C9803-971F-4F7D-A21B-9097C2EC1A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E73C9803-971F-4F7D-A21B-9097C2EC1A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E73C9803-971F-4F7D-A21B-9097C2EC1A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5BD413C-89AF-4480-870D-985AE6C44A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5BD413C-89AF-4480-870D-985AE6C44A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5BD413C-89AF-4480-870D-985AE6C44A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5BD413C-89AF-4480-870D-985AE6C44A38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +163,7 @@ Global
 		{1683308C-36D4-49B1-8CCE-9DDE09336856} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
 		{49E6076C-FEC8-4411-B7AE-4DB6112370C1} = {1EF50257-AFD3-48A3-9E22-03BDC25550A7}
 		{E73C9803-971F-4F7D-A21B-9097C2EC1A80} = {A431DCB4-6EF9-4BEF-8902-FA704D62624E}
+		{C5BD413C-89AF-4480-870D-985AE6C44A38} = {1EF50257-AFD3-48A3-9E22-03BDC25550A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA0BB43-C1D4-4688-BE43-A9ED2D6F78EE}

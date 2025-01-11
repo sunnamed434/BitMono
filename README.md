@@ -180,6 +180,7 @@ Feel free to use BitMono on frameworks which described below. Be careful using s
 
 | Framework      | Version |
 |----------------|---------|
+| .NET           | 9.0     |
 | .NET           | 8.0     |
 | .NET           | 7.0     |
 | .NET           | 6.0     |

@@ -1,6 +1,6 @@
 ## Binaries
 
-If you just need the compiled binaries simply install them [from releases][releases] - open the dropdown button `Assets`, and select the preferred archive, these binaries were made automatically via CI/CD pipeline. 
+If you just need the compiled binaries simply install them [from releases][releases] - open the dropdown button `Assets`, and select the preferred archive, these binaries were made automatically via CI/CD pipeline.
 
 ### Compiling
 
@@ -8,14 +8,15 @@ Recommended to install tools via Visual Studio installer, otherwise you can inst
 
 - [.NET Framework 462][net462]
 - [Visual Studio 2022][vs2022]/[JetBrains Rider][rider] or newer to build the solution
+- [.NET 9.0][net9]
 - [.NET 8.0][net8]
 - [.NET 7.0][net7]
 - [.NET 6.0][net6]
 
-To build the solution from command line, use: 
+To build the solution from command line, use:
 
 ```bash
-$ dotnet build 
+$ dotnet build
 ```
 
 Otherwise do that via IDE `Build` button if you have.
@@ -29,6 +30,7 @@ $ dotnet test
 ### Release On GitHub details
 
 Archives examples (versions and/or naming can be a bit different):
+- .NET 9.0: `BitMono-v0.24.2+7aaeceac-CLI-net9.0-linux-x64.zip`
 - .NET 8.0: `BitMono-v0.24.2+7aaeceac-CLI-net8.0-linux-x64.zip`
 - .NET 7.0: `BitMono-v0.24.2+7aaeceac-CLI-net7.0-win-x64.zip`
 - .NET 6.0: `BitMono-v0.24.2+7aaeceac-CLI-net6.0-linux-x64.zip`
@@ -39,7 +41,7 @@ Archives examples (versions and/or naming can be a bit different):
 To be more clear:
 - `v0.24.2` is the version and the value `+7aaeceac` after the version is the hash of the commit.
 - `CLI` is the `command line interface` meaning, currently BitMono only have CLI for usage.
-- `net8.0`, `net7.0`, `net6.0`, `net462`, `netstandard2.1`, `netstandard2.0` is the target framework that BitMono was built on.
+-  `net.9.0`, `net8.0`, `net7.0`, `net6.0`, `net462`, `netstandard2.1`, `netstandard2.0` is the target framework that BitMono was built on.
 
 ### Help
 
@@ -52,5 +54,6 @@ If you have any issues/questions freely, ask them [here][issues], or contact via
 [net6]: https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 [net7]: https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 [net8]: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+[net9]: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 [releases]: https://github.com/sunnamed434/BitMono/releases
 [issues]: https://github.com/sunnamed434/BitMono/issues
