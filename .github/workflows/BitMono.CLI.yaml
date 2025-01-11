@@ -1,5 +1,4 @@
 name: BitMono.CLI
-
 on:
   create:
     tags:
@@ -15,26 +14,30 @@ on:
       - '.github/workflows/BitMono.CLI.yaml'
       - 'src/**'
       - 'test/**'
-
 jobs:
   Build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target-framework: [net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
-        runtime: [linux-x64, win-x64, linux-arm64, win-arm64, osx-x64, osx-arm64]
-
+        target-framework: [net9.0, net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
+        runtime: [linux-x64, win-x64, linux-arm64, win-arm64, osx-x64, osx-arm64, win-x86]
+        exclude:
+          # Exclude win-x86 builds for .NET Standard as they're architecture-independent
+          - runtime: win-x86
+            target-framework: netstandard2.0
+          - runtime: win-x86
+            target-framework: netstandard2.1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
-
+      
       - name: Build Project
         uses: ./.github/actions/project-build
         id: project-build
@@ -44,30 +47,30 @@ jobs:
           target_framework: ${{ matrix.target-framework }}
           runtime_version: ${{ matrix.runtime }}
           github_token: ${{ secrets.PAT }}
-
+      
       - name: Install zip (for Linux/macOS)
         run: |
-          if [[ "${{ matrix.runtime }}" == "linux-x64" || "${{ matrix.runtime }}" == "linux-arm64" ]]; then
+          if [[ "${{ matrix.runtime }}" =~ ^linux ]]; then
             sudo apt-get install -y zip
-          elif [[ "${{ matrix.runtime }}" == "osx-x64" || "${{ matrix.runtime }}" == "osx-arm64" ]]; then
+          elif [[ "${{ matrix.runtime }}" =~ ^osx ]]; then
             if ! command -v zip &> /dev/null; then
               echo "zip is not available on this macOS runner, and it should be pre-installed."
               exit 1
             fi
           fi
-
+      
       - name: Zip artifacts
         run: |
           cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && \
           zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *
-
+      
       - name: Upload build
-        uses: actions/upload-artifact@v4 # There were problems with v4 + matrix, but now it seems to be working ok, see here: see: https://github.com/actions/upload-artifact/issues/478
+        uses: actions/upload-artifact@v4
         with:
           name: BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
-
+      
       - name: Create Release
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         uses: ncipollo/release-action@v1.14.0
