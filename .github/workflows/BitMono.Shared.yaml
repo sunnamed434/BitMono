@@ -9,11 +9,13 @@ on:
     paths:
       - '.github/workflows/BitMono.Shared.yaml'
       - 'src/BitMono.Shared/**'
+      - 'src/props/**'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/workflows/BitMono.Shared.yaml'
       - 'src/BitMono.Shared/**'
+      - 'src/props/**'
 
 jobs:
   build:
