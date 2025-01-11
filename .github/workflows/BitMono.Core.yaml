@@ -5,13 +5,13 @@ on:
     tags:
       - "*"
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Core.yaml'
       - 'src/BitMono.Core/**'
       - 'src/props/**'
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Core.yaml'
       - 'src/BitMono.Core/**'
