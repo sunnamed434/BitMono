@@ -1,0 +1,41 @@
+name: BitMono.GlobalTool
+
+on:
+  create:
+    tags:
+      - "*"
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.GlobalTool.yaml'
+      - 'src/BitMono.GlobalTool/**'
+      - 'src/props/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.GlobalTool.yaml'
+      - 'src/BitMono.GlobalTool/**'
+      - 'src/props/**'
+
+jobs:
+  build:
+    name: "BitMono.GlobalTool Build"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v4
+      name: Setup .NET
+      with:
+        dotnet-version: 9.x
+        
+    - uses: ./.github/actions/project-build
+      id: project-build
+      with:
+        project_path: src/BitMono.GlobalTool
+        github_token: ${{ secrets.PAT }}
+        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_push: true

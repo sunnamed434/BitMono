@@ -43,7 +43,8 @@ internal class OptionsObfuscationNeedsFactory
                 FileName = filePath,
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = fileBaseDirectory,
-                OutputPath = fileBaseDirectory
+                OutputPath = fileBaseDirectory,
+                Way = ObfuscationNeedsWay.Options
             };
         }
         else
@@ -57,7 +58,8 @@ internal class OptionsObfuscationNeedsFactory
                     : Path.Combine(fileBaseDirectory, _obfuscationSettings.ReferencesDirectoryName),
                 OutputPath = options.Output?.IsNullOrEmpty() == false
                     ? options.Output
-                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName)
+                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName),
+                Way = ObfuscationNeedsWay.Options
             };
         }
 

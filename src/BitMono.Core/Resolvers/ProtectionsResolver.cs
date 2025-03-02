@@ -16,10 +16,10 @@ public class ProtectionsResolver
         var foundProtections = new List<IProtection>();
         var cachedProtections = _protections.ToArray().ToList();
         var unknownProtections = new List<string>();
-        foreach (var protectionSettings in _protectionSettings.Where(p => p.Enabled))
+        foreach (var protectionSettings in _protectionSettings.Where(x => x.Enabled))
         {
-            var protection = cachedProtections.FirstOrDefault(p =>
-                p.GetName().Equals(protectionSettings.Name, StringComparison.OrdinalIgnoreCase));
+            var protection = cachedProtections.FirstOrDefault(x =>
+                x.GetName().Equals(protectionSettings.Name, StringComparison.OrdinalIgnoreCase));
             if (protection != null)
             {
                 foundProtections.Add(protection);
@@ -31,7 +31,7 @@ public class ProtectionsResolver
             }
         }
         var disabledProtections = cachedProtections
-            .Select(protection => protection.GetName())
+            .Select(x => x.GetName())
             .ToList();
         return new ProtectionsResolve
         {

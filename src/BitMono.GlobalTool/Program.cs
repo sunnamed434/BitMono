@@ -1,4 +1,4 @@
-namespace BitMono.CLI;
+﻿namespace BitMono.GlobalTool;
 
 internal class Program
 {
@@ -20,7 +20,6 @@ internal class Program
     {
         Console.CancelKeyPress += OnCancelKeyPress;
         var statusCode = KnownReturnStatuses.Success;
-        ObfuscationNeeds? needs = null;
         try
         {
             Console.Title = BitMonoFileVersionText;
@@ -36,7 +35,7 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            needs = new ObfuscationNeedsFactory(args, obfuscation, logger).Create(CancellationToken);
+            var needs = new OptionsObfuscationNeedsFactory(args, obfuscation, logger).Create(CancellationToken);
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
@@ -60,11 +59,6 @@ internal class Program
             if (!succeed)
             {
                 logger.Fatal("Engine has fatal issues, unable to continue!");
-                if (needs.Way == ObfuscationNeedsWay.Readline)
-                {
-                    Console.WriteLine("Enter anything to exit!");
-                    Console.ReadLine();
-                }
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
             }
@@ -94,11 +88,6 @@ internal class Program
 
         Console.CancelKeyPress -= OnCancelKeyPress;
 
-        if (needs?.Way == ObfuscationNeedsWay.Readline)
-        {
-            Console.WriteLine("Enter anything to exit!");
-            Console.ReadLine();
-        }
         return statusCode;
     }
 

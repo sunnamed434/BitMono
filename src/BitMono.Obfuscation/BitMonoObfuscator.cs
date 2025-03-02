@@ -94,7 +94,7 @@ public class BitMonoObfuscator
     /// </summary>
     private void OutputCompatibilityIssues()
     {
-        if (_context.Module.Assembly!.TryGetTargetFramework(out var targetAssemblyRuntime) == false)
+        if (!_context.Module.Assembly!.TryGetTargetFramework(out var targetAssemblyRuntime))
         {
             return;
         }
@@ -123,7 +123,7 @@ public class BitMonoObfuscator
             .ToList();
         var protectionsSorter = new ProtectionsSorter(_obfuscationAttributeResolver, _context.Module.Assembly!);
         _protectionsSort = protectionsSorter.Sort(protections, protectionSettings);
-        if (_protectionsSort.HasProtections == false)
+        if (!_protectionsSort.HasProtections)
         {
             throw new Exception("No protections were detected. Please specify or enable them in `protections.json` file.");
         }
@@ -140,7 +140,7 @@ public class BitMonoObfuscator
     }
     private void ConfigureForNativeCode()
     {
-        if (_protectionsSort!.ConfigureForNativeCodeProtections.Any() == false)
+        if (!_protectionsSort!.ConfigureForNativeCodeProtections.Any())
         {
             return;
         }
