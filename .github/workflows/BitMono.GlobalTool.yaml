@@ -39,3 +39,4 @@ jobs:
         github_token: ${{ secrets.PAT }}
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true
+        use_runtime: false  # Because this is a dotnet tool.

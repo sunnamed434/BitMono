@@ -7,12 +7,16 @@ inputs:
   target_framework:
     description: 'The target framework to build on'
     required: true
+  use_runtime:
+    description: 'Include runtime flag? Set to true for self-contained builds, false (default) for global tools.'
+    required: false
+    default: true
   runtime_version:
-    description: 'Build runtime version default linux-x64'
+    description: 'Build runtime version (default linux-x64) if using a runtime flag'
     required: false
     default: 'linux-x64'
   nuget_push:
-    description: 'Push to Nuget on release?'
+    description: 'Push to NuGet on release?'
     required: false
     default: false
   nuget_key:
@@ -34,35 +38,46 @@ runs:
     # Generate semver compatible version from current tag and commit hash
     - name: Create version
       id: get-version
-      run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: echo "version=$(git describe --tags $(git rev-list --tags --max-count=1))+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Check Prerelease
       id: check-prerelease
-      run: "if ${{ contains(steps.get-version.outputs.version, '-') }}; then
-              echo is_prerelease=true >> $GITHUB_OUTPUT;
-            else
-              echo is_prerelease=false >> $GITHUB_OUTPUT;
-            fi"
+      run: |
+        if [[ "${{ steps.get-version.outputs.version }}" == *"-"* ]]; then
+          echo "is_prerelease=true" >> $GITHUB_OUTPUT
+        else
+          echo "is_prerelease=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    # Determine whether to include the --runtime flag.
+    - name: Set runtime flag
+      id: set-runtime-flag
+      run: |
+        if [ "${{ inputs.use_runtime }}" = "true" ]; then
+          echo "runtime=--runtime ${{ inputs.runtime_version }}" >> $GITHUB_OUTPUT
+        else
+          echo "runtime=" >> $GITHUB_OUTPUT
+        fi
       shell: bash
 
     # Commands that are used multiple times.
-    # Placed in one place to make sure that the arguments would always be the same
     - name: Common commands
       id: common-commands
       run: |
-        echo "dotnet-restore=dotnet restore \$PROJECT_PATH --runtime ${{ inputs.runtime_version }} -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
-        echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore --runtime ${{ inputs.runtime_version }} -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
-        echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build --runtime ${{ inputs.runtime_version }} -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
+        echo "dotnet-restore=dotnet restore \$PROJECT_PATH ${{ steps.set-runtime-flag.outputs.runtime }} -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
+        echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore ${{ steps.set-runtime-flag.outputs.runtime }} -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+        echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build ${{ steps.set-runtime-flag.outputs.runtime }} -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
       shell: bash
 
-    # Install dependencies (this needs to be a separate step from build for caching)
+    # Install dependencies (separate step for caching)
     - name: Install dependencies
       run: |
         ${{ steps.common-commands.outputs.dotnet-restore }}
         pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-restore }}'
       env:
-        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+        PROJECT_PATH: ${{ inputs.project_path }}
       shell: bash
 
     # Build project
@@ -71,7 +86,7 @@ runs:
         ${{ steps.common-commands.outputs.dotnet-build }}
         pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-build }}'
       env:
-        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+        PROJECT_PATH: ${{ inputs.project_path }}
       shell: bash
 
     # Test project
@@ -79,19 +94,21 @@ runs:
       run: |
         pwsh -File .github/actions/project-build/run-command-for-every-tests-project.ps1 "$GITHUB_WORKSPACE/tests" '${{ steps.common-commands.outputs.dotnet-test }}'
       env:
-        PROJECT_PATH: ${{ inputs.project_path }} # Used by commands in `common-commands` step
+        PROJECT_PATH: ${{ inputs.project_path }}
       shell: bash
 
-    # Push to GitHub packages on each commit and release
+    # Push to GitHub packages on each commit and release (Nightly)
     - name: Push to NuGet (Nightly)
-      run: if ${{ inputs.nuget_push == 'true' && (github.event_name == 'push' || (github.event_name == 'create' && github.event.ref_type == 'tag')) }}; then
-        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/sunnamed434/index.json;
+      run: |
+        if [ "${{ inputs.nuget_push }}" = "true" ] && ( [ "${{ github.event_name }}" = "push" ] || ( [ "${{ github.event_name }}" = "create" ] && [ "${{ github.event.ref_type }}" = "tag" ] ) ); then
+          dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/sunnamed434/index.json;
         fi
       shell: bash
 
-    # Push to NuGet on each tag, but only if the tag is not a pre-release version
+    # Push to NuGet on each tag, but only if not a pre-release version (Release)
     - name: Push to NuGet (Release)
-      run: if ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}; then
-        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
+      run: |
+        if [ "${{ inputs.nuget_push }}" = "true" ] && [ "${{ github.event_name }}" = "create" ] && [ "${{ github.event.ref_type }}" = "tag" ] && [ "${{ steps.check-prerelease.outputs.is_prerelease }}" = "false" ]; then
+          dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
         fi
       shell: bash

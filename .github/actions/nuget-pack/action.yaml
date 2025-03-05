@@ -5,7 +5,7 @@ inputs:
     description: 'Path to .nuspec'
     required: true
   nuget_push:
-    description: 'Push to Nuget?'
+    description: 'Push to NuGet?'
     required: false
     default: false
   nuget_key:
