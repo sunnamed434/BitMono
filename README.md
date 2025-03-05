@@ -106,7 +106,7 @@ To download the latest release of BitMono, follow these steps:
 - **Targeting Mono or Unity Engine Runtime**: If your target file is built for .NET Framework and runs on Mono or Unity, use the .NET Framework version:
   `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
 
-> **Note:** Be sure to select the correct version of BitMono that matches your Target Framework. Using the wrong version could result in compatibility issues.
+> **Note:** Be sure to select the correct version of BitMono that matches your Target Framework. Using the wrong version could result in compatibility issues, however, if that works ok anyway or if you know what you're doing, you can ignore it.
 
 ### Pre-Require
 

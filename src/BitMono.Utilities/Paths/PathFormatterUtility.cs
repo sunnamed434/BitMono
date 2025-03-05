@@ -4,8 +4,13 @@ public static class PathFormatterUtility
 {
     private const string QuotesValue = "\"";
 
-    public static string Format(string path)
+    [return: NullGuard.AllowNull]
+    public static string? Format(string? path)
     {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
         return path.Replace(QuotesValue, string.Empty);
     }
 }

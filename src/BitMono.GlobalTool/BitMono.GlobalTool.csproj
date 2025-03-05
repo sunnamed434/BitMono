@@ -2,11 +2,30 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
-    <ApplicationIcon>BitMonoLogo.ico</ApplicationIcon>
+    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>bitmono.console</ToolCommandName>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props"/>
+
+  <ItemGroup>
+    <Compile Include="..\BitMono.CLI\Modules\Options.cs">
+      <Link>Modules/Options.cs</Link>
+    </Compile>
+    <Compile Include="..\BitMono.CLI\Modules\ObfuscationNeeds.cs">
+      <Link>Modules/ObfuscationNeeds.cs</Link>
+    </Compile>
+    <Compile Include="..\BitMono.CLI\Modules\LoggerConfiguratorExtensions.cs">
+      <Link>Modules\LoggerConfiguratorExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\BitMono.CLI\Modules\OptionsObfuscationNeedsFactory.cs">
+      <Link>Modules\OptionsObfuscationNeedsFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\BitMono.CLI\KnownReturnStatuses.cs">
+      <Link>KnownReturnStatuses.cs</Link>
+    </Compile>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BitMono.API\BitMono.API.csproj"/>
