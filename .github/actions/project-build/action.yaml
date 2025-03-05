@@ -38,17 +38,16 @@ runs:
     # Generate semver compatible version from current tag and commit hash
     - name: Create version
       id: get-version
-      run: echo "version=$(git describe --tags $(git rev-list --tags --max-count=1))+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: echo "version=$(git describe --tags `git rev-list --tags --max-count=1`)+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Check Prerelease
       id: check-prerelease
-      run: |
-        if [[ "${{ steps.get-version.outputs.version }}" == *"-"* ]]; then
-          echo "is_prerelease=true" >> $GITHUB_OUTPUT
-        else
-          echo "is_prerelease=false" >> $GITHUB_OUTPUT
-        fi
+      run: "if ${{ contains(steps.get-version.outputs.version, '-') }}; then
+              echo is_prerelease=true >> $GITHUB_OUTPUT;
+            else
+              echo is_prerelease=false >> $GITHUB_OUTPUT;
+            fi"
       shell: bash
 
     # Determine whether to include the --runtime flag.
@@ -99,16 +98,14 @@ runs:
 
     # Push to GitHub packages on each commit and release (Nightly)
     - name: Push to NuGet (Nightly)
-      run: |
-        if [ "${{ inputs.nuget_push }}" = "true" ] && ( [ "${{ github.event_name }}" = "push" ] || ( [ "${{ github.event_name }}" = "create" ] && [ "${{ github.event.ref_type }}" = "tag" ] ) ); then
-          dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/sunnamed434/index.json;
+      run: if ${{ inputs.nuget_push == 'true' && (github.event_name == 'push' || (github.event_name == 'create' && github.event.ref_type == 'tag')) }}; then
+        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.github_token }} --skip-duplicate --source https://nuget.pkg.github.com/sunnamed434/index.json;
         fi
       shell: bash
 
     # Push to NuGet on each tag, but only if not a pre-release version (Release)
     - name: Push to NuGet (Release)
-      run: |
-        if [ "${{ inputs.nuget_push }}" = "true" ] && [ "${{ github.event_name }}" = "create" ] && [ "${{ github.event.ref_type }}" = "tag" ] && [ "${{ steps.check-prerelease.outputs.is_prerelease }}" = "false" ]; then
-          dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
+      run: if ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}; then
+        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
         fi
       shell: bash
