@@ -7,6 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sunnamed434/BitMono</PackageProjectUrl>
     <PackageOwners>sunnamed434</PackageOwners>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <BitMonoVersion>0.0.0</BitMonoVersion>
     <PackageVersion>$(BitMonoVersion)</PackageVersion>
     <Version>$(BitMonoVersion)</Version>
@@ -25,6 +26,10 @@
     <NoWarn>$(NoWarn);NU1701;NU1702;CS0436;CS1591</NoWarn>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

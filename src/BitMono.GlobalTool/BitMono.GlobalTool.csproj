@@ -9,10 +9,6 @@
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props"/>
 
-  <PropertyGroup>
-    <PackageId>BitMono.GlobalTool1</PackageId>
-  </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="..\BitMono.CLI\Modules\Options.cs">
       <Link>Modules/Options.cs</Link>
