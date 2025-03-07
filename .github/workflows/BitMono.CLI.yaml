@@ -73,7 +73,7 @@ jobs:
       
       - name: Create Release
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1
         with:
           name: BitMono Release v${{ steps.project-build.outputs.version }}
           tag: ${{ steps.project-build.outputs.version }}
