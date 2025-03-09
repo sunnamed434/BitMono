@@ -23,21 +23,19 @@ public class BitMethodDotnet : Protection
                 continue;
             }
 
-            var randomMethodBodyIndex = 0;
-            if (body.Instructions.Count >= 3)
-            {
-                randomMethodBodyIndex = _randomNext(0, body.Instructions.Count);
-            }
-
+            const int firstInstruction = 0;
             var instruction = GetRandomInstruction();
-            var label = body.Instructions[randomMethodBodyIndex].CreateLabel();
-            body.Instructions.Insert(randomMethodBodyIndex, new CilInstruction(CilOpCodes.Br_S));
-            body.Instructions.Insert(randomMethodBodyIndex + 1, instruction);
-            body.Instructions[randomMethodBodyIndex].Operand = label;
+            var label = body.Instructions[firstInstruction].CreateLabel();
+            body.Instructions.Insert(firstInstruction, new CilInstruction(CilOpCodes.Br_S));
+            body.Instructions.Insert(firstInstruction + 1, instruction);
+            body.Instructions[firstInstruction].Operand = label;
         }
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Get the random instruction that breaks the decompiler method.
+    /// </summary>
     private CilInstruction GetRandomInstruction()
     {
         var randomValue = _randomNext(0, 3);
