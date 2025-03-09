@@ -10,39 +10,59 @@ public class FullRenamer : Protection
         _renamer = renamer;
     }
 
-    [SuppressMessage("ReSharper", "InvertIf")]
     public override Task ExecuteAsync()
     {
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
-            if (method.DeclaringType?.IsModuleType == false && method is { IsConstructor: false, IsVirtual: false })
+            if (method.DeclaringType?.IsModuleType == true)
             {
-                _renamer.Rename(method);
-                if (method.HasParameters())
+                continue;
+            }
+            if (method.IsConstructor || method.IsVirtual)
+            {
+                continue;
+            }
+            if (method.IsCompilerGenerated())
+            {
+                continue;
+            }
+            _renamer.Rename(method);
+            if (!method.HasParameters())
+            {
+                continue;
+            }
+            foreach (var parameter in method.Parameters)
+            {
+                if (parameter.Definition == null)
                 {
-                    foreach (var parameter in method.Parameters)
-                    {
-                        if (parameter.Definition != null)
-                        {
-                            _renamer.Rename(parameter.Definition);
-                        }
-                    }
+                    continue;
                 }
+                _renamer.Rename(parameter.Definition);
             }
         }
         foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
-            if (type.IsModuleType == false)
+            if (type.IsModuleType)
             {
-                _renamer.Rename(type);
+                continue;
             }
+            if (type.IsCompilerGenerated())
+            {
+                continue;
+            }
+            _renamer.Rename(type);
         }
         foreach (var field in Context.Parameters.Members.OfType<FieldDefinition>())
         {
-            if (field.DeclaringType?.IsModuleType == false)
+            if (field.DeclaringType?.IsModuleType == true)
             {
-                _renamer.Rename(field);
+                continue;
             }
+            if (field.IsCompilerGenerated())
+            {
+                continue;
+            }
+            _renamer.Rename(field);
         }
         return Task.CompletedTask;
     }
