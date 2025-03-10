@@ -13,13 +13,13 @@ public class UnmanagedString : Protection
     {
         var moduleImporter = Context.ModuleImporter;
         var stringSbytePointerCtor =
-            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*) })!);
+            moduleImporter.ImportMethod(typeof(string).GetConstructor([typeof(sbyte*)])!);
         var stringCharPointerCtor =
-            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(char*) })!);
+            moduleImporter.ImportMethod(typeof(string).GetConstructor([typeof(char*)])!);
         var stringSbytePointerWithLengthCtor =
-            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(sbyte*), typeof(int), typeof(int) })!);
+            moduleImporter.ImportMethod(typeof(string).GetConstructor([typeof(sbyte*), typeof(int), typeof(int)])!);
         var stringCharPointerWithLengthCtor =
-            moduleImporter.ImportMethod(typeof(string).GetConstructor(new[] { typeof(char*), typeof(int), typeof(int) })!);
+            moduleImporter.ImportMethod(typeof(string).GetConstructor([typeof(char*), typeof(int), typeof(int)])!);
         var encodedStrings = new Dictionary<string, MethodDefinition>();
         foreach (var method in Context.Parameters.Members.OfType<MethodDefinition>())
         {
