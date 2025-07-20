@@ -4,7 +4,7 @@ Prerequisites:
 - Ensure Docker is installed on your machine. If not, install Docker from https://docs.docker.com/get-docker/.
 
 Running Locally:
-1. Start Docker if it’s not already running.
+1. Start Docker if it's not already running.
 2. Open a terminal and navigate to the directory containing your docker-compose.yml file.
 3. Execute the following command to build and start the container:
    docker-compose up --build
@@ -18,6 +18,6 @@ Restarting the Container:
 
 To edit/update docs:
 Prerequisites:
-- Use Visual Studio Code, or any other tool. https://code.visualstudio.com/
+- Use Visual Studio Code (tps://code.visualstudio.com/), or any other tool.
 
-Go to `source` folder and do your magic!
+Go to 'source' folder and do your magic!

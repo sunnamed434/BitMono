@@ -1,5 +1,5 @@
 Native Code
-###########
+===========
 
 If you want to use a native code in the protection you must do the following:
 
