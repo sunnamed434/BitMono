@@ -12,6 +12,14 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 1
+   :caption: Usage
+   :name: sec-usage
+
+   usage/how-to-use
+   usage/troubleshooting
+
+.. toctree::
+   :maxdepth: 1
    :caption: Protections
    :name: sec-protections
 
@@ -55,6 +63,7 @@ Table of Contents:
    developers/do-not-resolve-members
    developers/configuration
    developers/obfuscate-build
+   developers/building
 
 
 .. toctree::

@@ -85,94 +85,29 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * AntiILdasm
 * and you can integrate existing/make own feature ;)
 
-## Usage
+## Documentation
 
-### Download
+Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installation guides, and detailed documentation.
 
-To download the latest release of BitMono, follow these steps:
+**Quick Start:**
+1. Download from [releases][bitmono_releases]
+2. Run `BitMono.CLI` and follow the prompts
+3. (optional) See the [How To Use guide][bitmono_docs] for detailed instructions
 
-1. Go to the [Latest BitMono Release][bitmono_latest_release].
-2. Select and download the archive file that matches the Target Framework of the application you want to protect. Here are some examples:
+**Installation Options:**
+- **GitHub Releases**: Download pre-built executables
+- **.NET Global Tool**: `dotnet tool install --global BitMono.GlobalTool`
+- **NuGet Packages**: Integrate into your projects
 
-- **Targeting .NET 8**: If your target file is built for .NET 8, download:
-  `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
-
-- **Targeting .NET Standard**: If your target file is built for .NET Standard, you can use either BitMono for .NET Framework or .NET 8:
-  `BitMono-v0.25.3+e64e54d3-CLI-net8.0-win-x64.zip`
-
-- **Targeting .NET Framework**: If your target file is built for .NET Framework, download:
-  `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
-
-- **Targeting Mono or Unity Engine Runtime**: If your target file is built for .NET Framework and runs on Mono or Unity, use the .NET Framework version:
-  `BitMono-v0.25.3+e64e54d3-CLI-net462-win-x64.zip`
-
-> **Note:** Be sure to select the correct version of BitMono that matches your Target Framework. Using the wrong version could result in compatibility issues, however, if that works ok anyway or if you know what you're doing, you can ignore it.
-
-### Pre-Require
-
-Enable one of the protection in `protections.json` file: Set `Enabled` to `true`.
-
-### Using CLI
-
-`BitMono.CLI <path to file>/drag-and-drop`
-
-Always drop dependencies in `libs` directory in the same path where `file` for obfuscation is located
-
-Your obfuscation directory structure will look something like this:
-```
-specially_created_folder_for_obfuscation/
-├─ your_app.exe
-└─ libs/
-  ├─ ImportantLibrary.dll
-  ├─ SuperImportantLibrary.dll
-  └─ ...
-```
-
-Copy all libraries (.dll) from the building application folder and paste them into the `libs` directory (if it doesn't exist yet create it), or even create the libs directory yourself with a custom name for example - `myLibs`, and then specify it in BitMono, however, if you will use `libs` then by default BitMono looking for a `libs` directory, so it will save your time.
-
-### Using CLI Commands
-
-```console
-  -f, --file         Required. Set file path.
-
-  -l, --libraries    Set libraries path.
-
-  -o, --output       Set output path.
-
-  --help             Display this help screen.
-
-  --version          Display version information.
-```
-
-Basic example
-```console
-$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l specially_created_folder_for_obfuscation/libs
-```
-
-In case when you already have a directory with the name `libs` (specially_created_folder_for_obfuscation\libs) BitMono will catch it automatically, so, you don't need to specify it anymore, but you can in case if you made another directory with `libs` somewhere on the disk or even just for "visibility".
-```console
-$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe
-```
-
-Specify custom `libs` directory
-```console
-$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory
-```
-
-Specify file, libs and output. If output directory doesn't exist BitMono will create it automatically and even open it on the top of the screen, if you want you can disable opening of the directory on the of top of the screen in `obfuscation.json` - and set `OpenFileDestinationInFileExplorer` to false.
-```console
-$ BitMono.CLI -f C:\specially_created_folder_for_obfuscation/your_app.exe -l C:\mythings\obfuscation\superLibsDirectory -o C:\specially_created_folder_for_obfuscation/output
-```
-
-Want more? Simply read the **[docs][bitmono_docs]**.
+For detailed installation and usage instructions, see the **[documentation][bitmono_docs]**.
 
 ### Troubleshooting
 
-Having issues? Get more help **[here][troubleshooting]**.
+Having issues? See the `troubleshooting guide <https://bitmono.readthedocs.io/en/latest/usage/troubleshooting.html>`_ in the documentation.
 
 ### Building
 
-If you want to build the BitMono by your own - [click here for detailed info][build_info]
+If you want to build BitMono yourself - see the `building guide <https://bitmono.readthedocs.io/en/latest/developers/building.html>`_ in the documentation.
 
 ### Supported Frameworks
 

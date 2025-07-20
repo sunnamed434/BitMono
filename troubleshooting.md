@@ -1,7 +1,12 @@
-### Troubleshooting
+# Troubleshooting
 
-Here we describe most known issues and its solution, something like Faq.
+**This content has been moved to the documentation.**
 
-#### Access Denied:
+For comprehensive troubleshooting information, please see the [Troubleshooting Guide](https://bitmono.readthedocs.io/en/latest/usage/troubleshooting.html) in the documentation.
 
-Try to set `OpenFileDestinationInFileExplorer` to `false` in `obfuscation.json`
+The documentation includes:
+- Common issues and solutions
+- Framework compatibility problems
+- Permission and dependency issues
+- Configuration troubleshooting
+- Getting additional help

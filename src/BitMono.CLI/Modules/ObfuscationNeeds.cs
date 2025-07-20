@@ -8,6 +8,7 @@ internal class ObfuscationNeeds
     public string ReferencesDirectoryName { get; set; }
     public string OutputPath { get; set; }
     public ObfuscationNeedsWay Way { get; set; }
+    public List<string> Protections { get; set; }
 #pragma warning restore CS8618
 }
 

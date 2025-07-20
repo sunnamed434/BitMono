@@ -19,5 +19,7 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Pocket.Extensions;
 global using Serilog;
+global using System.Collections.Generic;
+global using System.Linq;
 global using Serilog.Configuration;
 global using ILogger = Serilog.ILogger;

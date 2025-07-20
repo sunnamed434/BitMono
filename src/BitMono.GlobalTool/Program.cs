@@ -20,6 +20,7 @@ internal class Program
     {
         Console.CancelKeyPress += OnCancelKeyPress;
         var statusCode = KnownReturnStatuses.Success;
+        ObfuscationNeeds? needs = null;
         try
         {
             Console.Title = BitMonoFileVersionText;
@@ -35,11 +36,22 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var needs = new OptionsObfuscationNeedsFactory(args, obfuscation, logger).Create(CancellationToken);
+            var protections = serviceProvider.GetRequiredService<IOptions<ProtectionSettings>>().Value.Protections!;
+            needs = new ObfuscationNeedsFactory(args, obfuscation, protections, logger).Create(CancellationToken);
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
+            }
+
+            if (needs.Protections.Count != 0)
+            {
+                protections.Clear();
+                protections.AddRange(needs.Protections.Select(x => new ProtectionSetting
+                {
+                    Enabled = true,
+                    Name = x
+                }).ToList());
             }
 
             CancellationToken.ThrowIfCancellationRequested();
@@ -87,7 +99,11 @@ internal class Program
         }
 
         Console.CancelKeyPress -= OnCancelKeyPress;
-
+        if (needs?.Way == ObfuscationNeedsWay.Readline)
+        {
+            Console.WriteLine("Enter anything to exit!");
+            Console.ReadLine();
+        }
         return statusCode;
     }
 

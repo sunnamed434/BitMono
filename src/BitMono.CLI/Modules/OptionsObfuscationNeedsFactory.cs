@@ -6,8 +6,7 @@ internal class OptionsObfuscationNeedsFactory
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly ILogger _logger;
 
-    public OptionsObfuscationNeedsFactory(string[] args,
-        ObfuscationSettings obfuscationSettings, ILogger logger)
+    public OptionsObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
     {
         _args = args;
         _obfuscationSettings = obfuscationSettings;
@@ -44,6 +43,7 @@ internal class OptionsObfuscationNeedsFactory
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = fileBaseDirectory,
                 OutputPath = fileBaseDirectory,
+                Protections = options.Protections.ToList(),
                 Way = ObfuscationNeedsWay.Options
             };
         }
@@ -59,6 +59,7 @@ internal class OptionsObfuscationNeedsFactory
                 OutputPath = options.Output?.IsNullOrEmpty() == false
                     ? options.Output
                     : Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName),
+                Protections = options.Protections.ToList(),
                 Way = ObfuscationNeedsWay.Options
             };
         }

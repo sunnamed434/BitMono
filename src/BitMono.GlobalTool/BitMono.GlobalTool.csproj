@@ -19,8 +19,14 @@
     <Compile Include="..\BitMono.CLI\Modules\LoggerConfiguratorExtensions.cs">
       <Link>Modules\LoggerConfiguratorExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\BitMono.CLI\Modules\ObfuscationNeedsFactory.cs">
+      <Link>Modules\ObfuscationNeedsFactory.cs</Link>
+    </Compile>
     <Compile Include="..\BitMono.CLI\Modules\OptionsObfuscationNeedsFactory.cs">
       <Link>Modules\OptionsObfuscationNeedsFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\BitMono.CLI\Modules\ReadlineObfuscationNeedsFactory.cs">
+      <Link>Modules\ReadlineObfuscationNeedsFactory.cs</Link>
     </Compile>
     <Compile Include="..\BitMono.CLI\KnownReturnStatuses.cs">
       <Link>KnownReturnStatuses.cs</Link>
