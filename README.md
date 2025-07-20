@@ -103,11 +103,11 @@ For detailed installation and usage instructions, see the **[documentation][bitm
 
 ### Troubleshooting
 
-Having issues? See the `troubleshooting guide <https://bitmono.readthedocs.io/en/latest/usage/troubleshooting.html>`_ in the documentation.
+Having issues? See the [troubleshooting guide](https://bitmono.readthedocs.io/en/latest/usage/troubleshooting.html) in the documentation.
 
 ### Building
 
-If you want to build BitMono yourself - see the `building guide <https://bitmono.readthedocs.io/en/latest/developers/building.html>`_ in the documentation.
+If you want to build BitMono yourself - see the [building guide](https://bitmono.readthedocs.io/en/latest/developers/building.html) in the documentation.
 
 ### Supported Frameworks
 
