@@ -10,4 +10,7 @@ internal class Options
 
     [Option('o', "output", Required = false, HelpText = "Set output path.")]
     public string? Output { get; set; }
+
+    [Option('p', "protections", Required = false, HelpText = "Set protections, also can be set via protections.json.")]
+    public IEnumerable<string> Protections { get; set; } = [];
 }
