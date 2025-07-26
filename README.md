@@ -10,7 +10,7 @@
 [![Nuget feed][bitmono_nuget_shield]][bitmono_nuget_packages]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
-BitMono is a free, open-source C# obfuscator that was initially designed and intended mainly for Mono, however, now you're feel free to use it for any .NET app, but, be careful some protections work on .NET Framework, some on .NET, some on Mono, some on Unity only.
+BitMono is a free, open-source C# obfuscator that was initially designed and intended mainly for [Mono][mono_mainpage], however, now you're feel free to use it for any .NET app, but, be careful some protections work on .NET Framework, some on .NET, some on [Mono][mono_mainpage], some on [Unity Engine][unityengine_mainpage] only.
 
 BitMono uses [AsmResolver][asmresolver] instead of [dnlib][dnlib] (which we used in the past) for handling assemblies. If you have questions or issues, please let us know [here][bitmono_issues]. Download the latest version of BitMono [here][bitmono_releases].
 
@@ -174,6 +174,8 @@ Credits
 [bitmono_nuget_packages]: https://www.nuget.org/profiles/BitMono
 [bitmono_nuget_shield]: https://img.shields.io/nuget/v/BitMono.Core.svg
 [autofac_repo]: https://github.com/autofac/Autofac
+[unityengine_mainpage]: https://unity.com
+[mono_mainpage]: https://www.mono-project.com
 
 [troubleshooting]: https://github.com/sunnamed434/BitMono/blob/main/troubleshooting.md
 [build_info]: https://github.com/sunnamed434/BitMono/blob/main/build.md
