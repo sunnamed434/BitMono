@@ -24,7 +24,7 @@ public class ProtectionsConfigureForNativeCodeNotifier
         }
 
         _logger.Warning(
-            "Enabled protections may create native code configurations, which can sometimes break the app. Proceed with caution. If issues arise, disable the following protections.");
+            "Enabled protections may create native code configurations, which can sometimes break the app. Proceed with caution. If issues arise, make sure to don't build your app as AnyCPU or disable the following protections.");
         foreach (var protection in configureForNativeCodeProtections)
         {
             cancellationToken.ThrowIfCancellationRequested();
