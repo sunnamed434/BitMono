@@ -14,6 +14,7 @@ on:
       - '.github/workflows/BitMono.CLI.yaml'
       - 'src/**'
       - 'test/**'
+
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -27,6 +28,9 @@ jobs:
             target-framework: netstandard2.0
           - runtime: win-x86
             target-framework: netstandard2.1
+    outputs:
+      version: ${{ steps.project-build.outputs.version }}
+      is_prerelease: ${{ steps.project-build.outputs.is_prerelease }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,16 +72,25 @@ jobs:
           name: BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
           if-no-files-found: error
+
+  Release:
+    if: github.event_name == 'create' && github.event.ref_type == 'tag'
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
       
       - name: Create Release
-        if: github.event_name == 'create' && github.event.ref_type == 'tag'
         uses: ncipollo/release-action@v1
         with:
-          name: BitMono Release v${{ steps.project-build.outputs.version }}
-          tag: ${{ steps.project-build.outputs.version }}
-          artifacts: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          name: BitMono Release v${{ needs.Build.outputs.version }}
+          tag: ${{ needs.Build.outputs.version }}
+          artifacts: "./artifacts/**/*.zip"
           token: ${{ secrets.PAT }}
-          prerelease: ${{ steps.project-build.outputs.is_prerelease }}
+          prerelease: ${{ needs.Build.outputs.is_prerelease }}
           allowUpdates: true
           draft: true
           
