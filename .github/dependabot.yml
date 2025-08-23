@@ -5,15 +5,39 @@
 
 version: 2
 updates:
+  # NuGet dependencies for .NET projects
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "daily"
     target-branch: "master"
-    ignore:
-      - dependency-name: "Microsoft.Build.Tasks.Core"
-        versions: ["16.*"]
     labels:
       - "dependencies"
+      - "nuget"
+    reviewers:
+      - "sunnamed434"
+
+  # Python dependencies for documentation
+  - package-ecosystem: "pip"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+    target-branch: "master"
+    labels:
+      - "dependencies"
+      - "python"
+      - "documentation"
+    reviewers:
+      - "sunnamed434"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "master"
+    labels:
+      - "dependencies"
+      - "github-actions"
     reviewers:
       - "sunnamed434"
