@@ -10,7 +10,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "master"
+    target-branch: "main"
     labels:
       - "dependencies"
       - "nuget"
@@ -22,7 +22,7 @@ updates:
     directory: "/docs"
     schedule:
       interval: "weekly"
-    target-branch: "master"
+    target-branch: "main"
     labels:
       - "dependencies"
       - "python"
@@ -35,7 +35,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "master"
+    target-branch: "main"
     labels:
       - "dependencies"
       - "github-actions"
