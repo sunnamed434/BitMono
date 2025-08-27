@@ -5,12 +5,20 @@ namespace BitMono.Host.Extensions;
 public static class AutofacContainerBuilderExtensions
 {
     private const string ProtectionsFileName = "BitMono.Protections.dll";
+    private const string UnityFileName = "BitMono.Unity.dll";
 
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
         var protectionsFilePath = file ?? Path.Combine(AppContext.BaseDirectory, ProtectionsFileName);
         var rawData = File.ReadAllBytes(file ?? protectionsFilePath);
         Assembly.Load(rawData);
+        
+        var unityFilePath = Path.Combine(AppContext.BaseDirectory, UnityFileName);
+        if (File.Exists(unityFilePath))
+        {
+            var unityRawData = File.ReadAllBytes(unityFilePath);
+            Assembly.Load(unityRawData);
+        }
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         source.RegisterAssemblyTypes(assemblies)
