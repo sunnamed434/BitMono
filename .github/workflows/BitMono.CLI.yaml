@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 0
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         env:
           # Disable the .NET logo in the console output.
           DOTNET_NOLOGO: true
