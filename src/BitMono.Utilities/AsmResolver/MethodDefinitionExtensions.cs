@@ -4,7 +4,7 @@ public static class MethodDefinitionExtensions
 {
     public static bool IsAsync(this MethodDefinition source)
     {
-        foreach (var type in source.Module.GetAllTypes())
+        foreach (var type in source.DeclaringModule.GetAllTypes())
         {
             foreach (var nestedType in type.NestedTypes.Where(x => x.Name.StartsWith("<")))
             {

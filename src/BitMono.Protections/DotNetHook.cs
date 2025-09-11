@@ -76,25 +76,24 @@ public class DotNetHook : Protection
                         actualParameter.Name, actualParameter.Attributes);
                     dummyMethod.ParameterDefinitions.Add(parameter);
                 }
-                var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody(dummyMethod);
+                var dummyMethodBody = dummyMethod.CilMethodBody = new CilMethodBody();
                 if (callingMethod.Signature.ReturnsValue)
                 {
                     dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ldnull));
                 }
                 dummyMethodBody.Instructions.Add(new CilInstruction(CilOpCodes.Ret));
                 var signature = MethodSignature.CreateStatic(systemVoid);
-                var initializationMethod = new MethodDefinition(
-                    _renamer.RenameUnsafely(),
-                    MethodAttributes.Assembly | MethodAttributes.Static,
-                    signature);
-                initializationMethod.CilMethodBody = new CilMethodBody(initializationMethod)
+                var initializationMethod = new MethodDefinition( _renamer.RenameUnsafely(), MethodAttributes.Assembly | MethodAttributes.Static, signature)
                 {
-                    Instructions =
+                    CilMethodBody = new CilMethodBody
                     {
-                        new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
-                        new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
-                        new CilInstruction(CilOpCodes.Call, redirectStubMethod),
-                        new CilInstruction(CilOpCodes.Ret)
+                        Instructions =
+                        {
+                            new CilInstruction(CilOpCodes.Ldc_I4, dummyMethod.MetadataToken.ToInt32()),
+                            new CilInstruction(CilOpCodes.Ldc_I4, callingMethodMetadata.MetadataToken.ToInt32()),
+                            new CilInstruction(CilOpCodes.Call, redirectStubMethod),
+                            new CilInstruction(CilOpCodes.Ret)
+                        }
                     }
                 };
                 moduleType.Methods.Add(initializationMethod);

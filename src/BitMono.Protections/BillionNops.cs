@@ -17,7 +17,7 @@ public class BillionNops : Protection
         var method = new MethodDefinition(_renamer.RenameUnsafely(), MethodAttributes.Public | MethodAttributes.Static,
             MethodSignature.CreateStatic(factory.Void));
         moduleType.Methods.Add(method);
-        var body = method.CilMethodBody = new CilMethodBody(method);
+        var body = method.CilMethodBody = new CilMethodBody();
         for (var i = 0; i < 100000; i++)
         {
             Context.ThrowIfCancellationTokenRequested();
