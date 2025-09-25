@@ -28,31 +28,44 @@ public class Renamer
         var randomStringThree = strings[_randomNext(0, strings.Length - 1)];
         return $"{randomStringTwo} {randomStringOne}.{randomStringThree}";
     }
+
+    private bool ShouldRenameType(TypeDefinition? typeDefinition)
+    {
+        return typeDefinition == null || (_nameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) && !typeDefinition.IsExplicitLayout);
+    }
+
     public void Rename(IMetadataMember member)
     {
         if (member is TypeDefinition type)
         {
-            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (ShouldRenameType(type) && ShouldRenameType(type.DeclaringType))
             {
                 type.Name = RenameUnsafely();
             }
         }
         if (member is MethodDefinition method)
         {
-            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(method))
+            if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(method) && ShouldRenameType(method.DeclaringType))
             {
                 method.Name = RenameUnsafely();
             }
         }
         if (member is FieldDefinition field)
         {
+            if (!field.IsCompilerGenerated() && ShouldRenameType(field.DeclaringType))
+        {
             field.Name = RenameUnsafely();
+            }
         }
         if (member is ParameterDefinition parameter)
         {
+            if (!parameter.IsCompilerGenerated())
+        {
             parameter.Name = RenameUnsafely();
+            }
         }
     }
+
     public void Rename(params IMetadataMember[] members)
     {
         for (var i = 0; i < members.Length; i++)
@@ -60,6 +73,7 @@ public class Renamer
             Rename(members[i]);
         }
     }
+
     public void RemoveNamespace(IMetadataMember member)
     {
         if (member is TypeDefinition type)
@@ -87,6 +101,7 @@ public class Renamer
             }
         }
     }
+
     public void RemoveNamespace(params IMetadataMember[] members)
     {
         members.ForEach(RemoveNamespace);
