@@ -1,6 +1,5 @@
 ﻿namespace BitMono.Core.Analyzing;
 
-[SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")]
 public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
@@ -10,35 +9,32 @@ public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMemb
         _obfuscationSettings = obfuscation.Value;
     }
 
+    private static string? GetNamespace(IMetadataMember member)
+    {
+        if (member is TypeDefinition type)
+        {
+            return type.Namespace?.Value;
+        }
+        if (member is MethodDefinition method)
+        {
+            return method.DeclaringType?.Namespace?.Value;
+        }
+        if (member is FieldDefinition field)
+        {
+            return field.DeclaringType?.Namespace?.Value;
+        }
+        return null;
+    }
+
     public bool NotCriticalToMakeChanges(IMetadataMember member)
     {
-        if (_obfuscationSettings.SpecificNamespacesObfuscationOnly == false)
+        if (!_obfuscationSettings.SpecificNamespacesObfuscationOnly)
         {
             return true;
         }
 
-        var specificNamespaces = _obfuscationSettings.SpecificNamespaces!;
-        if (member is TypeDefinition type && type.HasNamespace())
-        {
-            if (specificNamespaces.Any(s => s.Equals(type.Namespace?.Value)) == false)
-            {
-                return false;
-            }
-        }
-        if (member is MethodDefinition method && method.DeclaringType?.HasNamespace() == true)
-        {
-            if (specificNamespaces.Any(s => s.Equals(method.DeclaringType.Namespace?.Value)) == false)
-            {
-                return false;
-            }
-        }
-        if (member is FieldDefinition field && field.DeclaringType?.HasNamespace() == true)
-        {
-            if (specificNamespaces.Any(s => s.Equals(field.DeclaringType.Namespace?.Value)) == false)
-            {
-                return false;
-            }
-        }
-        return true;
+        string[] specificNamespaces = _obfuscationSettings.SpecificNamespaces!;
+        string ns = GetNamespace(member) ?? string.Empty;
+        return Array.IndexOf(specificNamespaces, ns) != -1;
     }
 }
