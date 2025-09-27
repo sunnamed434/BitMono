@@ -49,7 +49,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
                             var traceArgument = TraceLdstrArgument(body, instruction);
                             if (traceArgument?.Operand is string traceMethodName)
                             {
-                                foreach (var possibleMethod in method.Module
+                                foreach (var possibleMethod in method.DeclaringModule
                                              .FindMembers()
                                              .OfType<MethodDefinition>()
                                              .Where(x => x.Name.Equals(traceMethodName)))

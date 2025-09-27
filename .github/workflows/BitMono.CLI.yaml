@@ -7,11 +7,17 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.CLI.yaml'
+      - 'props/SharedPackages.props'
+      - 'props/SharedProjectProps.props'
+      - 'props/SharedTestProps.props'
       - 'src/**'
       - 'test/**'
   pull_request:
     paths:
       - '.github/workflows/BitMono.CLI.yaml'
+      - 'props/SharedPackages.props'
+      - 'props/SharedProjectProps.props'
+      - 'props/SharedTestProps.props'
       - 'src/**'
       - 'test/**'
 
@@ -38,7 +44,7 @@ jobs:
           fetch-depth: 0
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         env:
           # Disable the .NET logo in the console output.
           DOTNET_NOLOGO: true
