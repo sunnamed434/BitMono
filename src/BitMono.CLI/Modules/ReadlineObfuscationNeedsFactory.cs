@@ -3,21 +3,54 @@
 internal class ReadlineObfuscationNeedsFactory
 {
     private readonly string[] _args;
-    private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly List<ProtectionSetting> _protectionSettings;
-    private readonly ILogger _logger;
 
-    public ReadlineObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings,
-        List<ProtectionSetting> protectionSettings, ILogger logger)
+    public ReadlineObfuscationNeedsFactory(string[] args)
     {
         _args = args;
-        _obfuscationSettings = obfuscationSettings;
-        _protectionSettings = protectionSettings;
-        _logger = logger.ForContext<ReadlineObfuscationNeedsFactory>();
     }
 
     public ObfuscationNeeds Create(CancellationToken cancellationToken)
     {
+        ObfuscationSettings? obfuscationSettings = null;
+        List<ProtectionSetting>? protectionSettings = null;
+        string? criticalsFile = null;
+        string? loggingFile = null;
+        string? obfuscationFile = null;
+
+        if (!File.Exists(KnownConfigNames.Criticals))
+        {
+            criticalsFile = AskForConfigFile("criticals", KnownConfigNames.Criticals, cancellationToken);
+        }
+
+        if (!File.Exists(KnownConfigNames.Logging))
+        {
+            loggingFile = AskForConfigFile("logging", KnownConfigNames.Logging, cancellationToken);
+        }
+
+        if (!File.Exists(KnownConfigNames.Obfuscation))
+        {
+            obfuscationFile = AskForConfigFile("obfuscation", KnownConfigNames.Obfuscation, cancellationToken);
+        }
+
+        try
+        {
+            if (File.Exists(obfuscationFile ?? KnownConfigNames.Obfuscation))
+            {
+                var obfuscationConfig = new BitMonoObfuscationConfiguration(obfuscationFile);
+                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+            }
+
+            if (File.Exists(KnownConfigNames.Protections))
+            {
+                var protectionsConfig = new BitMonoProtectionsConfiguration();
+                protectionSettings = protectionsConfig.Configuration.Get<ProtectionSettings>()?.Protections;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Warning: Could not load configuration files: {ex}");
+        }
+
         var fileName = GetFileName(_args);
         while (true)
         {
@@ -25,7 +58,7 @@ internal class ReadlineObfuscationNeedsFactory
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                _logger.Information("Please, specify file or drag-and-drop in BitMono CLI");
+                Console.WriteLine("Please, specify file or drag-and-drop in BitMono CLI");
 
                 fileName = PathFormatterUtility.Format(Console.ReadLine());
                 cancellationToken.ThrowIfCancellationRequested();
@@ -33,16 +66,16 @@ internal class ReadlineObfuscationNeedsFactory
                 {
                     if (File.Exists(fileName))
                     {
-                        _logger.Information("File successfully specified: {0}", fileName);
+                        Console.WriteLine($"File successfully specified: {fileName}");
                         break;
                     }
 
-                    _logger.Warning("File cannot be found, please, try again!");
+                    Console.WriteLine("File cannot be found, please, try again!");
                 }
                 else
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    _logger.Warning("Unable to specify empty null or whitespace file, please, try again!");
+                    Console.WriteLine("Unable to specify empty null or whitespace file, please, try again!");
                 }
             }
             catch (OperationCanceledException)
@@ -51,25 +84,25 @@ internal class ReadlineObfuscationNeedsFactory
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Something went wrong while specifying the file");
+                Console.WriteLine($"Something went wrong while specifying the file: {ex}");
             }
         }
 
         List<string> protections = [];
 
-        bool hasEnabledProtections = _protectionSettings != null && _protectionSettings.Any(x => x.Enabled);
-        bool hasAnyProtectionSettings = _protectionSettings != null && _protectionSettings.Any();
+        bool hasEnabledProtections = protectionSettings != null && protectionSettings.Any(x => x.Enabled);
+        bool hasAnyProtectionSettings = protectionSettings != null && protectionSettings.Any();
 
         if (!hasEnabledProtections)
         {
             if (!hasAnyProtectionSettings)
             {
-                _logger.Warning("No protection settings found (protections.json may be missing or empty)");
-                _logger.Information("Please input the preferred protections with ',' delimiter, example: StringsEncryption,AntiDe4dot,ControlFlow");
+                Console.WriteLine("No protection settings found (protections.json may be missing or empty)");
+                Console.WriteLine("Please input the preferred protections with ',' delimiter, example: StringsEncryption,AntiDe4dot,ControlFlow");
             }
             else
             {
-                _logger.Warning("No protection is enabled in protections.json file, please either enable any protection first or input the preferred with ',' delimiter, example: StringsEncryption,AntiDe4dot");
+                Console.WriteLine("No protection is enabled in protections.json file, please either enable any protection first or input the preferred with ',' delimiter, example: StringsEncryption,AntiDe4dot");
             }
 
             while (true)
@@ -93,38 +126,36 @@ internal class ReadlineObfuscationNeedsFactory
                             // If we have protection settings, validate against them but allow unknown protections
                             if (hasAnyProtectionSettings)
                             {
-                                var availableProtections = _protectionSettings.Select(p => p.Name).ToList();
+                                var availableProtections = protectionSettings!.Select(p => p.Name).ToList();
                                 var unknownProtections = inputProtections.Where(p => !availableProtections.Contains(p, StringComparer.OrdinalIgnoreCase)).ToList();
 
                                 if (unknownProtections.Any())
                                 {
-                                    _logger.Warning("The following protection(s) are not found in current protections.json but will be used anyway: {0}",
-                                        string.Join(", ", unknownProtections));
-                                    _logger.Information("Available protections in config: {0}",
-                                        availableProtections.Any() ? string.Join(", ", availableProtections) : "none");
+                                    Console.WriteLine($"The following protection(s) are not found in current protections.json but will be used anyway: {string.Join(", ", unknownProtections)}");
+                                    Console.WriteLine($"Available protections in config: {(availableProtections.Any() ? string.Join(", ", availableProtections) : "none")}");
                                 }
 
                                 var knownProtections = inputProtections.Where(p => availableProtections.Contains(p, StringComparer.OrdinalIgnoreCase)).ToList();
                                 if (knownProtections.Any())
                                 {
-                                    _logger.Information("Recognized protection(s) from config: {0}", string.Join(", ", knownProtections));
+                                    Console.WriteLine($"Recognized protection(s) from config: {string.Join(", ", knownProtections)}");
                                 }
                             }
                             else
                             {
-                                _logger.Warning("Cannot validate protection names as protections.json is missing/empty. Using specified protections as-is.");
+                                Console.WriteLine("Cannot validate protection names as protections.json is missing/empty. Using specified protections as-is.");
                             }
 
                             protections = inputProtections;
-                            _logger.Information("Protections successfully specified: {0}", string.Join(", ", protections));
+                            Console.WriteLine($"Protections successfully specified: {string.Join(", ", protections)}");
                             break;
                         }
 
-                        _logger.Warning("No valid protections found in input, please try again!");
+                        Console.WriteLine("No valid protections found in input, please try again!");
                     }
                     else
                     {
-                        _logger.Information("No protections specified, continuing without additional protections...");
+                        Console.WriteLine("No protections specified, continuing without additional protections...");
                         break;
                     }
                 }
@@ -134,29 +165,29 @@ internal class ReadlineObfuscationNeedsFactory
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Something went wrong while specifying protections");
+                    Console.WriteLine($"Something went wrong while specifying protections: {ex}");
                 }
             }
         }
         else
         {
             // Use enabled protections from settings
-            protections = _protectionSettings.Where(x => x.Enabled).Select(x => x.Name).ToList();
-            _logger.Information("Using enabled protections from settings: {0}", string.Join(", ", protections));
+            protections = protectionSettings!.Where(x => x.Enabled).Select(x => x.Name).ToList();
+            Console.WriteLine($"Using enabled protections from settings: {string.Join(", ", protections)}");
         }
 
         string dependenciesDirectoryName;
         string outputDirectoryName;
         var fileBaseDirectory = Path.GetDirectoryName(fileName);
-        if (_obfuscationSettings.ForceObfuscation)
+        if (obfuscationSettings?.ForceObfuscation == true)
         {
             dependenciesDirectoryName = fileBaseDirectory;
             outputDirectoryName = fileBaseDirectory;
         }
         else
         {
-            outputDirectoryName = Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName);
-            dependenciesDirectoryName = Path.Combine(fileBaseDirectory, _obfuscationSettings.ReferencesDirectoryName);
+            outputDirectoryName = Path.Combine(fileBaseDirectory, obfuscationSettings?.OutputDirectoryName ?? "output");
+            dependenciesDirectoryName = Path.Combine(fileBaseDirectory, obfuscationSettings?.ReferencesDirectoryName ?? "libs");
             if (!Directory.Exists(dependenciesDirectoryName))
             {
                 while (true)
@@ -167,30 +198,28 @@ internal class ReadlineObfuscationNeedsFactory
 
                         if (Directory.Exists(dependenciesDirectoryName))
                         {
-                            _logger.Information("Dependencies (libs) successfully found automatically: {0}!",
-                                dependenciesDirectoryName);
+                            Console.WriteLine($"Dependencies (libs) successfully found automatically: {dependenciesDirectoryName}!");
                             break;
                         }
 
-                        _logger.Information("Please, specify dependencies (libs) path: ");
+                        Console.WriteLine("Please, specify dependencies (libs) path: ");
                         var newDependenciesDirectoryName = PathFormatterUtility.Format(Console.ReadLine());
                         if (!string.IsNullOrWhiteSpace(newDependenciesDirectoryName))
                         {
                             if (Directory.Exists(newDependenciesDirectoryName))
                             {
                                 dependenciesDirectoryName = newDependenciesDirectoryName;
-                                _logger.Information("Dependencies (libs) successfully specified: {0}!",
-                                    newDependenciesDirectoryName);
+                                Console.WriteLine($"Dependencies (libs) successfully specified: {newDependenciesDirectoryName}!");
                                 break;
                             }
                             else
                             {
-                                _logger.Information("Libs directory doesn't exist, please, try again!");
+                                Console.WriteLine("Libs directory doesn't exist, please, try again!");
                             }
                         }
                         else
                         {
-                            _logger.Information("Unable to specify empty (libs), please, try again!");
+                            Console.WriteLine("Unable to specify empty (libs), please, try again!");
                         }
                     }
                     catch (OperationCanceledException)
@@ -199,15 +228,27 @@ internal class ReadlineObfuscationNeedsFactory
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(ex, "Something went wrong while specifying the dependencies (libs) path");
+                        Console.WriteLine($"Something went wrong while specifying the dependencies (libs) path: {ex}");
                     }
                 }
             }
             else
             {
-                _logger.Information("Dependencies (libs) directory was automatically found in: {0}",
-                    dependenciesDirectoryName);
+                Console.WriteLine($"Dependencies (libs) directory was automatically found in: {dependenciesDirectoryName}");
             }
+        }
+
+        ProtectionSettings? finalProtectionSettings = null;
+        if (protections.Any())
+        {
+            finalProtectionSettings = new ProtectionSettings
+            {
+                Protections = protections.Select(x => new ProtectionSetting
+                {
+                    Name = x,
+                    Enabled = true
+                }).ToList()
+            };
         }
 
         Directory.CreateDirectory(outputDirectoryName);
@@ -220,6 +261,10 @@ internal class ReadlineObfuscationNeedsFactory
             OutputPath = outputDirectoryName,
             Way = ObfuscationNeedsWay.Readline,
             Protections = protections,
+            ProtectionSettings = finalProtectionSettings,
+            CriticalsFile = criticalsFile,
+            LoggingFile = loggingFile,
+            ObfuscationFile = obfuscationFile
         };
     }
 
@@ -231,5 +276,85 @@ internal class ReadlineObfuscationNeedsFactory
             file = PathFormatterUtility.Format(args[0]);
         }
         return file;
+    }
+
+    private string? AskForConfigFile(string configType, string defaultFileName, CancellationToken cancellationToken, bool required = true)
+    {
+        while (true)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                Console.WriteLine($"No {configType} configuration file found ({defaultFileName}).");
+
+                if (required)
+                {
+                    Console.WriteLine($"The {configType} configuration file is required for BitMono to function properly.");
+                    Console.WriteLine($"Please specify the path to your {configType} configuration file:");
+                }
+                else
+                {
+                    Console.WriteLine($"Would you like to specify a custom {configType} configuration file? (y/n, or press Enter to skip):");
+                }
+
+                var response = Console.ReadLine();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!required && (string.IsNullOrWhiteSpace(response) || response.Equals("n", StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine($"Skipping {configType} configuration file.");
+                    return null;
+                }
+
+                if (required || response.Equals("y", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!required)
+                    {
+                        Console.WriteLine($"Please specify the path to your {configType} configuration file:");
+                    }
+
+                    var filePath = PathFormatterUtility.Format(Console.ReadLine());
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (!string.IsNullOrWhiteSpace(filePath))
+                    {
+                        if (File.Exists(filePath))
+                        {
+                            Console.WriteLine($"{configType} configuration file successfully specified: {filePath}");
+                            return filePath;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"File {filePath} does not exist. Please try again{(required ? "" : " or press Enter to skip")}.");
+                        }
+                    }
+                    else
+                    {
+                        if (required)
+                        {
+                            Console.WriteLine($"No file path specified. The {configType} configuration file is required. Please try again.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"No file path specified. Skipping {configType} configuration file.");
+                            return null;
+                        }
+                    }
+                }
+                else if (!required)
+                {
+                    Console.WriteLine("Please answer 'y' for yes, 'n' for no, or press Enter to skip.");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Something went wrong while specifying the {configType} configuration file: {ex}");
+            }
+        }
     }
 }

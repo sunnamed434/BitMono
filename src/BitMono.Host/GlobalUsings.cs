@@ -23,6 +23,7 @@ global using BitMono.Core.Factories;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Resolvers;
 global using BitMono.Core.Services;
+global using BitMono.Shared;
 global using BitMono.Host.Ioc;
 global using BitMono.Shared.Models;
 global using Serilog.Enrichers.Sensitive;

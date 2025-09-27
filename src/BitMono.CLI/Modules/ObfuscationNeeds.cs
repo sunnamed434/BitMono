@@ -9,6 +9,10 @@ internal class ObfuscationNeeds
     public string OutputPath { get; set; }
     public ObfuscationNeedsWay Way { get; set; }
     public List<string> Protections { get; set; }
+    public ProtectionSettings? ProtectionSettings { get; set; }
+    public string? CriticalsFile { get; set; }
+    public string? LoggingFile { get; set; }
+    public string? ObfuscationFile { get; set; }
 #pragma warning restore CS8618
 }
 
