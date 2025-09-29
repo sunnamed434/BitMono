@@ -24,10 +24,23 @@ internal class Program
         try
         {
             Console.Title = BitMonoFileVersionText;
+
+            needs = new ObfuscationNeedsFactory(args).Create(CancellationToken);
+            if (needs == null)
+            {
+                statusCode = KnownReturnStatuses.Failure;
+                return statusCode;
+            }
+
             var module = new BitMonoModule(
                 configureContainer => configureContainer.AddProtections(),
-                configureServices => configureServices.AddConfigurations(),
-                configureLogger => configureLogger.WriteTo.AddConsoleLogger());
+                configureServices => configureServices.AddConfigurations(
+                    protectionSettings: needs.ProtectionSettings,
+                    criticalsFile: needs.CriticalsFile,
+                    obfuscationFile: needs.ObfuscationFile,
+                    loggingFile: needs.LoggingFile),
+                configureLogger => configureLogger.WriteTo.AddConsoleLogger(),
+                loggingFile: needs.LoggingFile);
 
             var app = new BitMonoApplication().RegisterModule(module);
             await using var serviceProvider = await app.BuildAsync(CancellationToken);
@@ -36,23 +49,6 @@ internal class Program
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();
-            var protections = serviceProvider.GetRequiredService<IOptions<ProtectionSettings>>().Value.Protections!;
-            needs = new ObfuscationNeedsFactory(args, obfuscation, protections, logger).Create(CancellationToken);
-            if (needs == null)
-            {
-                statusCode = KnownReturnStatuses.Failure;
-                return statusCode;
-            }
-
-            if (needs.Protections.Count != 0)
-            {
-                protections.Clear();
-                protections.AddRange(needs.Protections.Select(x => new ProtectionSetting
-                {
-                    Enabled = true,
-                    Name = x
-                }).ToList());
-            }
 
             CancellationToken.ThrowIfCancellationRequested();
 

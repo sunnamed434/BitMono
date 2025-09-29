@@ -2,21 +2,23 @@
 
 public class BitMonoModule : Module
 {
-    private const string LoggingFileName = "logging.json";
     private const string DateVariableName = "date";
     private const string DateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
     private readonly Action<ContainerBuilder>? _configureContainer;
     private readonly Action<ServiceCollection>? _configureServices;
     private readonly Action<LoggerConfiguration>? _configureLogger;
+    private readonly string? _loggingFile;
 
     public BitMonoModule(
         Action<ContainerBuilder>? configureContainer = null,
         Action<ServiceCollection>? configureServices = null,
-        Action<LoggerConfiguration>? configureLogger = null)
+        Action<LoggerConfiguration>? configureLogger = null,
+        string? loggingFile = null)
     {
         _configureContainer = configureContainer;
         _configureServices = configureServices;
         _configureLogger = configureLogger;
+        _loggingFile = loggingFile;
     }
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -26,7 +28,7 @@ public class BitMonoModule : Module
 
         var loggingConfigurationRoot = new ConfigurationBuilder().AddJsonFileEx(configure =>
         {
-            configure.Path = LoggingFileName;
+            configure.Path = _loggingFile ?? KnownConfigNames.Logging;
             configure.Optional = false;
             configure.Variables = new Dictionary<string, string>
             {
