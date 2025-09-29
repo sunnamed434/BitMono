@@ -70,16 +70,15 @@
   "UseCriticalBaseTypes": true,
   "CriticalBaseTypes": [
     // RocketMod
-    "RocketPlugin",
+    "RocketPlugin*",
 
     // OpenMod
-    "OpenModUnturnedPlugin",
-    "OpenModUniversalPlugin",
-    "Command",
+    "OpenModUnturnedPlugin*",
+    "OpenModUniversalPlugin*",
+    "Command*",
 
     // rust-oxide-umod
-    "RustPlugin"
-
+    "RustPlugin*"
   ],
 
   // Exclude from obfuscation if the member starts with string
