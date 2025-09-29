@@ -3,14 +3,10 @@ namespace BitMono.CLI.Modules;
 internal class OptionsObfuscationNeedsFactory
 {
     private readonly string[] _args;
-    private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly ILogger _logger;
 
-    public OptionsObfuscationNeedsFactory(string[] args, ObfuscationSettings obfuscationSettings, ILogger logger)
+    public OptionsObfuscationNeedsFactory(string[] args)
     {
         _args = args;
-        _obfuscationSettings = obfuscationSettings;
-        _logger = logger.ForContext<OptionsObfuscationNeedsFactory>();
     }
 
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
@@ -22,20 +18,54 @@ internal class OptionsObfuscationNeedsFactory
             with.HelpWriter = Console.Error;
         });
         var parserResult = parser.ParseArguments<Options>(_args);
-        if (parserResult.Errors.IsEmpty() == false)
+        if (!parserResult.Errors.IsEmpty())
         {
             return null;
         }
         var options = parserResult.Value;
-        var filePath = PathFormatterUtility.Format(options.File!);
-        if (File.Exists(filePath) == false)
+
+        ObfuscationSettings? obfuscationSettings = null;
+        try
         {
-            _logger.Fatal($"File {filePath} cannot be found, please, try again!");
+            if (options.ObfuscationFile != null && File.Exists(options.ObfuscationFile))
+            {
+                var obfuscationConfig = new BitMonoObfuscationConfiguration(options.ObfuscationFile);
+                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+            }
+            else if (File.Exists(KnownConfigNames.Obfuscation))
+            {
+                var obfuscationConfig = new BitMonoObfuscationConfiguration();
+                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Warning: Could not load obfuscation configuration: {ex}");
+        }
+
+        var filePath = PathFormatterUtility.Format(options.File!);
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"File {filePath} cannot be found, please, try again!");
             return null;
         }
-        ObfuscationNeeds needs;
         var fileBaseDirectory = Path.GetDirectoryName(filePath);
-        if (_obfuscationSettings.ForceObfuscation)
+
+        ProtectionSettings? protectionSettings = null;
+        if (options.Protections.Any())
+        {
+            protectionSettings = new ProtectionSettings
+            {
+                Protections = options.Protections.Select(x => new ProtectionSetting
+                {
+                    Name = x,
+                    Enabled = true
+                }).ToList()
+            };
+        }
+
+        ObfuscationNeeds needs;
+        if (obfuscationSettings?.ForceObfuscation == true)
         {
             needs = new ObfuscationNeeds
             {
@@ -44,7 +74,11 @@ internal class OptionsObfuscationNeedsFactory
                 ReferencesDirectoryName = fileBaseDirectory,
                 OutputPath = fileBaseDirectory,
                 Protections = options.Protections.ToList(),
-                Way = ObfuscationNeedsWay.Options
+                ProtectionSettings = protectionSettings,
+                Way = ObfuscationNeedsWay.Options,
+                CriticalsFile = options.CriticalsFile,
+                LoggingFile = options.LoggingFile,
+                ObfuscationFile = options.ObfuscationFile
             };
         }
         else
@@ -55,12 +89,16 @@ internal class OptionsObfuscationNeedsFactory
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
                     ? options.Libraries
-                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.ReferencesDirectoryName),
+                    : Path.Combine(fileBaseDirectory, obfuscationSettings?.ReferencesDirectoryName ?? "libs"),
                 OutputPath = options.Output?.IsNullOrEmpty() == false
                     ? options.Output
-                    : Path.Combine(fileBaseDirectory, _obfuscationSettings.OutputDirectoryName),
+                    : Path.Combine(fileBaseDirectory, obfuscationSettings?.OutputDirectoryName ?? "output"),
                 Protections = options.Protections.ToList(),
-                Way = ObfuscationNeedsWay.Options
+                ProtectionSettings = protectionSettings,
+                Way = ObfuscationNeedsWay.Options,
+                CriticalsFile = options.CriticalsFile,
+                LoggingFile = options.LoggingFile,
+                ObfuscationFile = options.ObfuscationFile
             };
         }
 

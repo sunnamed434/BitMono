@@ -125,7 +125,7 @@ public class BitMonoObfuscator
         _protectionsSort = protectionsSorter.Sort(protections, protectionSettings);
         if (!_protectionsSort.HasProtections)
         {
-            throw new Exception("No protections were detected. Please specify or enable them in `protections.json` file.");
+            throw new Exception("No protections were detected. Please specify or enable them in `protections.json` file or `--protections` arg.");
         }
     }
     private bool OutputProtectionsAsync()

@@ -22,15 +22,27 @@ public static class AutofacContainerBuilderExtensions
         return source;
     }
     public static ServiceCollection AddConfigurations(this ServiceCollection source,
-        string? protectionsFile = null, string? criticalsFile = null, string? obfuscationFile = null)
+        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null)
     {
-        var protections = new BitMonoProtectionsConfiguration(protectionsFile);
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
         var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
         source.AddOptions()
-            .Configure<ProtectionSettings>(protections.Configuration)
             .Configure<CriticalsSettings>(criticals.Configuration)
             .Configure<ObfuscationSettings>(obfuscation.Configuration);
+
+        if (protectionSettings != null)
+        {
+            source.Configure<ProtectionSettings>(configure =>
+            {
+                configure.Protections = protectionSettings.Protections;
+            });
+        }
+        else
+        {
+            var protections = new BitMonoProtectionsConfiguration();
+            source.Configure<ProtectionSettings>(protections.Configuration);
+        }
+
         return source;
     }
 }
