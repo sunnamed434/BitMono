@@ -78,7 +78,8 @@ internal class OptionsObfuscationNeedsFactory
                 Way = ObfuscationNeedsWay.Options,
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
-                ObfuscationFile = options.ObfuscationFile
+                ObfuscationFile = options.ObfuscationFile,
+                ProtectionsFile = options.ProtectionsFile
             };
         }
         else
@@ -98,7 +99,8 @@ internal class OptionsObfuscationNeedsFactory
                 Way = ObfuscationNeedsWay.Options,
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
-                ObfuscationFile = options.ObfuscationFile
+                ObfuscationFile = options.ObfuscationFile,
+                ProtectionsFile = options.ProtectionsFile
             };
         }
 

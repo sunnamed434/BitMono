@@ -30,7 +30,7 @@ public static class AutofacContainerBuilderExtensions
         return source;
     }
     public static ServiceCollection AddConfigurations(this ServiceCollection source,
-        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null)
+        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null, string? protectionsFile = null)
     {
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
         var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
@@ -47,7 +47,7 @@ public static class AutofacContainerBuilderExtensions
         }
         else
         {
-            var protections = new BitMonoProtectionsConfiguration();
+            var protections = new BitMonoProtectionsConfiguration(protectionsFile);
             source.Configure<ProtectionSettings>(protections.Configuration);
         }
 
