@@ -17,26 +17,18 @@ public class ProtectionsNotifier
         {
             return;
         }
-        if (protectionsSort.HasProtections == false)
+        if (!protectionsSort.HasProtections)
         {
             return;
         }
 
         var stringBuilder = new StringBuilder();
-        stringBuilder.Append(string.Join(", ", protectionsSort.SortedProtections.Select(x => x.GetName())));
-        if (protectionsSort.Pipelines.Any())
-        {
-            stringBuilder.Append(", ");
-            stringBuilder.Append(string.Join(", ", protectionsSort.Pipelines.Select(x => x.GetName())));
-        }
-        if (protectionsSort.Packers.Any())
-        {
-            stringBuilder.Append(", ");
-            stringBuilder.Append(string.Join(", ", protectionsSort.Packers.Select(x => x.GetName())));
-        }
-        var enabledProtectionsCount = protectionsSort.SortedProtections.Count
-                                      + protectionsSort.Pipelines.Count
-                                      + protectionsSort.Packers.Count;
+        List<string> allProtections = [];
+        allProtections.AddRange(protectionsSort.SortedProtections.Select(x => x.GetName()));
+        allProtections.AddRange(protectionsSort.Pipelines.Select(x => x.GetName()));
+        allProtections.AddRange(protectionsSort.Packers.Select(x => x.GetName()));
+        stringBuilder.Append(string.Join(", ", allProtections));
+        var enabledProtectionsCount = protectionsSort.SortedProtections.Count + protectionsSort.Pipelines.Count + protectionsSort.Packers.Count;
         _logger.Information("({0}) Enabled protection(s): {1}", enabledProtectionsCount, stringBuilder.ToString());
         var runtimeMonikerNotifier = new ProtectionsRuntimeMonikerNotifier(_obfuscationSettings, _logger);
         runtimeMonikerNotifier.Notify(protectionsSort, cancellationToken);
