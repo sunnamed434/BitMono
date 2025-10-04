@@ -14,6 +14,7 @@ internal class ObfuscationNeeds
     public string? LoggingFile { get; set; }
     public string? ObfuscationFile { get; set; }
     public string? ProtectionsFile { get; set; }
+    public ObfuscationSettings? ObfuscationSettings { get; set; }
 #pragma warning restore CS8618
 }
 

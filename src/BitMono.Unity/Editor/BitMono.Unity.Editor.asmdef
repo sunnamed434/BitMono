@@ -1,7 +1,10 @@
 {
-    "name": "BitMono.Unity.Runtime",
+    "name": "BitMono.Unity.Editor",
+    "rootNamespace": "BitMono.Unity.Editor",
     "references": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

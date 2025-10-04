@@ -37,6 +37,11 @@ internal class OptionsObfuscationNeedsFactory
                 var obfuscationConfig = new BitMonoObfuscationConfiguration();
                 obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
             }
+
+            if (obfuscationSettings != null && options.NoWatermark)
+            {
+                obfuscationSettings.Watermark = false;
+            }
         }
         catch (Exception ex)
         {
@@ -79,7 +84,8 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile
+                ProtectionsFile = options.ProtectionsFile,
+                ObfuscationSettings = obfuscationSettings
             };
         }
         else
@@ -100,7 +106,8 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile
+                ProtectionsFile = options.ProtectionsFile,
+                ObfuscationSettings = obfuscationSettings
             };
         }
 

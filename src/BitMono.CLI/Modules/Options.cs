@@ -25,4 +25,7 @@ internal class Options
 
     [Option("obfuscation-file", Required = false, HelpText = "Set obfuscation configuration file path.")]
     public string? ObfuscationFile { get; set; }
+
+    [Option("no-watermark", Required = false, HelpText = "Disable watermarking (overrides obfuscation.json setting).")]
+    public bool NoWatermark { get; set; }
 }

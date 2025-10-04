@@ -30,13 +30,29 @@ public static class AutofacContainerBuilderExtensions
         return source;
     }
     public static ServiceCollection AddConfigurations(this ServiceCollection source,
-        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null, string? protectionsFile = null)
+        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null, string? protectionsFile = null, ObfuscationSettings? obfuscationSettings = null)
     {
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
-        var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
         source.AddOptions()
-            .Configure<CriticalsSettings>(criticals.Configuration)
-            .Configure<ObfuscationSettings>(obfuscation.Configuration);
+            .Configure<CriticalsSettings>(criticals.Configuration);
+
+        if (obfuscationSettings != null)
+        {
+            source.Configure<ObfuscationSettings>(configure =>
+            {
+                configure.Watermark = obfuscationSettings.Watermark;
+                configure.ClearCLI = obfuscationSettings.ClearCLI;
+                configure.ForceObfuscation = obfuscationSettings.ForceObfuscation;
+                configure.ReferencesDirectoryName = obfuscationSettings.ReferencesDirectoryName;
+                configure.OutputDirectoryName = obfuscationSettings.OutputDirectoryName;
+                configure.OpenFileDestinationInFileExplorer = obfuscationSettings.OpenFileDestinationInFileExplorer;
+            });
+        }
+        else
+        {
+            var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
+            source.Configure<ObfuscationSettings>(obfuscation.Configuration);
+        }
 
         if (protectionSettings != null)
         {
