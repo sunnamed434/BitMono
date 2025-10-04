@@ -15,7 +15,7 @@ namespace BitMono.Unity.Editor
     public class BitMonoBuildProcessor : IPostBuildPlayerScriptDLLs
     {
         public int callbackOrder => 0;
-        
+
         private static CancellationTokenSource _cancellationTokenSource;
         private static Process _currentProcess;
 
@@ -56,18 +56,18 @@ namespace BitMono.Unity.Editor
                 LogDebugStatic("Cancelling obfuscation process...");
                 _cancellationTokenSource.Cancel();
             }
-            
+
             if (_currentProcess != null && !_currentProcess.HasExited)
             {
                 try
                 {
-                    UnityEngine.Debug.Log("[BitMono] Killing obfuscation process...");
+                    LogDebugStatic("Killing obfuscation process...");
                     _currentProcess.Kill();
                     _currentProcess.WaitForExit(2000);
                 }
                 catch (Exception ex)
                 {
-                    UnityEngine.Debug.LogWarning($"[BitMono] Error killing process: {ex.Message}");
+                    LogDebugStatic($"Error killing process: {ex}");
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace BitMono.Unity.Editor
             _cancellationTokenSource = new CancellationTokenSource();
 
             LogDebug("Starting obfuscation process...");
-            
+
             if (config.UseUnityUIForProtections)
             {
                 var enabledProtectionsCount = config.ProtectionSettings?.Count(p => p.Enabled) ?? 0;
@@ -126,7 +126,7 @@ namespace BitMono.Unity.Editor
                 }
                 LogDebug($"{enabledProtectionsCount} protection(s) enabled");
             }
-            
+
             var assemblyPath = GetAssemblyLocation("Assembly-CSharp.dll");
             if (string.IsNullOrEmpty(assemblyPath))
             {
@@ -135,7 +135,7 @@ namespace BitMono.Unity.Editor
             }
 
             LogDebug($"Found assembly at: {assemblyPath}");
-            
+
             try
             {
                 ObfuscateAssembly(assemblyPath, _cancellationTokenSource.Token);
@@ -162,13 +162,13 @@ namespace BitMono.Unity.Editor
         private string GetAssemblyLocation(string assemblyName)
         {
             LogDebug($"Looking for assembly: {assemblyName}");
-            
+
             if (File.Exists(assemblyName) && assemblyName.EndsWith(".dll"))
             {
                 LogDebug($"Found assembly at current directory: {assemblyName}");
                 return assemblyName;
             }
-            
+
             if (!assemblyName.EndsWith(".dll"))
             {
                 assemblyName += ".dll";
@@ -213,8 +213,8 @@ namespace BitMono.Unity.Editor
 
             var config = LoadBitMonoConfig();
             string args;
-            
-            LogDebug($"Config loaded: UseUnityUI={config?.UseUnityUIForProtections}, ProtectionSettings count={config?.ProtectionSettings?.Count ?? 0}");
+
+            LogDebug($"Config loaded UseUnityUI: {config?.UseUnityUIForProtections} ProtectionSettings count: {config?.ProtectionSettings?.Count ?? 0}");
             if (config?.ProtectionSettings != null)
             {
                 var enabledCount = config.ProtectionSettings.Count(p => p.Enabled);
@@ -225,7 +225,7 @@ namespace BitMono.Unity.Editor
                     LogDebug($"Enabled protection names: {enabledNames}");
                 }
             }
-            
+
             if (config != null && config.UseUnityUIForProtections && config.ProtectionSettings.Any(p => p.Enabled))
             {
                 var enabledProtections = config.ProtectionSettings.Where(p => p.Enabled).Select(p => p.Name);
@@ -269,12 +269,12 @@ namespace BitMono.Unity.Editor
 
             var timeout = GetObfuscationTimeout();
             LogDebug($"Starting obfuscation with timeout: {timeout.TotalMinutes} minutes");
-            
+
             var startTime = DateTime.Now;
             var completed = false;
             var progressTitle = "BitMono Obfuscation";
             var progressInfo = "Obfuscating assembly...";
-            
+
             while (!completed && !process.HasExited)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -296,7 +296,7 @@ namespace BitMono.Unity.Editor
                     LogDebug("[BitMono] Build cancelled by user");
                     throw new BuildFailedException("Build cancelled by user");
                 }
-                
+
                 if (DateTime.Now - startTime > timeout)
                 {
                     LogDebug($"Timeout reached ({timeout.TotalMinutes} minutes), killing process");
@@ -315,10 +315,10 @@ namespace BitMono.Unity.Editor
                     EditorUtility.ClearProgressBar();
                     throw new BuildFailedException($"BitMono obfuscation timed out after {timeout.TotalSeconds} seconds");
                 }
-                
+
                 var elapsed = DateTime.Now - startTime;
                 var progress = Math.Min((float)(elapsed.TotalSeconds / timeout.TotalSeconds), 0.99f);
-                
+
                 if (EditorUtility.DisplayCancelableProgressBar(progressTitle, progressInfo, progress))
                 {
                     LogDebug("User cancelled obfuscation via progress bar");
@@ -336,14 +336,14 @@ namespace BitMono.Unity.Editor
                         LogDebug($"Error killing process: {ex.Message}");
                     }
                     EditorUtility.ClearProgressBar();
-                    UnityEngine.Debug.Log("[BitMono] Build cancelled by user");
+                    LogDebug("Build cancelled by user");
                     throw new BuildFailedException("Build cancelled by user");
                 }
-                
+
                 Thread.Sleep(1000);
                 completed = process.WaitForExit(0);
             }
-            
+
             EditorUtility.ClearProgressBar();
 
             var output = process.StandardOutput.ReadToEnd();
@@ -451,7 +451,7 @@ namespace BitMono.Unity.Editor
 
                     if (exitCode != 0)
                     {
-                        UnityEngine.Debug.LogError($"[BitMono] Obfuscation failed with exit code {exitCode} for {Path.GetFileName(assemblyPath)}");
+                        LogDebugStatic($"Obfuscation failed with exit code {exitCode} for {Path.GetFileName(assemblyPath)}");
                     }
                 }
                 catch (OperationCanceledException)

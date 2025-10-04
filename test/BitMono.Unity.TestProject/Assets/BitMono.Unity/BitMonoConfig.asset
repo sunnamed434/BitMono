@@ -15,40 +15,6 @@ MonoBehaviour:
   EnableObfuscation: 1
   ConfigPath: 
   UseUnityUIForProtections: 1
-  ProtectionSettings:
-  - Name: AntiILdasm
-    Enabled: 1
-  - Name: AntiDe4dot
-    Enabled: 1
-  - Name: ObjectReturnType
-    Enabled: 0
-  - Name: NoNamespaces
-    Enabled: 0
-  - Name: FullRenamer
-    Enabled: 0
-  - Name: AntiDebugBreakpoints
-    Enabled: 0
-  - Name: BillionNops
-    Enabled: 0
-  - Name: StringsEncryption
-    Enabled: 0
-  - Name: UnmanagedString
-    Enabled: 0
-  - Name: DotNetHook
-    Enabled: 0
-  - Name: CallToCalli
-    Enabled: 1
-  - Name: AntiDecompiler
-    Enabled: 0
-  - Name: BitMethodDotnet
-    Enabled: 0
-  - Name: BitDecompiler
-    Enabled: 0
-  - Name: BitTimeDateStamp
-    Enabled: 0
-  - Name: BitDotNet
-    Enabled: 0
-  - Name: BitMono
-    Enabled: 0
+  ProtectionSettings: []
   ObfuscationTimeoutMinutes: 5
   EnableDebugLogging: 0

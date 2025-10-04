@@ -101,11 +101,6 @@ namespace BitMono.Unity.Editor
                 if (protectionsData?.Protections != null && protectionsData.Protections.Length > 0)
                 {
                     ProtectionSettings.AddRange(protectionsData.Protections);
-                    UnityEngine.Debug.Log($"[BitMono] Loaded {protectionsData.Protections.Length} protections from file");
-                }
-                else
-                {
-                    UnityEngine.Debug.LogWarning("[BitMono] No protections found in protections.json file");
                 }
                 
                 UnityEditor.EditorUtility.SetDirty(this);
