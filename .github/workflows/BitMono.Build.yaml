@@ -146,6 +146,7 @@ jobs:
         uses: game-ci/unity-builder@v4
         env:
           PACKAGE_VERSION: ${{ needs.Build.outputs.version }}
+          VERSION: ${{ needs.Build.outputs.version }}
           UNITY_VERSION: ${{ matrix.unity-version }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -160,15 +161,21 @@ jobs:
       
       - name: Verify .unitypackage was created
         run: |
-          if [ -f "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" ]; then
-            echo "Unity package created successfully"
-            size_mb=$(awk "BEGIN {printf \"%.2f\", $(stat -c%s \"BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage\")/1024/1024}")
-            echo "File size: ${size_mb} MB"
-          else
-            echo "Unity package not found!" >&2
+          set -e
+          VERSION_NO_HASH='${{ needs.Build.outputs.version }}'
+          UNITY_VER='${{ matrix.unity-version }}'
+          FILE="BitMono-Unity-v${VERSION_NO_HASH}-Unity${UNITY_VER}.unitypackage"
+
+          if [ ! -f "$FILE" ]; then
+            echo "Unity package not found at expected path: ./$FILE" >&2
+            echo "Available unitypackages:" >&2
             find . -name "*.unitypackage" -print
             exit 1
           fi
+
+          echo "Unity package created: $FILE"
+          size_mb=$(awk "BEGIN {printf \"%.2f\", $(stat -c%s \"$FILE\")/1024/1024}")
+          echo "File size: ${size_mb} MB"
       
       - name: Create Unity Package Directory
         run: |
