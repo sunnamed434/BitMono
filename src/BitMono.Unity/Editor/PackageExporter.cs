@@ -14,12 +14,13 @@ namespace BitMono.Editor
         {
             try
             {
-                var version = Environment.GetEnvironmentVariable("PACKAGE_VERSION") ?? "0.0.0";
+                var version = Environment.GetEnvironmentVariable("VERSION") ?? Environment.GetEnvironmentVariable("PACKAGE_VERSION") ?? "0.0.0";
                 var unityVersion = Environment.GetEnvironmentVariable("UNITY_VERSION") ?? "2019.4";
                 
                 var outputPath = Path.Combine(
-                    Application.dataPath, 
-                    "..", 
+                    Application.dataPath,
+                    "..",
+                    "..",
                     "..",
                     $"BitMono-Unity-v{version}-Unity{unityVersion}.unitypackage"
                 );
