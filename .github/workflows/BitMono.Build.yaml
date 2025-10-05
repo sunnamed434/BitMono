@@ -140,6 +140,9 @@ jobs:
         env:
           PACKAGE_VERSION: ${{ needs.Build.outputs.version }}
           UNITY_VERSION: ${{ matrix.unity-version }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: ${{ matrix.unity-version }}
           targetPlatform: StandaloneWindows64
