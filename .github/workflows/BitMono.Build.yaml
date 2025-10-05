@@ -146,7 +146,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: ${{ matrix.unity-version }}
-          targetPlatform: StandaloneWindows64
+          targetPlatform: StandaloneLinux64
           buildMethod: BitMono.Editor.PackageExporter.ExportPackage
           projectPath: test/BitMono.Unity.TestProject
           buildName: BitMono-Unity-Package
