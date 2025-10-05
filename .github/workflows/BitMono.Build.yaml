@@ -140,7 +140,6 @@ jobs:
           
           copy "src\BitMono.Unity\package.json" ".\unity-package-temp\"
           copy "src\BitMono.Unity\BitMonoConfig.asset" ".\unity-package-temp\" 2>nul || echo "No BitMonoConfig.asset found"
-          copy "src\BitMono.Unity\BitMonoConfig.asset.meta" ".\unity-package-temp\" 2>nul || echo "No BitMonoConfig.asset.meta found"
           
           mkdir ".\unity-package-temp\BitMono.CLI" 2>nul || echo "Directory already exists"
           xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" ".\unity-package-temp\BitMono.CLI\" /E /I /Y
