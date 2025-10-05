@@ -38,7 +38,9 @@ internal class Program
                     protectionSettings: needs.ProtectionSettings,
                     criticalsFile: needs.CriticalsFile,
                     obfuscationFile: needs.ObfuscationFile,
-                    loggingFile: needs.LoggingFile),
+                    loggingFile: needs.LoggingFile,
+                    protectionsFile: needs.ProtectionsFile,
+                    obfuscationSettings: needs.ObfuscationSettings),
                 configureLogger => configureLogger.WriteTo.AddConsoleLogger(),
                 loggingFile: needs.LoggingFile);
 

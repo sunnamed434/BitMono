@@ -261,10 +261,9 @@ internal class ReadlineObfuscationNeedsFactory
             OutputPath = outputDirectoryName,
             Way = ObfuscationNeedsWay.Readline,
             Protections = protections,
-            ProtectionSettings = finalProtectionSettings,
             CriticalsFile = criticalsFile,
             LoggingFile = loggingFile,
-            ObfuscationFile = obfuscationFile
+            ObfuscationFile = obfuscationFile,
         };
     }
 

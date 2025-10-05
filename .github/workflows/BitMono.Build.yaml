@@ -1,0 +1,264 @@
+name: BitMono.Build
+on:
+  create:
+    tags:
+      - "*"
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.Build.yaml'
+      - 'props/SharedPackages.props'
+      - 'props/SharedProjectProps.props'
+      - 'props/SharedTestProps.props'
+      - 'src/**'
+      - 'test/**'
+  pull_request:
+    paths:
+      - '.github/workflows/BitMono.Build.yaml'
+      - 'props/SharedPackages.props'
+      - 'props/SharedProjectProps.props'
+      - 'props/SharedTestProps.props'
+      - 'src/**'
+      - 'test/**'
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target-framework: [net9.0, net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
+        runtime: [linux-x64, win-x64, linux-arm64, win-arm64, osx-x64, osx-arm64, win-x86]
+        exclude:
+          # Exclude win-x86 builds for .NET Standard as they're architecture-independent
+          - runtime: win-x86
+            target-framework: netstandard2.0
+          - runtime: win-x86
+            target-framework: netstandard2.1
+    outputs:
+      version: ${{ steps.project-build.outputs.version }}
+      is_prerelease: ${{ steps.project-build.outputs.is_prerelease }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        env:
+          # Disable the .NET logo in the console output.
+          DOTNET_NOLOGO: true
+          # Disable the .NET first time experience to skip caching NuGet packages and speed up the build.
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+          # Disable sending .NET CLI telemetry to Microsoft.
+          DOTNET_CLI_TELEMETRY_OPTOUT: true
+          DOTNET_INSTALL_DIR: ${{ github.workspace }}/.dotnet
+        with:
+          dotnet-version: 9.x
+      
+      - name: Build Project
+        uses: ./.github/actions/project-build
+        id: project-build
+        with:
+          project_path: src/BitMono.CLI/BitMono.CLI.csproj
+          nuget_push: false
+          target_framework: ${{ matrix.target-framework }}
+          runtime_version: ${{ matrix.runtime }}
+          github_token: ${{ secrets.PAT }}
+      
+      - name: Install zip (for Linux/macOS)
+        run: |
+          if [[ "${{ matrix.runtime }}" =~ ^linux ]]; then
+            sudo apt-get install -y zip
+          elif [[ "${{ matrix.runtime }}" =~ ^osx ]]; then
+            if ! command -v zip &> /dev/null; then
+              echo "zip is not available on this macOS runner, and it should be pre-installed."
+              exit 1
+            fi
+          fi
+      
+      - name: Zip artifacts
+        run: |
+          cd ./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }} && \
+          zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *
+      
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
+          path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
+          if-no-files-found: error
+
+  UnityPackage:
+    needs: Build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        unity-version: [
+          2019.4.40f1,
+          2020.3.48f1,
+          2021.3.45f1,
+          2022.3.50f1,
+          6.0.0f1,
+          6.1.0f1,    
+          6.2.0f1     
+        ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        env:
+          DOTNET_NOLOGO: true
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+          DOTNET_CLI_TELEMETRY_OPTOUT: true
+        with:
+          dotnet-version: 9.x
+      
+      - name: Build BitMono.CLI for Unity Package
+        uses: ./.github/actions/project-build
+        id: cli-build
+        with:
+          project_path: src/BitMono.CLI/BitMono.CLI.csproj
+          nuget_push: false
+          target_framework: net462
+          runtime_version: win-x64
+          github_token: ${{ secrets.PAT }}
+      
+      - name: Copy Unity files to test project
+        run: |
+          # Sync your source files to the Unity test project
+          xcopy "src\BitMono.Unity\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\" /E /I /Y
+          # Copy the built CLI to the test project
+          xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\BitMono.CLI\" /E /I /Y
+      
+      - name: Setup Unity for Package Export
+        uses: game-ci/unity-builder@v4
+        env:
+          PACKAGE_VERSION: ${{ needs.Build.outputs.version }}
+          UNITY_VERSION: ${{ matrix.unity-version }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: StandaloneWindows64
+          buildMethod: BitMono.Editor.PackageExporter.ExportPackage
+          projectPath: test/BitMono.Unity.TestProject
+          buildName: BitMono-Unity-Package
+          allowDirtyBuild: true
+      
+      - name: Verify .unitypackage was created
+        run: |
+          if (Test-Path "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage") {
+            Write-Host "Unity package created successfully"
+            Get-ChildItem "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" | ForEach-Object { Write-Host "File size: $([math]::Round($_.Length / 1MB, 2)) MB" }
+          } else {
+            Write-Error "Unity package not found!"
+            Get-ChildItem -Recurse -Name "*.unitypackage" | ForEach-Object { Write-Host "Found: $_" }
+            exit 1
+          }
+      
+      - name: Create Unity Package Directory
+        run: |
+          mkdir unity-package-temp
+          mkdir unity-package-temp\Editor
+      
+      - name: Copy Unity Package Files
+        run: |
+          copy "src\BitMono.Unity\Editor\*.cs" ".\unity-package-temp\Editor\"
+          copy "src\BitMono.Unity\Editor\*.asmdef" ".\unity-package-temp\Editor\" 2>nul || echo "No .asmdef files found"
+          
+          copy "src\BitMono.Unity\package.json" ".\unity-package-temp\"
+          copy "src\BitMono.Unity\BitMonoConfig.asset" ".\unity-package-temp\" 2>nul || echo "No BitMonoConfig.asset found"
+          
+          mkdir ".\unity-package-temp\BitMono.CLI" 2>nul || echo "Directory already exists"
+          xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" ".\unity-package-temp\BitMono.CLI\" /E /I /Y
+      
+      - name: Update Package Version and Unity Version
+        run: |
+          # Extract Unity version from matrix (e.g., 2019.4.40f1 -> 2019.4)
+          $unityVersion = '${{ matrix.unity-version }}'
+          $unityShort = $unityVersion -replace '^(\d+\.\d+)\..*', '$1'
+          
+          # Update package.json using PowerShell (cross-platform compatible)
+          $packageJson = Get-Content '.\unity-package-temp\package.json' -Raw | ConvertFrom-Json
+          $packageJson.version = '${{ needs.Build.outputs.version }}'
+          $packageJson.unity = $unityShort
+          $packageJson | ConvertTo-Json -Depth 10 | Set-Content '.\unity-package-temp\package.json'
+          
+          Write-Host "Updated package.json:"
+          Write-Host "  Version: ${{ needs.Build.outputs.version }}"
+          Write-Host "  Unity: $unityShort"
+      
+      - name: Test Unity Package Compatibility
+        run: |
+          # Test package.json syntax and Unity version compatibility
+          powershell -Command "
+          $packageJson = Get-Content '.\unity-package-temp\package.json' -Raw | ConvertFrom-Json
+          Write-Host 'Testing Unity version compatibility...'
+          Write-Host 'Package Unity version: ' $packageJson.unity
+          Write-Host 'Package Unity release: ' $packageJson.unityRelease
+          Write-Host 'Target Unity version: ${{ matrix.unity-version }}'
+          "
+      
+      - name: Create UPM Package (Modern Unity Package Manager)
+        run: |
+          # Create a proper UPM package structure
+          mkdir upm-package
+          mkdir upm-package\Editor
+          
+          # Copy files to UPM structure
+          copy "unity-package-temp\Editor\*.cs" "upm-package\Editor\"
+          copy "unity-package-temp\Editor\*.asmdef" "upm-package\Editor\"
+          copy "unity-package-temp\package.json" "upm-package\"
+          copy "unity-package-temp\BitMonoConfig.asset" "upm-package\" 2>nul || echo "No BitMonoConfig.asset found"
+          mkdir "upm-package\BitMono.CLI" 2>nul || echo "Directory already exists"
+          xcopy "unity-package-temp\BitMono.CLI\*" "upm-package\BitMono.CLI\" /E /I /Y
+          
+          # Create UPM tarball using tar (better compatibility than .zip)
+          cd upm-package
+          tar -czf ..\BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
+          cd ..
+      
+      - name: Upload Unity Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}
+          path: |
+            BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage
+            BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz
+          if-no-files-found: error
+
+  Release:
+    if: github.event_name == 'create' && github.event.ref_type == 'tag'
+    needs: [Build, UnityPackage]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: ./artifacts
+      
+      - name: List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find ./artifacts -type f -name "*.zip" -o -name "*.unitypackage"
+          echo ""
+          echo "Unity packages by version:"
+          find ./artifacts -name "*Unity*.unitypackage" | sort
+      
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: BitMono Release v${{ needs.Build.outputs.version }}
+          tag: ${{ needs.Build.outputs.version }}
+          artifacts: "./artifacts/**/*.zip,./artifacts/**/*.unitypackage,./artifacts/**/*.tgz"
+          token: ${{ secrets.PAT }}
+          prerelease: ${{ needs.Build.outputs.is_prerelease }}
+          allowUpdates: true
+          draft: true
+          

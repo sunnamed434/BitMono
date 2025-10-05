@@ -5,12 +5,20 @@ namespace BitMono.Host.Extensions;
 public static class AutofacContainerBuilderExtensions
 {
     private const string ProtectionsFileName = "BitMono.Protections.dll";
+    private const string UnityFileName = "BitMono.Unity.dll";
 
     public static ContainerBuilder AddProtections(this ContainerBuilder source, string? file = null)
     {
         var protectionsFilePath = file ?? Path.Combine(AppContext.BaseDirectory, ProtectionsFileName);
         var rawData = File.ReadAllBytes(file ?? protectionsFilePath);
         Assembly.Load(rawData);
+        
+        var unityFilePath = Path.Combine(AppContext.BaseDirectory, UnityFileName);
+        if (File.Exists(unityFilePath))
+        {
+            var unityRawData = File.ReadAllBytes(unityFilePath);
+            Assembly.Load(unityRawData);
+        }
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         source.RegisterAssemblyTypes(assemblies)
@@ -22,13 +30,29 @@ public static class AutofacContainerBuilderExtensions
         return source;
     }
     public static ServiceCollection AddConfigurations(this ServiceCollection source,
-        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null)
+        ProtectionSettings? protectionSettings = null, string? criticalsFile = null, string? obfuscationFile = null, string? loggingFile = null, string? protectionsFile = null, ObfuscationSettings? obfuscationSettings = null)
     {
         var criticals = new BitMonoCriticalsConfiguration(criticalsFile);
-        var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
         source.AddOptions()
-            .Configure<CriticalsSettings>(criticals.Configuration)
-            .Configure<ObfuscationSettings>(obfuscation.Configuration);
+            .Configure<CriticalsSettings>(criticals.Configuration);
+
+        if (obfuscationSettings != null)
+        {
+            source.Configure<ObfuscationSettings>(configure =>
+            {
+                configure.Watermark = obfuscationSettings.Watermark;
+                configure.ClearCLI = obfuscationSettings.ClearCLI;
+                configure.ForceObfuscation = obfuscationSettings.ForceObfuscation;
+                configure.ReferencesDirectoryName = obfuscationSettings.ReferencesDirectoryName;
+                configure.OutputDirectoryName = obfuscationSettings.OutputDirectoryName;
+                configure.OpenFileDestinationInFileExplorer = obfuscationSettings.OpenFileDestinationInFileExplorer;
+            });
+        }
+        else
+        {
+            var obfuscation = new BitMonoObfuscationConfiguration(obfuscationFile);
+            source.Configure<ObfuscationSettings>(obfuscation.Configuration);
+        }
 
         if (protectionSettings != null)
         {
@@ -39,7 +63,7 @@ public static class AutofacContainerBuilderExtensions
         }
         else
         {
-            var protections = new BitMonoProtectionsConfiguration();
+            var protections = new BitMonoProtectionsConfiguration(protectionsFile);
             source.Configure<ProtectionSettings>(protections.Configuration);
         }
 

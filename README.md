@@ -95,9 +95,18 @@ Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installa
 3. (optional) See the [How To Use guide][bitmono_docs] for detailed instructions
 
 **Installation Options:**
+
+**CLI & Global Tool:**
 - **GitHub Releases**: Download pre-built executables
 - **.NET Global Tool**: `dotnet tool install --global BitMono.GlobalTool`
-- **NuGet Packages**: Integrate into your projects
+
+**Unity Integration:**
+- **Unity 2018-2019 (Legacy)**: Download `.unitypackage` from [Releases](https://github.com/sunnamed434/BitMono/releases)
+  - In Unity: `Assets → Import Package → Custom Package`
+- **Unity 2020+ (Recommended)**: Download `.tgz` UPM package from [Releases](https://github.com/sunnamed434/BitMono/releases)
+  - In Unity: `Window → Package Manager → + → Add package from tarball`
+- **Git URL (Best for Development)**: `https://github.com/sunnamed434/BitMono.git#vX.Y.Z`
+  - In Unity: `Window → Package Manager → + → Add package from git URL`
 
 For detailed installation and usage instructions, see the **[documentation][bitmono_docs]**.
 
