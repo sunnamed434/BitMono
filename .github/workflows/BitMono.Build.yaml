@@ -86,7 +86,6 @@ jobs:
           if-no-files-found: error
 
   UnityPackage:
-    needs: Build
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
@@ -177,8 +176,8 @@ jobs:
       - name: Setup Unity for Package Export
         uses: game-ci/unity-builder@v4
         env:
-          PACKAGE_VERSION: ${{ needs.Build.outputs.version }}
-          VERSION: ${{ needs.Build.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.cli-build.outputs.version }}
+          VERSION: ${{ steps.cli-build.outputs.version }}
           UNITY_VERSION: ${{ matrix.unity-version }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -194,7 +193,7 @@ jobs:
       - name: Verify .unitypackage was created
         run: |
           set -e
-          VERSION_NO_HASH='${{ needs.Build.outputs.version }}'
+          VERSION_NO_HASH='${{ steps.cli-build.outputs.version }}'
           # Strip any SemVer build metadata (e.g., +<commit-hash>) for filenames
           VERSION_NO_HASH="${VERSION_NO_HASH%%+*}"
           UNITY_VER='${{ matrix.unity-version }}'
@@ -214,7 +213,7 @@ jobs:
       
       - name: Rename .unitypackage to include build metadata (if present)
         run: |
-          VERSION_FULL='${{ needs.Build.outputs.version }}'
+          VERSION_FULL='${{ steps.cli-build.outputs.version }}'
           UNITY_VER='${{ matrix.unity-version }}'
           BASE="BitMono-Unity-v${VERSION_FULL%%+*}-Unity${UNITY_VER}.unitypackage"
           if [[ "$VERSION_FULL" == *+* ]]; then
@@ -249,12 +248,12 @@ jobs:
           unityShort=$(echo "$unityVersion" | sed -E 's/^(\d+\.\d+)\..*/\1/')
           tmp=$(mktemp)
           jq \
-            --arg ver '${{ needs.Build.outputs.version }}' \
+            --arg ver '${{ steps.cli-build.outputs.version }}' \
             --arg unity "$unityShort" \
             '.version=$ver | .unity=$unity' \
             unity-package-temp/package.json > "$tmp" && mv "$tmp" unity-package-temp/package.json
           echo "Updated package.json:"
-          echo "  Version: ${{ needs.Build.outputs.version }}"
+          echo "  Version: ${{ steps.cli-build.outputs.version }}"
           echo "  Unity: $unityShort"
       
       - name: Test Unity Package Compatibility
@@ -281,13 +280,13 @@ jobs:
 
           # Create UPM tarball using tar (better compatibility than .zip)
           cd upm-package
-          tar -czf ../BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
+          tar -czf ../BitMono-Unity-UPM-v${{ steps.cli-build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
           cd ..
       
       - name: Upload Unity Packages
         uses: actions/upload-artifact@v4
         with:
-          name: BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}
+          name: BitMono-Unity-v${{ steps.cli-build.outputs.version }}-Unity${{ matrix.unity-version }}
           path: |
             BitMono-Unity-v*-Unity${{ matrix.unity-version }}.unitypackage
             BitMono-Unity-UPM-v*-Unity${{ matrix.unity-version }}.tgz
