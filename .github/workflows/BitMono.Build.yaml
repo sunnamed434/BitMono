@@ -128,6 +128,37 @@ jobs:
           runtime_version: win-x64
           github_token: ${{ secrets.PAT }}
       
+      - name: Copy Unity files to test project
+        run: |
+          # Sync your source files to the Unity test project
+          xcopy "src\BitMono.Unity\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\" /E /I /Y
+          # Copy the built CLI to the test project
+          xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\BitMono.CLI\" /E /I /Y
+      
+      - name: Setup Unity for Package Export
+        uses: game-ci/unity-builder@v4
+        env:
+          PACKAGE_VERSION: ${{ needs.Build.outputs.version }}
+          UNITY_VERSION: ${{ matrix.unity-version }}
+        with:
+          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: StandaloneWindows64
+          buildMethod: BitMono.Editor.PackageExporter.ExportPackage
+          projectPath: test/BitMono.Unity.TestProject
+          buildName: BitMono-Unity-Package
+          buildPath: .
+      
+      - name: Verify .unitypackage was created
+        run: |
+          if (Test-Path "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage") {
+            Write-Host "✓ Unity package created successfully"
+            Get-ChildItem "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" | ForEach-Object { Write-Host "File size: $([math]::Round($_.Length / 1MB, 2)) MB" }
+          } else {
+            Write-Error "✗ Unity package not found!"
+            Get-ChildItem -Recurse -Name "*.unitypackage" | ForEach-Object { Write-Host "Found: $_" }
+            exit 1
+          }
+      
       - name: Create Unity Package Directory
         run: |
           mkdir unity-package-temp
@@ -171,19 +202,32 @@ jobs:
           Write-Host 'Target Unity version: ${{ matrix.unity-version }}'
           "
       
-      - name: Create Unity Package Archive
+      - name: Create UPM Package (Modern Unity Package Manager)
         run: |
-          cd unity-package-temp
-          powershell -Command "
-          Compress-Archive -Path * -DestinationPath ..\BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage -Force
-          "
+          # Create a proper UPM package structure
+          mkdir upm-package
+          mkdir upm-package\Editor
+          
+          # Copy files to UPM structure
+          copy "unity-package-temp\Editor\*.cs" "upm-package\Editor\"
+          copy "unity-package-temp\Editor\*.asmdef" "upm-package\Editor\"
+          copy "unity-package-temp\package.json" "upm-package\"
+          copy "unity-package-temp\BitMonoConfig.asset" "upm-package\" 2>nul || echo "No BitMonoConfig.asset found"
+          mkdir "upm-package\BitMono.CLI" 2>nul || echo "Directory already exists"
+          xcopy "unity-package-temp\BitMono.CLI\*" "upm-package\BitMono.CLI\" /E /I /Y
+          
+          # Create UPM tarball using tar (better compatibility than .zip)
+          cd upm-package
+          tar -czf ..\BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
           cd ..
       
-      - name: Upload Unity Package
+      - name: Upload Unity Packages
         uses: actions/upload-artifact@v4
         with:
           name: BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}
-          path: "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage"
+          path: |
+            BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage
+            BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz
           if-no-files-found: error
 
   Release:
@@ -209,7 +253,7 @@ jobs:
         with:
           name: BitMono Release v${{ needs.Build.outputs.version }}
           tag: ${{ needs.Build.outputs.version }}
-          artifacts: "./artifacts/**/*.zip,./artifacts/**/*.unitypackage"
+          artifacts: "./artifacts/**/*.zip,./artifacts/**/*.unitypackage,./artifacts/**/*.tgz"
           token: ${{ secrets.PAT }}
           prerelease: ${{ needs.Build.outputs.is_prerelease }}
           allowUpdates: true
