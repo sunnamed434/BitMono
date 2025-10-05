@@ -43,12 +43,6 @@ namespace BitMono.Unity.Editor
             CancelObfuscation();
         }
 
-        [MenuItem("BitMono/Cancel Obfuscation")]
-        public static void CancelObfuscationMenu()
-        {
-            CancelObfuscation();
-        }
-
         public static void CancelObfuscation()
         {
             if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
@@ -70,6 +64,90 @@ namespace BitMono.Unity.Editor
                     LogDebugStatic($"Error killing process: {ex}");
                 }
             }
+        }
+
+        [MenuItem("BitMono/Show Config Location", false, 1)]
+        public static void ShowConfigLocation()
+        {
+            var configs = AssetDatabase.FindAssets("t:BitMonoConfiguration");
+            if (configs.Length > 0)
+            {
+                var configPath = AssetDatabase.GUIDToAssetPath(configs[0]);
+                var config = AssetDatabase.LoadAssetAtPath<BitMonoConfiguration>(configPath);
+                Selection.activeObject = config;
+                EditorGUIUtility.PingObject(config);
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("BitMono Configuration", "No BitMono configuration found. Please create a BitMonoConfig asset.", "OK");
+            }
+        }
+
+        [MenuItem("BitMono/Documentation", false, 2)]
+        public static void OpenDocumentation()
+        {
+            Application.OpenURL("https://github.com/sunnamed434/BitMono#readme");
+        }
+
+        [MenuItem("BitMono/GitHub Repository", false, 3)]
+        public static void OpenGitHub()
+        {
+            Application.OpenURL("https://github.com/sunnamed434/BitMono");
+        }
+
+        [MenuItem("BitMono/Report Issue", false, 4)]
+        public static void ReportIssue()
+        {
+            Application.OpenURL("https://github.com/sunnamed434/BitMono/issues");
+        }
+
+        [MenuItem("BitMono/About BitMono", false, 5)]
+        public static void ShowAboutDialog()
+        {
+            var version = "Unknown";
+            try
+            {
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath("Packages/com.bitmono.unity/package.json");
+                if (packageInfo != null)
+                {
+                    version = packageInfo.version;
+                }
+                else
+                {
+                    var guids = AssetDatabase.FindAssets("package t:TextAsset", new[] { "Assets/BitMono.Unity" });
+                    foreach (var guid in guids)
+                    {
+                        var path = AssetDatabase.GUIDToAssetPath(guid);
+                        if (path.EndsWith("package.json"))
+                        {
+                            var json = File.ReadAllText(path);
+                            var packageData = JsonUtility.FromJson<PackageJson>(json);
+                            version = packageData.version ?? "Unknown";
+                            break;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback to unknown
+            }
+
+            EditorUtility.DisplayDialog("About BitMono",
+                "BitMono Unity Integration\n\n" +
+                "Professional obfuscation for Unity projects with Mono2x support.\n" +
+                "Automatically obfuscates your assemblies during build process.\n\n" +
+                $"Version: {version}\n" +
+                "Author: sunnamed434\n" +
+                "GitHub: https://github.com/sunnamed434/BitMono\n\n" +
+                "Note: IL2CPP is not supported yet, however is planned to be supported in the future.",
+                "OK");
+        }
+
+        [System.Serializable]
+        private class PackageJson
+        {
+            public string version;
         }
 
         private void LogDebug(string message)
