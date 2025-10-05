@@ -35,7 +35,11 @@ public class GameManager : MonoBehaviour
         {
             if (instance == null)
             {
+#if UNITY_2020_1_OR_NEWER
                 instance = FindFirstObjectByType<GameManager>();
+#else
+                instance = FindObjectOfType<GameManager>();
+#endif
             }
             return instance;
         }
