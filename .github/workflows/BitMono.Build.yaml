@@ -190,6 +190,8 @@ jobs:
         run: |
           set -e
           VERSION_NO_HASH='${{ needs.Build.outputs.version }}'
+          # Strip any SemVer build metadata (e.g., +<commit-hash>) for filenames
+          VERSION_NO_HASH="${VERSION_NO_HASH%%+*}"
           UNITY_VER='${{ matrix.unity-version }}'
           FILE="BitMono-Unity-v${VERSION_NO_HASH}-Unity${UNITY_VER}.unitypackage"
 
@@ -203,6 +205,23 @@ jobs:
           echo "Unity package created: $FILE"
           size_mb=$(awk "BEGIN {printf \"%.2f\", $(stat -c%s \"$FILE\")/1024/1024}")
           echo "File size: ${size_mb} MB"
+      
+      - name: Rename .unitypackage to include build metadata (if present)
+        run: |
+          VERSION_FULL='${{ needs.Build.outputs.version }}'
+          UNITY_VER='${{ matrix.unity-version }}'
+          BASE="BitMono-Unity-v${VERSION_FULL%%+*}-Unity${UNITY_VER}.unitypackage"
+          if [[ "$VERSION_FULL" == *+* ]]; then
+            TARGET="BitMono-Unity-v${VERSION_FULL}-Unity${UNITY_VER}.unitypackage"
+            if [ -f "$BASE" ]; then
+              echo "Renaming $BASE -> $TARGET"
+              mv -f "$BASE" "$TARGET"
+            else
+              echo "Expected base package not found for rename: $BASE" >&2
+            fi
+          else
+            echo "No build metadata in version; keeping filename: $BASE"
+          fi
       
       - name: Create Unity Package Directory
         run: |
@@ -265,8 +284,8 @@ jobs:
         with:
           name: BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}
           path: |
-            BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage
-            BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz
+            BitMono-Unity-v*-Unity${{ matrix.unity-version }}.unitypackage
+            BitMono-Unity-UPM-v*-Unity${{ matrix.unity-version }}.tgz
           if-no-files-found: error
 
   Release:
