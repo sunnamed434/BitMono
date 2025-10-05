@@ -64,6 +64,7 @@ Table of Contents:
    developers/configuration
    developers/obfuscate-build
    developers/building
+   developers/unity-integration-testing
 
 
 .. toctree::
