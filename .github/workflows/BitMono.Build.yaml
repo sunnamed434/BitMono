@@ -46,13 +46,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         env:
-          # Disable the .NET logo in the console output.
           DOTNET_NOLOGO: true
-          # Disable the .NET first time experience to skip caching NuGet packages and speed up the build.
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-          # Disable sending .NET CLI telemetry to Microsoft.
           DOTNET_CLI_TELEMETRY_OPTOUT: true
-          DOTNET_INSTALL_DIR: ${{ github.workspace }}/.dotnet
         with:
           dotnet-version: 9.x
       
@@ -115,6 +111,15 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: test/BitMono.Unity.TestProject/Library
+          key: Library-BitMono-Unity-${{ matrix.unity-version }}
+          restore-keys: |
+            Library-BitMono-Unity-
+            Library-
       
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -203,7 +208,8 @@ jobs:
           fi
 
           echo "Unity package created: $FILE"
-          size_mb=$(awk "BEGIN {printf \"%.2f\", $(stat -c%s \"$FILE\")/1024/1024}")
+          size_bytes=$(stat -c%s -- "$FILE")
+          size_mb=$(awk -v s="$size_bytes" 'BEGIN {printf "%.2f", s/1024/1024}')
           echo "File size: ${size_mb} MB"
       
       - name: Rename .unitypackage to include build metadata (if present)
@@ -262,21 +268,20 @@ jobs:
       
       - name: Create UPM Package (Modern Unity Package Manager)
         run: |
-          # Create a proper UPM package structure
-          mkdir upm-package
-          mkdir upm-package\Editor
-          
+          # Create a proper UPM package structure (POSIX for Ubuntu runners)
+          mkdir -p upm-package/Editor
+
           # Copy files to UPM structure
-          copy "unity-package-temp\Editor\*.cs" "upm-package\Editor\"
-          copy "unity-package-temp\Editor\*.asmdef" "upm-package\Editor\"
-          copy "unity-package-temp\package.json" "upm-package\"
-          copy "unity-package-temp\BitMonoConfig.asset" "upm-package\" 2>nul || echo "No BitMonoConfig.asset found"
-          mkdir "upm-package\BitMono.CLI" 2>nul || echo "Directory already exists"
-          xcopy "unity-package-temp\BitMono.CLI\*" "upm-package\BitMono.CLI\" /E /I /Y
-          
+          cp unity-package-temp/Editor/*.cs upm-package/Editor/ 2>/dev/null || true
+          cp unity-package-temp/Editor/*.asmdef upm-package/Editor/ 2>/dev/null || echo "No .asmdef files found"
+          cp unity-package-temp/package.json upm-package/
+          cp unity-package-temp/BitMonoConfig.asset upm-package/ 2>/dev/null || echo "No BitMonoConfig.asset found"
+          mkdir -p upm-package/BitMono.CLI
+          cp -R unity-package-temp/BitMono.CLI/* upm-package/BitMono.CLI/ 2>/dev/null || true
+
           # Create UPM tarball using tar (better compatibility than .zip)
           cd upm-package
-          tar -czf ..\BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
+          tar -czf ../BitMono-Unity-UPM-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.tgz *
           cd ..
       
       - name: Upload Unity Packages
