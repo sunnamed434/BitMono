@@ -146,7 +146,7 @@ jobs:
           buildMethod: BitMono.Editor.PackageExporter.ExportPackage
           projectPath: test/BitMono.Unity.TestProject
           buildName: BitMono-Unity-Package
-          buildPath: .
+          allowDirtyBuild: true
       
       - name: Verify .unitypackage was created
         run: |

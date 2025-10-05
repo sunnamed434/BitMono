@@ -105,7 +105,7 @@ Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installa
   - In Unity: `Assets → Import Package → Custom Package`
 - **Unity 2020+ (Recommended)**: Download `.tgz` UPM package from [Releases](https://github.com/sunnamed434/BitMono/releases)
   - In Unity: `Window → Package Manager → + → Add package from tarball`
-- **Git URL (Best for Development)**: `https://github.com/sunnamed434/BitMono.git#v1.2.3`
+- **Git URL (Best for Development)**: `https://github.com/sunnamed434/BitMono.git#vX.Y.Z`
   - In Unity: `Window → Package Manager → + → Add package from git URL`
 
 For detailed installation and usage instructions, see the **[documentation][bitmono_docs]**.
