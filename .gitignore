@@ -6,6 +6,10 @@
 # BitMono artifacts
 src/BitMono.CLI/BitMono-v*.zip
 
+# Ignore temporaries from GameCI
+/[Aa]rtifacts/
+/[Cc]odeCoverage/
+
 # User-specific files
 *.rsuser
 *.suo
