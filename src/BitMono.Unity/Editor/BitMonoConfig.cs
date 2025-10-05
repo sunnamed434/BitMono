@@ -18,8 +18,6 @@ namespace BitMono.Unity.Editor
         [Tooltip("Custom path to BitMono configuration files (leave empty for auto-detection)")]
         public string ConfigPath = "";
 
-        [Header("Auto-Detected Path")]
-        [Tooltip("Shows the currently detected configuration path")]
         public string DetectedConfigPath => GetDetectedConfigPath();
 
         [Header("Protection Settings")]
