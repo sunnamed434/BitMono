@@ -25,9 +25,13 @@ if not exist "..\..\..\src\BitMono.CLI\bin\Release\net462\BitMono.CLI.exe" (
     dotnet build "..\..\..\src\BitMono.CLI\BitMono.CLI.csproj" --configuration Release
 )
 
-REM Copy BitMono.CLI to Unity test project root (outside Assets)
-set "CLI_SOURCE=..\..\..\src\BitMono.CLI\bin\Release\net462"
-set "CLI_DEST=..\..\..\test\BitMono.Unity.TestProject\BitMono.CLI"
+REM Copy BitMono.CLI into Assets (will be disabled via PluginImporter)
+set "CLI_BASE=..\..\..\src\BitMono.CLI\bin\Release\net462"
+set "CLI_SOURCE=%CLI_BASE%\win-x64"
+if not exist "%CLI_SOURCE%\BitMono.CLI.exe" (
+    set "CLI_SOURCE=%CLI_BASE%"
+)
+set "CLI_DEST=%TEST_PROJECT%\BitMono.CLI"
 
 if not exist "%CLI_DEST%" mkdir "%CLI_DEST%"
 
@@ -35,15 +39,31 @@ if exist "%CLI_SOURCE%\BitMono.CLI.exe" (
     echo Copying BitMono.CLI from %CLI_SOURCE% to %CLI_DEST%
     xcopy "%CLI_SOURCE%\*" "%CLI_DEST%\" /E /I /Y
     if %ERRORLEVEL% EQU 0 (
-        echo BitMono.CLI copied successfully
+        echo BitMono.CLI copied successfully into Assets (import disabled by editor script)
+        echo Generating .meta files to disable plugin import for CLI DLLs...
+        for /R "%CLI_DEST%" %%F in (*.dll) do (
+            >"%%~fF.meta" echo fileFormatVersion: 2
+            >>"%%~fF.meta" echo guid: %%~nF000000000000000000000000000000
+            >>"%%~fF.meta" echo PluginImporter:
+            >>"%%~fF.meta" echo ^  serializedVersion: 2
+            >>"%%~fF.meta" echo ^  isPreloaded: 0
+            >>"%%~fF.meta" echo ^  isOverridable: 0
+            >>"%%~fF.meta" echo ^  platformData:
+            >>"%%~fF.meta" echo ^  - first:
+            >>"%%~fF.meta" echo ^      Any:
+            >>"%%~fF.meta" echo ^    second:
+            >>"%%~fF.meta" echo ^      enabled: 0
+            >>"%%~fF.meta" echo ^  userData:
+            >>"%%~fF.meta" echo ^  assetBundleName:
+            >>"%%~fF.meta" echo ^  assetBundleVariant:
+        )
+        echo .meta generation complete.
     ) else (
         echo ERROR: Failed to copy BitMono.CLI
     )
 ) else (
     echo ERROR: BitMono.CLI not found at %CLI_SOURCE%
 )
-
-REM Config files are now auto-detected from BitMono.CLI location
 
 echo ✅ Done! Open Unity and refresh (Ctrl+R)
 pause

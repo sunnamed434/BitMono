@@ -14,8 +14,22 @@ namespace BitMono.Editor
         {
             try
             {
-                var version = Environment.GetEnvironmentVariable("VERSION") ?? Environment.GetEnvironmentVariable("PACKAGE_VERSION") ?? "0.0.0";
-                var unityVersion = Environment.GetEnvironmentVariable("UNITY_VERSION") ?? "2019.4";
+                var version = Environment.GetEnvironmentVariable("VERSION") ?? Environment.GetEnvironmentVariable("PACKAGE_VERSION");
+                var unityVersion = Environment.GetEnvironmentVariable("UNITY_VERSION");
+
+                if (string.IsNullOrWhiteSpace(version))
+                {
+                    Debug.LogError("VERSION/PACKAGE_VERSION environment variable is missing or empty. Aborting export.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(unityVersion))
+                {
+                    Debug.LogError("UNITY_VERSION environment variable is missing or empty. Aborting export.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
                 
                 var outputPath = Path.Combine(
                     Application.dataPath,

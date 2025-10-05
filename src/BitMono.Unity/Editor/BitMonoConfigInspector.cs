@@ -21,21 +21,20 @@ namespace BitMono.Unity.Editor
         public override void OnInspectorGUI()
         {
             var config = (BitMonoConfiguration)target;
-
             EditorGUILayout.LabelField("BitMono Obfuscation", EditorStyles.boldLabel);
             config.EnableObfuscation = EditorGUILayout.Toggle(
-                new GUIContent("Enable Obfuscation", 
+                new GUIContent("Enable Obfuscation",
                     "Enable BitMono obfuscation during Unity builds. " +
                     "You can also control this programmatically using EditorPrefs.SetBool(\"BitMono.Obfuscation\", true/false). " +
-                    "When disabled, obfuscation will be skipped entirely."), 
+                    "When disabled, obfuscation will be skipped entirely."),
                 config.EnableObfuscation);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Configuration Path", EditorStyles.boldLabel);
-            
+
             var effectivePath = string.IsNullOrEmpty(config.ConfigPath) ? config.DetectedConfigPath : config.ConfigPath;
             var isAutoDetected = string.IsNullOrEmpty(config.ConfigPath);
-            
+
             EditorGUI.BeginChangeCheck();
             var newConfigPath = EditorGUILayout.TextField(new GUIContent("Config Path", "Leave empty for auto-detection. Set a custom path to override auto-detection."), config.ConfigPath);
             if (EditorGUI.EndChangeCheck())
@@ -43,31 +42,31 @@ namespace BitMono.Unity.Editor
                 config.ConfigPath = newConfigPath;
                 EditorUtility.SetDirty(config);
             }
-            
+
             EditorGUI.BeginDisabledGroup(true);
             var pathLabel = isAutoDetected ? "Effective Path (Auto-detected)" : "Effective Path (Custom)";
             EditorGUILayout.TextField(pathLabel, effectivePath);
             EditorGUI.EndDisabledGroup();
-            
+
             if (isAutoDetected && effectivePath.Contains("Not found"))
             {
-                EditorGUILayout.HelpBox("Auto-detection failed. Please set a custom config path or ensure BitMono.CLI is accessible.", MessageType.Warning);
+                EditorGUILayout.HelpBox("Auto detection failed. Please set a custom config path or ensure BitMono.CLI is accessible.", MessageType.Warning);
             }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Obfuscation Settings", EditorStyles.boldLabel);
             config.ObfuscationTimeoutMinutes = EditorGUILayout.IntField(
-                new GUIContent("Timeout (minutes)", 
+                new GUIContent("Timeout (minutes)",
                     "How long to wait for obfuscation to complete before timing out. " +
                     "Increase this if you have large assemblies or complex protections that take longer to process. " +
                     "Decrease this if obfuscation gets stuck on problematic protections or so. " +
-                    "Default: 5 minutes"), 
+                    "Default: 5 minutes"),
                 config.ObfuscationTimeoutMinutes);
             config.EnableDebugLogging = EditorGUILayout.Toggle(
-                new GUIContent("Enable Debug Logging", 
+                new GUIContent("Enable Debug Logging",
                     "Show detailed BitMono output in the Unity Console during builds. " +
                     "Useful for troubleshooting obfuscation issues, seeing which protections are running, " +
-                    "and monitoring the obfuscation process. Only shows when this is enabled."), 
+                    "and monitoring the obfuscation process. Only shows when this is enabled."),
                 config.EnableDebugLogging);
 
             EditorGUILayout.Space();

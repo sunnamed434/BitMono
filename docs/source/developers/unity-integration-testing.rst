@@ -12,8 +12,7 @@ Scripts
 
 Located in ``src/BitMono.Unity/scripts/``:
 
-- ``copy-to-test-project.bat/ps1`` - Copies files to test project
-- ``create-unity-package.bat/ps1`` - Creates Unity package
+- ``copy-to-test-project.bat/ps1`` - Copies files to test project & Generates .meta to disable CLI plugin import under Assets
 
 Testing
 -------

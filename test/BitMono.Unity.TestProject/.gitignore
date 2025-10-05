@@ -5,7 +5,6 @@
 
 # Ignore Unity test project
 /Assets/BitMono.Unity/
-/BitMono.CLI
 
 .utmp/
 /[Ll]ibrary/

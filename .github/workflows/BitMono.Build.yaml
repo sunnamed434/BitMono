@@ -138,9 +138,36 @@ jobs:
       - name: Copy Unity files to test project
         run: |
           mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity
-          mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI
           cp -R src/BitMono.Unity/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/
+          # Keep CLI inside Assets but we'll disable import via PluginImporter/meta
+          mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI
           cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI/
+          # Generate .meta files to disable Unity import for all CLI DLLs (prevents load on project open)
+          CLI_DIR="test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI"
+          if [ -d "$CLI_DIR" ]; then
+            while IFS= read -r -d '' dll; do
+              meta="${dll}.meta"
+              name="$(basename "$dll")"
+              base="${name%.*}"
+              guid="${base}000000000000000000000000000000"
+              cat > "$meta" <<META
+fileFormatVersion: 2
+guid: $guid
+PluginImporter:
+  serializedVersion: 2
+  isPreloaded: 0
+  isOverridable: 0
+  platformData:
+  - first:
+      Any:
+    second:
+      enabled: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+META
+            done < <(find "$CLI_DIR" -type f -name "*.dll" -print0)
+          fi
       
       - name: Setup Unity for Package Export
         uses: game-ci/unity-builder@v4

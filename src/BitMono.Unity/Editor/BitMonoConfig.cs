@@ -58,6 +58,10 @@ namespace BitMono.Unity.Editor
         {
             var paths = new[]
             {
+                // Inside package under Assets
+                Path.Combine(Application.dataPath, "BitMono.Unity", "BitMono.CLI", "BitMono.CLI.exe"),
+                Path.Combine(Application.dataPath, "BitMono.CLI", "BitMono.CLI.exe"),
+                // Project root sibling to Assets (local dev / CI setups)
                 Path.Combine(Application.dataPath, "..", "BitMono.CLI", "BitMono.CLI.exe"),
                 Path.Combine(Application.dataPath, "..", "..", "src", "BitMono.CLI", "bin", "Release", "net462", "BitMono.CLI.exe"),
                 "BitMono.CLI.exe"
@@ -100,7 +104,7 @@ namespace BitMono.Unity.Editor
                 {
                     ProtectionSettings.AddRange(protectionsData.Protections);
                 }
-                
+
                 UnityEditor.EditorUtility.SetDirty(this);
             }
             catch (Exception)
