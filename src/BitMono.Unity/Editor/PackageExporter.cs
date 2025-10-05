@@ -36,7 +36,7 @@ namespace BitMono.Editor
                     "BitMonoConfig.asset"
                 };
                 
-                List<string> assetsToInclude = [];
+                List<string> assetsToInclude = new List<string>();
                 foreach (var file in coreFiles)
                 {
                     var assetPath = $"{basePath}/{file}";
