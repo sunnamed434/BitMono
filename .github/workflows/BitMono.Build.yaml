@@ -149,15 +149,15 @@ jobs:
           buildMethod: BitMono.Editor.PackageExporter.ExportPackage
           projectPath: test/BitMono.Unity.TestProject
           buildName: BitMono-Unity-Package
-          #allowDirtyBuild: true
+          allowDirtyBuild: true
       
       - name: Verify .unitypackage was created
         run: |
           if (Test-Path "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage") {
-            Write-Host "✓ Unity package created successfully"
+            Write-Host "Unity package created successfully"
             Get-ChildItem "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" | ForEach-Object { Write-Host "File size: $([math]::Round($_.Length / 1MB, 2)) MB" }
           } else {
-            Write-Error "✗ Unity package not found!"
+            Write-Error "Unity package not found!"
             Get-ChildItem -Recurse -Name "*.unitypackage" | ForEach-Object { Write-Host "Found: $_" }
             exit 1
           }
