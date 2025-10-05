@@ -151,21 +151,21 @@ jobs:
               base="${name%.*}"
               guid="${base}000000000000000000000000000000"
               cat > "$meta" << EOF
-fileFormatVersion: 2
-guid: ${guid}
-PluginImporter:
-  serializedVersion: 2
-  isPreloaded: 0
-  isOverridable: 0
-  platformData:
-  - first:
-      Any:
-    second:
-      enabled: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
-EOF
+              fileFormatVersion: 2
+              guid: ${guid}
+              PluginImporter:
+                serializedVersion: 2
+                isPreloaded: 0
+                isOverridable: 0
+                platformData:
+                - first:
+                    Any:
+                  second:
+                    enabled: 0
+                userData:
+                assetBundleName:
+                assetBundleVariant:
+              EOF
             done < <(find "$CLI_DIR" -type f -name "*.dll" -print0)
           fi
       
