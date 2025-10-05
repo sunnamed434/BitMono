@@ -91,7 +91,8 @@ jobs:
 
   UnityPackage:
     needs: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       matrix:
         unity-version: [
@@ -130,10 +131,10 @@ jobs:
       
       - name: Copy Unity files to test project
         run: |
-          # Sync your source files to the Unity test project
-          xcopy "src\BitMono.Unity\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\" /E /I /Y
-          # Copy the built CLI to the test project
-          xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" "test\BitMono.Unity.TestProject\Assets\BitMono.Unity\BitMono.CLI\" /E /I /Y
+          mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity
+          mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI
+          cp -R src/BitMono.Unity/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/
+          cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI/
       
       - name: Setup Unity for Package Export
         uses: game-ci/unity-builder@v4
@@ -153,57 +154,52 @@ jobs:
       
       - name: Verify .unitypackage was created
         run: |
-          if (Test-Path "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage") {
-            Write-Host "Unity package created successfully"
-            Get-ChildItem "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" | ForEach-Object { Write-Host "File size: $([math]::Round($_.Length / 1MB, 2)) MB" }
-          } else {
-            Write-Error "Unity package not found!"
-            Get-ChildItem -Recurse -Name "*.unitypackage" | ForEach-Object { Write-Host "Found: $_" }
+          if [ -f "BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage" ]; then
+            echo "Unity package created successfully"
+            size_mb=$(awk "BEGIN {printf \"%.2f\", $(stat -c%s \"BitMono-Unity-v${{ needs.Build.outputs.version }}-Unity${{ matrix.unity-version }}.unitypackage\")/1024/1024}")
+            echo "File size: ${size_mb} MB"
+          else
+            echo "Unity package not found!" >&2
+            find . -name "*.unitypackage" -print
             exit 1
-          }
+          fi
       
       - name: Create Unity Package Directory
         run: |
-          mkdir unity-package-temp
-          mkdir unity-package-temp\Editor
+          mkdir -p unity-package-temp/Editor
       
       - name: Copy Unity Package Files
         run: |
-          copy "src\BitMono.Unity\Editor\*.cs" ".\unity-package-temp\Editor\"
-          copy "src\BitMono.Unity\Editor\*.asmdef" ".\unity-package-temp\Editor\" 2>nul || echo "No .asmdef files found"
-          
-          copy "src\BitMono.Unity\package.json" ".\unity-package-temp\"
-          copy "src\BitMono.Unity\BitMonoConfig.asset" ".\unity-package-temp\" 2>nul || echo "No BitMonoConfig.asset found"
-          
-          mkdir ".\unity-package-temp\BitMono.CLI" 2>nul || echo "Directory already exists"
-          xcopy "src\BitMono.CLI\bin\Release\net462\win-x64\*" ".\unity-package-temp\BitMono.CLI\" /E /I /Y
+          cp src/BitMono.Unity/Editor/*.cs unity-package-temp/Editor/
+          cp src/BitMono.Unity/Editor/*.asmdef unity-package-temp/Editor/ || echo "No .asmdef files found"
+          cp src/BitMono.Unity/package.json unity-package-temp/
+          cp src/BitMono.Unity/BitMonoConfig.asset unity-package-temp/ || echo "No BitMonoConfig.asset found"
+          mkdir -p unity-package-temp/BitMono.CLI
+          cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* unity-package-temp/BitMono.CLI/
       
       - name: Update Package Version and Unity Version
         run: |
-          # Extract Unity version from matrix (e.g., 2019.4.40f1 -> 2019.4)
-          $unityVersion = '${{ matrix.unity-version }}'
-          $unityShort = $unityVersion -replace '^(\d+\.\d+)\..*', '$1'
-          
-          # Update package.json using PowerShell (cross-platform compatible)
-          $packageJson = Get-Content '.\unity-package-temp\package.json' -Raw | ConvertFrom-Json
-          $packageJson.version = '${{ needs.Build.outputs.version }}'
-          $packageJson.unity = $unityShort
-          $packageJson | ConvertTo-Json -Depth 10 | Set-Content '.\unity-package-temp\package.json'
-          
-          Write-Host "Updated package.json:"
-          Write-Host "  Version: ${{ needs.Build.outputs.version }}"
-          Write-Host "  Unity: $unityShort"
+          sudo apt-get update && sudo apt-get install -y jq
+          unityVersion='${{ matrix.unity-version }}'
+          unityShort=$(echo "$unityVersion" | sed -E 's/^(\d+\.\d+)\..*/\1/')
+          tmp=$(mktemp)
+          jq \
+            --arg ver '${{ needs.Build.outputs.version }}' \
+            --arg unity "$unityShort" \
+            '.version=$ver | .unity=$unity' \
+            unity-package-temp/package.json > "$tmp" && mv "$tmp" unity-package-temp/package.json
+          echo "Updated package.json:"
+          echo "  Version: ${{ needs.Build.outputs.version }}"
+          echo "  Unity: $unityShort"
       
       - name: Test Unity Package Compatibility
         run: |
-          # Test package.json syntax and Unity version compatibility
-          powershell -Command "
-          $packageJson = Get-Content '.\unity-package-temp\package.json' -Raw | ConvertFrom-Json
-          Write-Host 'Testing Unity version compatibility...'
-          Write-Host 'Package Unity version: ' $packageJson.unity
-          Write-Host 'Package Unity release: ' $packageJson.unityRelease
-          Write-Host 'Target Unity version: ${{ matrix.unity-version }}'
-          "
+          echo "Testing Unity version compatibility..."
+          pkgUnity=$(jq -r '.unity' unity-package-temp/package.json)
+          pkgUnityRelease=$(jq -r '.unityRelease // ""' unity-package-temp/package.json)
+          echo "Package Unity version: $pkgUnity"
+          echo "Package Unity release: $pkgUnityRelease"
+          echo "Target Unity version: ${{ matrix.unity-version }}"
       
       - name: Create UPM Package (Modern Unity Package Manager)
         run: |
