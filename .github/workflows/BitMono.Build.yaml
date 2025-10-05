@@ -146,6 +146,8 @@ jobs:
           # Keep CLI inside Assets but we'll disable import via PluginImporter/meta
           mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI
           cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI/
+          # Copy committed BitMonoConfig.cs.meta to ensure correct GUID for ScriptableObject binding
+          cp src/BitMono.Unity/Editor/BitMonoConfig.cs.meta test/BitMono.Unity.TestProject/Assets/BitMono.Unity/Editor/BitMonoConfig.cs.meta
           # Generate .meta files to disable Unity import for all CLI DLLs (prevents load on project open)
           CLI_DIR="test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI"
           if [ -d "$CLI_DIR" ]; then
@@ -237,7 +239,12 @@ jobs:
           cp src/BitMono.Unity/Editor/*.cs unity-package-temp/Editor/
           cp src/BitMono.Unity/Editor/*.asmdef unity-package-temp/Editor/ || echo "No .asmdef files found"
           cp src/BitMono.Unity/package.json unity-package-temp/
-          cp src/BitMono.Unity/BitMonoConfig.asset unity-package-temp/ || echo "No BitMonoConfig.asset found"
+          # Ensure BitMonoConfig.asset is included in package content
+          if [ -f src/BitMono.Unity/BitMonoConfig.asset ]; then
+            cp src/BitMono.Unity/BitMonoConfig.asset unity-package-temp/
+          else
+            echo "BitMonoConfig.asset not found in src/BitMono.Unity" >&2
+          fi
           mkdir -p unity-package-temp/BitMono.CLI
           cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* unity-package-temp/BitMono.CLI/
       
@@ -274,7 +281,12 @@ jobs:
           cp unity-package-temp/Editor/*.cs upm-package/Editor/ 2>/dev/null || true
           cp unity-package-temp/Editor/*.asmdef upm-package/Editor/ 2>/dev/null || echo "No .asmdef files found"
           cp unity-package-temp/package.json upm-package/
-          cp unity-package-temp/BitMonoConfig.asset upm-package/ 2>/dev/null || echo "No BitMonoConfig.asset found"
+          # Prefer copying BitMonoConfig.asset from source; fallback to temp if needed
+          if [ -f src/BitMono.Unity/BitMonoConfig.asset ]; then
+            cp src/BitMono.Unity/BitMonoConfig.asset upm-package/
+          else
+            cp unity-package-temp/BitMonoConfig.asset upm-package/ 2>/dev/null || echo "No BitMonoConfig.asset found"
+          fi
           mkdir -p upm-package/BitMono.CLI
           cp -R unity-package-temp/BitMono.CLI/* upm-package/BitMono.CLI/ 2>/dev/null || true
 

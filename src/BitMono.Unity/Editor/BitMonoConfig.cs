@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace BitMono.Unity.Editor
 {
-    [CreateAssetMenu(fileName = "BitMonoConfig", menuName = "BitMono/BitMono Configuration")]
-    public class BitMonoConfiguration : ScriptableObject
+    [CreateAssetMenu(fileName = "BitMonoConfig", menuName = "BitMono/Create BitMono Configuration")]
+    public class BitMonoConfig : ScriptableObject
     {
         [Header("BitMono Obfuscation")]
         [Tooltip("Enable BitMono obfuscation during Unity builds")]

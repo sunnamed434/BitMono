@@ -5,12 +5,12 @@ using UnityEditor;
 
 namespace BitMono.Unity.Editor
 {
-    [CustomEditor(typeof(BitMonoConfiguration))]
+    [CustomEditor(typeof(BitMonoConfig))]
     public class BitMonoConfigInspector : UnityEditor.Editor
     {
         private void OnEnable()
         {
-            var config = (BitMonoConfiguration)target;
+            var config = (BitMonoConfig)target;
             if (config.UseUnityUIForProtections && (config.ProtectionSettings == null || config.ProtectionSettings.Count == 0))
             {
                 config.LoadProtectionsFromFile();
@@ -20,7 +20,7 @@ namespace BitMono.Unity.Editor
 
         public override void OnInspectorGUI()
         {
-            var config = (BitMonoConfiguration)target;
+            var config = (BitMonoConfig)target;
             EditorGUILayout.LabelField("BitMono Obfuscation", EditorStyles.boldLabel);
             config.EnableObfuscation = EditorGUILayout.Toggle(
                 new GUIContent("Enable Obfuscation",

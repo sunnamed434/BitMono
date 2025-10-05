@@ -69,11 +69,11 @@ namespace BitMono.Unity.Editor
         [MenuItem("BitMono/Show Config Location", false, 1)]
         public static void ShowConfigLocation()
         {
-            var configs = AssetDatabase.FindAssets("t:BitMonoConfiguration");
+            var configs = AssetDatabase.FindAssets("t:BitMonoConfig");
             if (configs.Length > 0)
             {
                 var configPath = AssetDatabase.GUIDToAssetPath(configs[0]);
-                var config = AssetDatabase.LoadAssetAtPath<BitMonoConfiguration>(configPath);
+                var config = AssetDatabase.LoadAssetAtPath<BitMonoConfig>(configPath);
                 Selection.activeObject = config;
                 EditorGUIUtility.PingObject(config);
             }
@@ -168,13 +168,13 @@ namespace BitMono.Unity.Editor
             }
         }
 
-        private static BitMonoConfiguration LoadBitMonoConfigStatic()
+        private static BitMonoConfig LoadBitMonoConfigStatic()
         {
-            var configs = AssetDatabase.FindAssets("t:BitMonoConfiguration");
+            var configs = AssetDatabase.FindAssets("t:BitMonoConfig");
             if (configs.Length > 0)
             {
                 var configPath = AssetDatabase.GUIDToAssetPath(configs[0]);
-                return AssetDatabase.LoadAssetAtPath<BitMonoConfiguration>(configPath);
+                return AssetDatabase.LoadAssetAtPath<BitMonoConfig>(configPath);
             }
             return null;
         }
@@ -629,13 +629,13 @@ namespace BitMono.Unity.Editor
             return null;
         }
 
-        private BitMonoConfiguration LoadBitMonoConfig()
+        private BitMonoConfig LoadBitMonoConfig()
         {
-            var configs = AssetDatabase.FindAssets("t:BitMonoConfiguration");
+            var configs = AssetDatabase.FindAssets("t:BitMonoConfig");
             if (configs.Length > 0)
             {
                 var configPath = AssetDatabase.GUIDToAssetPath(configs[0]);
-                return AssetDatabase.LoadAssetAtPath<BitMonoConfiguration>(configPath);
+                return AssetDatabase.LoadAssetAtPath<BitMonoConfig>(configPath);
             }
             return null;
         }

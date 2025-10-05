@@ -12,12 +12,17 @@ mkdir "%TEST_PROJECT%\Editor"
 REM Copy files from main source to test project
 copy "..\Editor\*.cs" "%TEST_PROJECT%\Editor\" /Y
 copy "..\Editor\*.asmdef" "%TEST_PROJECT%\Editor\" /Y
+REM Copy .meta files if they exist (to preserve GUIDs)
+if exist "..\Editor\*.cs.meta" copy "..\Editor\*.cs.meta" "%TEST_PROJECT%\Editor\" /Y
+if exist "..\Editor\*.asmdef.meta" copy "..\Editor\*.asmdef.meta" "%TEST_PROJECT%\Editor\" /Y
 copy "..\package.json" "%TEST_PROJECT%\" /Y
 copy "..\README.md" "%TEST_PROJECT%\" /Y
 
-REM Copy asset files if they exist
+REM Copy BitMonoConfig.asset (and .meta if exists) to preserve GUID/script binding
 if exist "..\BitMonoConfig.asset" copy "..\BitMonoConfig.asset" "%TEST_PROJECT%\" /Y
 if exist "..\BitMonoConfig.asset.meta" copy "..\BitMonoConfig.asset.meta" "%TEST_PROJECT%\" /Y
+
+REM Static .meta is committed; no generation needed
 
 REM Build BitMono.CLI if needed
 if not exist "..\..\..\src\BitMono.CLI\bin\Release\net462\BitMono.CLI.exe" (

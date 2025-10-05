@@ -11,12 +11,20 @@ New-Item -ItemType Directory -Path (Join-Path $TestProject "Editor") -Force | Ou
 # Copy files from main source to test project
 Copy-Item "..\Editor\*.cs" (Join-Path $TestProject "Editor") -Force
 Copy-Item "..\Editor\*.asmdef" (Join-Path $TestProject "Editor") -Force
+if (Get-ChildItem "..\Editor\*.cs.meta" -ErrorAction SilentlyContinue) { Copy-Item "..\Editor\*.cs.meta" (Join-Path $TestProject "Editor") -Force }
+if (Get-ChildItem "..\Editor\*.asmdef.meta" -ErrorAction SilentlyContinue) { Copy-Item "..\Editor\*.asmdef.meta" (Join-Path $TestProject "Editor") -Force }
 Copy-Item "..\package.json" $TestProject -Force
 Copy-Item "..\README.md" $TestProject -Force
 
-# Copy asset files if they exist
-if (Test-Path "..\BitMonoConfig.asset") { Copy-Item "..\BitMonoConfig.asset" $TestProject -Force }
-if (Test-Path "..\BitMonoConfig.asset.meta") { Copy-Item "..\BitMonoConfig.asset.meta" $TestProject -Force }
+# Copy BitMonoConfig.asset (and .meta, if present) to preserve GUID/script binding
+$configAsset = Join-Path (Join-Path (Split-Path $PSScriptRoot -Parent) "..") "BitMonoConfig.asset"
+if (Test-Path $configAsset) {
+    Copy-Item $configAsset $TestProject -Force
+}
+$configMeta = "$configAsset.meta"
+if (Test-Path $configMeta) {
+    Copy-Item $configMeta $TestProject -Force
+}
 
 # Build BitMono.CLI if needed
 $CliSourcePath = "..\..\..\src\BitMono.CLI\bin\Release\net462\BitMono.CLI.exe"
