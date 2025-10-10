@@ -194,21 +194,37 @@ The integration hooks into Unity's build pipeline and runs BitMono CLI to protec
 Installation
 ~~~~~~~~~~~
 
-Download the Unity Package
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Download the Unity Integration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Go to the latest BitMono release on `GitHub <https://github.com/sunnamed434/BitMono/releases/latest>`_
-2. Download the Unity package for your Unity version:
+2. For your Unity version, download the archive with both package formats:
 
-   - **Unity 2019.4**: ``BitMono-Unity-v0.25.3-Unity2019.4.40f1.unitypackage``
-   - **Unity 2020.3**: ``BitMono-Unity-v0.25.3-Unity2020.3.48f1.unitypackage``
-   - **Unity 2021.3**: ``BitMono-Unity-v0.25.3-Unity2021.3.45f1.unitypackage``
-   - **Unity 2022.3**: ``BitMono-Unity-v0.25.3-Unity2022.3.50f1.unitypackage``
-   - **Unity 6.0+**: ``BitMono-Unity-v0.25.3-Unity6.0.0f1.unitypackage``
+   - File name pattern: ``BitMono-Unity-v<version>-Unity<unityVersion>.zip``
+   - Example: ``BitMono-Unity-v1.2.3-Unity2021.3.45f1.zip``
 
-3. In Unity, go to **Assets → Import Package → Custom Package**
-4. Select the downloaded ``.unitypackage`` file
-5. Click **Import** to add BitMono to your project
+   The archive contains:
+
+   - ``BitMono-Unity-v<version>-Unity<unityVersion>.unitypackage`` (classic package)
+   - ``BitMono-Unity-UPM-v<version>-Unity<unityVersion>.tgz`` (Unity Package Manager tarball)
+
+Install (choose one)
+~~~~~~~~~~~~~~~~~~~~
+
+.. rubric:: Option A — Import .unitypackage (recommended for most users)
+
+1. Extract the downloaded ``.zip``
+2. In Unity: **Assets → Import Package → Custom Package**
+3. Select ``BitMono-Unity-v<version>-Unity<unityVersion>.unitypackage``
+4. Click **Import**
+
+.. rubric:: Option B — Install via Unity Package Manager (UPM)
+
+1. Extract the downloaded ``.zip``
+2. In Unity: **Window → Package Manager**
+3. Click the ``+`` dropdown → **Add package from tarball...**
+4. Select ``BitMono-Unity-UPM-v<version>-Unity<unityVersion>.tgz``
+5. Confirm installation
 
 Project Structure
 ~~~~~~~~~~~~~~~~~
