@@ -283,6 +283,15 @@ public class BitMonoObfuscator
             fileBuilder
                 .CreateFile(_imageBuild!.ConstructedImage!)
                 .Write(memoryStream);
+            
+            if (!string.IsNullOrEmpty(_obfuscationSettings.StrongNameKeyFile) && File.Exists(_obfuscationSettings.StrongNameKeyFile))
+            {
+                _logger.Information("Applying strong name signature to PE image");
+                var privateKey = StrongNamePrivateKey.FromFile(_obfuscationSettings.StrongNameKeyFile);
+                var signer = new StrongNameSigner(privateKey);
+                signer.SignImage(memoryStream, _context.Module.Assembly.HashAlgorithm);
+            }
+            
             await _dataWriter.WriteAsync(_context.BitMonoContext.OutputFile, memoryStream.ToArray());
             _logger.Information("The protected module was saved in {0}", _context.BitMonoContext.OutputDirectoryName);
         }

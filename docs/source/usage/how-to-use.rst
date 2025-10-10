@@ -41,6 +41,7 @@ Available options:
 - ``--logging-file``: Custom logging config file
 - ``--obfuscation-file``: Custom obfuscation config file
 - ``--no-watermark``: Turn off watermarking
+- ``--strong-name-key``: Path to strong name key (.snk) file for assembly signing
 
 Setup
 ~~~~~

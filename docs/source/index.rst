@@ -16,6 +16,7 @@ Table of Contents:
    :name: sec-usage
 
    usage/how-to-use
+   usage/assembly-signing
    usage/troubleshooting
 
 .. toctree::
