@@ -146,8 +146,10 @@ jobs:
           # Keep CLI inside Assets but we'll disable import via PluginImporter/meta
           mkdir -p test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI
           cp -R src/BitMono.CLI/bin/Release/net462/win-x64/* test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI/
-          # Copy committed BitMonoConfig.cs.meta to ensure correct GUID for ScriptableObject binding
-          cp src/BitMono.Unity/Editor/BitMonoConfig.cs.meta test/BitMono.Unity.TestProject/Assets/BitMono.Unity/Editor/BitMonoConfig.cs.meta
+          # Copy BitMonoConfig.cs.meta if it exists to preserve GUID for ScriptableObject binding
+          if [ -f src/BitMono.Unity/Editor/BitMonoConfig.cs.meta ]; then
+            cp src/BitMono.Unity/Editor/BitMonoConfig.cs.meta test/BitMono.Unity.TestProject/Assets/BitMono.Unity/Editor/BitMonoConfig.cs.meta
+          fi
           # Generate .meta files to disable Unity import for all CLI DLLs (prevents load on project open)
           CLI_DIR="test/BitMono.Unity.TestProject/Assets/BitMono.Unity/BitMono.CLI"
           if [ -d "$CLI_DIR" ]; then
