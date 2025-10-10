@@ -46,9 +46,24 @@ public class ModuleFactory : IModuleFactory
             throw;
         }
 
-        var managedPEImageBuilder =
-            new ManagedPEImageBuilder(new DotNetDirectoryFactory(_metadataBuilderFlags), _errorListener);
-
+        var factory = new DotNetDirectoryFactory(_metadataBuilderFlags);
+        
+        if (!string.IsNullOrEmpty(_obfuscationSettings.StrongNameKeyFile))
+        {
+            if (File.Exists(_obfuscationSettings.StrongNameKeyFile))
+            {
+                _logger.Information("Loading strong name key from: {KeyFile}", _obfuscationSettings.StrongNameKeyFile);
+                var privateKey = StrongNamePrivateKey.FromFile(_obfuscationSettings.StrongNameKeyFile);
+                factory.StrongNamePrivateKey = privateKey;
+                _logger.Information("Configured DotNetDirectoryFactory with strong name private key");
+            }
+            else
+            {
+                _logger.Error("Strong name key file not found: {KeyFile}", _obfuscationSettings.StrongNameKeyFile);
+            }
+        }
+        
+        var managedPEImageBuilder = new ManagedPEImageBuilder(factory, _errorListener);
         return new ModuleFactoryResult
         {
             Module = module,

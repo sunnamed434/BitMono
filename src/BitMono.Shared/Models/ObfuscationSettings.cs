@@ -22,4 +22,5 @@ public class ObfuscationSettings
     public bool SpecificNamespacesObfuscationOnly { get; set; }
     public string[]? SpecificNamespaces { get; set; }
     public string[]? RandomStrings { get; set; }
+    public string? StrongNameKeyFile { get; set; }
 }

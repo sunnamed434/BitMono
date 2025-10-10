@@ -42,6 +42,11 @@ internal class OptionsObfuscationNeedsFactory
             {
                 obfuscationSettings.Watermark = false;
             }
+            
+            if (obfuscationSettings != null)
+            {
+                obfuscationSettings.StrongNameKeyFile = options.StrongNameKey;
+            }
         }
         catch (Exception ex)
         {
