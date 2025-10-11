@@ -30,6 +30,7 @@ global using BitMono.Core.Renaming;
 global using BitMono.Core.Resolvers;
 global using BitMono.Core.Services;
 global using BitMono.Utilities.AsmResolver;
+global using Echo.DataFlow;
 global using Echo.DataFlow.Analysis;
 global using Echo.Platforms.AsmResolver;
 global using JetBrains.Annotations;
