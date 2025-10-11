@@ -18,13 +18,13 @@ public class DoNotResolveMemberResolver : IMemberResolver
 
     public bool Resolve(IProtection protection, IMetadataMember member)
     {
-        if (protection.TryGetDoNotResolveAttribute(out var doNotResolveAttribute) == false)
+        if (!protection.TryGetDoNotResolveAttribute(out var doNotResolveAttribute))
         {
             return true;
         }
         if (doNotResolveAttribute!.MemberInclusion.HasFlag(MemberInclusionFlags.SpecialRuntime))
         {
-            if (_runtimeCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
+            if (!_runtimeCriticalAnalyzer.NotCriticalToMakeChanges(member))
             {
                 return false;
             }
@@ -33,20 +33,46 @@ public class DoNotResolveMemberResolver : IMemberResolver
         {
             if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Model))
             {
-                if (_modelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute) == false)
+                if (!_modelAttributeCriticalAnalyzer.NotCriticalToMakeChanges(customAttribute))
                 {
                     return false;
                 }
             }
         }
-        if (member is MethodDefinition method)
+        if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Reflection))
         {
-            if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.Reflection))
+            switch (member)
             {
-                if (_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
-                {
-                    return false;
-                }
+                case MethodDefinition method:
+                    if (!_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(method))
+                    {
+                        return false;
+                    }
+                    break;
+                case FieldDefinition field:
+                    if (!_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(field))
+                    {
+                        return false;
+                    }
+                    break;
+                case PropertyDefinition property:
+                    if (!_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(property))
+                    {
+                        return false;
+                    }
+                    break;
+                case EventDefinition eventDef:
+                    if (!_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(eventDef))
+                    {
+                        return false;
+                    }
+                    break;
+                case TypeDefinition type:
+                    if (!_reflectionCriticalAnalyzer.NotCriticalToMakeChanges(type))
+                    {
+                        return false;
+                    }
+                    break;
             }
         }
         return true;
