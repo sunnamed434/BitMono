@@ -108,6 +108,9 @@ Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installa
 - **Git URL (Best for Development)**: `https://github.com/sunnamed434/BitMono.git#vX.Y.Z`
   - In Unity: `Window → Package Manager → + → Add package from git URL`
 
+**NuGet Package Users:**
+If you encounter dependency resolution issues when using BitMono as a NuGet package, see the [NuGet configuration guide](https://bitmono.readthedocs.io/en/latest/usage/nuget-configuration.html) in the documentation.
+
 For detailed installation and usage instructions, see the **[documentation][bitmono_docs]**.
 
 ### Troubleshooting

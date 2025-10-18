@@ -17,6 +17,7 @@ Table of Contents:
 
    usage/how-to-use
    usage/assembly-signing
+   usage/nuget-configuration
    usage/troubleshooting
 
 .. toctree::

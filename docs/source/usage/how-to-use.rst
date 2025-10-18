@@ -275,6 +275,40 @@ Troubleshooting
 
 For detailed troubleshooting information, see the `troubleshooting guide <troubleshooting.html>`_.
 
+NuGet Package Integration (For Developers)
+------------------------------------------
+
+.. note::
+
+   This section is for developers who want to integrate BitMono into their own obfuscation tools or build custom solutions. For regular users, the CLI tool or Unity integration are recommended.
+
+BitMono is also available as NuGet packages, allowing you to integrate obfuscation capabilities directly into your own applications or build custom obfuscation tools.
+
+Available Packages
+~~~~~~~~~~~~~~~~~~
+
+**Core Components:**
+- `BitMono.API <https://www.nuget.org/packages/BitMono.API/>`_ - Core interfaces and abstractions
+- `BitMono.Core <https://www.nuget.org/packages/BitMono.Core/>`_ - Main obfuscation engine
+- `BitMono.Protections <https://www.nuget.org/packages/BitMono.Protections/>`_ - Collection of protection implementations
+- `BitMono.Shared <https://www.nuget.org/packages/BitMono.Shared/>`_ - Shared utilities and models
+
+**Host & Utilities:**
+- `BitMono.Host <https://www.nuget.org/packages/BitMono.Host/>`_ - Application host framework
+- `BitMono.Utilities <https://www.nuget.org/packages/BitMono.Utilities/>`_ - Helper functions and utilities
+- `BitMono.Obfuscation <https://www.nuget.org/packages/BitMono.Obfuscation/>`_ - High-level obfuscation orchestrator
+- `BitMono.Runtime <https://www.nuget.org/packages/BitMono.Runtime/>`_ - Runtime components for obfuscated assemblies
+
+Configuration
+~~~~~~~~~~~~~
+
+When using NuGet packages, you'll need to configure BitMono programmatically or through configuration files. See the `developer documentation <../developers/configuration.html>`_ for detailed configuration options.
+
+Dependencies
+~~~~~~~~~~~~
+
+BitMono NuGet packages depend on nightly versions of AsmResolver. If you encounter dependency resolution issues, see the `NuGet configuration guide <nuget-configuration.html>`_ for setup instructions.
+
 Next Steps
 ----------
 
