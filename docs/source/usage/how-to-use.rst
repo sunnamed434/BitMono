@@ -288,12 +288,14 @@ Available Packages
 ~~~~~~~~~~~~~~~~~~
 
 **Core Components:**
+
 - `BitMono.API <https://www.nuget.org/packages/BitMono.API/>`_ - Core interfaces and abstractions
 - `BitMono.Core <https://www.nuget.org/packages/BitMono.Core/>`_ - Main obfuscation engine
 - `BitMono.Protections <https://www.nuget.org/packages/BitMono.Protections/>`_ - Collection of protection implementations
 - `BitMono.Shared <https://www.nuget.org/packages/BitMono.Shared/>`_ - Shared utilities and models
 
 **Host & Utilities:**
+
 - `BitMono.Host <https://www.nuget.org/packages/BitMono.Host/>`_ - Application host framework
 - `BitMono.Utilities <https://www.nuget.org/packages/BitMono.Utilities/>`_ - Helper functions and utilities
 - `BitMono.Obfuscation <https://www.nuget.org/packages/BitMono.Obfuscation/>`_ - High-level obfuscation orchestrator
@@ -307,7 +309,7 @@ When using NuGet packages, you'll need to configure BitMono programmatically or 
 Dependencies
 ~~~~~~~~~~~~
 
-BitMono NuGet packages depend on nightly versions of AsmResolver. If you encounter dependency resolution issues, see the `NuGet configuration guide <nuget-configuration.html>`_ for setup instructions.
+BitMono NuGet packages may use nightly versions of AsmResolver. If you encounter dependency resolution issues, see the `NuGet configuration guide <nuget-configuration.html>`_ for setup instructions.
 
 Next Steps
 ----------
