@@ -16,12 +16,12 @@ public class ObfuscationAttributeResolver : AttributeResolver<IReadOnlyList<Obfu
     public override bool Resolve(string? featureName, IHasCustomAttribute from, [NotNullWhen(true)] out IReadOnlyList<ObfuscationAttributeData>? model)
     {
         model = null;
-        if (_obfuscationSettings.ObfuscationAttributeObfuscationExclude == false)
+        if (!_obfuscationSettings.ObfuscationAttributeObfuscationExclude)
         {
             return false;
         }
-        if (AttemptAttributeResolver.TryResolve(from, _attributeNamespace, _attributeName,
-                out var attributesResolve) == false)
+        if (!AttemptAttributeResolver.TryResolve(from, _attributeNamespace, _attributeName,
+                out var attributesResolve))
         {
             return false;
         }
@@ -34,20 +34,36 @@ public class ObfuscationAttributeResolver : AttributeResolver<IReadOnlyList<Obfu
             {
                 continue;
             }
-            if (namedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? feature) == false)
+            
+            var hasFeature = namedValues.TryGetTypedValue(nameof(ObfuscationAttribute.Feature), out string? featureValue);
+            var feature = hasFeature ? featureValue : "all";
+            
+            if (hasFeature)
             {
-                continue;
+                if (!string.Equals(feature, featureName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
             }
-            if (feature.Equals(featureName, StringComparison.OrdinalIgnoreCase) == false)
+            else
             {
-                continue;
+                if (string.IsNullOrEmpty(featureName))
+                {
+                    continue;
+                }
             }
 
             var exclude =
                 namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
                     defaultValue: true);
+            
+            if (!exclude)
+            {
+                continue;
+            }
+            
             var applyToMembers =
-                namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.Exclude),
+                namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.ApplyToMembers),
                     defaultValue: true);
             var stripAfterObfuscation =
                 namedValues.GetValueOrDefault(nameof(ObfuscationAttribute.StripAfterObfuscation),
@@ -62,6 +78,12 @@ public class ObfuscationAttributeResolver : AttributeResolver<IReadOnlyList<Obfu
                 CustomAttribute = attribute.Attribute
             });
         }
+        
+        if (attributes.Count == 0)
+        {
+            return false;
+        }
+        
         model = attributes;
         return true;
     }

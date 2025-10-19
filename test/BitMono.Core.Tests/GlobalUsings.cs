@@ -1,8 +1,11 @@
+global using System;
 global using System.Collections;
 global using System.Collections.Generic;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Linq;
+global using System.Reflection;
 global using AsmResolver.DotNet;
+global using AsmResolver.PE.DotNet.Cil;
 global using BitMono.Core.Analyzing;
 global using BitMono.Core.Resolvers;
 global using BitMono.Core.TestCases.CustomAttributes;

@@ -17,7 +17,7 @@ public class ObfuscationMethods
     public void ObfuscationAttributeFeatureCallToCalliExcludeTrue()
     {
     }
-    [Obfuscation(Feature = nameof(CallToCalli), Exclude = true)]
+    [Obfuscation(Feature = nameof(CallToCalli), Exclude = false)]
     public void ObfuscationAttributeFeatureCallToCalliExcludeFalse()
     {
     }   

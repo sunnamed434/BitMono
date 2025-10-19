@@ -31,4 +31,8 @@ public static class Setup
     {
         return new SerializableBitCriticalAnalyzer(obfuscation);
     }
+    public static ReflectionCriticalAnalyzer ReflectionCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
+    {
+        return new ReflectionCriticalAnalyzer(obfuscation);
+    }
 }

@@ -199,4 +199,188 @@ public class ReflectionMethods
             _ = nestedType.GetMethod("ToString");
         }
     }
+
+    public void DeepReflectionLevel1()
+    {
+        DeepReflectionLevel2();
+    }
+
+    public void DeepReflectionLevel2()
+    {
+        DeepReflectionLevel3();
+    }
+
+    public void DeepReflectionLevel3()
+    {
+        UsesReflectionOnItSelf();
+    }
+
+    public void DeepReflectionDirect()
+    {
+        typeof(ReflectionMethods).GetMethod(nameof(DeepReflectionDirect));
+    }
+
+    public void NonReflectionMethod()
+    {
+        VoidMethod("test");
+    }
+
+    public void CallsNonReflectionMethod()
+    {
+        NonReflectionMethod();
+    }
+
+    // Base type reflection test cases
+    public class BaseClass
+    {
+        public virtual void BaseMethod() { }
+        public string BaseField = "base";
+        public string BaseProperty { get; set; } = "base";
+        public event EventHandler BaseEvent;
+    }
+
+    public class DerivedClass : BaseClass
+    {
+        public override void BaseMethod() { }
+        public void DerivedMethod() { }
+    }
+
+    public void UsesBaseTypeReflection()
+    {
+        _ = typeof(DerivedClass).GetMethod("BaseMethod");
+        _ = typeof(DerivedClass).GetField("BaseField");
+        _ = typeof(DerivedClass).GetProperty("BaseProperty");
+        _ = typeof(DerivedClass).GetEvent("BaseEvent");
+    }
+
+    public void UsesInheritedMemberReflection()
+    {
+        _ = typeof(DerivedClass).GetMethod("DerivedMethod");
+        _ = typeof(DerivedClass).GetMember("BaseMethod");
+    }
+
+    // Plural reflection methods test cases
+    public void UsesGetMethods()
+    {
+        _ = typeof(ReflectionMethods).GetMethods();
+        _ = typeof(ReflectionMethods).GetMethods(BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    public void UsesGetFields()
+    {
+        _ = typeof(ReflectionMethods).GetFields();
+        _ = typeof(ReflectionMethods).GetFields(BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    public void UsesGetProperties()
+    {
+        _ = typeof(ReflectionMethods).GetProperties();
+        _ = typeof(ReflectionMethods).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    public void UsesGetEvents()
+    {
+        _ = typeof(ReflectionMethods).GetEvents();
+        _ = typeof(ReflectionMethods).GetEvents(BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    public void UsesGetMembers()
+    {
+        _ = typeof(ReflectionMethods).GetMembers();
+        _ = typeof(ReflectionMethods).GetMembers(BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    // Generic type reflection test cases
+    public void UsesGenericTypeReflection()
+    {
+        _ = typeof(List<>).GetMethod("Add");
+        _ = typeof(List<>).GetProperty("Count");
+        _ = typeof(Dictionary<,>).GetMethod("Add");
+    }
+
+    public void UsesConstructedGenericTypeReflection()
+    {
+        _ = typeof(List<string>).GetMethod("Add");
+        _ = typeof(List<string>).GetProperty("Count");
+        _ = typeof(Dictionary<string, int>).GetMethod("Add");
+    }
+
+    // Assembly.GetType test cases
+    public void UsesAssemblyGetType()
+    {
+        var assembly = typeof(ReflectionMethods).Assembly;
+        var type = assembly.GetType("BitMono.Core.TestCases.Reflection.ReflectionMethods");
+        _ = type?.GetMethod("UsesAssemblyGetType");
+    }
+
+    public void UsesAssemblyGetTypeWithReflection()
+    {
+        var assembly = typeof(ReflectionMethods).Assembly;
+        var type = assembly.GetType("BitMono.Core.TestCases.Reflection.ReflectionMethods");
+        _ = type?.GetMethod("UsesAssemblyGetTypeWithReflection");
+        _ = type?.GetField("TestField");
+        _ = type?.GetProperty("TestProperty");
+    }
+
+    // Complex reflection patterns
+    public void UsesComplexTypeResolution()
+    {
+        var typeName = "BitMono.Core.TestCases.Reflection.ReflectionMethods";
+        var assembly = typeof(ReflectionMethods).Assembly;
+        var type = assembly.GetType(typeName);
+        
+        if (type != null)
+        {
+            _ = type.GetMethod("UsesComplexTypeResolution");
+            _ = type.GetField("TestField");
+            _ = type.GetProperty("TestProperty");
+            _ = type.GetEvent("TestEvent");
+        }
+    }
+
+    public void UsesNestedTypeReflection()
+    {
+        _ = typeof(ReflectionMethods).GetNestedTypes();
+        _ = typeof(ReflectionMethods).GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic);
+    }
+
+    public void UsesInterfaceReflection()
+    {
+        var interfaces = typeof(ReflectionMethods).GetInterfaces();
+        foreach (var iface in interfaces)
+        {
+            _ = iface.GetMethod("GetHashCode");
+            _ = iface.GetMethod("ToString");
+        }
+    }
+
+    public void UsesMemberOverrideReflection()
+    {
+        _ = typeof(DerivedClass).GetMethod("BaseMethod");
+        _ = typeof(DerivedClass).GetMethod("VirtualMethod");
+        _ = typeof(DerivedClass).GetProperty("BaseProperty");
+        _ = typeof(DerivedClass).GetProperty("VirtualProperty");
+        _ = typeof(DerivedClass).GetEvent("BaseEvent");
+        _ = typeof(DerivedClass).GetEvent("VirtualEvent");
+    }
+}
+
+public class BaseClass
+{
+    public virtual void BaseMethod() { }
+    public virtual void VirtualMethod() { }
+    public virtual string BaseProperty { get; set; }
+    public virtual string VirtualProperty { get; set; }
+    public virtual event EventHandler BaseEvent;
+    public virtual event EventHandler VirtualEvent;
+}
+
+public class DerivedClass : BaseClass
+{
+    public override void BaseMethod() { }
+    public override void VirtualMethod() { }
+    public override string BaseProperty { get; set; }
+    public override string VirtualProperty { get; set; }
+    public override event EventHandler BaseEvent;
+    public override event EventHandler VirtualEvent;
 }
