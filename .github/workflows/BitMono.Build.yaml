@@ -79,7 +79,7 @@ jobs:
           zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *
       
       - name: Upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
@@ -298,7 +298,7 @@ jobs:
           cd ..
       
       - name: Upload Unity Packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: BitMono-Unity-v${{ steps.cli-build.outputs.version }}-Unity${{ matrix.unity-version }}
           path: |
