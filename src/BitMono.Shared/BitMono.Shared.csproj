@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net7.0;net6.0;net462;netstandard2.1;netstandard2.0;</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
@@ -21,6 +21,19 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="2.0.0" />
     <PackageReference Include="Serilog.Extensions.Autofac.DependencyInjection" Version="5.0.0" />
+  </ItemGroup>
+
+  <!-- Packages specific to .NET 10.0 -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+    <PackageReference Include="Autofac" Version="8.4.0" />
+    <PackageReference Include="Autofac.Configuration" Version="7.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
   </ItemGroup>
 
   <!-- Packages specific to .NET 9.0 -->

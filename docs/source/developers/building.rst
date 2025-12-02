@@ -16,6 +16,7 @@ Recommended to install tools via Visual Studio installer, otherwise you can grab
 
 - `Visual Studio 2022 <https://visualstudio.microsoft.com/downloads>`_ or `JetBrains Rider <https://www.jetbrains.com/rider/download>`_ or newer
 - `.NET Framework 4.6.2 <https://dotnet.microsoft.com/en-us/download/dotnet-framework/net462>`_
+- `.NET 10.0 <https://dotnet.microsoft.com/en-us/download/dotnet/10.0>`_
 - `.NET 9.0 <https://dotnet.microsoft.com/en-us/download/dotnet/9.0>`_
 - `.NET 8.0 <https://dotnet.microsoft.com/en-us/download/dotnet/8.0>`_
 - `.NET 7.0 <https://dotnet.microsoft.com/en-us/download/dotnet/7.0>`_
@@ -46,6 +47,7 @@ Release Archives
 
 Archive examples (versions and naming might be different):
 
+- .NET 10.0: ``BitMono-v0.24.2+7aaeceac-CLI-net10.0-linux-x64.zip``
 - .NET 9.0: ``BitMono-v0.24.2+7aaeceac-CLI-net9.0-linux-x64.zip``
 - .NET 8.0: ``BitMono-v0.24.2+7aaeceac-CLI-net8.0-linux-x64.zip``
 - .NET 7.0: ``BitMono-v0.24.2+7aaeceac-CLI-net7.0-win-x64.zip``
@@ -59,7 +61,7 @@ Archive naming explained:
 - ``v0.24.2`` is the version
 - ``+7aaeceac`` after the version is the commit hash
 - ``CLI`` means command line interface (currently BitMono only has CLI)
-- ``net9.0``, ``net8.0``, etc. is the target framework BitMono was built on
+- ``net10.0``, ``net9.0``, ``net8.0``, etc. is the target framework BitMono was built on
 
 Getting Help
 -----------

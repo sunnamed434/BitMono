@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target-framework: [net9.0, net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
+        target-framework: [net10.0, net9.0, net8.0, net7.0, net6.0, net462, netstandard2.1, netstandard2.0]
         runtime: [linux-x64, win-x64, linux-arm64, win-arm64, osx-x64, osx-arm64, win-x86]
         exclude:
           # Exclude win-x86 builds for .NET Standard as they're architecture-independent
@@ -50,7 +50,7 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
           DOTNET_CLI_TELEMETRY_OPTOUT: true
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
       
       - name: Build Project
         uses: ./.github/actions/project-build
@@ -127,7 +127,7 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
           DOTNET_CLI_TELEMETRY_OPTOUT: true
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
       
       - name: Build BitMono.CLI for Unity Package
         uses: ./.github/actions/project-build
