@@ -24,8 +24,13 @@
 
 #bm-header-label {
     -unity-font-style: bold;
-    font-size: 14px;
-    margin-bottom: 6px;
+    font-size: 25px;
+}
+
+#bm-header-logo {
+	width: 64px;
+	height: 64px;
+	margin-right: 25px;
 }
 
 #bm-label-obfuscation-state {
@@ -38,7 +43,7 @@
 
 #bm-section-title {
     -unity-font-style: bold;
-    font-size: 12px;
+    font-size: 16px;
     margin-bottom: 4px;
     opacity: 0.95;
 }
@@ -52,6 +57,7 @@
 #bm-toggle-debug-logging,
 #bm-toggle-use-ui-protections {
     margin-top: 2px;
+    font-size: 14px;
     margin-bottom: 4px;
     -unity-font-style: normal;
 }

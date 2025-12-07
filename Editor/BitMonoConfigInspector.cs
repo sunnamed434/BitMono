@@ -44,12 +44,31 @@ namespace BitMono.Unity.Editor
             }
 
             var headerSection = new VisualElement { name = "bm-section-header" };
+
+            var headerRow = new VisualElement();
+            headerRow.style.flexDirection = FlexDirection.Row;
+            headerRow.style.justifyContent = Justify.SpaceBetween;
+            headerRow.style.alignItems = Align.Center;
+
             var headerLabel = new Label("BitMono Obfuscation") { name = "bm-header-label" };
             if (fontAsset != null)
             {
                 headerLabel.style.unityFontDefinition = new StyleFontDefinition(fontAsset);
             }
-            headerSection.Add(headerLabel);
+            headerRow.Add(headerLabel);
+
+            var logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/BitMono.Unity/Logo/BitMonoLogo.png");
+            if (logoTexture != null)
+            {
+                var logoImage = new Image
+                {
+                    name = "bm-header-logo",
+                    image = logoTexture
+                };
+                headerRow.Add(logoImage);
+            }
+
+            headerSection.Add(headerRow);
 
             var enableObfToggle = new Toggle
             {
