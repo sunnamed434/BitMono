@@ -21,3 +21,23 @@ Testing
 2. Run: ``src/BitMono.Unity/scripts/copy-to-test-project.bat``
 3. Open Unity: ``test/BitMono.Unity.TestProject/``
 4. Build to test
+
+Testing Package Export
+----------------------
+
+To verify that the ``.unitypackage`` export includes all required DLLs:
+
+1. Follow steps 1-3 above to set up the test project
+2. In Unity, go to **BitMono > Test Export Package**
+3. Check the Console for output showing included files and DLL count
+4. The package will be created at the repository root: ``BitMono-Unity-vtest-Unity<version>.unitypackage``
+
+Expected output::
+
+    === BitMono Package Export Test ===
+    Including 192 files from BitMono.CLI folder (164 DLLs)
+    Total assets to export: 198
+    Package exported successfully!
+      Size: ~8 MB
+
+This menu item is only available in the source code (not in exported packages) since ``PackageExporter.cs`` is excluded from the ``.unitypackage``.
