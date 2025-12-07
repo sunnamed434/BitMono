@@ -18,6 +18,6 @@ Testing
 -------
 
 1. Build CLI: ``dotnet build src/BitMono.CLI/BitMono.CLI.csproj -c Release -f net462``
-2. Run: ``copy-to-test-project.bat``
+2. Run: ``src/BitMono.Unity/scripts/copy-to-test-project.bat``
 3. Open Unity: ``test/BitMono.Unity.TestProject/``
 4. Build to test
