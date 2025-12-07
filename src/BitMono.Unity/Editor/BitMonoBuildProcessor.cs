@@ -595,9 +595,14 @@ namespace BitMono.Unity.Editor
         {
             var paths = new[]
             {
+                // Unity package location (Assets/BitMono.Unity/BitMono.CLI/)
+                Path.Combine(Application.dataPath, "BitMono.Unity", "BitMono.CLI", "BitMono.CLI.exe"),
+                // Project root locations
                 Path.Combine(Application.dataPath, "..", "BitMono.CLI", "BitMono.CLI.exe"),
                 Path.Combine(Application.dataPath, "..", "..", "BitMono.CLI", "BitMono.CLI.exe"),
+                // Development build location
                 Path.Combine(Application.dataPath, "..", "..", "src", "BitMono.CLI", "bin", "Release", "net462", "BitMono.CLI.exe"),
+                // Fallback to PATH
                 "BitMono.CLI.exe"
             };
 
