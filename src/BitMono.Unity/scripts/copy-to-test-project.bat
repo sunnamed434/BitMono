@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo BitMono Unity - Setup Test Project
 echo Current directory: %CD%
 
@@ -32,21 +33,21 @@ if not exist "..\..\..\src\BitMono.CLI\bin\Release\net462\BitMono.CLI.exe" (
 
 REM Copy BitMono.CLI into Assets (will be disabled via PluginImporter)
 set "CLI_BASE=..\..\..\src\BitMono.CLI\bin\Release\net462"
-set "CLI_SOURCE=%CLI_BASE%\win-x64"
-if not exist "%CLI_SOURCE%\BitMono.CLI.exe" (
-    set "CLI_SOURCE=%CLI_BASE%"
+set "CLI_SOURCE=!CLI_BASE!\win-x64"
+if not exist "!CLI_SOURCE!\BitMono.CLI.exe" (
+    set "CLI_SOURCE=!CLI_BASE!"
 )
 set "CLI_DEST=%TEST_PROJECT%\BitMono.CLI"
 
-if not exist "%CLI_DEST%" mkdir "%CLI_DEST%"
+if not exist "!CLI_DEST!" mkdir "!CLI_DEST!"
 
-if exist "%CLI_SOURCE%\BitMono.CLI.exe" (
-    echo Copying BitMono.CLI from %CLI_SOURCE% to %CLI_DEST%
-    xcopy "%CLI_SOURCE%\*" "%CLI_DEST%\" /E /I /Y
-    if %ERRORLEVEL% EQU 0 (
-        echo BitMono.CLI copied successfully into Assets (import disabled by editor script)
+if exist "!CLI_SOURCE!\BitMono.CLI.exe" (
+    echo Copying BitMono.CLI from !CLI_SOURCE! to !CLI_DEST!
+    xcopy "!CLI_SOURCE!\*" "!CLI_DEST!\" /E /I /Y
+    if !ERRORLEVEL! EQU 0 (
+        echo BitMono.CLI copied successfully into Assets ^(import disabled by editor script^)
         echo Generating .meta files to disable plugin import for CLI DLLs...
-        for /R "%CLI_DEST%" %%F in (*.dll) do (
+        for /R "!CLI_DEST!" %%F in (*.dll) do (
             >"%%~fF.meta" echo fileFormatVersion: 2
             >>"%%~fF.meta" echo guid: %%~nF000000000000000000000000000000
             >>"%%~fF.meta" echo PluginImporter:
@@ -67,7 +68,7 @@ if exist "%CLI_SOURCE%\BitMono.CLI.exe" (
         echo ERROR: Failed to copy BitMono.CLI
     )
 ) else (
-    echo ERROR: BitMono.CLI not found at %CLI_SOURCE%
+    echo ERROR: BitMono.CLI not found at !CLI_SOURCE!
 )
 
 echo ✅ Done! Open Unity and refresh (Ctrl+R)
