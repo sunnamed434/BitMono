@@ -10,6 +10,21 @@ namespace BitMono.Editor
 {
     public static class PackageExporter
     {
+        private static bool _verboseLogging;
+
+        [MenuItem("BitMono/Test Export Package")]
+        public static void TestExportPackage()
+        {
+            // Set test values for local testing
+            Environment.SetEnvironmentVariable("VERSION", "test");
+            Environment.SetEnvironmentVariable("UNITY_VERSION", Application.unityVersion);
+
+            Debug.Log("=== BitMono Package Export Test ===");
+            _verboseLogging = true;
+            ExportPackage();
+            _verboseLogging = false;
+        }
+
         public static void ExportPackage()
         {
             try
@@ -58,7 +73,8 @@ namespace BitMono.Editor
                     if (File.Exists(assetPath))
                     {
                         assetsToInclude.Add(assetPath);
-                        Debug.Log($"Including: {assetPath}");
+                        if (_verboseLogging)
+                            Debug.Log($"Including: {assetPath}");
                     }
                     else
                     {
@@ -73,9 +89,24 @@ namespace BitMono.Editor
                         .Where(f => !f.EndsWith(".meta"))
                         .Select(f => f.Replace(Application.dataPath, "Assets").Replace("\\", "/"))
                         .ToArray();
-                    
+
                     assetsToInclude.AddRange(cliFiles);
-                    Debug.Log($"Including {cliFiles.Length} files from BitMono.CLI folder");
+                    var dllCount = cliFiles.Count(f => f.EndsWith(".dll"));
+                    Debug.Log($"Including {cliFiles.Length} files from BitMono.CLI folder ({dllCount} DLLs)");
+
+                    // Verbose: list individual DLLs for debugging
+                    if (_verboseLogging)
+                    {
+                        var dllFiles = cliFiles.Where(f => f.EndsWith(".dll")).ToArray();
+                        foreach (var dll in dllFiles.Take(10))
+                        {
+                            Debug.Log($"    - {Path.GetFileName(dll)}");
+                        }
+                        if (dllFiles.Length > 10)
+                        {
+                            Debug.Log($"    ... and {dllFiles.Length - 10} more DLLs");
+                        }
+                    }
                 }
                 else
                 {
@@ -88,9 +119,13 @@ namespace BitMono.Editor
                     EditorApplication.Exit(1);
                     return;
                 }
-                
+
                 Debug.Log($"Total assets to export: {assetsToInclude.Count}");
-                
+
+                // Refresh the AssetDatabase to ensure all newly copied files are imported
+                // This is critical for CLI DLLs that are copied during CI before export
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+
                 AssetDatabase.ExportPackage(
                     assetsToInclude.ToArray(),
                     outputPath,
