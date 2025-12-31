@@ -4,9 +4,9 @@ public class SpecificNamespaceCriticalAnalyzer : ICriticalAnalyzer<IMetadataMemb
 {
     private readonly ObfuscationSettings _obfuscationSettings;
 
-    public SpecificNamespaceCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
+    public SpecificNamespaceCriticalAnalyzer(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = obfuscation.Value;
+        _obfuscationSettings = obfuscationSettings;
     }
 
     private static string? GetNamespace(IMetadataMember member)

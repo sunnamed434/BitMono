@@ -1,36 +1,41 @@
-﻿namespace BitMono.Host;
+using BitMono.Host.Ioc;
+using BitMono.Shared.DependencyInjection;
 
+namespace BitMono.Host;
+
+/// <summary>
+/// Main application class for building the BitMono DI container.
+/// </summary>
 public class BitMonoApplication : IApplication
 {
-    private readonly ContainerBuilder _containerBuilder;
+    private readonly Container _container;
     private readonly List<IModule> _modules;
 
     public BitMonoApplication()
     {
-        _containerBuilder = new ContainerBuilder();
+        _container = new Container();
         _modules = [];
     }
 
-    public IApplication Populate(IEnumerable<ServiceDescriptor> descriptors)
-    {
-        _containerBuilder.Populate(descriptors);
-        return this;
-    }
+    /// <inheritdoc/>
     public IApplication RegisterModule(IModule module)
     {
         _modules.Add(module);
         return this;
     }
-    public Task<AutofacServiceProvider> BuildAsync(CancellationToken cancellationToken)
+
+    /// <inheritdoc/>
+    public Task<IBitMonoServiceProvider> BuildAsync(CancellationToken cancellationToken)
     {
         foreach (var module in _modules)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            _containerBuilder.RegisterModule(module);
+            module.Load(_container);
         }
-        var container = _containerBuilder.Build();
-        var provider = new AutofacServiceProvider(container.Resolve<ILifetimeScope>());
-        return Task.FromResult(provider);
+
+        // Register the container itself as the service provider
+        _container.Register<IBitMonoServiceProvider>(_container).AsSingleton();
+
+        return Task.FromResult<IBitMonoServiceProvider>(_container);
     }
 }

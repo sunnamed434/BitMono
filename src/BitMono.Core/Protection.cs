@@ -2,7 +2,7 @@ namespace BitMono.Core;
 
 public abstract class Protection : ProtectionBase
 {
-    protected Protection(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected Protection(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 }

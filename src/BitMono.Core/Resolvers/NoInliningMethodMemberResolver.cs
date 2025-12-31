@@ -4,9 +4,9 @@ public class NoInliningMethodMemberResolver : IMemberResolver
 {
     private readonly ObfuscationSettings _obfuscationSettings;
 
-    public NoInliningMethodMemberResolver(IOptions<ObfuscationSettings> obfuscation)
+    public NoInliningMethodMemberResolver(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = obfuscation.Value;
+        _obfuscationSettings = obfuscationSettings;
     }
 
     public bool Resolve(IProtection? protection, IMetadataMember member)

@@ -6,9 +6,9 @@ public class ObfuscationAttributeResolver : AttributeResolver<IReadOnlyList<Obfu
     private readonly string _attributeNamespace;
     private readonly string _attributeName;
 
-    public ObfuscationAttributeResolver(IOptions<ObfuscationSettings> configuration)
+    public ObfuscationAttributeResolver(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = configuration.Value;
+        _obfuscationSettings = obfuscationSettings;
         _attributeNamespace = typeof(ObfuscationAttribute).Namespace!;
         _attributeName = nameof(ObfuscationAttribute);
     }

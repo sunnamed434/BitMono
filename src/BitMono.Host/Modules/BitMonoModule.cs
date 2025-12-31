@@ -1,99 +1,94 @@
-﻿namespace BitMono.Host.Modules;
+using BitMono.API;
+using BitMono.API.Analyzing;
+using BitMono.API.Resolvers;
+using BitMono.Core.Factories;
+using BitMono.Core.Renaming;
+using BitMono.Core.Services;
+using BitMono.Host.Ioc;
+using BitMono.Shared.Configuration;
+using BitMono.Shared.DependencyInjection;
+using BitMono.Shared.Logging;
+using BitMono.Shared.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using LoggerConfiguration = BitMono.Shared.Logging.LoggerConfiguration;
+using ILogger = BitMono.Shared.Logging.ILogger;
 
-public class BitMonoModule : Module
+namespace BitMono.Host.Modules;
+
+public class BitMonoModule : IModule
 {
-    private const string DateVariableName = "date";
     private const string DateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
-    private readonly Action<ContainerBuilder>? _configureContainer;
-    private readonly Action<ServiceCollection>? _configureServices;
+
+    private readonly Action<Container>? _configureContainer;
     private readonly Action<LoggerConfiguration>? _configureLogger;
-    private readonly string? _loggingFile;
+    private readonly ObfuscationSettings? _obfuscationSettings;
+    private readonly ProtectionSettings? _protectionSettings;
+    private readonly string? _criticalsFile;
+    private readonly string? _obfuscationFile;
+    private readonly string? _protectionsFile;
 
     public BitMonoModule(
-        Action<ContainerBuilder>? configureContainer = null,
-        Action<ServiceCollection>? configureServices = null,
+        Action<Container>? configureContainer = null,
         Action<LoggerConfiguration>? configureLogger = null,
-        string? loggingFile = null)
+        ObfuscationSettings? obfuscationSettings = null,
+        ProtectionSettings? protectionSettings = null,
+        string? criticalsFile = null,
+        string? obfuscationFile = null,
+        string? protectionsFile = null)
     {
         _configureContainer = configureContainer;
-        _configureServices = configureServices;
         _configureLogger = configureLogger;
-        _loggingFile = loggingFile;
+        _obfuscationSettings = obfuscationSettings;
+        _protectionSettings = protectionSettings;
+        _criticalsFile = criticalsFile;
+        _obfuscationFile = obfuscationFile;
+        _protectionsFile = protectionsFile;
     }
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]
-    protected override void Load(ContainerBuilder containerBuilder)
+    public void Load(Container container)
     {
-        _configureContainer?.Invoke(containerBuilder);
+        _configureContainer?.Invoke(container);
 
-        var loggingConfigurationRoot = new ConfigurationBuilder().AddJsonFileEx(configure =>
+        var loggerConfiguration = new LoggerConfiguration
         {
-            configure.Path = _loggingFile ?? KnownConfigNames.Logging;
-            configure.Optional = false;
-            configure.Variables = new Dictionary<string, string>
-            {
-                {
-                    DateVariableName,
-                    DateTime.Now.ToString(DateTimeFormat)
-                }
-            };
-            configure.ResolveFileProvider();
-        }).Build();
-
-        var loggerConfiguration = new LoggerConfiguration()
-            .ReadFrom.Configuration(loggingConfigurationRoot);
-
+            WriteToConsole = true,
+            WriteToFile = true,
+            LogFilePath = Path.Combine("logs", $"bitmono-{DateTime.Now.ToString(DateTimeFormat)}.log"),
+            MinimumLevel = LogLevel.Debug
+        };
         _configureLogger?.Invoke(loggerConfiguration);
 
-        var logger = loggerConfiguration.CreateLogger();
-        containerBuilder.Register<ILogger>(_ => logger);
+        var logger = new Logger(loggerConfiguration);
+        container.Register<ILogger>(logger).AsSingleton();
 
-        var serviceCollection = new ServiceCollection();
-        _configureServices?.Invoke(serviceCollection);
+        var criticalsSettings = SettingsLoader.Load<CriticalsSettings>(
+            _criticalsFile ?? KnownConfigNames.Criticals);
+        container.Register(criticalsSettings).AsSingleton();
 
-        containerBuilder.RegisterType<EngineContextAccessor>()
-            .As<IEngineContextAccessor>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
+        var obfuscationSettings = _obfuscationSettings ??
+            SettingsLoader.Load<ObfuscationSettings>(_obfuscationFile ?? KnownConfigNames.Obfuscation);
+        container.Register(obfuscationSettings).AsSingleton();
 
-        containerBuilder.RegisterType<ProtectionContextFactory>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
+        var protectionSettings = _protectionSettings ??
+            SettingsLoader.Load<ProtectionSettings>(_protectionsFile ?? KnownConfigNames.Protections);
+        container.Register(protectionSettings).AsSingleton();
 
-        containerBuilder.RegisterType<ProtectionParametersFactory>()
-            .AsSelf()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.Register<RandomNext>(_ => RandomService.RandomNext)
-            .OwnedByLifetimeScope()
-            .SingleInstance();
-
-        containerBuilder.RegisterType<Renamer>()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
+        container.Register<IEngineContextAccessor, EngineContextAccessor>().AsSingleton();
+        container.Register<ProtectionContextFactory>().AsSingleton();
+        container.Register<ProtectionParametersFactory>().AsSingleton();
+        container.Register<RandomNext>(() => RandomService.RandomNext).AsSingleton();
+        container.Register<Renamer>().AsSingleton();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .Where(t => t.GetInterface(nameof(IMemberResolver)) != null)
-            .AsImplementedInterfaces()
-            .OwnedByLifetimeScope()
-            .SingleInstance();
 
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .AsClosedTypesOf(typeof(ICriticalAnalyzer<>))
-            .OwnedByLifetimeScope()
-            .SingleInstance();
+        container.RegisterAssemblyTypes(assemblies, typeof(IMemberResolver));
 
-        containerBuilder.RegisterAssemblyTypes(assemblies)
-            .PublicOnly()
-            .AsClosedTypesOf(typeof(IAttributeResolver<>))
-            .OwnedByLifetimeScope()
-            .SingleInstance();
+        container.RegisterClosedTypesOf(assemblies, typeof(ICriticalAnalyzer<>));
 
-        containerBuilder.Populate(serviceCollection);
+        container.RegisterClosedTypesOf(assemblies, typeof(IAttributeResolver<>));
     }
 }

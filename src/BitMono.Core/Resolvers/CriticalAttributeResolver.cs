@@ -4,9 +4,9 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalAttributeResolver(IOptions<CriticalsSettings> criticals)
+    public CriticalAttributeResolver(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public override bool Resolve(string? feature, IHasCustomAttribute from,

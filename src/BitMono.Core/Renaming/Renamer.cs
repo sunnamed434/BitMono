@@ -11,12 +11,12 @@ public class Renamer
     public Renamer(
         NameCriticalAnalyzer nameCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer,
-        IOptions<ObfuscationSettings> configuration,
+        ObfuscationSettings obfuscationSettings,
         RandomNext randomNext)
     {
         _nameCriticalAnalyzer = nameCriticalAnalyzer;
         _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
-        _obfuscationSettings = configuration.Value;
+        _obfuscationSettings = obfuscationSettings;
         _randomNext = randomNext;
     }
 

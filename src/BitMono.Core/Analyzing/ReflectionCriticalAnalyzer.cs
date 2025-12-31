@@ -35,9 +35,9 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         All
     }
 
-    public ReflectionCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
+    public ReflectionCriticalAnalyzer(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = obfuscation.Value;
+        _obfuscationSettings = obfuscationSettings;
         _argumentTracer = new ArgumentTracer();
         _cachedMethods = [];
         _cachedFields = [];

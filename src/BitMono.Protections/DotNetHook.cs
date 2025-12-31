@@ -5,7 +5,7 @@ public class DotNetHook : Protection
     private readonly Renamer _renamer;
     private readonly RandomNext _randomNext;
 
-    public DotNetHook(Renamer renamer, RandomNext randomNext, IServiceProvider serviceProvider) : base(serviceProvider)
+    public DotNetHook(Renamer renamer, RandomNext randomNext, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
         _randomNext = randomNext;

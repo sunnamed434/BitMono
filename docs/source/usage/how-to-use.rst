@@ -247,8 +247,7 @@ After importing, your project will contain:
        ├── BitMono.CLI.exe                 # The actual obfuscation tool
        ├── protections.json                # Protection settings
        ├── obfuscation.json                # Obfuscation settings
-       ├── criticals.json                  # What not to obfuscate
-       └── logging.json                    # Logging configuration
+       └── criticals.json                  # What not to obfuscate
 
 Configuration
 ~~~~~~~~~~~~~

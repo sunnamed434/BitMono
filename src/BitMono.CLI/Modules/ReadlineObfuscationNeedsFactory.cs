@@ -36,14 +36,13 @@ internal class ReadlineObfuscationNeedsFactory
         {
             if (File.Exists(obfuscationFile ?? KnownConfigNames.Obfuscation))
             {
-                var obfuscationConfig = new BitMonoObfuscationConfiguration(obfuscationFile);
-                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(obfuscationFile ?? KnownConfigNames.Obfuscation);
             }
 
             if (File.Exists(KnownConfigNames.Protections))
             {
-                var protectionsConfig = new BitMonoProtectionsConfiguration();
-                protectionSettings = protectionsConfig.Configuration.Get<ProtectionSettings>()?.Protections;
+                var loadedSettings = SettingsLoader.Load<ProtectionSettings>(KnownConfigNames.Protections);
+                protectionSettings = loadedSettings?.Protections;
             }
         }
         catch (Exception ex)

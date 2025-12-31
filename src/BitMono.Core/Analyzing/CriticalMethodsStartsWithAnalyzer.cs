@@ -4,9 +4,9 @@ public class CriticalMethodsStartsWithAnalyzer : ICriticalAnalyzer<MethodDefinit
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalMethodsStartsWithAnalyzer(IOptions<CriticalsSettings> criticals)
+    public CriticalMethodsStartsWithAnalyzer(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)

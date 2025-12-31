@@ -5,7 +5,7 @@ public class FullRenamer : Protection
 {
     private readonly Renamer _renamer;
 
-    public FullRenamer(Renamer renamer, IServiceProvider serviceProvider) : base(serviceProvider)
+    public FullRenamer(Renamer renamer, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
     }

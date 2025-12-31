@@ -4,9 +4,9 @@ public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefiniti
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalInterfacesCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    public CriticalInterfacesCriticalAnalyzer(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)

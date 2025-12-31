@@ -8,7 +8,7 @@ public class ReflectionCriticalAnalyzerTest
         {
             ReflectionMembersObfuscationExclude = reflectionEnabled
         };
-        return Setup.ReflectionCriticalAnalyzer(Options.Create(obfuscation));
+        return Setup.ReflectionCriticalAnalyzer(obfuscation);
     }
 
     private static (ModuleDefinition module, TypeDefinition type) GetTestData()

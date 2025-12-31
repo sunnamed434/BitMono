@@ -8,13 +8,13 @@ internal class Program
         $"BitMono v{FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).FileVersion}";
     private static readonly string AsciiArt = $"""
 
-                                                      ___  _ __  __  ___
-                                                     / _ )(_) /_/  |/  /__  ___  ___
-                                                    / _  / / __/ /|_/ / _ \/ _ \/ _ \
-                                                   /____/_/\__/_/  /_/\___/_//_/\___/
-                                                   https://github.com/sunnamed434/BitMono
-                                                   {BitMonoFileVersionText}
-                                               """;
+                                                  ___  _ __  __  ___
+                                                 / _ )(_) /_/  |/  /__  ___  ___
+                                                / _  / / __/ /|_/ / _ \/ _ \/ _ \
+                                               /____/_/\__/_/  /_/\___/_//_/\___/
+                                               https://github.com/sunnamed434/BitMono
+                                               {BitMonoFileVersionText}
+                                           """;
 
     private static async Task<int> Main(string[] args)
     {
@@ -33,21 +33,17 @@ internal class Program
             }
 
             var module = new BitMonoModule(
-                configureContainer => configureContainer.AddProtections(),
-                configureServices => configureServices.AddConfigurations(
-                    protectionSettings: needs.ProtectionSettings,
-                    criticalsFile: needs.CriticalsFile,
-                    obfuscationFile: needs.ObfuscationFile,
-                    loggingFile: needs.LoggingFile,
-                    protectionsFile: needs.ProtectionsFile,
-                    obfuscationSettings: needs.ObfuscationSettings),
-                configureLogger => configureLogger.WriteTo.AddConsoleLogger(),
-                loggingFile: needs.LoggingFile);
+                configureContainer: container => container.AddProtections(),
+                obfuscationSettings: needs.ObfuscationSettings,
+                protectionSettings: needs.ProtectionSettings,
+                criticalsFile: needs.CriticalsFile,
+                obfuscationFile: needs.ObfuscationFile,
+                protectionsFile: needs.ProtectionsFile);
 
             var app = new BitMonoApplication().RegisterModule(module);
-            await using var serviceProvider = await app.BuildAsync(CancellationToken);
+            var serviceProvider = await app.BuildAsync(CancellationToken);
 
-            var obfuscation = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
+            var obfuscation = serviceProvider.GetRequiredService<ObfuscationSettings>();
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();

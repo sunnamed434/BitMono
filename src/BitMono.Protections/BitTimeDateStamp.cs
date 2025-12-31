@@ -2,7 +2,7 @@
 
 public class BitTimeDateStamp : PackerProtection
 {
-    public BitTimeDateStamp(IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitTimeDateStamp(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

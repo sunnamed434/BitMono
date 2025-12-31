@@ -3,7 +3,7 @@ namespace BitMono.Protections;
 [RuntimeMonikerMono]
 public class BitMono : PackerProtection
 {
-    public BitMono(IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitMono(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

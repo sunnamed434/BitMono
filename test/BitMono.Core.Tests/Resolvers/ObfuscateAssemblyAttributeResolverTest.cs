@@ -9,8 +9,7 @@ public class ObfuscateAssemblyAttributeResolverTest
         {
             ObfuscateAssemblyAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscateAssemblyAttributeResolver(options);
+        var resolver = Setup.ObfuscateAssemblyAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(CustomAttributesInstance).Assembly.Location);
 
         var result = resolver.Resolve(module.Assembly);

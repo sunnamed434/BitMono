@@ -5,7 +5,7 @@ public class StringsEncryption : Protection
 {
     private readonly Renamer _renamer;
 
-    public StringsEncryption(Renamer renamer, IServiceProvider serviceProvider) : base(serviceProvider)
+    public StringsEncryption(Renamer renamer, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
     }

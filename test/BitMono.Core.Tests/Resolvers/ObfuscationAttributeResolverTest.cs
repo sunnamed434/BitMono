@@ -10,8 +10,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -32,8 +31,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalli));
@@ -52,8 +50,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.VoidObfuscationAttribute));
@@ -72,8 +69,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(n => n.Name == nameof(ObfuscationMethods));
         var method = type.Methods.First(m => m.Name == nameof(ObfuscationMethods.VoidObfuscationAttribute));
@@ -93,8 +89,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -118,8 +113,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -143,8 +137,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -163,8 +156,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -182,8 +174,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -202,8 +193,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -222,8 +212,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -246,8 +235,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n =>
@@ -271,8 +259,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = false,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.ObfuscationAttributeCallToCalli));
@@ -289,8 +276,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(ObfuscationTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(ObfuscationTypes.NoObfuscationAttribute));
@@ -308,8 +294,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(n => n.Name == nameof(ObfuscationMethods));
         var method = type.Methods.First(m => m.Name == nameof(ObfuscationMethods.ObfuscationAttributeFeatureCallToCalliExcludeTrue));
@@ -331,8 +316,7 @@ public class ObfuscationAttributeResolverTest
         {
             ObfuscationAttributeObfuscationExclude = true,
         };
-        var options = Options.Create(obfuscation);
-        var resolver = Setup.ObfuscationAttributeResolver(options);
+        var resolver = Setup.ObfuscationAttributeResolver(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(ObfuscationMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(n => n.Name == nameof(ObfuscationMethods));
         var method = type.Methods.First(m => m.Name == nameof(ObfuscationMethods.ObfuscationAttributeFeatureCallToCalliExcludeFalse));

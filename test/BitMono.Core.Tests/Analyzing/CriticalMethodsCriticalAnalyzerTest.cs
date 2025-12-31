@@ -29,8 +29,7 @@ public class CriticalMethodsCriticalAnalyzerTest
                 methodName
             }
         };
-        var options = Options.Create(criticals);
-        var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(options);
+        var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(criticals);
         var module = ModuleDefinition.FromFile(typeof(CriticalMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(CriticalMethods));
         var method = type.Methods.First(m => m.Name == methodName);
@@ -53,8 +52,7 @@ public class CriticalMethodsCriticalAnalyzerTest
                 methodName
             }
         };
-        var options = Options.Create(criticals);
-        var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(options);
+        var criticalAnalyzer = Setup.CriticalMethodsCriticalAnalyzer(criticals);
         var module = ModuleDefinition.FromFile(typeof(CriticalMethods).Assembly.Location);
         var type = module.TopLevelTypes.First(t => t.Name == nameof(CriticalMethods));
         var method = type.Methods.First(m => m.Name == nameof(CriticalMethods.VoidMethod));

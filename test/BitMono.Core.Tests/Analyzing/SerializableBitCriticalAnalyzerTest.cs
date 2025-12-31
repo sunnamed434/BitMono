@@ -9,7 +9,7 @@ public class SerializableBitCriticalAnalyzerTest
         {
             SerializableBitObfuscationExclude = true
         };
-        var criticalAnalyzer = Setup.SerializableBitCriticalAnalyzer(Options.Create(obfuscation));
+        var criticalAnalyzer = Setup.SerializableBitCriticalAnalyzer(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(SerializableTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(SerializableTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(SerializableTypes.SerializableBit));
@@ -25,11 +25,11 @@ public class SerializableBitCriticalAnalyzerTest
         {
             SerializableBitObfuscationExclude = true
         };
-        var criticalAnalyzer = Setup.SerializableBitCriticalAnalyzer(Options.Create(obfuscation));
+        var criticalAnalyzer = Setup.SerializableBitCriticalAnalyzer(obfuscation);
         var module = ModuleDefinition.FromFile(typeof(SerializableTypes).Assembly.Location);
         var types = module.TopLevelTypes.First(t => t.Name == nameof(SerializableTypes));
         var type = types.NestedTypes.First(n => n.Name == nameof(SerializableTypes.NoSerializableBit));
-        
+
         var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
 
         result.Should().BeTrue();

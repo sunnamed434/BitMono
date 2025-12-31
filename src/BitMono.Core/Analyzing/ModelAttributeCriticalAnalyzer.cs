@@ -6,9 +6,9 @@ public class ModelAttributeCriticalAnalyzer : ICriticalAnalyzer<IHasCustomAttrib
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public ModelAttributeCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    public ModelAttributeCriticalAnalyzer(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public bool NotCriticalToMakeChanges(IHasCustomAttribute customAttribute)

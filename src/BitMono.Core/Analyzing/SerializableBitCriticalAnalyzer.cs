@@ -5,9 +5,9 @@ public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 {
     private readonly ObfuscationSettings _obfuscationSettings;
 
-    public SerializableBitCriticalAnalyzer(IOptions<ObfuscationSettings> obfuscation)
+    public SerializableBitCriticalAnalyzer(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = obfuscation.Value;
+        _obfuscationSettings = obfuscationSettings;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)

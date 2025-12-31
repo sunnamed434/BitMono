@@ -3,7 +3,7 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class ObjectReturnType : Protection
 {
-    public ObjectReturnType(IServiceProvider serviceProvider) : base(serviceProvider)
+    public ObjectReturnType(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

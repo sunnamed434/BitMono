@@ -3,7 +3,7 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class AntiDebugBreakpoints : Protection
 {
-    public AntiDebugBreakpoints(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AntiDebugBreakpoints(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

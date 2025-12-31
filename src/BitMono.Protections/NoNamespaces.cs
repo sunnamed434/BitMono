@@ -3,7 +3,7 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class NoNamespaces : Protection
 {
-    public NoNamespaces(IServiceProvider serviceProvider) : base(serviceProvider)
+    public NoNamespaces(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
