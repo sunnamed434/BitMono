@@ -1,4 +1,4 @@
-﻿namespace BitMono.GlobalTool;
+namespace BitMono.GlobalTool;
 
 internal class Program
 {
@@ -24,30 +24,26 @@ internal class Program
         try
         {
             Console.Title = BitMonoFileVersionText;
-            
+
             needs = new ObfuscationNeedsFactory(args).Create(CancellationToken);
             if (needs == null)
             {
                 statusCode = KnownReturnStatuses.Failure;
                 return statusCode;
             }
-            
+
             var module = new BitMonoModule(
-                configureContainer => configureContainer.AddProtections(),
-                configureServices => configureServices.AddConfigurations(
-                    protectionSettings: needs.ProtectionSettings,
-                    criticalsFile: needs.CriticalsFile,
-                    obfuscationFile: needs.ObfuscationFile,
-                    loggingFile: needs.LoggingFile,
-                    protectionsFile: needs.ProtectionsFile,
-                    obfuscationSettings: needs.ObfuscationSettings),
-                configureLogger => configureLogger.WriteTo.AddConsoleLogger(),
-                loggingFile: needs.LoggingFile);
+                configureContainer: container => container.AddProtections(),
+                obfuscationSettings: needs.ObfuscationSettings,
+                protectionSettings: needs.ProtectionSettings,
+                criticalsFile: needs.CriticalsFile,
+                obfuscationFile: needs.ObfuscationFile,
+                protectionsFile: needs.ProtectionsFile);
 
             var app = new BitMonoApplication().RegisterModule(module);
-            await using var serviceProvider = await app.BuildAsync(CancellationToken);
+            var serviceProvider = await app.BuildAsync(CancellationToken);
 
-            var obfuscation = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
+            var obfuscation = serviceProvider.GetRequiredService<ObfuscationSettings>();
             var logger = serviceProvider
                 .GetRequiredService<ILogger>()
                 .ForContext<Program>();

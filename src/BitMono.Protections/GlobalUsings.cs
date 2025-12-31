@@ -19,6 +19,7 @@ global using AsmResolver.PE.File;
 global using BitMono.API.Protections;
 global using BitMono.Core;
 global using BitMono.Core.Attributes;
+global using BitMono.Shared.DependencyInjection;
 global using BitMono.Core.Injection;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Services;

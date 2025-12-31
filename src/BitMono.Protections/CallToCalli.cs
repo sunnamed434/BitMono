@@ -3,7 +3,7 @@
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
 public class CallToCalli : Protection
 {
-    public CallToCalli(IServiceProvider serviceProvider) : base(serviceProvider)
+    public CallToCalli(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

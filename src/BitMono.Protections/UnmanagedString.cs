@@ -5,7 +5,7 @@
 [RuntimeMonikerNETFramework]
 public class UnmanagedString : Protection
 {
-    public UnmanagedString(IServiceProvider serviceProvider) : base(serviceProvider)
+    public UnmanagedString(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

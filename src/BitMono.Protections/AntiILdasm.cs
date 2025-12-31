@@ -2,7 +2,7 @@
 
 public class AntiILdasm : Protection
 {
-    public AntiILdasm(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AntiILdasm(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

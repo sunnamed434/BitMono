@@ -5,7 +5,7 @@ public class BitMethodDotnet : Protection
 {
     private readonly RandomNext _randomNext;
 
-    public BitMethodDotnet(RandomNext randomNext, IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitMethodDotnet(RandomNext randomNext, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _randomNext = randomNext;
     }

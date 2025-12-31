@@ -6,9 +6,9 @@ public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinitio
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalBaseTypesCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    public CriticalBaseTypesCriticalAnalyzer(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)

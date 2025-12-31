@@ -15,4 +15,3 @@ global using BitMono.Shared.Models;
 global using FluentAssertions;
 global using Xunit;
 global using BitMono.Protections;
-global using Microsoft.Extensions.Options;

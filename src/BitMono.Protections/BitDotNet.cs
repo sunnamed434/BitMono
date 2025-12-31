@@ -5,7 +5,7 @@ public class BitDotNet : PackerProtection
 {
     private const int PEHeaderWithExtraByteHex = 0x00014550;
 
-    public BitDotNet(IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitDotNet(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

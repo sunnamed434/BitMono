@@ -3,7 +3,7 @@
 [RuntimeMonikerMono]
 public class AntiDecompiler : PipelineProtection
 {
-    public AntiDecompiler(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AntiDecompiler(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
@@ -19,7 +19,7 @@ public class AntiDecompiler : PipelineProtection
 [ProtectionName(nameof(AntiDnSpyAnalyzer))]
 public class AntiDnSpyAnalyzer : PhaseProtection
 {
-    public AntiDnSpyAnalyzer(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AntiDnSpyAnalyzer(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

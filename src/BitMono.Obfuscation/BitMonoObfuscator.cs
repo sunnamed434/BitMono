@@ -1,8 +1,8 @@
-﻿namespace BitMono.Obfuscation;
+namespace BitMono.Obfuscation;
 
 public class BitMonoObfuscator
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IBitMonoServiceProvider _serviceProvider;
     private readonly StarterContext _context;
     private readonly IDataWriter _dataWriter;
     private readonly ObfuscationSettings _obfuscationSettings;
@@ -19,7 +19,7 @@ public class BitMonoObfuscator
     private long _startTime;
 
     public BitMonoObfuscator(
-        IServiceProvider serviceProvider,
+        IBitMonoServiceProvider serviceProvider,
         StarterContext context,
         IDataWriter dataWriter,
         ObfuscationSettings obfuscationSettings,
@@ -117,7 +117,7 @@ public class BitMonoObfuscator
     }
     private void SortProtections()
     {
-        var protectionSettings = _serviceProvider.GetRequiredService<IOptions<ProtectionSettings>>().Value.Protections!;
+        var protectionSettings = _serviceProvider.GetRequiredService<ProtectionSettings>().Protections!;
         var protections = _serviceProvider
             .GetRequiredService<ICollection<IProtection>>()
             .ToList();
@@ -283,7 +283,7 @@ public class BitMonoObfuscator
             fileBuilder
                 .CreateFile(_imageBuild!.ConstructedImage!)
                 .Write(memoryStream);
-            
+
             if (!string.IsNullOrEmpty(_obfuscationSettings.StrongNameKeyFile) && File.Exists(_obfuscationSettings.StrongNameKeyFile))
             {
                 _logger.Information("Applying strong name signature to PE image");
@@ -291,7 +291,7 @@ public class BitMonoObfuscator
                 var signer = new StrongNameSigner(privateKey);
                 signer.SignImage(memoryStream, _context.Module.Assembly.HashAlgorithm);
             }
-            
+
             await _dataWriter.WriteAsync(_context.BitMonoContext.OutputFile, memoryStream.ToArray());
             _logger.Information("The protected module was saved in {0}", _context.BitMonoContext.OutputDirectoryName);
         }

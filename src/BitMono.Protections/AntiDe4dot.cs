@@ -2,7 +2,7 @@
 
 public class AntiDe4dot : Protection
 {
-    public AntiDe4dot(IServiceProvider serviceProvider) : base(serviceProvider)
+    public AntiDe4dot(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

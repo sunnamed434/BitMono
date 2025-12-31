@@ -18,10 +18,10 @@ Create your protection in the ``BitMono.Protections`` namespace.
 	public class StandardProtection : Protection
 	{
 	    // Inject services right here
-	    public StandardProtection(IServiceProvider serviceProvider) : base(serviceProvider)
+	    public StandardProtection(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
 	    {
 	    }
-	
+
 	    public override Task ExecuteAsync()
 	    {
 	        // All protection are intended to be async, so you can simply await your things, or if you don't have,

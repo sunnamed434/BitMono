@@ -4,9 +4,9 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
 {
     private readonly CriticalsSettings _criticalsSettings;
 
-    public CriticalMethodsCriticalAnalyzer(IOptions<CriticalsSettings> criticals)
+    public CriticalMethodsCriticalAnalyzer(CriticalsSettings criticalsSettings)
     {
-        _criticalsSettings = criticals.Value;
+        _criticalsSettings = criticalsSettings;
     }
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)

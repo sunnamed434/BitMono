@@ -29,13 +29,11 @@ internal class OptionsObfuscationNeedsFactory
         {
             if (options.ObfuscationFile != null && File.Exists(options.ObfuscationFile))
             {
-                var obfuscationConfig = new BitMonoObfuscationConfiguration(options.ObfuscationFile);
-                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(options.ObfuscationFile);
             }
             else if (File.Exists(KnownConfigNames.Obfuscation))
             {
-                var obfuscationConfig = new BitMonoObfuscationConfiguration();
-                obfuscationSettings = obfuscationConfig.Configuration.Get<ObfuscationSettings>();
+                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(KnownConfigNames.Obfuscation);
             }
 
             if (obfuscationSettings != null && options.NoWatermark)

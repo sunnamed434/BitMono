@@ -16,9 +16,6 @@
     <Compile Include="..\BitMono.CLI\Modules\ObfuscationNeeds.cs">
       <Link>Modules/ObfuscationNeeds.cs</Link>
     </Compile>
-    <Compile Include="..\BitMono.CLI\Modules\LoggerConfiguratorExtensions.cs">
-      <Link>Modules\LoggerConfiguratorExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\BitMono.CLI\Modules\ObfuscationNeedsFactory.cs">
       <Link>Modules\ObfuscationNeedsFactory.cs</Link>
     </Compile>

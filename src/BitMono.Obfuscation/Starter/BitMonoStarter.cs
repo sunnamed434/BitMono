@@ -1,16 +1,16 @@
-﻿namespace BitMono.Obfuscation.Starter;
+namespace BitMono.Obfuscation.Starter;
 
 public class BitMonoStarter
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IBitMonoServiceProvider _serviceProvider;
     private readonly ObfuscationSettings _obfuscationSettings;
     private readonly IEngineContextAccessor _engineContextAccessor;
     private readonly ILogger _logger;
 
-    public BitMonoStarter(IServiceProvider serviceProvider)
+    public BitMonoStarter(IBitMonoServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _obfuscationSettings = serviceProvider.GetRequiredService<IOptions<ObfuscationSettings>>().Value;
+        _obfuscationSettings = serviceProvider.GetRequiredService<ObfuscationSettings>();
         _engineContextAccessor = serviceProvider.GetRequiredService<IEngineContextAccessor>();
         _logger = serviceProvider
             .GetRequiredService<ILogger>()

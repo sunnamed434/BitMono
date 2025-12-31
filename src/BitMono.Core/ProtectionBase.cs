@@ -3,9 +3,9 @@ namespace BitMono.Core;
 public abstract class ProtectionBase : IProtection
 {
     protected ProtectionContext Context { get; }
-    protected IServiceProvider ServiceProvider { get; }
+    protected IBitMonoServiceProvider ServiceProvider { get; }
 
-    protected ProtectionBase(IServiceProvider serviceProvider)
+    protected ProtectionBase(IBitMonoServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         Context = ServiceProvider

@@ -4,7 +4,7 @@ public class BillionNops : Protection
 {
     private readonly Renamer _renamer;
 
-    public BillionNops(Renamer renamer, IServiceProvider serviceProvider) : base(serviceProvider)
+    public BillionNops(Renamer renamer, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
     }

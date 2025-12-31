@@ -1,58 +1,11 @@
 How to disable path masking?
 ============================
 
-You're probably getting a message with the file/directory or just a path ``(***\things)``, and you might have the same folder twice somewhere, and you need to see the full path without masking if this is what you're looking for, all instructions how to do that are provided here.
+.. note::
 
-Open-up ``logging.json`` in the root of the downloaded BitMono, edit this file, and remove this:
+   Path masking was a feature in older versions of BitMono that used Serilog for logging.
+   Since BitMono now uses a lightweight custom logger, path masking is no longer applied by default.
 
-.. code-block:: json
+In current versions of BitMono, file paths are displayed in full without any masking. If you're seeing masked paths like ``(***\things)``, you may be using an older version of BitMono.
 
-	"Enrich": [
-            {
-                "Name": "WithSensitiveDataMasking",
-                "Args": {
-                    "options": {
-                        "MaskValue": "***\\",
-                        "MaskProperties": [ "path", "directory", "file" ],
-                        "MaskingOperators": [ "BitMono.Host.Extensions.PathMaskingOperator, BitMono.Host" ]
-                    }
-                }
-            },
-        ],
-
-
-So, after edit ``logging.json`` looks like this:
-
-.. code-block:: json
-
-	{
-	    "Serilog": {
-	        "Using": [
-	            "Serilog",
-	            "Serilog.Sinks.Console",
-	            "Serilog.Sinks.File",
-	            "Serilog.Sinks.Async",
-	            "Serilog.Enrichers.Sensitive"
-	        ],
-	        "WriteTo": [
-	            {
-	                "Name": "Async",
-	                "Args": {
-	                    "configure": [
-	                        {
-	                            "Name": "File",
-	                            "Args": {
-	                                "path": "logs/bitmono-{{date}}.log",
-	                                "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}][{SourceContext}] {Message:lj}{NewLine}{Exception}"
-	                            }
-	                        }
-	                    ]
-	                }
-	            }
-	        ],
-	        "Enrich": [
-	            "FromLogContext"
-	        ],
-	        "MinimumLevel": "Debug"
-	    }
-	}
+To get full path visibility, simply update to the latest version of BitMono from the `releases page <https://github.com/sunnamed434/BitMono/releases/latest>`_.

@@ -6,9 +6,9 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
     private readonly string _attributeNamespace;
     private readonly string _attributeName;
 
-    public ObfuscateAssemblyAttributeResolver(IOptions<ObfuscationSettings> configuration)
+    public ObfuscateAssemblyAttributeResolver(ObfuscationSettings obfuscationSettings)
     {
-        _obfuscationSettings = configuration.Value;
+        _obfuscationSettings = obfuscationSettings;
         _attributeNamespace = typeof(ObfuscateAssemblyAttribute).Namespace!;
         _attributeName = nameof(ObfuscateAssemblyAttribute);
     }

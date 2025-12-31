@@ -3,7 +3,7 @@ namespace BitMono.Protections;
 [RuntimeMonikerMono]
 public class BitDecompiler : PackerProtection
 {
-    public BitDecompiler(IServiceProvider serviceProvider) : base(serviceProvider)
+    public BitDecompiler(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
