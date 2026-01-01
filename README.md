@@ -187,7 +187,7 @@ Credits
 [bitmono_nuget_packages]: https://www.nuget.org/profiles/BitMono
 [bitmono_nuget_shield]: https://img.shields.io/nuget/v/BitMono.Core.svg
 [autofac_repo]: https://github.com/autofac/Autofac
-[minioc_repo]: https://github.com/pjc0247/minioffice.ioc
+[minioc_repo]: https://github.com/microsoft/MinIoC
 [unityengine_mainpage]: https://unity.com
 [mono_mainpage]: https://www.mono-project.com
 
