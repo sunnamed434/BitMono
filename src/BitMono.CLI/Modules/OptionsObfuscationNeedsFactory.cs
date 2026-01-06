@@ -35,6 +35,15 @@ internal class OptionsObfuscationNeedsFactory
             {
                 obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(KnownConfigNames.Obfuscation);
             }
+            else
+            {
+                // Fallback to application base directory
+                var baseObfuscationFile = Path.Combine(AppContext.BaseDirectory, KnownConfigNames.Obfuscation);
+                if (File.Exists(baseObfuscationFile))
+                {
+                    obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(baseObfuscationFile);
+                }
+            }
 
             if (obfuscationSettings != null && options.NoWatermark)
             {

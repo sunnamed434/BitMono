@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedTestProps.props"/>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BitMono.Shared\BitMono.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
