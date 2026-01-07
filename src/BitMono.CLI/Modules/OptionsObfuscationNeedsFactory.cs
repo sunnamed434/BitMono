@@ -54,6 +54,11 @@ internal class OptionsObfuscationNeedsFactory
             {
                 obfuscationSettings.StrongNameKeyFile = options.StrongNameKey;
             }
+
+            if (obfuscationSettings != null && !string.IsNullOrEmpty(options.OutputName))
+            {
+                obfuscationSettings.OutputFileName = options.OutputName;
+            }
         }
         catch (Exception ex)
         {

@@ -31,4 +31,7 @@ internal class Options
 
     [Option("strong-name-key", Required = false, HelpText = "Path to strong name key (.snk) file for assembly signing.")]
     public string? StrongNameKey { get; set; }
+
+    [Option('n', "output-name", Required = false, HelpText = "Set output file name.")]
+    public string? OutputName { get; set; }
 }

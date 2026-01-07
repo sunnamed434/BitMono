@@ -40,6 +40,7 @@ Available options:
 - ``--criticals-file``: Custom criticals config file
 - ``--logging-file``: Custom logging config file
 - ``--obfuscation-file``: Custom obfuscation config file
+- ``-n, --output-name``: Custom output file name (default: same as input)
 - ``--no-watermark``: Turn off watermarking
 - ``--strong-name-key``: Path to strong name key (.snk) file for assembly signing
 
@@ -177,8 +178,11 @@ You can use glob patterns (``*``) in base types and method patterns.
 
    {
      "Watermark": true,
-     "OutputDirectoryName": "output"
+     "OutputDirectoryName": "output",
+     "OutputFileName": null
    }
+
+- ``OutputFileName``: Custom output file name (e.g., ``"Protected.dll"``). When set, uses the exact name ignoring watermark suffix.
 
 Most settings have sensible defaults. You only need to change them if you want something different.
 
