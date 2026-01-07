@@ -69,6 +69,7 @@ internal class OptionsObfuscationNeedsFactory
         var fileBaseDirectory = Path.GetDirectoryName(filePath);
 
         ProtectionSettings? protectionSettings = null;
+        string? protectionsFile = options.ProtectionsFile;
         if (options.Protections.Any())
         {
             protectionSettings = new ProtectionSettings
@@ -79,6 +80,27 @@ internal class OptionsObfuscationNeedsFactory
                     Enabled = true
                 }).ToList()
             };
+        }
+        else
+        {
+            // Try to find protections.json for fallback
+            if (protectionsFile != null && File.Exists(protectionsFile))
+            {
+                // Use specified file
+            }
+            else if (File.Exists(KnownConfigNames.Protections))
+            {
+                protectionsFile = KnownConfigNames.Protections;
+            }
+            else
+            {
+                // Fallback to application base directory
+                var baseProtectionsFile = Path.Combine(AppContext.BaseDirectory, KnownConfigNames.Protections);
+                if (File.Exists(baseProtectionsFile))
+                {
+                    protectionsFile = baseProtectionsFile;
+                }
+            }
         }
 
         ObfuscationNeeds needs;
@@ -96,7 +118,7 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile,
+                ProtectionsFile = protectionsFile,
                 ObfuscationSettings = obfuscationSettings
             };
         }
@@ -118,7 +140,7 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile,
+                ProtectionsFile = protectionsFile,
                 ObfuscationSettings = obfuscationSettings
             };
         }
