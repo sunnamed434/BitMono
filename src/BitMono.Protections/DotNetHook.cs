@@ -59,20 +59,84 @@ public class DotNetHook : Protection
                 {
                     continue;
                 }
+                // Skip generic methods. The cloned signature carries
+                // GenericParameterCount > 0, but we would not attach
+                // corresponding GenericParameter definitions to the
+                // generated dummyMethod. AsmResolver then rejects the
+                // assembly during WriteModule with:
+                //   "Method defines 0 generic parameters but its signature
+                //   defines N parameters."
+                // Fully cloning the GenericParameters (including their
+                // constraints) is non-trivial, so we conservatively skip
+                // these calls.
+                if (callingMethod.Signature.GenericParameterCount > 0)
+                {
+                    continue;
+                }
                 if (module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata) == false)
                 {
                     continue;
                 }
 
-                var dummyMethod = new MethodDefinition(_renamer.RenameUnsafely(), callingMethod.Attributes, callingMethod.Signature)
+                // If the original method is an instance method, its signature
+                // carries the HasThis flag. Previously callingMethod.Signature
+                // was reused by reference while the dummy method was forced to
+                // IsStatic = true, which produced inconsistent metadata
+                // ("Method is static but its signature has the HasThis flag
+                // set."). Under .NET 10 / ASP.NET Core this triggers hundreds
+                // of WriteModuleAsync errors. We now rebuild the signature
+                // explicitly as static, prepending "this" as a regular first
+                // parameter so the IL call stack at the caller stays the same.
+                var originalSignature = callingMethod.Signature;
+                MethodSignature dummySignature;
+                bool prependThis = originalSignature.HasThis;
+                if (prependThis)
                 {
-                    IsAssembly = true,
-                    IsStatic = true
-                }.AssignNextAvailableToken(module);
+                    var paramTypes = new List<TypeSignature>(originalSignature.ParameterTypes.Count + 1)
+                    {
+                        callingMethod.DeclaringType!.ToTypeSignature()
+                    };
+                    paramTypes.AddRange(originalSignature.ParameterTypes);
+                    dummySignature = MethodSignature.CreateStatic(
+                        originalSignature.ReturnType,
+                        originalSignature.GenericParameterCount,
+                        paramTypes.ToArray());
+                }
+                else
+                {
+                    dummySignature = originalSignature;
+                }
+
+                // The attributes have to be correct at construction time
+                // because AsmResolver verifies them against the signature
+                // inside MethodDefinition's constructor. Setting
+                // "IsStatic = true" later via an object initializer is too
+                // late and would throw "An instance method requires a
+                // signature with the HasThis flag set." Strip all
+                // visibility/static-related flags from the original method
+                // and set Assembly + Static directly.
+                const MethodAttributes visibilityMask =
+                    MethodAttributes.MemberAccessMask |
+                    MethodAttributes.Static |
+                    MethodAttributes.Virtual |
+                    MethodAttributes.Final |
+                    MethodAttributes.Abstract |
+                    MethodAttributes.NewSlot;
+                var dummyAttributes = (callingMethod.Attributes & ~visibilityMask)
+                    | MethodAttributes.Assembly
+                    | MethodAttributes.Static;
+
+                var dummyMethod = new MethodDefinition(_renamer.RenameUnsafely(), dummyAttributes, dummySignature)
+                    .AssignNextAvailableToken(module);
                 moduleType.Methods.Add(dummyMethod);
+                if (prependThis)
+                {
+                    dummyMethod.ParameterDefinitions.Add(new ParameterDefinition(1, "this", 0));
+                }
                 foreach (var actualParameter in callingMethod.ParameterDefinitions)
                 {
-                    var parameter = new ParameterDefinition(actualParameter.Sequence,
+                    var parameter = new ParameterDefinition(
+                        prependThis ? (ushort)(actualParameter.Sequence + 1) : actualParameter.Sequence,
                         actualParameter.Name, actualParameter.Attributes);
                     dummyMethod.ParameterDefinitions.Add(parameter);
                 }
