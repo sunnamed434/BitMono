@@ -114,17 +114,17 @@ runs:
         user: ${{ inputs.nuget_user }}
 
     # Push to NuGet on each tag, but only if not a pre-release version (Release).
-    # No --skip-duplicate here on purpose: a version can never be reused on nuget.org, so a 409 means the
-    # version is already taken (or was burned by a deleted / failed-validation prior push) and must fail
-    # the build loudly instead of being swallowed as a warning.
+    # --skip-duplicate keeps re-runs idempotent: a 409 for an already-published version is a warning, not
+    # a failure. The "Verify published on nuget.org" step below is the real gate - it turns a genuine
+    # non-publish (a 409 that's actually a rejection, or a silent async-validation failure) red.
     - name: Push to NuGet (Release)
       if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
-      run: dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
       shell: bash
 
-    # A successful push only returns 201; nuget.org then runs async validation (incl. virus/malware
-    # scanning). If that fails the package never appears, yet the push step stays green. Poll the flat
-    # container until the version is live so a silent validation rejection turns the build red instead.
+    # The push step can pass without the package going live: --skip-duplicate turns a 409 into a warning,
+    # and a 201 only means "accepted" before nuget.org runs async validation (virus/malware scan) that can
+    # still reject it. Poll the flat container until the version is live so either case turns the build red.
     - name: Verify published on nuget.org
       if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
       shell: bash
