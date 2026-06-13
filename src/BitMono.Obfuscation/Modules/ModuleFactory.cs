@@ -33,6 +33,17 @@ public class ModuleFactory : IModuleFactory
 
             module = ModuleDefinition.FromBytes(_bytes, moduleReaderParameters);
         }
+        catch (Exception exception) when (exception.Message.IndexOf("architecture", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            _logger.Error(
+                "Couldn't read the input as a managed .NET assembly - it looks AOT-compiled (unsupported PE " +
+                "architecture, e.g. Arm64). This is common with .NET MAUI on iOS and with Native AOT. BitMono " +
+                "obfuscates managed IL, so it must run before AOT: move the code you want to protect into class " +
+                "libraries and obfuscate those (they stay IL and get AOT-compiled afterwards), and don't obfuscate " +
+                "the iOS app head. More info: https://bitmono.readthedocs.io/en/latest/usage/native-aot.html"
+            );
+            throw;
+        }
         catch (BadImageFormatException)
         {
             _logger.Error(

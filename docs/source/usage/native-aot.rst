@@ -81,3 +81,15 @@ Notes and known issues
 - **"No entrypoint module" on ``ilc``** — this is the unsupported-hook limitation
   (`dotnet/runtime#121522 <https://github.com/dotnet/runtime/issues/121522>`_), not a bug in your
   obfuscation config. It is SDK-version dependent.
+
+.NET MAUI
+---------
+
+- **Android** works with the normal flow — the code stays managed IL, so add the
+  :doc:`BitMono.Integration <msbuild-integration>` package (or run the CLI) and build as usual.
+- **iOS** is AOT-compiled (iOS doesn't allow JIT), so the app head becomes a native arm64 image that
+  BitMono can't read — you'll see ``unsupported PE image architecture Arm64``. The way to protect an
+  iOS app is to obfuscate the IL *before* AOT: move the code you want to protect into **class
+  libraries** and obfuscate those. They stay managed IL when BitMono rewrites them and are
+  AOT-compiled afterwards, so the obfuscation carries into the native output. Don't obfuscate the iOS
+  app head itself.
