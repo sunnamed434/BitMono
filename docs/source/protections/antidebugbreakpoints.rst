@@ -10,3 +10,8 @@ Protection Type
 ---------------
 
 The protection type is `Protection`.
+
+IL2CPP
+------
+
+Works on IL2CPP builds: the injected timing checks are pure managed code that AOT-compiles and still runs at runtime (see :doc:`../protection-list/unity`).

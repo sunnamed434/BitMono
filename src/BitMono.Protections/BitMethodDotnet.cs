@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[IL2CPPIncompatible("Inserts dead IL prefix opcodes (volatile./unaligned./etc.) that aren't attached to a valid instruction; il2cpp.exe rejects the malformed IL")]
 public class BitMethodDotnet : Protection
 {
     private readonly RandomNext _randomNext;

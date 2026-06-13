@@ -17,3 +17,8 @@ The protection type is `Packer`.
 .. warning::
 
     This protection compatible only with Mono.
+
+IL2CPP
+------
+
+Not supported on IL2CPP builds. It applies Mono-specific ExplicitLayout metadata tricks that ``il2cpp.exe`` rejects. BitMono skips it automatically when building for IL2CPP (see :doc:`../protection-list/unity`).

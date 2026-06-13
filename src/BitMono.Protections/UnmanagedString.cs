@@ -3,6 +3,7 @@
 [ConfigureForNativeCode]
 [RuntimeMonikerNETCore]
 [RuntimeMonikerNETFramework]
+[IL2CPPIncompatible("Emits unmanaged (native) method bodies that build strings from machine code; IL2CPP cannot convert native bodies to C++")]
 public class UnmanagedString : Protection
 {
     public UnmanagedString(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

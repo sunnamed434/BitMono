@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[IL2CPPIncompatible("Injects decoy obfuscator-marker types whose names aren't valid identifiers; only confuses managed-PE tools (de4dot) that never see the IL2CPP build")]
 public class AntiDe4dot : Protection
 {
     public AntiDe4dot(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

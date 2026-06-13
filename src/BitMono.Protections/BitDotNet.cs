@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
+[IL2CPPIncompatible("Corrupts the managed PE header / CLR metadata so only the Mono loader can read it; il2cpp.exe must parse the assembly and cannot")]
 public class BitDotNet : PackerProtection
 {
     private const int PEHeaderWithExtraByteHex = 0x00014550;

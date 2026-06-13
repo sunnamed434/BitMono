@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[IL2CPPIncompatible("Only zeroes the managed PE's timestamp, which IL2CPP discards, so it has no effect on the IL2CPP output")]
 public class BitTimeDateStamp : PackerProtection
 {
     public BitTimeDateStamp(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

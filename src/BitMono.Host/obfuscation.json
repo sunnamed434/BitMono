@@ -18,6 +18,13 @@
   // The CLI --preset flag overrides this value.
   "Preset": "Custom",
 
+  // Build the assembly for a Unity IL2CPP game. When true, protections that aren't IL2CPP-compatible
+  // (native code, calli, PE packers, etc.) are skipped so they don't break the il2cpp.exe C++ build;
+  // the IL2CPP-safe ones (renaming, string encryption, ...) still run and obfuscate global-metadata.dat.
+  // The BitMono Unity integration sets this automatically when the scripting backend is IL2CPP; the CLI
+  // --il2cpp flag also turns it on.
+  "IL2CPP": false,
+
   // Name of the references directory
   "ReferencesDirectoryName": "libs",
 

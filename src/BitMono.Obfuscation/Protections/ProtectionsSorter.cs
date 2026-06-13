@@ -12,7 +12,7 @@ public class ProtectionsSorter
     }
 
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-    public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings)
+    public ProtectionsSort Sort(List<IProtection> protections, IEnumerable<ProtectionSetting> protectionSettings, bool il2cpp = false)
     {
         var protectionsResolve = new ProtectionsResolver(protections, protectionSettings).Sort();
         var obfuscationAttributeProtections =
@@ -20,9 +20,14 @@ public class ProtectionsSorter
                 _obfuscationAttributeResolver.Resolve(x.GetName(), _assemblyDefinition));
         var deprecatedProtections =
             protectionsResolve.FoundProtections.Where(x => x.TryGetObsoleteAttribute(out _));
+        // Skip protections that break il2cpp.exe's C++ conversion or only touch the discarded managed PE. See #250.
+        var il2cppIncompatibleProtections = il2cpp
+            ? protectionsResolve.FoundProtections.Where(x => x.IsIL2CPPIncompatible()).ToList()
+            : new List<IProtection>();
         var sortedProtections = protectionsResolve.FoundProtections
             .Except(obfuscationAttributeProtections)
-            .Except(deprecatedProtections);
+            .Except(deprecatedProtections)
+            .Except(il2cppIncompatibleProtections);
         var pipelineProtections = sortedProtections
             .Where(x => x is IPipelineProtection)
             .Cast<IPipelineProtection>();
@@ -40,6 +45,10 @@ public class ProtectionsSorter
             .Select(x => (x, x.GetRuntimeMonikerAttributes()))
             .Where(x => x.Item2.Any());
 
+        var il2cppExcludedProtections = il2cppIncompatibleProtections
+            .Select(x => (Protection: x, Reason: x.GetIL2CPPIncompatibleReason()))
+            .ToList();
+
         var hasProtections = !sortedProtections.IsEmpty() || !packers.IsEmpty();
 
         return new ProtectionsSort(
@@ -52,6 +61,7 @@ public class ProtectionsSorter
             deprecatedProtections.ToList(),
             configureForNativeCodeProtections.ToList(),
             runtimeMonikerProtections.ToList(),
+            il2cppExcludedProtections,
             hasProtections);
     }
 }

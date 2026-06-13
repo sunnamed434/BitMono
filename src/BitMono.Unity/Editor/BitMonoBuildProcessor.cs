@@ -140,7 +140,9 @@ namespace BitMono.Unity.Editor
                 $"Version: {version}\n" +
                 "Author: sunnamed434\n" +
                 "GitHub: https://github.com/sunnamed434/BitMono\n\n" +
-                "Note: IL2CPP is not supported yet, however is planned to be supported in the future.",
+                "IL2CPP builds are supported: when the scripting backend is IL2CPP, BitMono automatically runs " +
+                "only IL2CPP-compatible protections (renaming, string encryption, ...) on the managed assembly " +
+                "before il2cpp.exe converts it, so your names are obfuscated in global-metadata.dat.",
                 "OK");
         }
 
@@ -214,9 +216,15 @@ namespace BitMono.Unity.Editor
 
             LogDebug($"Found assembly at: {assemblyPath}");
 
+            var isIL2CPP = IsIL2CPPBuild(report);
+            if (isIL2CPP)
+            {
+                LogDebug("IL2CPP scripting backend detected - running BitMono in IL2CPP-compatible mode.");
+            }
+
             try
             {
-                ObfuscateAssembly(assemblyPath, _cancellationTokenSource.Token);
+                ObfuscateAssembly(assemblyPath, isIL2CPP, _cancellationTokenSource.Token);
                 LogDebug("Obfuscation completed successfully");
             }
             catch (OperationCanceledException)
@@ -275,7 +283,23 @@ namespace BitMono.Unity.Editor
             return null;
         }
 
-        private void ObfuscateAssembly(string assemblyPath, CancellationToken cancellationToken = default)
+        // Uses the BuildTargetGroup overload (not NamedBuildTarget) to stay compatible with Unity 2019.4,
+        // the package minimum. See #250.
+        private static bool IsIL2CPPBuild(BuildReport report)
+        {
+            try
+            {
+                var targetGroup = BuildPipeline.GetBuildTargetGroup(report.summary.platform);
+                return PlayerSettings.GetScriptingBackend(targetGroup) == ScriptingImplementation.IL2CPP;
+            }
+            catch (Exception ex)
+            {
+                LogDebugStatic($"Could not determine scripting backend, assuming non-IL2CPP: {ex.Message}");
+                return false;
+            }
+        }
+
+        private void ObfuscateAssembly(string assemblyPath, bool il2cpp, CancellationToken cancellationToken = default)
         {
             var bitMonoCli = FindBitMonoCli();
             if (string.IsNullOrEmpty(bitMonoCli))
@@ -304,6 +328,8 @@ namespace BitMono.Unity.Editor
                 }
             }
 
+            // On IL2CPP, tell the CLI to skip protections that would break the il2cpp.exe build. See #250.
+            var il2cppArg = il2cpp ? " --il2cpp" : "";
             if (config != null && config.UseUnityUIForProtections && config.ProtectionSettings.Any(p => p.Enabled))
             {
                 var enabledProtections = config.ProtectionSettings.Where(p => p.Enabled).Select(p => p.Name);
@@ -313,7 +339,7 @@ namespace BitMono.Unity.Editor
                       $"--obfuscation-file \"{Path.Combine(configPath, "obfuscation.json")}\" " +
                       $"--criticals-file \"{Path.Combine(configPath, "criticals.json")}\" " +
                       $"--logging-file \"{Path.Combine(configPath, "logging.json")}\" " +
-                      $"--protections {protectionList} --no-watermark";
+                      $"--protections {protectionList} --no-watermark{il2cppArg}";
             }
             else
             {
@@ -322,7 +348,7 @@ namespace BitMono.Unity.Editor
                       $"--obfuscation-file \"{Path.Combine(configPath, "obfuscation.json")}\" " +
                       $"--criticals-file \"{Path.Combine(configPath, "criticals.json")}\" " +
                       $"--logging-file \"{Path.Combine(configPath, "logging.json")}\" " +
-                      $"--protections-file \"{Path.Combine(configPath, "protections.json")}\" --no-watermark";
+                      $"--protections-file \"{Path.Combine(configPath, "protections.json")}\" --no-watermark{il2cppArg}";
             }
 
             LogDebug($"Running: {bitMonoCli} {args}");

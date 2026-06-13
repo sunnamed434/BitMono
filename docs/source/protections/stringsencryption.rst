@@ -15,3 +15,8 @@ The protection type is `Protection`.
 .. warning::
 
     This protection slows down the application a lot.
+
+IL2CPP
+------
+
+Works on IL2CPP builds: it runs before ``il2cpp.exe``, so plaintext strings are removed from ``global-metadata.dat`` and the managed decryptor is AOT-compiled to C++ (see :doc:`../protection-list/unity`).

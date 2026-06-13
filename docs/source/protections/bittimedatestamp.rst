@@ -10,3 +10,8 @@ Protection Type
 ---------------
 
 The protection type is `Packer`.
+
+IL2CPP
+------
+
+Not supported on IL2CPP builds. It only zeroes the managed PE's timestamp, which IL2CPP discards, so it has no effect on the IL2CPP output. BitMono skips it automatically when building for IL2CPP (see :doc:`../protection-list/unity`).

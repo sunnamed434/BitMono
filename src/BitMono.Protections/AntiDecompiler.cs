@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
+[IL2CPPIncompatible("Applies Mono-specific ExplicitLayout metadata tricks that il2cpp.exe rejects")]
 public class AntiDecompiler : PipelineProtection
 {
     public AntiDecompiler(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

@@ -49,7 +49,12 @@ internal class OptionsObfuscationNeedsFactory
             {
                 obfuscationSettings.Watermark = false;
             }
-            
+
+            if (obfuscationSettings != null && options.IL2CPP)
+            {
+                obfuscationSettings.IL2CPP = true;
+            }
+
             if (obfuscationSettings != null)
             {
                 obfuscationSettings.StrongNameKeyFile = options.StrongNameKey;
@@ -58,6 +63,11 @@ internal class OptionsObfuscationNeedsFactory
             if (obfuscationSettings != null && !string.IsNullOrEmpty(options.OutputName))
             {
                 obfuscationSettings.OutputFileName = options.OutputName;
+            }
+
+            if (obfuscationSettings != null && !string.IsNullOrWhiteSpace(options.Plugins))
+            {
+                obfuscationSettings.PluginsDirectoryName = options.Plugins;
             }
         }
         catch (Exception ex)

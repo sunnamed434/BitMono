@@ -12,6 +12,7 @@ public class ProtectionsSort
         IReadOnlyCollection<IProtection> obfuscationAttributeExcludeProtections,
         IReadOnlyCollection<IProtection> configureForNativeCodeProtections,
         IReadOnlyCollection<(IProtection, RuntimeMonikerAttribute[])> runtimeMonikerProtections,
+        IReadOnlyCollection<(IProtection Protection, string Reason)> il2cppIncompatibleProtections,
         bool hasProtections)
     {
         ProtectionsResolve = protectionsResolve;
@@ -23,6 +24,7 @@ public class ProtectionsSort
         ObfuscationAttributeExcludeProtections = obfuscationAttributeExcludeProtections;
         ConfigureForNativeCodeProtections = configureForNativeCodeProtections;
         RuntimeMonikerProtections = runtimeMonikerProtections;
+        IL2CPPIncompatibleProtections = il2cppIncompatibleProtections;
         HasProtections = hasProtections;
     }
 
@@ -39,6 +41,11 @@ public class ProtectionsSort
     public IReadOnlyCollection<IProtection> ObfuscationAttributeExcludeProtections { get; }
     public IReadOnlyCollection<IProtection> ConfigureForNativeCodeProtections { get; }
     public IReadOnlyCollection<(IProtection, RuntimeMonikerAttribute[])> RuntimeMonikerProtections { get; }
+    /// <summary>
+    /// Protections skipped because they don't work on IL2CPP builds, with the reason for each.
+    /// Only populated when running in IL2CPP mode (see <see cref="ObfuscationSettings.IL2CPP"/>); empty otherwise.
+    /// </summary>
+    public IReadOnlyCollection<(IProtection Protection, string Reason)> IL2CPPIncompatibleProtections { get; }
     public bool HasProtections { get; }
 #pragma warning restore CS8618
 }

@@ -26,6 +26,9 @@ internal class Options
     [Option("obfuscation-file", Required = false, HelpText = "Set obfuscation configuration file path.")]
     public string? ObfuscationFile { get; set; }
 
+    [Option("plugins", Required = false, HelpText = "Custom plugins directory to load custom protections from (overrides PluginsDirectoryName in obfuscation.json). Relative paths resolve against BitMono's base directory.")]
+    public string? Plugins { get; set; }
+
     [Option("no-watermark", Required = false, HelpText = "Disable watermarking (overrides obfuscation.json setting).")]
     public bool NoWatermark { get; set; }
 
@@ -37,4 +40,7 @@ internal class Options
 
     [Option("preset", Required = false, HelpText = "Protection preset/level: Custom, Minimal, Balanced, or Maximum. When not Custom it overrides protections.json (an explicit -p/--protections list still wins; CLI --preset wins over obfuscation.json).")]
     public string? Preset { get; set; }
+
+    [Option("il2cpp", Required = false, HelpText = "Build the assembly for a Unity IL2CPP game: skip protections that aren't IL2CPP-compatible (native code, calli, PE packers, etc.) so the il2cpp.exe build doesn't break. Set automatically by the BitMono Unity integration.")]
+    public bool IL2CPP { get; set; }
 }

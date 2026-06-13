@@ -13,9 +13,9 @@ Download
 
 Get BitMono from `GitHub releases <https://github.com/sunnamed434/BitMono/releases/latest>`_:
 
-- .NET 8 apps: ``BitMono-v0.39.0-CLI-net8.0-win-x64.zip``
-- .NET Framework apps: ``BitMono-v0.39.0-CLI-net462-win-x64.zip``
-- Unity/Mono: Use the .NET Framework version
+- .NET 8 apps: ``BitMono-v<version>-CLI-net8.0-win-x64.zip``
+- .NET Framework apps: ``BitMono-v<version>-CLI-net462-win-x64.zip``
+- Unity/Mono: use the .NET Framework version
 
 Usage
 ~~~~~
@@ -28,7 +28,7 @@ More options:
 
 .. code-block:: console
 
-   BitMono.CLI -f MyApp.exe -l Dependencies -o MyObfuscatedApp -p FullRenamer,StringEncryption
+   BitMono.CLI -f MyApp.exe -l Dependencies -o MyObfuscatedApp -p FullRenamer,StringsEncryption
 
 Available options:
 
@@ -191,17 +191,20 @@ Most settings have sensible defaults. You only need to change them if you want s
 Unity Integration
 -----------------
 
-BitMono includes Unity integration that automatically obfuscates your assemblies during the Unity build process. 
+BitMono includes Unity integration that automatically obfuscates your assemblies during the Unity build process.
 The integration hooks into Unity's build pipeline and runs BitMono CLI to protect your game code.
 
 .. note::
 
-   IL2CPP is not supported yet, however is planned to be supported in the future.
+   **IL2CPP is supported.** When the scripting backend is IL2CPP, BitMono obfuscates the managed
+   ``Assembly-CSharp.dll`` *before* ``il2cpp.exe`` converts it to C++, so renamed names land cloaked in
+   ``global-metadata.dat`` (which is what tools like Il2CppDumper read). The Unity integration detects the
+   IL2CPP backend automatically and runs only IL2CPP-compatible protections - protections that emit native
+   code, ``calli``, pack the PE, etc. are skipped because they would break the ``il2cpp.exe`` build or only
+   affect the managed PE that IL2CPP discards. See :doc:`../protection-list/unity` for the per-protection
+   list and :doc:`../developers/il2cpp-compatibility` for how this is decided.
 
-Installation
-~~~~~~~~~~~~
-
-Download the Unity Integration
+Download
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Go to the latest BitMono release on `GitHub <https://github.com/sunnamed434/BitMono/releases/latest>`_
@@ -218,14 +221,14 @@ Download the Unity Integration
 Install (choose one)
 ~~~~~~~~~~~~~~~~~~~~
 
-.. rubric:: Option A — Import .unitypackage (recommended for most users)
+.. rubric:: Option A: Import the .unitypackage (recommended for most users)
 
 1. Extract the downloaded ``.zip``
 2. In Unity: **Assets → Import Package → Custom Package**
 3. Select ``BitMono-Unity-v<version>-Unity<unityVersion>.unitypackage``
 4. Click **Import**
 
-.. rubric:: Option B — Install via Unity Package Manager (UPM)
+.. rubric:: Option B: Install via Unity Package Manager (UPM)
 
 1. Extract the downloaded ``.zip``
 2. In Unity: **Window → Package Manager**
@@ -284,7 +287,7 @@ reference — no separate tool run. Install ``BitMono.Integration`` as a develop
 .. code-block:: xml
 
    <ItemGroup>
-     <PackageReference Include="BitMono.Integration" Version="0.39.0">
+     <PackageReference Include="BitMono.Integration" Version="0.40.1">
        <PrivateAssets>all</PrivateAssets>
        <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
      </PackageReference>

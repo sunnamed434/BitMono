@@ -1,5 +1,6 @@
 namespace BitMono.Protections;
 
+[IL2CPPIncompatible("Adds a 100,000-instruction junk method that only pads the managed PE (discarded by IL2CPP) while bloating the generated C++")]
 public class BillionNops : Protection
 {
     private readonly Renamer _renamer;

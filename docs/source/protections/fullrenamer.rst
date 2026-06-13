@@ -37,3 +37,8 @@ Protection Type
 ---------------
 
 The protection type is `Protection`.
+
+IL2CPP
+------
+
+Works on IL2CPP builds, and it's one of the most useful ones there: it runs before ``il2cpp.exe``, so the renamed names are written cloaked into ``global-metadata.dat`` - which is exactly what tools like Il2CppDumper read (see :doc:`../protection-list/unity`).

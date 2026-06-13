@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[IL2CPPIncompatible("Emits calli against runtime-resolved function pointers (Module.ResolveMethod / RuntimeMethodHandle.GetFunctionPointer); IL2CPP's AOT compiler does not support this")]
 public class CallToCalli : Protection
 {
     public CallToCalli(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

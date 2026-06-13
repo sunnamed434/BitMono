@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[IL2CPPIncompatible("Changes return types to System.Object without boxing the returned value; il2cpp.exe's static IL-to-C++ converter rejects the type-unsafe return")]
 public class ObjectReturnType : Protection
 {
     public ObjectReturnType(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

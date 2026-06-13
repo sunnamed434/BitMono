@@ -1,6 +1,7 @@
 namespace BitMono.Protections;
 
 [RuntimeMonikerMono]
+[IL2CPPIncompatible("Packs the managed PE by zeroing its CLR/.NET data directory so only the Mono loader can read it; il2cpp.exe must parse the assembly and cannot")]
 public class BitMono : PackerProtection
 {
     public BitMono(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

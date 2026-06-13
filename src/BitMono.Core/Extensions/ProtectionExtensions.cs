@@ -45,6 +45,47 @@ public static class ProtectionExtensions
             .GetType()
             .GetConfigureForNativeCodeAttribute();
     }
+    public static IL2CPPIncompatibleAttribute? GetIL2CPPIncompatibleAttribute(this Type source, bool inherit = false)
+    {
+        return source.GetCustomAttribute<IL2CPPIncompatibleAttribute>(inherit);
+    }
+    public static IL2CPPIncompatibleAttribute? GetIL2CPPIncompatibleAttribute(this IProtection source)
+    {
+        return source
+            .GetType()
+            .GetIL2CPPIncompatibleAttribute();
+    }
+    /// <summary>
+    /// A protection is IL2CPP-incompatible when it is explicitly marked with
+    /// <see cref="IL2CPPIncompatibleAttribute"/>, or when it emits native code
+    /// (<see cref="ConfigureForNativeCodeAttribute"/>) - native method bodies can never be converted
+    /// to C++ by il2cpp.exe. See #250.
+    /// </summary>
+    public static bool IsIL2CPPIncompatible(this Type source)
+    {
+        return source.GetIL2CPPIncompatibleAttribute() != null
+            || source.GetConfigureForNativeCodeAttribute() != null;
+    }
+    public static bool IsIL2CPPIncompatible(this IProtection source)
+    {
+        return source.GetType().IsIL2CPPIncompatible();
+    }
+    /// <summary>
+    /// The user-facing reason a protection is skipped on IL2CPP builds.
+    /// </summary>
+    public static string GetIL2CPPIncompatibleReason(this IProtection source)
+    {
+        var attribute = source.GetIL2CPPIncompatibleAttribute();
+        if (attribute != null)
+        {
+            return attribute.GetMessage();
+        }
+        if (source.GetConfigureForNativeCodeAttribute() != null)
+        {
+            return "Emits native (unmanaged) method bodies, which IL2CPP cannot convert to C++";
+        }
+        return "Not supported on IL2CPP builds";
+    }
     public static bool TryGetObsoleteAttribute(this Type source, out ObsoleteAttribute? attribute, bool inherit = false)
     {
         attribute = source.GetCustomAttribute<ObsoleteAttribute>(inherit);

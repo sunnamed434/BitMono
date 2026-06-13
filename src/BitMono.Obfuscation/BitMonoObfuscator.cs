@@ -12,6 +12,7 @@ public class BitMonoObfuscator
     private readonly ObfuscationAttributesStripNotifier _obfuscationAttributesStripNotifier;
     private readonly ProtectionsNotifier _protectionsNotifier;
     private readonly ProtectionsConfigureForNativeCodeNotifier _protectionsConfigureForNativeCodeNotifier;
+    private readonly ProtectionsIL2CPPNotifier _protectionsIL2CPPNotifier;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
     private readonly TipsNotifier _tipsNotifier;
     private readonly ILogger _logger;
@@ -39,6 +40,7 @@ public class BitMonoObfuscator
         _obfuscationAttributesStripNotifier = new ObfuscationAttributesStripNotifier(_logger);
         _protectionsNotifier = new ProtectionsNotifier(_obfuscationSettings, _logger);
         _protectionsConfigureForNativeCodeNotifier = new ProtectionsConfigureForNativeCodeNotifier(_obfuscationSettings, _logger);
+        _protectionsIL2CPPNotifier = new ProtectionsIL2CPPNotifier(_obfuscationSettings, _logger);
         _protectionExecutionNotifier = new ProtectionExecutionNotifier(_logger);
         _tipsNotifier = new TipsNotifier(_obfuscationSettings, _logger);
     }
@@ -54,6 +56,7 @@ public class BitMonoObfuscator
         await _pipeline.InvokeAsync(OutputCompatibilityIssues);
         await _pipeline.InvokeAsync(SortProtections);
         await _pipeline.InvokeAsync(OutputProtectionsAsync);
+        await _pipeline.InvokeAsync(OutputIL2CPPInfo);
         await _pipeline.InvokeAsync(ConfigureForNativeCode);
         await _pipeline.InvokeAsync(StartTimeCounter);
         await _pipeline.InvokeAsync(ResolveDependencies);
@@ -130,11 +133,29 @@ public class BitMonoObfuscator
             .GetRequiredService<ICollection<IProtection>>()
             .ToList();
         var protectionsSorter = new ProtectionsSorter(_obfuscationAttributeResolver, _context.Module.Assembly!);
-        _protectionsSort = protectionsSorter.Sort(protections, protectionSettings);
+        _protectionsSort = protectionsSorter.Sort(protections, protectionSettings, _obfuscationSettings.IL2CPP);
         if (!_protectionsSort.HasProtections)
         {
+            if (_obfuscationSettings.IL2CPP && _protectionsSort.IL2CPPIncompatibleProtections.Count > 0)
+            {
+                var skipped = string.Join(", ", _protectionsSort.IL2CPPIncompatibleProtections.Select(x => x.Protection.GetName()));
+                throw new Exception(
+                    "No IL2CPP-compatible protections were enabled. Every selected protection was skipped because it " +
+                    $"doesn't work on IL2CPP builds ({skipped}). Enable IL2CPP-safe protections such as FullRenamer, " +
+                    "NoNamespaces or StringsEncryption.");
+            }
             throw new Exception("No protections were detected. Please specify or enable them in `protections.json` file or `--protections` arg.");
         }
+    }
+    private bool OutputIL2CPPInfo()
+    {
+        if (_protectionsSort == null)
+        {
+            _logger.Fatal("Unable to output IL2CPP info without sorted protections!");
+            return false;
+        }
+        _protectionsIL2CPPNotifier.Notify(_protectionsSort, _context.CancellationToken);
+        return true;
     }
     private bool OutputProtectionsAsync()
     {

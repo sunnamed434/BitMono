@@ -38,7 +38,7 @@ Protection List
 
 - **BitDecompiler**
 
-- **BitDateTimeStamp**
+- **BitTimeDateStamp**
 
 - **BitMono**
 
@@ -47,6 +47,40 @@ Protection List
 - **AntiDe4dot**
 
 - **AntiILdasm**
+
+The list above targets the **Mono** scripting backend, where the protected ``Assembly-CSharp.dll`` ships
+as-is.
+
+IL2CPP builds
+-------------
+
+With the **IL2CPP** scripting backend the managed assembly is not shipped: ``il2cpp.exe`` consumes it and
+converts it to C++ (``GameAssembly.dll``), keeping a copy of every class/method/field name in
+``global-metadata.dat``. That metadata is what tools like `Il2CppDumper <https://github.com/Perfare/Il2CppDumper>`_
+read to reconstruct your code, so the useful obfuscation is whatever **survives into the metadata**.
+
+BitMono obfuscates the managed assembly *before* ``il2cpp.exe`` runs, so name and string obfuscation carry
+through into ``global-metadata.dat``. The Unity integration detects the IL2CPP backend automatically (or set
+``"IL2CPP": true`` in ``obfuscation.json`` / pass ``--il2cpp`` to the CLI) and runs **only the
+IL2CPP-compatible protections**, skipping the rest with a clear log line for each.
+
+IL2CPP-compatible (kept):
+
+- **FullRenamer** - renamed names are written cloaked into ``global-metadata.dat``.
+- **NoNamespaces** - clears namespaces in the metadata.
+- **StringsEncryption** - removes plaintext strings from the metadata; the decryptor is AOT-compiled to C++.
+- **AntiDebugBreakpoints** - pure managed timing checks that AOT-compile and still run at runtime.
+
+Skipped on IL2CPP (would break the ``il2cpp.exe`` build, or only affect the discarded managed PE):
+**UnmanagedString**, **CallToCalli**, **DotNetHook**, **BitMethodDotnet**, **ObjectReturnType**,
+**AntiDe4dot**, **BillionNops**, **AntiILdasm**, **BitTimeDateStamp**, **AntiDecompiler**, **BitMono**,
+**BitDotNet**, **BitDecompiler**.
+
+.. note::
+
+   Protecting the IL2CPP *output* itself (encrypting ``global-metadata.dat`` and injecting a native
+   decryptor into ``GameAssembly.dll``) is tracked separately as future work in
+   `#276 <https://github.com/sunnamed434/BitMono/issues/276>`_.
 
 Additional Considerations
 -------------------------

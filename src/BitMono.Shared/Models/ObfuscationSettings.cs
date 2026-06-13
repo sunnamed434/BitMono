@@ -34,4 +34,8 @@ public class ObfuscationSettings
     // User-selected protection preset/level: Custom (default, use protections.json as-is),
     // Minimal, Balanced, or Maximum. Never auto-detected. A CLI --preset overrides this.
     public string? Preset { get; set; }
+
+    // Build for a Unity IL2CPP game: skip protections that aren't IL2CPP-compatible so they don't break the
+    // il2cpp.exe build. Set automatically by the Unity integration, or via the CLI --il2cpp flag. See #250.
+    public bool IL2CPP { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿namespace BitMono.Protections;
 
+[IL2CPPIncompatible("Injects SuppressIldasmAttribute, which only affects ildasm on the managed PE that IL2CPP discards")]
 public class AntiILdasm : Protection
 {
     public AntiILdasm(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

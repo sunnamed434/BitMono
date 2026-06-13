@@ -22,3 +22,8 @@ Protection Type
 ---------------
 
 The protection type is `Protection`.
+
+IL2CPP
+------
+
+Not supported on IL2CPP builds. It only pads the managed PE (discarded by IL2CPP) with a huge junk method while bloating the generated C++. BitMono skips it automatically when building for IL2CPP (see :doc:`../protection-list/unity`).
