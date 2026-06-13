@@ -98,7 +98,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
                     }
                     else if (instruction?.OpCode == CilOpCodes.Ldtoken && instruction.Operand is ITypeDefOrRef typeRef)
                     {
-                        if (typeRef.Resolve() is TypeDefinition typeDef && !_cachedTypes.Contains(typeDef))
+                        if (typeRef.ResolveOrNull() is TypeDefinition typeDef && !_cachedTypes.Contains(typeDef))
                         {
                             _cachedTypes.Add(typeDef);
                             foundReflection = true;
@@ -168,7 +168,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         TypeDefinition? targetType = null;
         if (instruction.Operand is IMethodDefOrRef methodRef)
         {
-            var resolvedMethod = methodRef.Resolve();
+            var resolvedMethod = methodRef.ResolveOrNull();
             if (resolvedMethod?.Signature != null && resolvedMethod.Signature.HasThis)
             {
                 var argumentCount = resolvedMethod.Signature.ParameterTypes.Count;
@@ -245,7 +245,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 
         if (typeInstruction.OpCode == CilOpCodes.Ldtoken && typeInstruction.Operand is ITypeDefOrRef typeRef)
         {
-            return typeRef.Resolve();
+            return typeRef.ResolveOrNull();
         }
 
         if (typeInstruction.OpCode == CilOpCodes.Call && typeInstruction.Operand is IMethodDefOrRef method)
@@ -714,7 +714,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
     private static IEnumerable<IMemberDefinition> GetBaseMembers(IMemberDefinition member)
     {
         var declaringType = member.DeclaringType;
-        if (declaringType?.BaseType?.Resolve() is not TypeDefinition baseType)
+        if (declaringType?.BaseType?.ResolveOrNull() is not TypeDefinition baseType)
             yield break;
 
         switch (member)

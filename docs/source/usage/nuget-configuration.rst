@@ -1,5 +1,5 @@
 NuGet Configuration
-==================
+===================
 
 This guide explains how to configure NuGet when using BitMono as a NuGet package dependency.
 

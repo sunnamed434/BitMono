@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Single TFM only to satisfy the SDK; the package ships no lib/ output. -->
+    <TargetFramework>net8.0</TargetFramework>
+
+    <!-- Build-tools / development dependency package. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+
+    <!-- No product code is compiled here. -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <!-- The single LTS TFM we bundle the CLI for. -->
+    <BitMonoBundledCliTfm Condition=" '$(BitMonoBundledCliTfm)' == '' ">net8.0</BitMonoBundledCliTfm>
+    <BitMonoCliPublishDir>$(MSBuildProjectDirectory)\obj\cli-publish\$(BitMonoBundledCliTfm)\</BitMonoCliPublishDir>
+    <BitMonoCliProject>$(MSBuildProjectDirectory)\..\BitMono.CLI\BitMono.CLI.csproj</BitMonoCliProject>
+
+    <!-- NU5100 = file not in lib/ (intended: tools/); NU5128 = no lib/deps (intended: dev pkg). -->
+    <NoWarn>$(NoWarn);NU5100;NU5128;NU5118;NU5119</NoWarn>
+
+    <!-- Official hook for adding files to the package at the right point in the pack pipeline.
+         Adding <None Pack="true"> dynamically inside a target runs too late (after _GetPackageFiles). -->
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_BitMonoPackBundledCli</TargetsForTfmSpecificContentInPackage>
+
+    <Description>MSBuild integration for the BitMono .NET obfuscator. Add this PackageReference to automatically obfuscate your assembly on build.</Description>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
+
+  <!-- Pack the MSBuild logic. Names MUST match the PackageId (= BitMono.Integration). -->
+  <ItemGroup>
+    <None Include="build\BitMono.Integration.props"   Pack="true" PackagePath="build\BitMono.Integration.props" />
+    <None Include="build\BitMono.Integration.targets" Pack="true" PackagePath="build\BitMono.Integration.targets" />
+    <None Include="buildMultiTargeting\BitMono.Integration.props"   Pack="true" PackagePath="buildMultiTargeting\BitMono.Integration.props" />
+    <None Include="buildMultiTargeting\BitMono.Integration.targets" Pack="true" PackagePath="buildMultiTargeting\BitMono.Integration.targets" />
+  </ItemGroup>
+
+  <!-- Publish BitMono.CLI (framework-dependent, single TFM) into obj/cli-publish. -->
+  <Target Name="PublishBundledCli" Condition=" '$(DesignTimeBuild)' != 'true' ">
+    <Message Importance="high" Text="[BitMono.Integration] Publishing BitMono.CLI ($(BitMonoBundledCliTfm)) -&gt; $(BitMonoCliPublishDir)" />
+    <RemoveDir Directories="$(BitMonoCliPublishDir)" />
+    <!-- Framework-dependent publish invoked via 'dotnet BitMono.CLI.dll'. The CLI's Costura.Fody embeds
+         third-party deps into BitMono.CLI.dll (BitMono.* are excluded, so they stay loose on disk for the
+         engine's AppContext.BaseDirectory reflection-loading). This is the same artifact shape shipped in
+         the release zips, so it is production-proven. -->
+    <Exec Command="dotnet publish &quot;$(BitMonoCliProject)&quot; --configuration Release --framework $(BitMonoBundledCliTfm) --self-contained false -p:BitMonoVersion=$(BitMonoVersion) -p:PublishSingleFile=false -p:UseAppHost=false --output &quot;$(BitMonoCliPublishDir)&quot;"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <!-- Collect the published payload as package files under tools/<tfm>/ (invoked by pack at the right time). -->
+  <Target Name="_BitMonoPackBundledCli" DependsOnTargets="PublishBundledCli">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(BitMonoCliPublishDir)**\*.*"
+                              Exclude="$(BitMonoCliPublishDir)**\*.pdb;$(BitMonoCliPublishDir)**\*.xml">
+        <PackagePath>tools/$(BitMonoBundledCliTfm)/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+</Project>

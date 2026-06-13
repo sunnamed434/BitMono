@@ -16,6 +16,7 @@ Table of Contents:
    :name: sec-usage
 
    usage/how-to-use
+   usage/msbuild-integration
    usage/assembly-signing
    usage/nuget-configuration
    usage/troubleshooting

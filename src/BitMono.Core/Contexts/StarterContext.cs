@@ -11,7 +11,7 @@ public class StarterContext
     public BitMonoContext BitMonoContext { get; set; }
     public CancellationToken CancellationToken { get; set; }
 
-    public IAssemblyResolver AssemblyResolver => Module.MetadataResolver.AssemblyResolver;
+    public IAssemblyResolver AssemblyResolver => Module.RuntimeContext.AssemblyResolver;
 #pragma warning restore CS8618
 
     public void ThrowIfCancellationRequested()

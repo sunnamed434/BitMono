@@ -1,0 +1,8 @@
+<Project>
+  <!--
+    Multi-targeting (outer) build: $(TargetFramework) is empty here. The real obfuscation runs in each
+    inner per-TFM build via build/BitMono.Integration.props|targets. We import the shared property
+    defaults so users can set/override them once at the outer level too.
+  -->
+  <Import Project="$(MSBuildThisFileDirectory)..\build\BitMono.Integration.props" />
+</Project>

@@ -21,7 +21,7 @@ public class ArgumentTracer
         if (callInstruction.Operand is not IMethodDescriptor methodDescriptor)
             return null;
 
-        var method = methodDescriptor.Resolve();
+        var method = methodDescriptor.ResolveOrNull();
         if (method?.Signature == null)
             return null;
 
@@ -121,7 +121,7 @@ public class ArgumentTracer
     {
         if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor method)
         {
-            var resolvedMethod = method.Resolve();
+            var resolvedMethod = method.ResolveOrNull();
             if (resolvedMethod?.Signature != null)
             {
                 int pushCount = IsSystemVoid(resolvedMethod.Signature.ReturnType) ? 0 : 1;
@@ -138,7 +138,7 @@ public class ArgumentTracer
     {
         if (instruction.OpCode.FlowControl == CilFlowControl.Call && instruction.Operand is IMethodDescriptor method)
         {
-            var resolvedMethod = method.Resolve();
+            var resolvedMethod = method.ResolveOrNull();
             if (resolvedMethod?.Signature != null)
             {
                 int popCount = resolvedMethod.Signature.ParameterTypes.Count;
@@ -419,7 +419,7 @@ public class ArgumentTracer
     {
         if (instruction.OpCode == CilOpCodes.Ldtoken && instruction.Operand is ITypeDefOrRef typeRef)
         {
-            return typeRef.Resolve();
+            return typeRef.ResolveOrNull();
         }
 
         return null;
@@ -501,7 +501,7 @@ public class ArgumentTracer
         if (instruction.Operand is not IMethodDescriptor methodDescriptor)
             return null;
 
-        var method = methodDescriptor.Resolve();
+        var method = methodDescriptor.ResolveOrNull();
         if (method?.DeclaringType?.FullName != "BitMono.Core.Tests.Analyzing.ArgumentTracerTestCases")
             return null;
 
