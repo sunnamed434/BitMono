@@ -90,7 +90,7 @@ public class AntiDebugBreakpoints : Protection
                 {
                     continue;
                 }
-                if (threadSleepMethods.Any(x => signatureComparer.Equals(member, x)) == false)
+                if (!threadSleepMethods.Any(x => signatureComparer.Equals(member, x)))
                 {
                     continue;
                 }

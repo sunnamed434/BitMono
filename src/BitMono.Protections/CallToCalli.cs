@@ -51,7 +51,7 @@ public class CallToCalli : Protection
                 {
                     continue;
                 }
-                if (module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata) == false)
+                if (!module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                 {
                     continue;
                 }

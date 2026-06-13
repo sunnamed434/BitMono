@@ -21,7 +21,7 @@ public static class MethodDefinitionExtensions
     }
     public static bool NotAsync(this MethodDefinition source)
     {
-        return source.IsAsync() == false;
+        return !source.IsAsync();
     }
     public static bool HasParameters(this MethodDefinition source)
     {

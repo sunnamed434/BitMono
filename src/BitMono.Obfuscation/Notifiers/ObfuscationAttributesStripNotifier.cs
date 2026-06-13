@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class ObfuscationAttributesStripNotifier
 {
@@ -11,22 +11,22 @@ public class ObfuscationAttributesStripNotifier
 
     public void Notify(ObfuscationAttributesStrip obfuscationAttributesStrip)
     {
-        if (obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.IsEmpty() == false)
+        if (!obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.IsEmpty())
         {
             _logger.Information("Successfully stripped {0} obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscationAttributesSuccessStrip.Count);
         }
-        if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.IsEmpty() == false)
+        if (!obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.IsEmpty())
         {
             _logger.Information("Successfully stripped {0} assembly obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscateAssemblyAttributesSuccessStrip.Count);
         }
-        if (obfuscationAttributesStrip.ObfuscationAttributesFailStrip.IsEmpty() == false)
+        if (!obfuscationAttributesStrip.ObfuscationAttributesFailStrip.IsEmpty())
         {
             _logger.Information("Failed to strip {0} assembly obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscationAttributesFailStrip.Count);
         }
-        if (obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.IsEmpty() == false)
+        if (!obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.IsEmpty())
         {
             _logger.Information("Failed to strip {0} obfuscation attribute(s)",
                 obfuscationAttributesStrip.ObfuscateAssemblyAttributesFailStrip.Count);

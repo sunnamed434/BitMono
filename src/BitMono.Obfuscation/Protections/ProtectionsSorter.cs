@@ -40,7 +40,7 @@ public class ProtectionsSorter
             .Select(x => (x, x.GetRuntimeMonikerAttributes()))
             .Where(x => x.Item2.Any());
 
-        var hasProtections = sortedProtections.IsEmpty() == false || packers.IsEmpty() == false;
+        var hasProtections = !sortedProtections.IsEmpty() || !packers.IsEmpty();
 
         return new ProtectionsSort(
             protectionsResolve,

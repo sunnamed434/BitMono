@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsConfigureForNativeCodeNotifier
 {
@@ -13,12 +13,12 @@ public class ProtectionsConfigureForNativeCodeNotifier
 
     public void Notify(ProtectionsSort protectionsSort, CancellationToken cancellationToken)
     {
-        if (_obfuscationSettings.OutputConfigureForNativeCodeWarnings == false)
+        if (!_obfuscationSettings.OutputConfigureForNativeCodeWarnings)
         {
             return;
         }
         var configureForNativeCodeProtections = protectionsSort.ConfigureForNativeCodeProtections;
-        if (configureForNativeCodeProtections.Any() == false)
+        if (!configureForNativeCodeProtections.Any())
         {
             return;
         }

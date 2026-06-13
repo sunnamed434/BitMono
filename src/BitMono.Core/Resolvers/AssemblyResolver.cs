@@ -56,7 +56,7 @@ public static class AssemblyResolver
                 }
             }
 
-            if (resolved == false)
+            if (!resolved)
             {
                 failedToResolveReferences.Add(originalReference);
             }

@@ -1,4 +1,4 @@
-using BitMono.Core.Analyzing.Baml;
+﻿using BitMono.Core.Analyzing.Baml;
 using BitMono.Core.Services;
 
 namespace BitMono.Core.Analyzing;
@@ -33,13 +33,13 @@ public class BamlCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
             return true;
         }
         var declaringType = GetDeclaringType(member);
-        return declaringType == null || referencedTypes.Contains(declaringType) == false;
+        return declaringType == null || !referencedTypes.Contains(declaringType);
     }
 
     private HashSet<TypeDefinition> GetReferencedTypes(ModuleDefinition module)
     {
         // Computed once per module (BAML parsing is shared across protections and members).
-        if (ReferenceEquals(_module, module) == false || _referencedTypes == null)
+        if (!ReferenceEquals(_module, module) || _referencedTypes == null)
         {
             _module = module;
             _referencedTypes = WpfBamlReferenceResolver.ResolveReferencedTypes(module);

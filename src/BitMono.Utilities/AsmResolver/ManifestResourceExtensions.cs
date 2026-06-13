@@ -9,7 +9,7 @@ public static class ManifestResourceExtensions
 
     public static bool IsEmbeddedCosturaResource(this ManifestResource source)
     {
-        if (Utf8String.IsNullOrEmpty(source.Name) == false)
+        if (!Utf8String.IsNullOrEmpty(source.Name))
         {
             if (source.IsEmbedded)
             {

@@ -41,7 +41,7 @@ public class StringsEncryption : Protection
             for (var i = 0; i < instructions.Count; i++)
             {
                 var instruction = instructions[i];
-                if (instruction.OpCode.Equals(CilOpCodes.Ldstr) == false)
+                if (!instruction.OpCode.Equals(CilOpCodes.Ldstr))
                 {
                     continue;
                 }

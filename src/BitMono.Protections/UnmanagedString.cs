@@ -34,7 +34,7 @@ public class UnmanagedString : Protection
                         var useUnicode = !CanBeEncodedIn7BitASCII(content);
                         var addNullTerminator = !HasNullCharacter(content);
 
-                        if (encodedStrings.TryGetValue(content, out var nativeMethod) == false) // reuse encoded strings
+                        if (!encodedStrings.TryGetValue(content, out var nativeMethod)) // reuse encoded strings
                         {
                             nativeMethod = CreateNativeMethod(content, Context.Module, Context.X86, useUnicode, addNullTerminator);
                             encodedStrings.Add(content, nativeMethod);

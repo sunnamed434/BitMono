@@ -44,12 +44,12 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         }
         if (member is TypeDefinition type)
         {
-            if (_serializableBitCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+            if (!_serializableBitCriticalAnalyzer.NotCriticalToMakeChanges(type))
             {
                 return false;
             }
         }
-        if (_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(member) == false)
+        if (!_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(member))
         {
             return false;
         }

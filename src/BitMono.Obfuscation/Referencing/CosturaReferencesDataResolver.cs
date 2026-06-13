@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Referencing;
+﻿namespace BitMono.Obfuscation.Referencing;
 
 public class CosturaReferencesDataResolver : IReferencesDataResolver
 {
@@ -11,7 +11,7 @@ public class CosturaReferencesDataResolver : IReferencesDataResolver
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (resource.IsEmbeddedCosturaResource() == false)
+            if (!resource.IsEmbeddedCosturaResource())
             {
                 continue;
             }

@@ -4,7 +4,7 @@ public class ProtectionSetting
 {
     [JsonRequired] public string Name { get; set; }
     public bool Enabled { get; set; }
-    [JsonIgnore] public bool Disabled => Enabled == false;
+    [JsonIgnore] public bool Disabled => !Enabled;
 
     public void Enable()
     {

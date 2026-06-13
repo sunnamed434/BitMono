@@ -1,4 +1,4 @@
-namespace BitMono.CLI.Modules;
+﻿namespace BitMono.CLI.Modules;
 
 internal class OptionsObfuscationNeedsFactory
 {
@@ -116,7 +116,7 @@ internal class OptionsObfuscationNeedsFactory
         // Multiple dependency directories may be passed via -l/--libraries; fall back to the
         // configured (or default "libs") directory when none are given.
         var librariesPaths = options.Libraries
-            .Where(x => string.IsNullOrWhiteSpace(x) == false)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(PathFormatterUtility.Format)
             .ToList();
         var referencesDirectories = librariesPaths.Count > 0

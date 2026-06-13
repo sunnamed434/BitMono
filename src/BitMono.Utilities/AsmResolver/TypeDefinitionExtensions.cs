@@ -8,7 +8,7 @@ public static class TypeDefinitionExtensions
     }
     public static bool HasNamespace(this TypeDefinition source)
     {
-        return Utf8String.IsNullOrEmpty(source.Namespace) == false;
+        return !Utf8String.IsNullOrEmpty(source.Namespace);
     }
 
     // Framework-owned namespaces that hold compiler/runtime "magic" types matched by full name

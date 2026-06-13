@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Referencing;
+﻿namespace BitMono.Obfuscation.Referencing;
 
 public class AutomaticPathReferencesDataResolver : IReferencesDataResolver
 {
@@ -19,7 +19,7 @@ public class AutomaticPathReferencesDataResolver : IReferencesDataResolver
     {
         var referencesData = _referencesDataResolver.Resolve(module, cancellationToken);
         var costuraReferencesData = _costuraReferencesDataResolver.Resolve(module, cancellationToken);
-        if (costuraReferencesData.IsEmpty() == false)
+        if (!costuraReferencesData.IsEmpty())
         {
             referencesData.AddRange(costuraReferencesData);
         }

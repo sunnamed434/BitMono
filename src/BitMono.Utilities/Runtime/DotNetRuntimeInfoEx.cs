@@ -1,4 +1,4 @@
-namespace BitMono.Utilities.Runtime;
+﻿namespace BitMono.Utilities.Runtime;
 
 public static class DotNetRuntimeInfoEx
 {
@@ -26,7 +26,7 @@ public static class DotNetRuntimeInfoEx
             return null;
         }
         var version = targetFrameworkAttribute.FrameworkName;
-        if (version.Contains('v') == false)
+        if (!version.Contains('v'))
         {
             return null;
         }
@@ -58,7 +58,7 @@ public static class DotNetRuntimeInfoEx
     }
     public static string? GetMonoDisplayName()
     {
-        if (IsRunningOnMono() == false)
+        if (!IsRunningOnMono())
         {
             return null;
         }

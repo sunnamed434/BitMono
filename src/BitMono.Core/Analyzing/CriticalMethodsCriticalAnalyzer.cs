@@ -11,11 +11,11 @@ public class CriticalMethodsCriticalAnalyzer : ICriticalAnalyzer<MethodDefinitio
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        if (_criticalsSettings.UseCriticalMethods == false)
+        if (!_criticalsSettings.UseCriticalMethods)
         {
             return true;
         }
         var criticalMethodNames = _criticalsSettings.CriticalMethods;
-        return criticalMethodNames.Any(x => x.Equals(method.Name)) == false;
+        return !criticalMethodNames.Any(x => x.Equals(method.Name));
     }
 }

@@ -63,7 +63,7 @@ public static class ProtectionExtensions
         var protectionNameAttribute = source.GetCustomAttribute<ProtectionNameAttribute>(inherit);
         if (protectionNameAttribute != null)
         {
-            return string.IsNullOrWhiteSpace(protectionNameAttribute.Name) == false
+            return !string.IsNullOrWhiteSpace(protectionNameAttribute.Name)
                 ? protectionNameAttribute.Name
                 : source.Name;
         }

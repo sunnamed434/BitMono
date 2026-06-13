@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class ProtectionsRuntimeMonikerNotifier
 {
@@ -13,7 +13,7 @@ public class ProtectionsRuntimeMonikerNotifier
 
     public void Notify(ProtectionsSort protectionsSort, CancellationToken cancellationToken)
     {
-        if (_obfuscationSettings.OutputRuntimeMonikerWarnings == false)
+        if (!_obfuscationSettings.OutputRuntimeMonikerWarnings)
         {
             return;
         }

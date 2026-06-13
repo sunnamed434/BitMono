@@ -11,7 +11,7 @@ public class CriticalInterfacesCriticalAnalyzer : ICriticalAnalyzer<TypeDefiniti
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (_criticalsSettings.UseCriticalInterfaces == false)
+        if (!_criticalsSettings.UseCriticalInterfaces)
         {
             return true;
         }

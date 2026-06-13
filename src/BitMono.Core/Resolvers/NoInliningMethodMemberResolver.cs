@@ -11,7 +11,7 @@ public class NoInliningMethodMemberResolver : IMemberResolver
 
     public bool Resolve(IProtection? protection, IMetadataMember member)
     {
-        if (_obfuscationSettings.NoInliningMethodObfuscationExclude == false)
+        if (!_obfuscationSettings.NoInliningMethodObfuscationExclude)
         {
             return true;
         }

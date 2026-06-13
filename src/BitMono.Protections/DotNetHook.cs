@@ -57,7 +57,7 @@ public class DotNetHook : Protection
                 {
                     continue;
                 }
-                if (callingMethod.CilMethodBody == null || callingMethod.Signature == null || callingMethod.Managed == false)
+                if (callingMethod.CilMethodBody == null || callingMethod.Signature == null || !callingMethod.Managed)
                 {
                     continue;
                 }
@@ -79,7 +79,7 @@ public class DotNetHook : Protection
                 {
                     continue;
                 }
-                if (module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata) == false)
+                if (!module.TryLookupMember(callingMethod.MetadataToken, out var callingMethodMetadata))
                 {
                     continue;
                 }

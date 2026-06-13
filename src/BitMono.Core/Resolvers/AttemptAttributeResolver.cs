@@ -6,7 +6,7 @@ public static class AttemptAttributeResolver
         [NotNullWhen(true)] out List<CustomAttributeResolve>? attributesResolve)
     {
         attributesResolve = CustomAttributeResolver.Resolve(from, @namespace, name);
-        return attributesResolve.IsNullOrEmpty() == false;
+        return !attributesResolve.IsNullOrEmpty();
     }
     public static bool TryResolve(IHasCustomAttribute from, string @namespace, string name)
     {

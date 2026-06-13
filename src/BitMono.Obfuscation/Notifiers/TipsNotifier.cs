@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Notifiers;
+﻿namespace BitMono.Obfuscation.Notifiers;
 
 public class TipsNotifier
 {
@@ -25,7 +25,7 @@ public class TipsNotifier
 
     public void Notify()
     {
-        if (_obfuscationSettings.Tips == false)
+        if (!_obfuscationSettings.Tips)
         {
             return;
         }

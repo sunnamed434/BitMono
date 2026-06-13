@@ -7,21 +7,21 @@ public class RuntimeCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
     {
         if (member is TypeDefinition type)
         {
-            return type.IsRuntimeSpecialName == false;
+            return !type.IsRuntimeSpecialName;
         }
         if (member is FieldDefinition field)
         {
-            return field.IsRuntimeSpecialName == false
-                && field.IsLiteral == false
+            return !field.IsRuntimeSpecialName
+                && !field.IsLiteral
                 && field.DeclaringType?.IsEnum == false;
         }
         if (member is MethodDefinition method)
         {
-            return method.IsRuntimeSpecialName == false || method.DeclaringType?.IsForwarder == false;
+            return !method.IsRuntimeSpecialName || method.DeclaringType?.IsForwarder == false;
         }
         if (member is EventDefinition @event)
         {
-            return @event.IsRuntimeSpecialName == false;
+            return !@event.IsRuntimeSpecialName;
         }
         return true;
     }

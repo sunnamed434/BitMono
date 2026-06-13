@@ -1,4 +1,4 @@
-namespace BitMono.Core.Resolvers;
+﻿namespace BitMono.Core.Resolvers;
 
 public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAssemblyAttributeData>
 {
@@ -16,12 +16,12 @@ public class ObfuscateAssemblyAttributeResolver : AttributeResolver<ObfuscateAss
     public override bool Resolve(string? feature, IHasCustomAttribute from, [NotNullWhen(true)] out ObfuscateAssemblyAttributeData? model)
     {
         model = null;
-        if (_obfuscationSettings.ObfuscateAssemblyAttributeObfuscationExclude == false)
+        if (!_obfuscationSettings.ObfuscateAssemblyAttributeObfuscationExclude)
         {
             return false;
         }
-        if (AttemptAttributeResolver.TryResolve(from, _attributeNamespace,
-                _attributeName, out var attributesResolve) == false)
+        if (!AttemptAttributeResolver.TryResolve(from, _attributeNamespace,
+                _attributeName, out var attributesResolve))
         {
             return false;
         }

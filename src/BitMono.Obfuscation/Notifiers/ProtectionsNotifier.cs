@@ -13,7 +13,7 @@ public class ProtectionsNotifier
 
     public void Notify(ProtectionsSort protectionsSort, CancellationToken cancellationToken)
     {
-        if (_obfuscationSettings.NotifyProtections == false)
+        if (!_obfuscationSettings.NotifyProtections)
         {
             return;
         }

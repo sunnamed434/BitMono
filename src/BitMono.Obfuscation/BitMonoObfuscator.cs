@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation;
+﻿namespace BitMono.Obfuscation;
 
 public class BitMonoObfuscator
 {
@@ -192,7 +192,7 @@ public class BitMonoObfuscator
             _logger.Warning("Failed to resolve dependency: {0}", reference.FullName);
         }
         _logger.Information("References resolve have been completed!");
-        if (assemblyResolve.Succeed == false)
+        if (!assemblyResolve.Succeed)
         {
             if (_obfuscationSettings.FailOnNoRequiredDependency)
             {
@@ -265,7 +265,7 @@ public class BitMonoObfuscator
     }
     private void StripObfuscationAttributes()
     {
-        if (_obfuscationSettings.StripObfuscationAttributes == false)
+        if (!_obfuscationSettings.StripObfuscationAttributes)
         {
             return;
         }

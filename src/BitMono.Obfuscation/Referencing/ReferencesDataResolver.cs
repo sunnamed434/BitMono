@@ -22,13 +22,13 @@ public class ReferencesDataResolver : IReferencesDataResolver
         var seenFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var directory in _referencesDirectories)
         {
-            if (string.IsNullOrWhiteSpace(directory) || Directory.Exists(directory) == false)
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 continue;
             }
             foreach (var reference in Directory.GetFiles(directory))
             {
-                if (seenFileNames.Add(Path.GetFileName(reference)) == false)
+                if (!seenFileNames.Add(Path.GetFileName(reference)))
                 {
                     continue;
                 }

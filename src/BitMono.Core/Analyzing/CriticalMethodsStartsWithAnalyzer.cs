@@ -11,12 +11,12 @@ public class CriticalMethodsStartsWithAnalyzer : ICriticalAnalyzer<MethodDefinit
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        if (_criticalsSettings.UseCriticalMethodsStartsWith == false)
+        if (!_criticalsSettings.UseCriticalMethodsStartsWith)
         {
             return true;
         }
 
         var criticalMethodsStartWith = _criticalsSettings.CriticalMethodsStartsWith;
-        return criticalMethodsStartWith.Any(c => c.StartsWith(method.Name)) == false;
+        return !criticalMethodsStartWith.Any(c => c.StartsWith(method.Name));
     }
 }

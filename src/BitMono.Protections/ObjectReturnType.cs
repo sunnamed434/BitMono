@@ -18,7 +18,7 @@ public class ObjectReturnType : Protection
             {
                 continue;
             }
-            if (method.Signature.Returns(systemBoolean) == false)
+            if (!method.Signature.Returns(systemBoolean))
             {
                 continue;
             }

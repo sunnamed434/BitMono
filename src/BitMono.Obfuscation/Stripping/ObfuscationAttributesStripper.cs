@@ -1,4 +1,4 @@
-namespace BitMono.Obfuscation.Stripping;
+﻿namespace BitMono.Obfuscation.Stripping;
 
 public class ObfuscationAttributesStripper
 {
@@ -50,11 +50,11 @@ public class ObfuscationAttributesStripper
     private void StripAssemblyObfuscationAttribute(IHasCustomAttribute customAttribute,
         List<CustomAttribute> obfuscateAssemblyAttributesSuccessStrip, List<CustomAttribute> obfuscateAssemblyAttributesFailStrip)
     {
-        if (_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData) == false)
+        if (!_obfuscateAssemblyAttributeResolver.Resolve(null, customAttribute, out var obfuscateAssemblyAttributeData))
         {
             return;
         }
-        if (obfuscateAssemblyAttributeData.StripAfterObfuscation == false)
+        if (!obfuscateAssemblyAttributeData.StripAfterObfuscation)
         {
             return;
         }
@@ -73,7 +73,7 @@ public class ObfuscationAttributesStripper
         List<CustomAttribute> obfuscationAttributesSuccessStrip, List<CustomAttribute> obfuscationAttributesFailStrip,
         CancellationToken cancellationToken)
     {
-        if (_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData) == false)
+        if (!_obfuscationAttributeResolver.Resolve(protectionName, customAttribute, out var obfuscationAttributeData))
         {
             return;
         }
@@ -81,7 +81,7 @@ public class ObfuscationAttributesStripper
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (attributeData.StripAfterObfuscation == false)
+            if (!attributeData.StripAfterObfuscation)
             {
                 continue;
             }

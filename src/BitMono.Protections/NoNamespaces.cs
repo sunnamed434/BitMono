@@ -11,7 +11,7 @@ public class NoNamespaces : Protection
     {
         foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
-            if (type.HasNamespace() == false)
+            if (!type.HasNamespace())
             {
                 continue;
             }

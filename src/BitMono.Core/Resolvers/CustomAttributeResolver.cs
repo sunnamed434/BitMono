@@ -22,7 +22,7 @@ public static class CustomAttributeResolver
                     for (var j = 0; j < namedArguments.Count; j++)
                     {
                         var namedArgument = namedArguments[j];
-                        if (string.IsNullOrWhiteSpace(namedArgument.MemberName?.Value) == false)
+                        if (!string.IsNullOrWhiteSpace(namedArgument.MemberName?.Value))
                         {
                             if (namedArgument.Argument.Element is Utf8String utf8String)
                             {

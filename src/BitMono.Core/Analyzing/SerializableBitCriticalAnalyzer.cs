@@ -1,4 +1,4 @@
-namespace BitMono.Core.Analyzing;
+﻿namespace BitMono.Core.Analyzing;
 
 [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
 public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
@@ -12,7 +12,7 @@ public class SerializableBitCriticalAnalyzer : ICriticalAnalyzer<TypeDefinition>
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (_obfuscationSettings.SerializableBitObfuscationExclude == false)
+        if (!_obfuscationSettings.SerializableBitObfuscationExclude)
         {
             return true;
         }

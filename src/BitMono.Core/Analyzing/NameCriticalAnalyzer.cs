@@ -24,11 +24,11 @@ public class NameCriticalAnalyzer :
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
     {
-        if (_criticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+        if (!_criticalInterfacesCriticalAnalyzer.NotCriticalToMakeChanges(type))
         {
             return false;
         }
-        if (_criticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(type) == false)
+        if (!_criticalBaseTypesCriticalAnalyzer.NotCriticalToMakeChanges(type))
         {
             return false;
         }
@@ -36,11 +36,11 @@ public class NameCriticalAnalyzer :
     }
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
-        if (_criticalMethodsCriticalAnalyzer.NotCriticalToMakeChanges(method) == false)
+        if (!_criticalMethodsCriticalAnalyzer.NotCriticalToMakeChanges(method))
         {
             return false;
         }
-        if (_criticalMethodsStartsWithAnalyzer.NotCriticalToMakeChanges(method) == false)
+        if (!_criticalMethodsStartsWithAnalyzer.NotCriticalToMakeChanges(method))
         {
             return false;
         }

@@ -24,13 +24,13 @@ public class InvokablePipeline
 
     private async Task InvokeInternalAsync(Delegate invokeMethod)
     {
-        if (Succeed == false)
+        if (!Succeed)
         {
             return;
         }
 
         Succeed = await InvokeMethodAsync(invokeMethod);
-        if (Succeed == false && OnFail != null)
+        if (!Succeed && OnFail != null)
         {
             await OnFail();
         }

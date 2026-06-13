@@ -13,7 +13,7 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
         [NotNullWhen(true)] out CustomAttributeResolve? attributeResolve)
     {
         attributeResolve = null;
-        if (_criticalsSettings.UseCriticalAttributes == false)
+        if (!_criticalsSettings.UseCriticalAttributes)
         {
             return false;
         }
@@ -21,8 +21,8 @@ public class CriticalAttributeResolver : AttributeResolver<CustomAttributeResolv
         var criticalAttributes = _criticalsSettings.CriticalAttributes;
         foreach (var criticalAttribute in criticalAttributes)
         {
-            if (AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name,
-                    out var attributesResolve) == false)
+            if (!AttemptAttributeResolver.TryResolve(from, criticalAttribute.Namespace, criticalAttribute.Name,
+                    out var attributesResolve))
             {
                 continue;
             }
