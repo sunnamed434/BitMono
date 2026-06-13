@@ -284,7 +284,7 @@ reference — no separate tool run. Install ``BitMono.Integration`` as a develop
 .. code-block:: xml
 
    <ItemGroup>
-     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+     <PackageReference Include="BitMono.Integration" Version="0.39.0">
        <PrivateAssets>all</PrivateAssets>
        <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
      </PackageReference>

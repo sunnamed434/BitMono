@@ -30,7 +30,7 @@ own package and is not exposed to projects that reference yours:
 .. code-block:: xml
 
    <ItemGroup>
-     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+     <PackageReference Include="BitMono.Integration" Version="0.39.0">
        <PrivateAssets>all</PrivateAssets>
        <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
      </PackageReference>
@@ -146,7 +146,7 @@ works the same for **VB.NET** and **F#**. Add the exact same ``<PackageReference
 
    <!-- MyVbApp.vbproj -->
    <ItemGroup>
-     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+     <PackageReference Include="BitMono.Integration" Version="0.39.0">
        <PrivateAssets>all</PrivateAssets>
        <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
      </PackageReference>
