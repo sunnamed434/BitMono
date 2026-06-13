@@ -1,0 +1,61 @@
+name: BitMono.Integration
+
+on:
+  create:
+    tags:
+      - "*"
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.Integration.yaml'
+      - 'src/BitMono.Integration/**'
+      - 'src/BitMono.CLI/**'
+      - 'props/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/BitMono.Integration.yaml'
+      - 'src/BitMono.Integration/**'
+      - 'src/BitMono.CLI/**'
+      - 'props/**'
+
+jobs:
+  build:
+    name: "BitMono.Integration Build"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read     # checkout
+      packages: write    # dotnet nuget push -> nuget.pkg.github.com/sunnamed434
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v5
+      name: Setup .NET
+      env:
+        DOTNET_NOLOGO: true
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+        DOTNET_CLI_TELEMETRY_OPTOUT: true
+      with:
+        # net8 is needed to publish the bundled CLI (--framework net8.0); 10.x provides the SDK.
+        dotnet-version: |
+          8.x
+          10.x
+
+    # Insurance: ensure the CLI restores even under locked/offline restore policies,
+    # because packing BitMono.Integration publishes BitMono.CLI as part of its build.
+    - name: Restore BitMono.CLI (bundled by the package)
+      run: dotnet restore src/BitMono.CLI/BitMono.CLI.csproj -p:Configuration=Release -p:TargetFramework=net8.0
+      shell: bash
+
+    - uses: ./.github/actions/project-build
+      id: project-build
+      with:
+        project_path: src/BitMono.Integration
+        target_framework: net8.0
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_push: true
+        use_runtime: false  # build-tools / dev package, no RID

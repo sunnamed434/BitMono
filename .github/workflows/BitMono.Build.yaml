@@ -21,6 +21,9 @@ on:
       - 'src/**'
       - 'test/**'
 
+permissions:
+  contents: read
+
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -60,7 +63,7 @@ jobs:
           nuget_push: false
           target_framework: ${{ matrix.target-framework }}
           runtime_version: ${{ matrix.runtime }}
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Install zip (for Linux/macOS)
         run: |
@@ -79,7 +82,7 @@ jobs:
           zip -qq -r ./BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip *
       
       - name: Upload build
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}
           path: "./src/BitMono.CLI/bin/Release/${{ matrix.target-framework }}/${{ matrix.runtime }}/BitMono-v${{ steps.project-build.outputs.version }}-CLI-${{ matrix.target-framework }}-${{ matrix.runtime }}.zip"
@@ -137,7 +140,7 @@ jobs:
           nuget_push: false
           target_framework: net462
           runtime_version: win-x64
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Copy Unity files to test project
         run: |
@@ -298,7 +301,7 @@ jobs:
           cd ..
       
       - name: Upload Unity Packages
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: BitMono-Unity-v${{ steps.cli-build.outputs.version }}-Unity${{ matrix.unity-version }}
           path: |
@@ -310,9 +313,11 @@ jobs:
     if: github.event_name == 'create' && github.event.ref_type == 'tag'
     needs: [Build, UnityPackage]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create/update the GitHub release
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: ./artifacts
       
@@ -330,7 +335,7 @@ jobs:
           name: BitMono Release v${{ needs.Build.outputs.version }}
           tag: ${{ needs.Build.outputs.version }}
           artifacts: "./artifacts/**/*.zip,./artifacts/**/*.unitypackage,./artifacts/**/*.tgz"
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ needs.Build.outputs.is_prerelease }}
           allowUpdates: true
           draft: true

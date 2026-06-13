@@ -21,6 +21,9 @@ jobs:
   build:
     name: "BitMono.Core Build"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v6
@@ -36,7 +39,7 @@ jobs:
       id: project-build
       with:
         project_path: src/BitMono.Core
-        github_token: ${{ secrets.PAT }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
         nuget_push: true
         

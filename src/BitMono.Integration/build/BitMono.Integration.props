@@ -1,0 +1,45 @@
+<Project>
+
+  <!--
+    BitMono.Integration - properties (imported EARLY in the consumer's evaluation).
+    Every value is overridable: define the property in your .csproj (or a Directory.Build.props)
+    to win over these defaults. Do NOT reference late-bound properties such as $(TargetFileName)
+    or $(IntermediateOutputPath) here - they are not set yet; read those only in the .targets file.
+  -->
+
+  <PropertyGroup>
+    <!-- Master on/off switch. Default: enabled. -->
+    <BitMonoEnabled Condition=" '$(BitMonoEnabled)' == '' ">true</BitMonoEnabled>
+
+    <!-- Configuration gating. Default Release only; set empty to run in every configuration. -->
+    <BitMonoConfigurations Condition=" '$(BitMonoConfigurations)' == '' ">Release</BitMonoConfigurations>
+
+    <!-- Fail the build if obfuscation fails (recommended). Set false to warn-and-continue. -->
+    <BitMonoFailOnError Condition=" '$(BitMonoFailOnError)' == '' ">true</BitMonoFailOnError>
+
+    <!-- Pass-through toggles. -->
+    <BitMonoNoWatermark   Condition=" '$(BitMonoNoWatermark)'   == '' ">false</BitMonoNoWatermark>
+    <BitMonoStrongNameKey Condition=" '$(BitMonoStrongNameKey)' == '' "></BitMonoStrongNameKey>
+
+    <!-- Host used to run the bundled CLI; override for unusual setups (e.g. an absolute dotnet path). -->
+    <BitMonoDotnetHost Condition=" '$(BitMonoDotnetHost)' == '' ">dotnet</BitMonoDotnetHost>
+
+    <!-- Path to the bundled CLI entry DLL inside this package ('build/' is MSBuildThisFileDirectory). -->
+    <BitMonoBundledCliTfm Condition=" '$(BitMonoBundledCliTfm)' == '' ">net8.0</BitMonoBundledCliTfm>
+    <BitMonoCliDll Condition=" '$(BitMonoCliDll)' == '' ">$(MSBuildThisFileDirectory)..\tools\$(BitMonoBundledCliTfm)\BitMono.CLI.dll</BitMonoCliDll>
+
+    <!--
+      Config files: project-root obfuscation.json / protections.json / criticals.json / logging.json.
+      Each is passed to the CLI only when it exists (gated in .targets). Override to point elsewhere.
+      When none are present, BitMono falls back to the defaults bundled inside the package's CLI.
+    -->
+    <BitMonoObfuscationFile Condition=" '$(BitMonoObfuscationFile)' == '' ">$(MSBuildProjectDirectory)\obfuscation.json</BitMonoObfuscationFile>
+    <BitMonoProtectionsFile Condition=" '$(BitMonoProtectionsFile)' == '' ">$(MSBuildProjectDirectory)\protections.json</BitMonoProtectionsFile>
+    <BitMonoCriticalsFile   Condition=" '$(BitMonoCriticalsFile)'   == '' ">$(MSBuildProjectDirectory)\criticals.json</BitMonoCriticalsFile>
+    <BitMonoLoggingFile     Condition=" '$(BitMonoLoggingFile)'     == '' ">$(MSBuildProjectDirectory)\logging.json</BitMonoLoggingFile>
+
+    <!-- Verbosity of the BitMono target messages: low|normal|high. -->
+    <BitMonoMessageImportance Condition=" '$(BitMonoMessageImportance)' == '' ">high</BitMonoMessageImportance>
+  </PropertyGroup>
+
+</Project>

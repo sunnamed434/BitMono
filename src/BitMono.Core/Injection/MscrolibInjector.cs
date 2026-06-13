@@ -19,7 +19,7 @@ public class MscorlibInjector
         classWithLayout.Fields.Add(fieldWithRVA);
 
         var systemByte = importer.ImportType(module.CorLibTypeFactory.Byte.ToTypeDefOrRef());
-        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Public | FieldAttributes.Static, new FieldSignature(systemByte.MakeSzArrayType()));
+        var fieldInjectedArray = new FieldDefinition(name, FieldAttributes.Public | FieldAttributes.Static, new FieldSignature(module.CorLibTypeFactory.Byte.MakeSzArrayType()));
         classWithLayout.Fields.Add(fieldInjectedArray);
 
         var initializeArrayMethod = importer.ImportMethod(typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.InitializeArray), new Type[]
@@ -83,7 +83,7 @@ public class MscorlibInjector
         var factory = module.CorLibTypeFactory;
         var ctor = factory.CorLibScope
             .CreateTypeReference(@namespace, name)
-            .CreateMemberReference(".ctor", MethodSignature.CreateInstance(factory.Void, factory.String)
+            .CreateMemberReference(".ctor", MethodSignature.CreateInstance(factory.Void, [factory.String])
             .ImportWith(module.DefaultImporter));
 
         var attribute = new CustomAttribute(ctor);
