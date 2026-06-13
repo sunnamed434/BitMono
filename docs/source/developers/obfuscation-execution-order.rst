@@ -34,4 +34,5 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 	public class Packer : PackerProtection
 
 
-16. Output Elapsed Time since obfuscation 
+16. Output Elapsed Time since obfuscation
+17. Output Tips (short, helpful hints printed after a run; can be turned off with the ``Tips`` setting in ``obfuscation.json``) 

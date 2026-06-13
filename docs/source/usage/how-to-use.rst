@@ -33,7 +33,7 @@ More options:
 Available options:
 
 - ``-f, --file``: File to obfuscate (required)
-- ``-l, --libraries``: Dependencies folder (default: ``libs``)
+- ``-l, --libraries``: Dependencies folder (default: ``libs``). Accepts multiple space-separated folders, e.g. ``-l Dependencies MoreLibs``
 - ``-o, --output``: Output folder (default: ``output``)
 - ``-p, --protections``: Which protections to use
 - ``--protections-file``: Custom protections config file
@@ -179,10 +179,12 @@ You can use glob patterns (``*``) in base types and method patterns.
    {
      "Watermark": true,
      "OutputDirectoryName": "output",
-     "OutputFileName": null
+     "OutputFileName": null,
+     "Tips": true
    }
 
 - ``OutputFileName``: Custom output file name (e.g., ``"Protected.dll"``). When set, uses the exact name ignoring watermark suffix.
+- ``Tips``: Print short, helpful tips after obfuscation (how to exclude members, disable the watermark, use the ``libs`` directory, pick a preset). Set to ``false`` to silence them.
 
 Most settings have sensible defaults. You only need to change them if you want something different.
 
