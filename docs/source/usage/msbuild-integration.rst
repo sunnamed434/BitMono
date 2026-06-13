@@ -135,6 +135,26 @@ Multi-targeted projects
 Projects with multiple ``<TargetFrameworks>`` are fully supported: each target framework's output is
 obfuscated independently during its inner build.
 
+Other .NET languages (VB.NET, F#)
+---------------------------------
+
+BitMono works on the compiled IL, and the integration hooks MSBuild (not the C# compiler), so it
+works the same for **VB.NET** and **F#**. Add the exact same ``<PackageReference>`` to your
+``.vbproj`` / ``.fsproj`` and build in ``Release``:
+
+.. code-block:: xml
+
+   <!-- MyVbApp.vbproj -->
+   <ItemGroup>
+     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+       <PrivateAssets>all</PrivateAssets>
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+     </PackageReference>
+   </ItemGroup>
+
+The same ``protections.json`` / ``criticals.json`` / ``obfuscation.json`` files apply. Running the
+CLI directly (``BitMono.CLI -f MyVbApp.dll``) works identically too.
+
 Signing
 -------
 
