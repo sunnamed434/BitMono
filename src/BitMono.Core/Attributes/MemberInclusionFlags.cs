@@ -21,4 +21,10 @@ public enum MemberInclusionFlags
     /// Exclude members that are used in reflection from obfuscation (e.g., methods, fields, properties accessed via reflection).
     /// </summary>
     Reflection = 0x4,
+
+    /// <summary>
+    /// Exclude members referenced by compiled WPF XAML (BAML) from obfuscation, so renaming or
+    /// namespace-stripping doesn't leave the BAML pointing at names that no longer exist.
+    /// </summary>
+    Baml = 0x8,
 }

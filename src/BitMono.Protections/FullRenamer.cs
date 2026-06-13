@@ -1,6 +1,6 @@
 namespace BitMono.Protections;
 
-[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection | MemberInclusionFlags.Baml)]
 public class FullRenamer : Protection
 {
     private readonly Renamer _renamer;
@@ -38,6 +38,9 @@ public class FullRenamer : Protection
         // See https://github.com/sunnamed434/BitMono/issues/220.
         var memberReferences = CollectModuleMemberReferences(Context.Module);
 
+        // Note: types referenced by WPF BAML are kept out of Context.Parameters.Members by the
+        // MemberInclusionFlags.Baml gate on this protection (see BamlCriticalAnalyzer), so the loops
+        // below never see them.
         var membersList = Context.Parameters.Members.ToList();
         var allTypes = membersList.OfType<TypeDefinition>().ToList();
         var allMethods = membersList.OfType<MethodDefinition>().ToList();
