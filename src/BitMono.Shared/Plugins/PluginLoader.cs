@@ -62,7 +62,7 @@ public sealed class PluginLoader
                 // dependencies probe correctly and the AssemblyResolve fallback has somewhere to look.
                 var assembly = Assembly.LoadFrom(file);
                 loaded.Add(assembly);
-                _logger.Information("Loaded plugin: {0}", assembly.GetName().Name);
+                _logger.Information("Loaded plugin: {0} v{1}", assembly.GetName().Name, assembly.GetName().Version);
             }
             catch (BadImageFormatException)
             {
