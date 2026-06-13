@@ -34,6 +34,11 @@ public class Renamer
         return typeDefinition == null || (_nameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) && !typeDefinition.IsExplicitLayout && !typeDefinition.IsInReservedNamespace());
     }
 
+    public bool CanRename(TypeDefinition type)
+    {
+        return ShouldRenameType(type);
+    }
+
     /// <summary>
     /// Whether <paramref name="method"/> may be safely renamed according to the same
     /// safety gate that <see cref="Rename(IMetadataMember)"/> applies (critical-name and

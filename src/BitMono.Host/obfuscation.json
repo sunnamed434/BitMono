@@ -32,6 +32,10 @@
   // Set to true indicates whether enabled
   "Tips": true,
 
+  // For WPF apps: rename the type names that XAML/BAML references and rewrite the BAML to match
+  // (their members are always kept). Set false to instead leave XAML-referenced types untouched.
+  "WpfBamlRewrite": true,
+
   // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute or NoInlining bit
   // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,

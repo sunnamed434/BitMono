@@ -9,6 +9,7 @@ public class ObfuscationSettings
     public string OutputDirectoryName { get; set; }
     public bool NotifyProtections { get; set; }
     public bool Tips { get; set; } = true;
+    public bool WpfBamlRewrite { get; set; } = true;
     public bool NoInliningMethodObfuscationExclude { get; set; }
     public bool SerializableBitObfuscationExclude { get; set; }
     public bool ObfuscationAttributeObfuscationExclude { get; set; }

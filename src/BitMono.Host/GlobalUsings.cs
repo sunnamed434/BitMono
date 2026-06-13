@@ -2,6 +2,7 @@ global using BitMono.API;
 global using BitMono.API.Analyzing;
 global using BitMono.API.Protections;
 global using BitMono.API.Resolvers;
+global using BitMono.Core.Analyzing.Baml;
 global using BitMono.Core.Factories;
 global using BitMono.Core.Renaming;
 global using BitMono.Core.Resolvers;

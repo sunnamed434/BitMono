@@ -1,13 +1,17 @@
+using BitMono.Core.Analyzing.Baml;
+
 namespace BitMono.Protections;
 
 [DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.Model | MemberInclusionFlags.Reflection | MemberInclusionFlags.Baml)]
 public class FullRenamer : Protection
 {
     private readonly Renamer _renamer;
+    private readonly WpfBamlContextAccessor _bamlContextAccessor;
 
-    public FullRenamer(Renamer renamer, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
+    public FullRenamer(Renamer renamer, WpfBamlContextAccessor bamlContextAccessor, IBitMonoServiceProvider serviceProvider) : base(serviceProvider)
     {
         _renamer = renamer;
+        _bamlContextAccessor = bamlContextAccessor;
     }
 
     public override Task ExecuteAsync()
@@ -143,6 +147,10 @@ public class FullRenamer : Protection
         }
 
         SyncMemberReferenceNames(memberReferences);
+
+        // Rename the type names XAML references and update the BAML to match (their members are kept
+        // by the Baml exclusion). No-op unless WpfBamlRewrite is on. See issue #212.
+        _bamlContextAccessor.GetContext()?.ApplyRewrite(Context.Module, _renamer);
         return Task.CompletedTask;
     }
 

@@ -80,6 +80,7 @@ public class BitMonoModule : IModule
         container.Register<ProtectionParametersFactory>().AsSingleton();
         container.Register<RandomNext>(new RandomNext(RandomService.RandomNext)).AsSingleton();
         container.Register<Renamer>().AsSingleton();
+        container.Register<WpfBamlContextAccessor>().AsSingleton();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 

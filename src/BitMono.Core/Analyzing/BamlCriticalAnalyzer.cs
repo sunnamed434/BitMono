@@ -1,5 +1,4 @@
-﻿using BitMono.Core.Analyzing.Baml;
-using BitMono.Core.Services;
+using BitMono.Core.Analyzing.Baml;
 
 namespace BitMono.Core.Analyzing;
 
@@ -11,40 +10,22 @@ namespace BitMono.Core.Analyzing;
 /// </summary>
 public class BamlCriticalAnalyzer : ICriticalAnalyzer<IMetadataMember>
 {
-    private readonly IEngineContextAccessor _engineContextAccessor;
-    private ModuleDefinition? _module;
-    private HashSet<TypeDefinition>? _referencedTypes;
+    private readonly WpfBamlContextAccessor _bamlContextAccessor;
 
-    public BamlCriticalAnalyzer(IEngineContextAccessor engineContextAccessor)
+    public BamlCriticalAnalyzer(WpfBamlContextAccessor bamlContextAccessor)
     {
-        _engineContextAccessor = engineContextAccessor;
+        _bamlContextAccessor = bamlContextAccessor;
     }
 
     public bool NotCriticalToMakeChanges(IMetadataMember member)
     {
-        var module = _engineContextAccessor.Instance?.Module;
-        if (module == null)
-        {
-            return true;
-        }
-        var referencedTypes = GetReferencedTypes(module);
-        if (referencedTypes.Count == 0)
+        var context = _bamlContextAccessor.GetContext();
+        if (context == null || context.XamlTypes.Count == 0)
         {
             return true;
         }
         var declaringType = GetDeclaringType(member);
-        return declaringType == null || !referencedTypes.Contains(declaringType);
-    }
-
-    private HashSet<TypeDefinition> GetReferencedTypes(ModuleDefinition module)
-    {
-        // Computed once per module (BAML parsing is shared across protections and members).
-        if (!ReferenceEquals(_module, module) || _referencedTypes == null)
-        {
-            _module = module;
-            _referencedTypes = WpfBamlReferenceResolver.ResolveReferencedTypes(module);
-        }
-        return _referencedTypes;
+        return declaringType == null || !context.XamlTypes.Contains(declaringType);
     }
 
     private static TypeDefinition? GetDeclaringType(IMetadataMember member)
