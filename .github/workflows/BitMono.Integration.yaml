@@ -26,6 +26,7 @@ jobs:
     permissions:
       contents: read     # checkout
       packages: write    # dotnet nuget push -> nuget.pkg.github.com/sunnamed434
+      id-token: write   # OIDC for NuGet Trusted Publishing
 
     steps:
     - uses: actions/checkout@v6
@@ -56,6 +57,6 @@ jobs:
         project_path: src/BitMono.Integration
         target_framework: net8.0
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        nuget_key: ${{ secrets.NUGET_DEPLOY_KEY }}
+        nuget_user: ${{ secrets.NUGET_USER }}
         nuget_push: true
         use_runtime: false  # build-tools / dev package, no RID

@@ -19,8 +19,8 @@ inputs:
     description: 'Push to NuGet on release?'
     required: false
     default: false
-  nuget_key:
-    description: 'NuGet deploy key'
+  nuget_user:
+    description: 'nuget.org username (profile name) for Trusted Publishing via OIDC'
     required: false
   github_token:
     description: 'GitHub token'
@@ -103,9 +103,18 @@ runs:
         fi
       shell: bash
 
+    # Trusted Publishing (OIDC): exchange the GitHub token for a short-lived nuget.org API key,
+    # right before the push (the key expires in ~1h). Only on non-prerelease tags.
+    # Requires `id-token: write` on the calling workflow and a Trusted Publishing policy on nuget.org.
+    - name: NuGet login (OIDC -> temp key)
+      id: nuget-login
+      if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
+      uses: NuGet/login@v1
+      with:
+        user: ${{ inputs.nuget_user }}
+
     # Push to NuGet on each tag, but only if not a pre-release version (Release)
     - name: Push to NuGet (Release)
-      run: if ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}; then
-        dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ inputs.nuget_key }} --skip-duplicate --source https://api.nuget.org/v3/index.json;
-        fi
+      if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
+      run: dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
       shell: bash
