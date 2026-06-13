@@ -60,6 +60,7 @@ Table of Contents:
    :name: sec-developers
 
    developers/first-protection
+   developers/plugins
    developers/obfuscation-execution-order
    developers/which-base-protection-select
    developers/protection-runtime-moniker

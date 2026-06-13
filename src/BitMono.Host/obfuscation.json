@@ -24,6 +24,11 @@
   // Name of the output directory
   "OutputDirectoryName": "output",
 
+  // Directory scanned for drop-in plugins (custom protections). Drop a plugin DLL here (or in a
+  // subfolder with its dependencies) and BitMono loads it on start. Relative paths are resolved
+  // against BitMono's base directory; absolute paths are used as-is. See the Plugins docs.
+  "PluginsDirectoryName": "plugins",
+
   // Outputs information about protections (Enabled protections, disabled, deprecated, unknown, etc)
   // Set to true indicates whether enabled
   "NotifyProtections": true,

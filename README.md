@@ -84,6 +84,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * AntiDe4dot
 * AntiILdasm
 * and you can integrate existing/make own feature ;)
+* **Plugins** - drop your own protections in a `plugins` folder, no rebuild required ([guide](https://bitmono.readthedocs.io/en/latest/developers/plugins.html))
 
 ## Documentation
 

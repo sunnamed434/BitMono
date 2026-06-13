@@ -7,6 +7,10 @@ public class ObfuscationSettings
     public bool ForceObfuscation { get; set; }
     public string ReferencesDirectoryName { get; set; }
     public string OutputDirectoryName { get; set; }
+
+    // Directory scanned for drop-in plugin assemblies that contain custom protections. Relative paths
+    // are resolved against BitMono's base directory; absolute paths are used as-is. See #227.
+    public string PluginsDirectoryName { get; set; } = "plugins";
     public bool NotifyProtections { get; set; }
     public bool Tips { get; set; } = true;
     public bool WpfBamlRewrite { get; set; } = true;
