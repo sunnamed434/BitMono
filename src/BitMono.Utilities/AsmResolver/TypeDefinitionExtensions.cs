@@ -22,7 +22,7 @@ public static class TypeDefinitionExtensions
         while (current != null)
         {
             yield return current;
-            current = current.BaseType?.Resolve();
+            current = current.BaseType?.ResolveOrNull();
         }
     }
 }

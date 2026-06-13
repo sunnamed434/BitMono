@@ -51,8 +51,6 @@ public class BitMonoModule : IModule
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void Load(Container container)
     {
-        _configureContainer?.Invoke(container);
-
         var loggerConfiguration = new LoggerConfiguration
         {
             WriteToConsole = true,
@@ -80,15 +78,19 @@ public class BitMonoModule : IModule
         container.Register<IEngineContextAccessor, EngineContextAccessor>().AsSingleton();
         container.Register<ProtectionContextFactory>().AsSingleton();
         container.Register<ProtectionParametersFactory>().AsSingleton();
-        container.Register<RandomNext>(() => RandomService.RandomNext).AsSingleton();
+        container.Register<RandomNext>(new RandomNext(RandomService.RandomNext)).AsSingleton();
         container.Register<Renamer>().AsSingleton();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        container.RegisterAssemblyTypes(assemblies, typeof(IMemberResolver));
+        container.RegisterCollection<IMemberResolver>(assemblies);
 
         container.RegisterClosedTypesOf(assemblies, typeof(ICriticalAnalyzer<>));
 
         container.RegisterClosedTypesOf(assemblies, typeof(IAttributeResolver<>));
+
+        // Call configureContainer AFTER all core dependencies are registered
+        // This allows AddProtections to resolve protection dependencies correctly
+        _configureContainer?.Invoke(container);
     }
 }

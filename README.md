@@ -108,6 +108,12 @@ Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installa
 - **Git URL (Best for Development)**: `https://github.com/sunnamed434/BitMono.git#vX.Y.Z`
   - In Unity: `Window → Package Manager → + → Add package from git URL`
 
+**MSBuild Integration (NuGet):**
+Obfuscate automatically on every `Release` build by adding one package reference to your `.csproj` — no separate tool run:
+- `dotnet add package BitMono.Integration` (then set `<PrivateAssets>all</PrivateAssets>` on the reference) and build in `Release`.
+- Configure with the usual `protections.json` / `criticals.json` / `obfuscation.json` next to your `.csproj`.
+- See the [MSBuild integration guide](https://bitmono.readthedocs.io/en/latest/usage/msbuild-integration.html).
+
 **NuGet Package Users:**
 If you encounter dependency resolution issues when using BitMono as a NuGet package, see the [NuGet configuration guide](https://bitmono.readthedocs.io/en/latest/usage/nuget-configuration.html) in the documentation.
 
@@ -187,7 +193,7 @@ Credits
 [bitmono_nuget_packages]: https://www.nuget.org/profiles/BitMono
 [bitmono_nuget_shield]: https://img.shields.io/nuget/v/BitMono.Core.svg
 [autofac_repo]: https://github.com/autofac/Autofac
-[minioc_repo]: https://github.com/pjc0247/minioffice.ioc
+[minioc_repo]: https://github.com/microsoft/MinIoC
 [unityengine_mainpage]: https://unity.com
 [mono_mainpage]: https://www.mono-project.com
 

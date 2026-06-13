@@ -46,7 +46,7 @@ public class DotNetHook : Protection
                 {
                     continue;
                 }
-                var callingMethod = callingOperandMethod.Resolve();
+                var callingMethod = callingOperandMethod.ResolveOrNull();
                 if (callingMethod == null)
                 {
                     continue;

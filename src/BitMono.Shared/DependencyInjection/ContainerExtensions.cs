@@ -102,7 +102,7 @@ public static class ContainerExtensions
 
             foreach (var type in types)
             {
-                if (!type.IsClass || type.IsAbstract || !type.IsPublic)
+                if (!type.IsClass || type.IsAbstract || !type.IsPublic || type.IsGenericTypeDefinition)
                     continue;
 
                 if (filter != null && !filter(type))
@@ -149,7 +149,7 @@ public static class ContainerExtensions
 
             foreach (var type in types)
             {
-                if (!type.IsClass || type.IsAbstract || !type.IsPublic)
+                if (!type.IsClass || type.IsAbstract || !type.IsPublic || type.IsGenericTypeDefinition)
                     continue;
 
                 if (filter != null && !filter(type))
@@ -159,9 +159,17 @@ public static class ContainerExtensions
                 var implementedInterfaces = type.GetInterfaces()
                     .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == openGenericType);
 
+                var hasMatch = false;
                 foreach (var closedInterface in implementedInterfaces)
                 {
                     container.Register(closedInterface, type).AsSingleton();
+                    hasMatch = true;
+                }
+
+                // Also register the concrete type itself so it can be resolved directly
+                if (hasMatch && !container.IsRegistered(type))
+                {
+                    container.Register(type, type).AsSingleton();
                 }
             }
         }
@@ -198,7 +206,7 @@ public static class ContainerExtensions
 
             foreach (var type in types)
             {
-                if (!type.IsClass || type.IsAbstract || !type.IsPublic)
+                if (!type.IsClass || type.IsAbstract || !type.IsPublic || type.IsGenericTypeDefinition)
                     continue;
 
                 if (filter != null && !filter(type))

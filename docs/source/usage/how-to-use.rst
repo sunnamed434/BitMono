@@ -40,6 +40,7 @@ Available options:
 - ``--criticals-file``: Custom criticals config file
 - ``--logging-file``: Custom logging config file
 - ``--obfuscation-file``: Custom obfuscation config file
+- ``-n, --output-name``: Custom output file name (default: same as input)
 - ``--no-watermark``: Turn off watermarking
 - ``--strong-name-key``: Path to strong name key (.snk) file for assembly signing
 
@@ -177,8 +178,11 @@ You can use glob patterns (``*``) in base types and method patterns.
 
    {
      "Watermark": true,
-     "OutputDirectoryName": "output"
+     "OutputDirectoryName": "output",
+     "OutputFileName": null
    }
+
+- ``OutputFileName``: Custom output file name (e.g., ``"Protected.dll"``). When set, uses the exact name ignoring watermark suffix.
 
 Most settings have sensible defaults. You only need to change them if you want something different.
 
@@ -268,6 +272,24 @@ Just build your project normally:
 3. Your final build contains protected code
 
 That's it! No extra steps needed.
+
+MSBuild Integration (NuGet)
+---------------------------
+
+Obfuscate your project automatically on every ``Release`` build by adding a single NuGet package
+reference — no separate tool run. Install ``BitMono.Integration`` as a development dependency:
+
+.. code-block:: xml
+
+   <ItemGroup>
+     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+       <PrivateAssets>all</PrivateAssets>
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+     </PackageReference>
+   </ItemGroup>
+
+Configure it with the same ``protections.json`` / ``criticals.json`` / ``obfuscation.json`` files placed
+next to your ``.csproj``. See the dedicated :doc:`msbuild-integration` guide for full details.
 
 Troubleshooting
 --------------

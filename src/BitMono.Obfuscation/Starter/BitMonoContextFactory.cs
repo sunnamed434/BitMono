@@ -23,7 +23,8 @@ public class BitMonoContextFactory
             OutputDirectoryName = outputDirectoryName,
             ReferencesData = referencesData,
             Watermark = _obfuscationSettings.Watermark,
-            FileName = fileName
+            FileName = fileName,
+            OutputFileName = _obfuscationSettings.OutputFileName
         };
     }
 }

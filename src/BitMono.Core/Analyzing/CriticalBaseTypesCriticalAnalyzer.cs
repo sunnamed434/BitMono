@@ -69,7 +69,7 @@ public class CriticalBaseTypesCriticalAnalyzer : ICriticalAnalyzer<TypeDefinitio
         {
             yield return current.FullName;
             ITypeDefOrRef? baseType = current.BaseType;
-            current = baseType?.Resolve();
+            current = baseType?.ResolveOrNull();
             if (current == null && baseType != null)
             {
                 //Type is in an unresolved dependency assembly, stop the search but yield the type name

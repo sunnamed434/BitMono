@@ -35,6 +35,15 @@ internal class OptionsObfuscationNeedsFactory
             {
                 obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(KnownConfigNames.Obfuscation);
             }
+            else
+            {
+                // Fallback to application base directory
+                var baseObfuscationFile = Path.Combine(AppContext.BaseDirectory, KnownConfigNames.Obfuscation);
+                if (File.Exists(baseObfuscationFile))
+                {
+                    obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(baseObfuscationFile);
+                }
+            }
 
             if (obfuscationSettings != null && options.NoWatermark)
             {
@@ -44,6 +53,11 @@ internal class OptionsObfuscationNeedsFactory
             if (obfuscationSettings != null)
             {
                 obfuscationSettings.StrongNameKeyFile = options.StrongNameKey;
+            }
+
+            if (obfuscationSettings != null && !string.IsNullOrEmpty(options.OutputName))
+            {
+                obfuscationSettings.OutputFileName = options.OutputName;
             }
         }
         catch (Exception ex)
@@ -60,6 +74,7 @@ internal class OptionsObfuscationNeedsFactory
         var fileBaseDirectory = Path.GetDirectoryName(filePath);
 
         ProtectionSettings? protectionSettings = null;
+        string? protectionsFile = options.ProtectionsFile;
         if (options.Protections.Any())
         {
             protectionSettings = new ProtectionSettings
@@ -70,6 +85,27 @@ internal class OptionsObfuscationNeedsFactory
                     Enabled = true
                 }).ToList()
             };
+        }
+        else
+        {
+            // Try to find protections.json for fallback
+            if (protectionsFile != null && File.Exists(protectionsFile))
+            {
+                // Use specified file
+            }
+            else if (File.Exists(KnownConfigNames.Protections))
+            {
+                protectionsFile = KnownConfigNames.Protections;
+            }
+            else
+            {
+                // Fallback to application base directory
+                var baseProtectionsFile = Path.Combine(AppContext.BaseDirectory, KnownConfigNames.Protections);
+                if (File.Exists(baseProtectionsFile))
+                {
+                    protectionsFile = baseProtectionsFile;
+                }
+            }
         }
 
         ObfuscationNeeds needs;
@@ -87,7 +123,7 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile,
+                ProtectionsFile = protectionsFile,
                 ObfuscationSettings = obfuscationSettings
             };
         }
@@ -109,7 +145,7 @@ internal class OptionsObfuscationNeedsFactory
                 CriticalsFile = options.CriticalsFile,
                 LoggingFile = options.LoggingFile,
                 ObfuscationFile = options.ObfuscationFile,
-                ProtectionsFile = options.ProtectionsFile,
+                ProtectionsFile = protectionsFile,
                 ObfuscationSettings = obfuscationSettings
             };
         }

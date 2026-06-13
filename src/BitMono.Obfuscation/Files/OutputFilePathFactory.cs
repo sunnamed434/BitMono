@@ -6,6 +6,11 @@ public static class OutputFilePathFactory
 
     public static string Create(BitMonoContext context)
     {
+        if (!string.IsNullOrEmpty(context.OutputFileName))
+        {
+            return Path.Combine(context.OutputDirectoryName, context.OutputFileName);
+        }
+
         var stringBuilder = new StringBuilder();
         stringBuilder.Append(Path.GetFileNameWithoutExtension(context.FileName));
         if (context.Watermark)
