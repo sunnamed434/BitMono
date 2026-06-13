@@ -7,7 +7,7 @@ Do Not Resolve Members
     Be careful, because ``Context.Module`` (ModuleDefinition) doesn't affected by ``DoNotResolveAttribute``.
 
 
-For comfort BitMono provides an API which able to do not pass specfic members inside of the protection for easier understanding and abstraction let's call ``members`` as - types/methods/fields/properties, etc.
+For comfort BitMono provides an API which able to do not pass specific members inside of the protection for easier understanding and abstraction let's call ``members`` as - types/methods/fields/properties, etc.
 
 
 .. code-block:: csharp
@@ -51,7 +51,7 @@ THIS IS TOTALLY BAD AND WRONG! Sorting doesn't affects to the actual Module.
 
 .. code-block:: csharp
     
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
         foreach (var type in Context.Module.GetAllTypes())
         {
@@ -66,16 +66,16 @@ Instead highly recommend to use this.
 
 .. code-block:: csharp
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var type in parameters.Members.OfType<TypeDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
     
         }
     }
 
 
-This is also was wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specificly what you need, for example.
+This one is also wrong because if you will try to get access to the ``type.Methods``, etc, methods are not sorted, use specifically what you need, for example.
 
 
 Need access to the types and methods? Then do this.
@@ -83,27 +83,27 @@ Need access to the types and methods? Then do this.
 
 .. code-block:: csharp
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var type in parameters.Members.OfType<TypeDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<TypeDefinition>())
         {
     
         }
-        foreach (var type in parameters.Members.OfType<MethodDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<MethodDefinition>())
         {
     
         }
     }
 
 
-Need access to the methods? Then just iterrate through the methods.
+Need access to the methods? Then just iterate through the methods.
 
 
 .. code-block:: csharp
 
-    public override Task ExecuteAsync(ProtectionParameters parameters)
+    public override Task ExecuteAsync()
     {
-        foreach (var type in parameters.Members.OfType<MethodDefinition>())
+        foreach (var type in Context.Parameters.Members.OfType<MethodDefinition>())
         {
     
         }

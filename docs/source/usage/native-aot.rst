@@ -1,62 +1,59 @@
 Native AOT
 ==========
 
-Short answer: **yes, you can obfuscate a Native AOT app — but the obfuscation must happen on the
-managed IL before the AOT compiler runs.** BitMono is an IL obfuscator, so it has to do its work
-*before* ``ilc`` (the Native AOT compiler) turns your assembly into native code.
+Yes, you can obfuscate a Native AOT app, but only if the obfuscation happens on the managed IL before
+the AOT compiler runs. BitMono is an IL obfuscator, so it has to do its work *before* ``ilc`` (the
+Native AOT compiler) turns your assembly into native code.
 
 .. warning::
 
-   Native AOT + IL obfuscation is **not officially supported by Microsoft**. The .NET team has
-   stated there are *"no supported hooks that would allow third party code to modify inputs to
-   ILC"* (`dotnet/runtime#121522 <https://github.com/dotnet/runtime/issues/121522>`_). It works in
-   practice, but the exact MSBuild wiring can change between SDK versions (a known symptom on some
-   .NET 9 SDKs is ``error: No entrypoint module`` during ``ilc``). Treat this as a community
-   integration: pin your SDK and **test the published native binary**.
+   Native AOT plus IL obfuscation is not officially supported by Microsoft. The .NET team has said
+   there are no supported hooks for third-party code to modify the inputs to ``ilc``
+   (`dotnet/runtime#121522 <https://github.com/dotnet/runtime/issues/121522>`_). It works in practice,
+   but the exact MSBuild wiring can change between SDK versions (a known symptom on some .NET 9 SDKs is
+   ``error: No entrypoint module`` during ``ilc``). Treat it as a community integration: pin your SDK
+   and test the published native binary.
 
-How Native AOT changes the picture
-----------------------------------
+What changes with AOT
+---------------------
 
-A normal ``dotnet publish`` produces a managed ``.dll`` that BitMono rewrites directly. With
-``PublishAot``, ``dotnet publish`` instead:
+A normal ``dotnet publish`` leaves a managed ``.dll`` in the output that BitMono rewrites directly.
+With ``PublishAot``, ``dotnet publish`` instead:
 
 1. compiles your C# to a managed IL assembly in ``obj/<config>/<tfm>/<rid>/`` (the *intermediate
    assembly*), then
-2. runs ``ilc`` to compile that IL **and its dependencies** into a single native executable.
+2. runs ``ilc`` to turn that IL and its dependencies into one native executable.
 
-There is no managed assembly left in the output to obfuscate. So BitMono must run between steps 1
-and 2 — on the intermediate assembly, before ``ilc`` reads it.
+There's no managed assembly left in the output to touch. So BitMono has to run between those two steps,
+on the intermediate assembly, before ``ilc`` reads it.
 
-.. note::
+Keep in mind the final binary is native code, so renaming buys you less than usual (there's no IL left
+for a decompiler), and the protections that rely on IL/metadata or runtime tricks (``AntiDecompiler``,
+``BitMono``, ``DotNetHook``, ``CallToCalli``, ...) are pointless or even harmful under AOT. For AOT
+stick to lightweight IL-level transforms like ``StringsEncryption`` and ``FullRenamer``, and if you want
+native-level protection put a native protector on top.
 
-   Because the final binary is native code, **renaming buys less than usual** (there is no IL left
-   for a decompiler), and several BitMono protections that exploit IL/metadata or runtime tricks
-   (e.g. ``AntiDecompiler``, ``BitMono``, ``DotNetHook``, ``CallToCalli``) are meaningless or
-   harmful under AOT. For AOT prefer lightweight, IL-level transforms (e.g. ``StringsEncryption``,
-   ``FullRenamer``) and, for native-level protection, a native protector on top.
-
-Recommended: the MSBuild NuGet integration
+The easy way: the MSBuild NuGet integration
 -------------------------------------------
 
-:doc:`BitMono.Integration <msbuild-integration>` obfuscates the **intermediate** assembly right
-after compilation (``AfterCompile``), which is *before* ``ilc`` consumes it. So for most projects
-the AOT case needs no extra wiring — add the package and publish:
+:doc:`BitMono.Integration <msbuild-integration>` obfuscates the intermediate assembly right after
+compilation (``AfterCompile``), which is before ``ilc`` consumes it. So for most projects AOT needs no
+extra wiring, just add the package and publish:
 
 .. code-block:: console
 
    dotnet publish -c Release -r win-x64 /p:PublishAot=true
 
-If the obfuscated app starts and runs, you are done. If ``ilc`` fails with ``No entrypoint
-module`` (or a similar input error), you have hit the unsupported-hook limitation above — see the
-caveats and try pinning to an SDK where it is known to work for you (it has historically worked on
-.NET 8).
+If the app starts and runs, you're done. If ``ilc`` fails with ``No entrypoint module`` (or a similar
+input error), you hit the unsupported-hook limitation above, try pinning to an SDK where it's known to
+work for you (it has historically worked on .NET 8).
 
-Manual target (running the CLI yourself)
-----------------------------------------
+Doing it by hand
+----------------
 
-If you don't use the NuGet package, hook a target that runs **before** ``IlcCompile`` and
-overwrite the intermediate assembly **in place** (do not move/rename it — keeping the same path is
-what avoids desyncing the ``ilc`` input list):
+Not using the NuGet package? Hook a target that runs before ``IlcCompile`` and overwrite the
+intermediate assembly in place. Don't move or rename it, keeping the same path is what stops the
+``ilc`` input list from desyncing:
 
 .. code-block:: xml
 
@@ -69,27 +66,26 @@ what avoids desyncing the ``ilc`` input list):
            OverwriteReadOnlyFiles="true" />
    </Target>
 
-Notes and known issues
-----------------------
+Things to watch out for
+-----------------------
 
-- **Keep renaming AOT-safe.** Native AOT relies on metadata for some reflection and for its own
-  bookkeeping. Use ``criticals.json`` / ``[Obfuscation(Exclude = true)]`` to exclude anything read
-  by reflection, and keep ``ReflectionMembersObfuscationExclude`` enabled.
-- **Generic members.** A regression where members accessed through a generic instantiation (e.g.
-  ``Foo<int>().Bar()``) were renamed but their references were not — which crashed AOT and JIT apps
-  alike — is fixed (FullRenamer now rewrites those references). Use a current BitMono build.
-- **"No entrypoint module" on ``ilc``** — this is the unsupported-hook limitation
+- Keep renaming AOT-safe. Native AOT leans on metadata for some reflection and its own bookkeeping, so
+  exclude anything read by reflection with ``criticals.json`` / ``[Obfuscation(Exclude = true)]`` and
+  keep ``ReflectionMembersObfuscationExclude`` on.
+- Members reached through a generic instantiation (e.g. ``Foo<int>().Bar()``) used to get renamed
+  without their references being updated, which crashed AOT and JIT apps alike. That's fixed now,
+  FullRenamer rewrites those references, just use a current BitMono build.
+- ``No entrypoint module`` on ``ilc`` is the unsupported-hook limitation
   (`dotnet/runtime#121522 <https://github.com/dotnet/runtime/issues/121522>`_), not a bug in your
-  obfuscation config. It is SDK-version dependent.
+  config. It depends on the SDK version.
 
 .NET MAUI
 ---------
 
-- **Android** works with the normal flow — the code stays managed IL, so add the
+- Android works with the normal flow, the code stays managed IL, so add the
   :doc:`BitMono.Integration <msbuild-integration>` package (or run the CLI) and build as usual.
-- **iOS** is AOT-compiled (iOS doesn't allow JIT), so the app head becomes a native arm64 image that
-  BitMono can't read — you'll see ``unsupported PE image architecture Arm64``. The way to protect an
-  iOS app is to obfuscate the IL *before* AOT: move the code you want to protect into **class
-  libraries** and obfuscate those. They stay managed IL when BitMono rewrites them and are
-  AOT-compiled afterwards, so the obfuscation carries into the native output. Don't obfuscate the iOS
-  app head itself.
+- iOS is AOT-compiled (no JIT allowed), so the app head becomes a native arm64 image BitMono can't read,
+  you'll see ``unsupported PE image architecture Arm64``. To protect an iOS app, obfuscate the IL before
+  AOT: move the code you care about into class libraries and obfuscate those. They stay managed IL when
+  BitMono rewrites them and get AOT-compiled afterwards, so the protection carries into the native
+  output. Don't try to obfuscate the iOS app head itself.

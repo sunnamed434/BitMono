@@ -54,7 +54,7 @@ So, if you will add more protection to the file, I think it would seem like tota
 
 ## Documentation
 
-Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
+The **[docs][bitmono_docs]** cover every protection, configuration option, and more.
 
 ## How your app will look since BitMono obfuscation - just in a few words
 * Looks like C++ application but is an actual C# application;
@@ -78,7 +78,7 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * AntiDebugBreakpoints
 * AntiDecompiler
 * BitDecompiler (fixed version of BitDotNet for newer Unity Versions)
-* BitDateTimeStamp
+* BitTimeDateStamp
 * BitMono
 * BillionNops
 * AntiDe4dot
@@ -86,9 +86,9 @@ Read the **[docs][bitmono_docs]** to read protection, functionality, and more.
 * and you can integrate existing/make own feature ;)
 * **Plugins** - drop your own protections in a `plugins` folder, no rebuild required ([guide](https://bitmono.readthedocs.io/en/latest/developers/plugins.html))
 
-## Documentation
+## Getting Started
 
-Read the **[docs][bitmono_docs]** for comprehensive usage instructions, installation guides, and detailed documentation.
+Full usage and installation guides live in the **[docs][bitmono_docs]**.
 
 **Quick Start:**
 1. Download from [releases][bitmono_releases]

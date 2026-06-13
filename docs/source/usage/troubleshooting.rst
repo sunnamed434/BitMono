@@ -1,62 +1,54 @@
 Troubleshooting
 ===============
 
-Common Issues and Solutions
----------------------------
+A few things that commonly go wrong, and how to fix them. If none of this helps, open an issue on
+`GitHub <https://github.com/sunnamed434/BitMono/issues>`_ or ping us on Discord.
 
-Access Denied
-~~~~~~~~~~~~~
+"Access Denied" when opening the output folder
+----------------------------------------------
 
-**Problem**: You get an "Access Denied" error when BitMono tries to open the output directory.
+When BitMono is done it tries to open the output directory in your file explorer. If that throws an
+"Access Denied", just turn it off, set ``OpenFileDestinationInFileExplorer`` to ``false`` in
+``obfuscation.json``.
 
-**Solution**: Set `OpenFileDestinationInFileExplorer` to `false` in `obfuscation.json`.
+Missing dependencies
+--------------------
 
-Missing Dependencies
-~~~~~~~~~~~~~~~~~~~~
+BitMono needs your app's dependencies to understand the code. If it can't find them:
 
-**Problem**: BitMono can't find required dependencies.
+- Put every ``.dll`` your app references in the ``libs`` folder, next to the file you're obfuscating.
+- Make sure the files are actually there and not locked by another process.
+- If some dependency is genuinely optional and you can't get it, set ``FailOnNoRequiredDependency`` to
+  ``false`` in ``obfuscation.json`` to continue anyway. Be careful though, skipping a real dependency
+  can break the obfuscated app.
 
-**Solution**: 
-- Make sure all required .dll files are in the ``libs`` directory
-- Check that the dependency files exist and are accessible
-- Try setting `FailOnNoRequiredDependency` to `false` in `obfuscation.json` if the dependencies are optional
+Framework mismatch
+------------------
 
-Framework Mismatch
-~~~~~~~~~~~~~~~~~~
+Use the BitMono build that matches your app's framework, otherwise the obfuscated file won't run:
 
-**Problem**: You get compatibility warnings or errors.
+- .NET app → .NET build of BitMono
+- .NET Framework app → .NET Framework build
+- Unity/Mono → .NET Framework build
 
-**Solution**: Use the BitMono version that matches your target framework:
+More on this in :doc:`../obfuscationissues/compatibility`.
 
-- .NET 8 applications → Use .NET 8 version of BitMono
-- .NET Framework applications → Use .NET Framework version of BitMono
-- Unity/Mono applications → Use .NET Framework version of BitMono
+No protections enabled
+----------------------
 
-No Protections Enabled
-~~~~~~~~~~~~~~~~~~~~~~
+If BitMono says nothing is enabled, you didn't turn anything on. Enable at least one protection in
+``protections.json`` (set ``Enabled`` to ``true``), or pass them on the command line with
+``-p Protection1,Protection2``, or pick a preset with ``--preset``.
 
-**Problem**: BitMono says no protections are enabled.
+Can't write to the output directory
+-----------------------------------
 
-**Solution**: 
-- Enable at least one protection in `protections.json` by setting `Enabled` to `true`
-- Or specify protections via command line: `-p ProtectionName1,ProtectionName2`
+Make sure BitMono can actually write there: the path exists, it's not read-only, and nothing else has
+the file open. A normal user folder is usually fine, you rarely need to run as administrator.
 
-Permission Errors
-~~~~~~~~~~~~~~~~~
+Still stuck?
+------------
 
-**Problem**: BitMono can't write to the output directory.
-
-**Solution**: 
-- Make sure BitMono has write permissions to the output directory
-- Try running as administrator if needed
-- Check that the output path is valid and accessible
-
-Getting More Help
------------------
-
-If you're still having issues:
-
-- Check the `obfuscation.json` and `protections.json` configuration files
-- Look at the console output for specific error messages
-- Try running BitMono in interactive mode to see detailed prompts
-- Visit the `GitHub Issues <https://github.com/sunnamed434/BitMono/issues>`_ page 
+- Read the console output, BitMono usually tells you exactly what went wrong.
+- Try the interactive mode, it shows more detailed prompts.
+- Open an issue `here <https://github.com/sunnamed434/BitMono/issues>`_ and bring the log with you.

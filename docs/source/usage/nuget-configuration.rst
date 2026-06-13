@@ -1,17 +1,12 @@
 NuGet Configuration
 ===================
 
-This guide explains how to configure NuGet when using BitMono as a NuGet package dependency.
+You only need this if you hit dependency errors while using BitMono as a NuGet package. BitMono
+sometimes pulls a nightly build of AsmResolver (when we need a critical fix that isn't on nuget.org
+yet), and those live on Washi's feed, not the default one. If NuGet can't resolve AsmResolver, point it
+at that feed too.
 
-When Configuration is Needed
-----------------------------
-
-You need to configure NuGet if you encounter dependency resolution errors when trying to use BitMono packages. This happens when BitMono may use nightly versions of AsmResolver (which we may use when needed for critical fixes) that are only available in a custom feed, not on the default nuget.org.
-
-Configuration Steps
--------------------
-
-1. **Create NuGet.config in your project root:**
+Add a ``NuGet.config`` to your project root:
 
 .. code-block:: xml
 
@@ -23,31 +18,23 @@ Configuration Steps
      </packageSources>
    </configuration>
 
-2. **Restore packages:**
+Then restore:
 
 .. code-block:: bash
 
    dotnet restore
 
-That's it! Your project should now be able to resolve AsmResolver dependencies.
+That's it, AsmResolver should resolve now.
 
-Available BitMono Packages
---------------------------
+The packages
+------------
 
-**Core Packages:**
-
-- `BitMono.API <https://www.nuget.org/packages/BitMono.API/>`_ - Core interfaces and abstractions
-- `BitMono.Core <https://www.nuget.org/packages/BitMono.Core/>`_ - Main obfuscation engine
-- `BitMono.Protections <https://www.nuget.org/packages/BitMono.Protections/>`_ - Protection implementations
-- `BitMono.Shared <https://www.nuget.org/packages/BitMono.Shared/>`_ - Shared utilities and models
-
-**Host & Utilities:**
-
-- `BitMono.Host <https://www.nuget.org/packages/BitMono.Host/>`_ - Application host framework
-- `BitMono.Utilities <https://www.nuget.org/packages/BitMono.Utilities/>`_ - Helper functions
-- `BitMono.Obfuscation <https://www.nuget.org/packages/BitMono.Obfuscation/>`_ - High-level obfuscation orchestrator
-- `BitMono.Runtime <https://www.nuget.org/packages/BitMono.Runtime/>`_ - Runtime components
-
-**Tools:**
-
-- `BitMono.GlobalTool <https://www.nuget.org/packages/BitMono.GlobalTool/>`_ - .NET Global Tool
+- `BitMono.API <https://www.nuget.org/packages/BitMono.API/>`_ - core interfaces and abstractions
+- `BitMono.Core <https://www.nuget.org/packages/BitMono.Core/>`_ - the obfuscation engine
+- `BitMono.Protections <https://www.nuget.org/packages/BitMono.Protections/>`_ - the protection implementations
+- `BitMono.Shared <https://www.nuget.org/packages/BitMono.Shared/>`_ - shared utilities and models
+- `BitMono.Host <https://www.nuget.org/packages/BitMono.Host/>`_ - application host framework
+- `BitMono.Utilities <https://www.nuget.org/packages/BitMono.Utilities/>`_ - helper functions
+- `BitMono.Obfuscation <https://www.nuget.org/packages/BitMono.Obfuscation/>`_ - high-level obfuscation orchestrator
+- `BitMono.Runtime <https://www.nuget.org/packages/BitMono.Runtime/>`_ - runtime components for obfuscated assemblies
+- `BitMono.GlobalTool <https://www.nuget.org/packages/BitMono.GlobalTool/>`_ - the .NET global tool

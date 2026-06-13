@@ -14,4 +14,4 @@ The protection type is `Protection`.
 
 .. warning::
 
-    This protection is only compatible with .NET Framework and .NET Core, and doens't work with Mono.
+    This protection is only compatible with .NET Framework and .NET Core, and doesn't work with Mono.

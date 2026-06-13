@@ -3,11 +3,11 @@
 # -- Project information
 
 project = 'BitMono'
-copyright = '2022-2025, BitMono'
+copyright = '2022-2026, BitMono'
 author = 'sunnamed434'
 
-release = '0.1'
-version = '0.1.0'
+version = '0.40'
+release = '0.40.1'
 
 # -- General configuration
 
