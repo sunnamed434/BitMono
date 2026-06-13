@@ -46,6 +46,12 @@ public class DotNetHook : Protection
                 {
                     continue;
                 }
+                // newobj allocates and invokes a constructor; it cannot be redirected
+                // to a static stub, so leave object construction untouched.
+                if (instruction.OpCode.Code == CilCode.Newobj)
+                {
+                    continue;
+                }
                 var callingMethod = callingOperandMethod.ResolveOrNull();
                 if (callingMethod == null)
                 {
@@ -92,9 +98,20 @@ public class DotNetHook : Protection
                 bool prependThis = originalSignature.HasThis;
                 if (prependThis)
                 {
+                    var declaringType = callingMethod.DeclaringType!;
+                    // The declaring type becomes the first ("this") parameter of the
+                    // static stub. Skip cases we cannot faithfully represent here: an
+                    // open generic declaring type (e.g. List<T>) has no concrete
+                    // signature, and a value type takes a managed-pointer "this" (&T)
+                    // that also interacts with constrained. call prefixes. Both are
+                    // conservatively skipped rather than emitting broken metadata.
+                    if (declaringType.GenericParameters.Count > 0 || declaringType.IsValueType)
+                    {
+                        continue;
+                    }
                     var paramTypes = new List<TypeSignature>(originalSignature.ParameterTypes.Count + 1)
                     {
-                        callingMethod.DeclaringType!.ToTypeSignature()
+                        declaringType.ToTypeSignature()
                     };
                     paramTypes.AddRange(originalSignature.ParameterTypes);
                     dummySignature = MethodSignature.CreateStatic(
@@ -163,6 +180,13 @@ public class DotNetHook : Protection
                 moduleType.Methods.Add(initializationMethod);
 
                 instruction.Operand = dummyMethod;
+                // The stub is static; a callvirt at the original instance call site would
+                // be invalid IL, so normalize it to a plain call. The hook already binds to
+                // a single resolved target, so dispatch semantics are unchanged.
+                if (instruction.OpCode.Code == CilCode.Callvirt)
+                {
+                    instruction.OpCode = CilOpCodes.Call;
+                }
                 var randomIndex = _randomNext(0, moduleCctor.CilMethodBody!.Instructions.CountWithoutRet());
                 moduleCctor.CilMethodBody.Instructions.Insert(randomIndex,
                     new CilInstruction(CilOpCodes.Call, initializationMethod));
