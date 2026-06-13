@@ -34,4 +34,15 @@ public static class MemberResolutionExtensions
             ? definition as MethodDefinition
             : null;
     }
+
+    public static FieldDefinition? ResolveOrNull(this IFieldDescriptor? field)
+    {
+        if (field == null)
+        {
+            return null;
+        }
+        return field.Resolve(field.ContextModule?.RuntimeContext, out var definition) == ResolutionStatus.Success
+            ? definition as FieldDefinition
+            : null;
+    }
 }

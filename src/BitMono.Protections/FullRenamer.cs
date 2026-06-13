@@ -30,6 +30,14 @@ public class FullRenamer : Protection
         //     contracts are never broken.
         // -----------------------------------------------------------------
 
+        // Member access through a generic instantiation (e.g. Template<int>.Do() or .Field) is
+        // encoded as a MemberReference whose Name is a standalone metadata string. Renaming the
+        // underlying MethodDefinition/FieldDefinition does NOT update it, so the call/field access
+        // breaks at runtime. Record reference -> definition links now, while the names still match
+        // and the references resolve, then re-sync the reference names once renaming is done.
+        // See https://github.com/sunnamed434/BitMono/issues/220.
+        var memberReferences = CollectModuleMemberReferences(Context.Module);
+
         var membersList = Context.Parameters.Members.ToList();
         var allTypes = membersList.OfType<TypeDefinition>().ToList();
         var allMethods = membersList.OfType<MethodDefinition>().ToList();
@@ -138,7 +146,72 @@ public class FullRenamer : Protection
             _renamer.Rename(field);
         }
 
+        SyncMemberReferenceNames(memberReferences);
         return Task.CompletedTask;
+    }
+
+    // Maps every MemberReference used in the module's method bodies to the in-module definition it
+    // points to. Resolution happens before any renaming, while reference and definition names
+    // still match. References whose definition lives in another module (e.g. framework calls) are
+    // ignored - we never rename those, so their names must stay intact.
+    private static Dictionary<MemberReference, IMemberDefinition> CollectModuleMemberReferences(ModuleDefinition module)
+    {
+        var moduleTypes = new HashSet<TypeDefinition>(module.GetAllTypes());
+        var references = new Dictionary<MemberReference, IMemberDefinition>();
+        foreach (var type in moduleTypes)
+        {
+            foreach (var method in type.Methods)
+            {
+                if (method.CilMethodBody is not { } body)
+                {
+                    continue;
+                }
+                foreach (var instruction in body.Instructions)
+                {
+                    var reference = instruction.Operand switch
+                    {
+                        MemberReference memberReference => memberReference,
+                        MethodSpecification { Method: MemberReference memberReference } => memberReference,
+                        _ => null
+                    };
+                    if (reference == null || references.ContainsKey(reference))
+                    {
+                        continue;
+                    }
+                    if (ResolveModuleMember(moduleTypes, reference) is { } definition)
+                    {
+                        references[reference] = definition;
+                    }
+                }
+            }
+        }
+        return references;
+    }
+
+    private static IMemberDefinition? ResolveModuleMember(HashSet<TypeDefinition> moduleTypes, MemberReference reference)
+    {
+        // MemberReference is both an IMethodDescriptor and an IFieldDescriptor, so cast to the
+        // matching one to pick the right ResolveOrNull overload.
+        if (reference.IsMethod)
+        {
+            var method = ((IMethodDescriptor)reference).ResolveOrNull();
+            return method?.DeclaringType != null && moduleTypes.Contains(method.DeclaringType) ? method : null;
+        }
+        if (reference.IsField)
+        {
+            var field = ((IFieldDescriptor)reference).ResolveOrNull();
+            return field?.DeclaringType != null && moduleTypes.Contains(field.DeclaringType) ? field : null;
+        }
+        return null;
+    }
+
+    // Re-points each recorded reference at its definition's (possibly renamed) name.
+    private static void SyncMemberReferenceNames(Dictionary<MemberReference, IMemberDefinition> references)
+    {
+        foreach (var pair in references)
+        {
+            pair.Key.Name = pair.Value.Name;
+        }
     }
 
     private void RenameParametersOf(MethodDefinition method)
