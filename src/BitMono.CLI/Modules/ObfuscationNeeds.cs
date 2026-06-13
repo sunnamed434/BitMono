@@ -6,6 +6,7 @@ internal class ObfuscationNeeds
     public string FileName { get; set; }
     public string FileBaseDirectory { get; set; }
     public string ReferencesDirectoryName { get; set; }
+    public List<string> ReferencesDirectoryNames { get; set; } = new();
     public string OutputPath { get; set; }
     public ObfuscationNeedsWay Way { get; set; }
     public List<string> Protections { get; set; }

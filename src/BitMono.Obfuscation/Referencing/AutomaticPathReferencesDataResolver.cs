@@ -6,8 +6,12 @@ public class AutomaticPathReferencesDataResolver : IReferencesDataResolver
     private readonly CosturaReferencesDataResolver _costuraReferencesDataResolver;
 
     public AutomaticPathReferencesDataResolver(string referencesDirectoryPath)
+        : this(new[] { referencesDirectoryPath })
     {
-        _referencesDataResolver = new ReferencesDataResolver(referencesDirectoryPath);
+    }
+    public AutomaticPathReferencesDataResolver(IEnumerable<string> referencesDirectoryPaths)
+    {
+        _referencesDataResolver = new ReferencesDataResolver(referencesDirectoryPaths);
         _costuraReferencesDataResolver = new CosturaReferencesDataResolver();
     }
 

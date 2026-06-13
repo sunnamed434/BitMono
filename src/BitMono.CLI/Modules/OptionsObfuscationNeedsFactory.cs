@@ -113,6 +113,16 @@ internal class OptionsObfuscationNeedsFactory
             }
         }
 
+        // Multiple dependency directories may be passed via -l/--libraries; fall back to the
+        // configured (or default "libs") directory when none are given.
+        var librariesPaths = options.Libraries
+            .Where(x => string.IsNullOrWhiteSpace(x) == false)
+            .Select(PathFormatterUtility.Format)
+            .ToList();
+        var referencesDirectories = librariesPaths.Count > 0
+            ? librariesPaths
+            : new List<string> { Path.Combine(fileBaseDirectory, obfuscationSettings?.ReferencesDirectoryName ?? "libs") };
+
         ObfuscationNeeds needs;
         if (obfuscationSettings?.ForceObfuscation == true)
         {
@@ -121,6 +131,7 @@ internal class OptionsObfuscationNeedsFactory
                 FileName = filePath,
                 FileBaseDirectory = fileBaseDirectory,
                 ReferencesDirectoryName = fileBaseDirectory,
+                ReferencesDirectoryNames = new List<string> { fileBaseDirectory },
                 OutputPath = fileBaseDirectory,
                 Protections = options.Protections.ToList(),
                 ProtectionSettings = protectionSettings,
@@ -138,9 +149,8 @@ internal class OptionsObfuscationNeedsFactory
             {
                 FileName = filePath,
                 FileBaseDirectory = fileBaseDirectory,
-                ReferencesDirectoryName = options.Libraries?.IsNullOrEmpty() == false
-                    ? options.Libraries
-                    : Path.Combine(fileBaseDirectory, obfuscationSettings?.ReferencesDirectoryName ?? "libs"),
+                ReferencesDirectoryName = referencesDirectories[0],
+                ReferencesDirectoryNames = referencesDirectories,
                 OutputPath = options.Output?.IsNullOrEmpty() == false
                     ? options.Output
                     : Path.Combine(fileBaseDirectory, obfuscationSettings?.OutputDirectoryName ?? "output"),

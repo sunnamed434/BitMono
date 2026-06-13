@@ -49,6 +49,6 @@ public class BitMonoStarter
     {
         return StartAsync(new FinalFileInfo(info.FilePath, info.OutputDirectoryPath),
             new ModuleFactory(File.ReadAllBytes(info.FilePath), _obfuscationSettings, new LogErrorListener(_logger, _obfuscationSettings), _logger),
-            new FileDataWriter(), new AutomaticPathReferencesDataResolver(info.ReferencesDirectoryPath), cancellationToken);
+            new FileDataWriter(), new AutomaticPathReferencesDataResolver(info.ReferencesDirectoryPaths), cancellationToken);
     }
 }

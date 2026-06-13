@@ -55,11 +55,11 @@ internal class Program
                 Console.Clear();
             }
             logger.Information("File: {0}", needs.FileName);
-            logger.Information("Dependencies (libs): {0}", needs.ReferencesDirectoryName);
+            logger.Information("Dependencies (libs): {0}", string.Join(", ", needs.ReferencesDirectoryNames));
             logger.Information("Everything is seems to be ok, starting obfuscation..");
             logger.Information(AsciiArt);
 
-            var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryName, needs.OutputPath);
+            var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryNames, needs.OutputPath);
             var engine = new BitMonoStarter(serviceProvider);
             var succeed = await engine.StartAsync(info, CancellationToken);
             if (!succeed)

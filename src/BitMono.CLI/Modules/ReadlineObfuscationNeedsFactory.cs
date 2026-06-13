@@ -263,6 +263,7 @@ internal class ReadlineObfuscationNeedsFactory
             FileName = fileName,
             FileBaseDirectory = fileBaseDirectory,
             ReferencesDirectoryName = dependenciesDirectoryName,
+            ReferencesDirectoryNames = new List<string> { dependenciesDirectoryName },
             OutputPath = outputDirectoryName,
             Way = ObfuscationNeedsWay.Readline,
             Protections = protections,

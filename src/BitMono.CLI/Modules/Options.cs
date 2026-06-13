@@ -5,8 +5,8 @@ internal class Options
     [Option('f', "file", Required = true, HelpText = "Set file path.")]
     public string? File { get; set; }
 
-    [Option('l', "libraries", Required = false, HelpText = "Set libraries path.")]
-    public string? Libraries { get; set; }
+    [Option('l', "libraries", Required = false, HelpText = "Set one or more dependency (libs) directories, e.g. -l \"C:\\a\" \"C:\\b\" (space-separated).")]
+    public IEnumerable<string> Libraries { get; set; } = [];
 
     [Option('o', "output", Required = false, HelpText = "Set output path.")]
     public string? Output { get; set; }
