@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    Multi-targeting (outer) build. Do NOT obfuscate here ($(TargetFileName) is undefined and there is
+    no single intermediate assembly). Each inner per-TFM build imports build/BitMono.Integration.targets
+    and performs obfuscation there. We only emit a one-time informational message.
+  -->
+  <Target Name="BitMonoMultiTargetingInfo"
+          AfterTargets="DispatchToInnerBuilds"
+          Condition=" '$(BitMonoEnabled)' == 'true' ">
+    <Message Importance="normal"
+             Text="[BitMono] Multi-targeted project detected; obfuscation runs per target framework in inner builds." />
+  </Target>
+</Project>

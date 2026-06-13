@@ -273,6 +273,24 @@ Just build your project normally:
 
 That's it! No extra steps needed.
 
+MSBuild Integration (NuGet)
+---------------------------
+
+Obfuscate your project automatically on every ``Release`` build by adding a single NuGet package
+reference — no separate tool run. Install ``BitMono.Integration`` as a development dependency:
+
+.. code-block:: xml
+
+   <ItemGroup>
+     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+       <PrivateAssets>all</PrivateAssets>
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+     </PackageReference>
+   </ItemGroup>
+
+Configure it with the same ``protections.json`` / ``criticals.json`` / ``obfuscation.json`` files placed
+next to your ``.csproj``. See the dedicated :doc:`msbuild-integration` guide for full details.
+
 Troubleshooting
 --------------
 

@@ -1,0 +1,119 @@
+<Project>
+
+  <!--
+    BitMono.Integration - obfuscation target (imported LATE; all SDK properties/items available).
+    Runs the bundled BitMono.CLI out-of-process against the freshly compiled intermediate assembly,
+    then copies the obfuscated result back in place so it flows into bin/ and into publish output.
+  -->
+
+  <PropertyGroup>
+    <!-- Run gating: enabled + configuration match. -->
+    <_BitMonoConfigMatches Condition=" '$(BitMonoConfigurations)' == '' ">true</_BitMonoConfigMatches>
+    <_BitMonoConfigMatches Condition=" '$(BitMonoConfigurations)' != '' AND $(BitMonoConfigurations.Contains('$(Configuration)')) ">true</_BitMonoConfigMatches>
+    <_BitMonoConfigMatches Condition=" '$(_BitMonoConfigMatches)' == '' ">false</_BitMonoConfigMatches>
+
+    <_BitMonoShouldRun>false</_BitMonoShouldRun>
+    <_BitMonoShouldRun Condition=" '$(BitMonoEnabled)' == 'true' AND '$(_BitMonoConfigMatches)' == 'true' ">true</_BitMonoShouldRun>
+
+    <!-- ABSOLUTE paths with NO trailing separator. The CLI runs with a different WorkingDirectory, so
+         relative paths would break; and a trailing '\' before a closing quote becomes an escaped quote
+         on Windows ('-l "x\"' mangles the command line). NormalizePath makes them absolute regardless of
+         the build's current directory. -->
+    <_BitMonoInput>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)$(TargetFileName)'))</_BitMonoInput>
+    <_BitMonoTempRoot>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)bitmono'))</_BitMonoTempRoot>
+    <_BitMonoTempLibs>$(_BitMonoTempRoot)\libs</_BitMonoTempLibs>
+    <_BitMonoTempOut>$(_BitMonoTempRoot)\out</_BitMonoTempOut>
+    <_BitMonoStamp>$(_BitMonoTempRoot)\bitmono.stamp</_BitMonoStamp>
+  </PropertyGroup>
+
+  <Target Name="BitMonoObfuscate"
+          AfterTargets="AfterCompile"
+          BeforeTargets="CopyFilesToOutputDirectory"
+          Condition=" '$(_BitMonoShouldRun)' == 'true' AND Exists('$(_BitMonoInput)') AND '$(DesignTimeBuild)' != 'true' "
+          Inputs="$(_BitMonoInput);$(BitMonoCliDll)"
+          Outputs="$(_BitMonoStamp)">
+
+    <!-- 0. Sanity: the bundled CLI must be present in the restored package. -->
+    <Error Condition=" !Exists('$(BitMonoCliDll)') "
+           Text="[BitMono] Bundled CLI not found at '$(BitMonoCliDll)'. The BitMono.Integration package may be corrupt or the restore incomplete." />
+
+    <Message Importance="$(BitMonoMessageImportance)" Text="[BitMono] Obfuscating $(TargetFileName) (config: $(Configuration))..." />
+
+    <!-- 1. Fresh temp dirs. -->
+    <RemoveDir Directories="$(_BitMonoTempLibs);$(_BitMonoTempOut)" />
+    <MakeDir Directories="$(_BitMonoTempRoot);$(_BitMonoTempLibs);$(_BitMonoTempOut)" />
+
+    <!--
+      2. Build the single -l libraries dir from the resolved reference closure.
+         ReferenceCopyLocalPaths = runtime deps copied next to the output (best superset);
+         ReferencePathWithRefAssemblies / ReferencePath = compile references (may be ref-only,
+         but metadata is sufficient for BitMono's type resolution). Keep .dll, de-dup by filename.
+    -->
+    <ItemGroup>
+      <_BitMonoLibCandidate Include="@(ReferenceCopyLocalPaths)"        Condition=" '%(Extension)' == '.dll' " />
+      <_BitMonoLibCandidate Include="@(ReferencePathWithRefAssemblies)" Condition=" '%(Extension)' == '.dll' " />
+      <_BitMonoLibCandidate Include="@(ReferencePath)"                  Condition=" '%(Extension)' == '.dll' " />
+    </ItemGroup>
+    <Copy SourceFiles="@(_BitMonoLibCandidate)"
+          DestinationFiles="@(_BitMonoLibCandidate-&gt;'$(_BitMonoTempLibs)\%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true"
+          Condition=" '@(_BitMonoLibCandidate)' != '' " />
+
+    <!-- 3. Assemble optional config-file args (only when the file exists). Reuses the CLI JSON formats. -->
+    <PropertyGroup>
+      <_BitMonoObfArg  Condition=" Exists('$(BitMonoObfuscationFile)') ">--obfuscation-file &quot;$(BitMonoObfuscationFile)&quot;</_BitMonoObfArg>
+      <_BitMonoProtArg Condition=" Exists('$(BitMonoProtectionsFile)') ">--protections-file &quot;$(BitMonoProtectionsFile)&quot;</_BitMonoProtArg>
+      <_BitMonoCritArg Condition=" Exists('$(BitMonoCriticalsFile)') ">--criticals-file &quot;$(BitMonoCriticalsFile)&quot;</_BitMonoCritArg>
+      <_BitMonoLogArg  Condition=" Exists('$(BitMonoLoggingFile)') ">--logging-file &quot;$(BitMonoLoggingFile)&quot;</_BitMonoLogArg>
+      <_BitMonoNoWatermarkArg Condition=" '$(BitMonoNoWatermark)' == 'true' ">--no-watermark</_BitMonoNoWatermarkArg>
+      <_BitMonoSnkArg Condition=" '$(BitMonoStrongNameKey)' != '' ">--strong-name-key &quot;$(BitMonoStrongNameKey)&quot;</_BitMonoSnkArg>
+
+      <!-- -n makes the produced path deterministic: <out>/$(TargetFileName). -->
+      <_BitMonoArgs>-f &quot;$(_BitMonoInput)&quot; -l &quot;$(_BitMonoTempLibs)&quot; -o &quot;$(_BitMonoTempOut)&quot; -n &quot;$(TargetFileName)&quot; $(_BitMonoObfArg) $(_BitMonoProtArg) $(_BitMonoCritArg) $(_BitMonoLogArg) $(_BitMonoNoWatermarkArg) $(_BitMonoSnkArg)</_BitMonoArgs>
+    </PropertyGroup>
+
+    <Message Importance="$(BitMonoMessageImportance)" Text="[BitMono] $(BitMonoDotnetHost) &quot;$(BitMonoCliDll)&quot; $(_BitMonoArgs)" />
+
+    <!--
+      4. Invoke the bundled CLI out-of-process.
+         WorkingDirectory is a WRITABLE temp (the CLI writes logs/ relative to CWD) - NOT the
+         read-only package cache. Protections still load via AppContext.BaseDirectory (the CLI's own
+         folder), which is independent of CWD. IgnoreExitCode so we can branch on the result.
+    -->
+    <Exec Command="$(BitMonoDotnetHost) &quot;$(BitMonoCliDll)&quot; $(_BitMonoArgs)"
+          WorkingDirectory="$(_BitMonoTempRoot)"
+          IgnoreExitCode="true" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="_BitMonoExitCode" />
+    </Exec>
+
+    <!-- 5. Handle failure. -->
+    <Error   Condition=" '$(_BitMonoExitCode)' != '0' AND '$(BitMonoFailOnError)' == 'true' "
+             Text="[BitMono] Obfuscation FAILED for $(TargetFileName) (exit code $(_BitMonoExitCode)). See messages above." />
+    <Warning Condition=" '$(_BitMonoExitCode)' != '0' AND '$(BitMonoFailOnError)' != 'true' "
+             Text="[BitMono] Obfuscation failed for $(TargetFileName) (exit $(_BitMonoExitCode)); continuing because BitMonoFailOnError=false. Output is NOT obfuscated." />
+
+    <!--
+      6. Resolve where the produced file landed:
+         - ForceObfuscation=false (default): in our temp out dir.
+         - ForceObfuscation=true: CLI ignored -o and wrote in place over the intermediate.
+    -->
+    <PropertyGroup>
+      <_BitMonoProduced Condition=" Exists('$(_BitMonoTempOut)\$(TargetFileName)') ">$(_BitMonoTempOut)\$(TargetFileName)</_BitMonoProduced>
+      <_BitMonoProduced Condition=" '$(_BitMonoProduced)' == '' AND Exists('$(_BitMonoInput)') ">$(_BitMonoInput)</_BitMonoProduced>
+    </PropertyGroup>
+    <Error Condition=" '$(_BitMonoExitCode)' == '0' AND ( '$(_BitMonoProduced)' == '' OR !Exists('$(_BitMonoProduced)') ) AND '$(BitMonoFailOnError)' == 'true' "
+           Text="[BitMono] CLI reported success but no obfuscated '$(TargetFileName)' was produced." />
+
+    <!-- 7. Copy obfuscated result back over the intermediate (the in-place case is already correct). -->
+    <Copy Condition=" '$(_BitMonoExitCode)' == '0' AND '$(_BitMonoProduced)' == '$(_BitMonoTempOut)\$(TargetFileName)' "
+          SourceFiles="$(_BitMonoProduced)" DestinationFiles="$(_BitMonoInput)" OverwriteReadOnlyFiles="true" />
+
+    <Message Condition=" '$(_BitMonoExitCode)' == '0' " Importance="$(BitMonoMessageImportance)"
+             Text="[BitMono] Obfuscated $(TargetFileName) successfully." />
+
+    <!-- 8. Stamp only on success (so failures re-run next build); clean transient dirs. -->
+    <Touch Files="$(_BitMonoStamp)" AlwaysCreate="true" Condition=" '$(_BitMonoExitCode)' == '0' " />
+    <RemoveDir Directories="$(_BitMonoTempLibs);$(_BitMonoTempOut)" />
+  </Target>
+
+</Project>
