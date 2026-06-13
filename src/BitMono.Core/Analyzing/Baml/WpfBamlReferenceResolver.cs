@@ -41,12 +41,12 @@ public static class WpfBamlReferenceResolver
 
         foreach (var resource in module.Resources)
         {
-            if (resource.IsEmbedded == false)
+            if (!resource.IsEmbedded)
             {
                 continue;
             }
             var name = resource.Name?.Value;
-            if (name == null || name.EndsWith(".g.resources", StringComparison.OrdinalIgnoreCase) == false)
+            if (name == null || !name.EndsWith(".g.resources", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -86,7 +86,7 @@ public static class WpfBamlReferenceResolver
         while (enumerator.MoveNext())
         {
             if (enumerator.Key is not string key
-                || key.EndsWith(".baml", StringComparison.OrdinalIgnoreCase) == false)
+                || !key.EndsWith(".baml", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -107,27 +107,41 @@ public static class WpfBamlReferenceResolver
                 continue;
             }
 
-            BamlSymbolReader parsed;
+            BamlDocument document;
             try
             {
-                parsed = BamlSymbolReader.Read(baml);
+                document = BamlReader.ReadDocument(new MemoryStream(baml, writable: false));
             }
             catch
             {
                 // Unparseable BAML: leave those symbols alone (no worse than before).
                 continue;
             }
-            CollectFromBaml(parsed, assemblyName, typesByFullName, excluded);
+            CollectFromBaml(document, assemblyName, typesByFullName, excluded);
         }
     }
 
-    private static void CollectFromBaml(BamlSymbolReader baml, string assemblyName,
+    private static void CollectFromBaml(BamlDocument document, string assemblyName,
         Dictionary<string, TypeDefinition> typesByFullName, HashSet<TypeDefinition> excluded)
     {
+        var assemblies = new Dictionary<ushort, string>();
+        var types = new Dictionary<ushort, TypeInfoRecord>();
+        foreach (var record in document)
+        {
+            switch (record)
+            {
+                case AssemblyInfoRecord assembly:
+                    assemblies[assembly.AssemblyId] = assembly.AssemblyFullName;
+                    break;
+                case TypeInfoRecord type:
+                    types[type.TypeId] = type;
+                    break;
+            }
+        }
+
         bool IsLocalAssembly(ushort assemblyId)
         {
-            if (baml.Assemblies.TryGetValue(assemblyId, out var assemblyFullName) == false
-                || assemblyFullName == null)
+            if (!assemblies.TryGetValue(assemblyId, out var assemblyFullName) || assemblyFullName == null)
             {
                 return false;
             }
@@ -140,19 +154,19 @@ public static class WpfBamlReferenceResolver
             return string.Equals(simpleName.Trim(), assemblyName, StringComparison.OrdinalIgnoreCase);
         }
 
-        TypeDefinition? ResolveLocal(BamlSymbolReader.BamlTypeRef typeRef)
+        TypeDefinition? ResolveLocal(TypeInfoRecord typeRecord)
         {
-            if (IsLocalAssembly(typeRef.AssemblyId) == false)
+            if (!IsLocalAssembly(typeRecord.AssemblyId))
             {
                 return null;
             }
-            return typesByFullName.TryGetValue(typeRef.FullName, out var definition) ? definition : null;
+            return typesByFullName.TryGetValue(typeRecord.TypeFullName ?? string.Empty, out var definition) ? definition : null;
         }
 
         // Types named directly in XAML (x:Class types, custom controls, converters, ...).
-        foreach (var typeRef in baml.Types.Values)
+        foreach (var typeRecord in types.Values)
         {
-            var definition = ResolveLocal(typeRef);
+            var definition = ResolveLocal(typeRecord);
             if (definition != null)
             {
                 excluded.Add(definition);
@@ -161,13 +175,17 @@ public static class WpfBamlReferenceResolver
 
         // Members named in XAML (bound properties, event handlers, ...). Excluding the whole owner
         // type is the safe baseline: it also preserves property accessors and event-handler methods.
-        foreach (var attribute in baml.Attributes)
+        foreach (var record in document)
         {
-            if (baml.Types.TryGetValue(attribute.OwnerTypeId, out var ownerRef) == false)
+            if (record is not AttributeInfoRecord attribute)
             {
                 continue;
             }
-            var owner = ResolveLocal(ownerRef);
+            if (!types.TryGetValue(attribute.OwnerTypeId, out var ownerRecord))
+            {
+                continue;
+            }
+            var owner = ResolveLocal(ownerRecord);
             if (owner != null)
             {
                 excluded.Add(owner);

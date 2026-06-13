@@ -32,3 +32,35 @@ internal sealed class BamlBinaryReader : BinaryReader
         return value;
     }
 }
+
+/// <summary>
+/// <see cref="BinaryWriter"/> counterpart of <see cref="BamlBinaryReader"/>, used when writing BAML
+/// back out. <see cref="BinaryWriter.Write(string)"/> already emits the 7-bit-length-prefixed UTF-8
+/// strings BAML uses; this adds the 7-bit-encoded int (record size prefix).
+/// </summary>
+internal sealed class BamlBinaryWriter : BinaryWriter
+{
+    public BamlBinaryWriter(Stream stream) : base(stream)
+    {
+    }
+
+    public void WriteEncodedInt(int value)
+    {
+        var v = (uint)value;
+        while (v >= 0x80)
+        {
+            Write((byte)(v | 0x80));
+            v >>= 7;
+        }
+        Write((byte)v);
+    }
+
+    public static int SizeofEncodedInt(int value)
+    {
+        if ((value & ~0x7F) == 0) return 1;
+        if ((value & ~0x3FFF) == 0) return 2;
+        if ((value & ~0x1FFFFF) == 0) return 3;
+        if ((value & ~0xFFFFFFF) == 0) return 4;
+        return 5;
+    }
+}
