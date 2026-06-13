@@ -15,108 +15,96 @@ public class FullRenamer : Protection
         // -----------------------------------------------------------------
         //  Behaviour:
         //
-        //  1. Interface methods within the obfuscation scope and their
-        //     implementations are renamed TOGETHER with the same random
-        //     name (rather than being skipped wholesale because of
-        //     IsVirtual, which would break the API surface).
-        //  2. Compiler-generated async state-machine types
-        //     ("<MethodName>d__N") are renamed as well so the original
-        //     method name does not leak through stack traces.
-        //  3. True "override" methods (IsVirtual && !IsNewSlot) are left
-        //     alone because they must keep the same name as the base
-        //     class method they override.
-        //  4. Implicit implementations of interfaces that live OUTSIDE
-        //     the current module (IsVirtual && IsNewSlot && IsFinal but
-        //     not picked up by phase 1) are skipped so we do not break
-        //     the contract and trigger TypeLoadException at assembly
-        //     load time.
+        //  1. A (non-generic) interface method in scope is renamed TOGETHER
+        //     with every one of its in-scope implementations using a single
+        //     shared name. The rename is atomic and gated: it only happens
+        //     when at least one implementation was found and every member of
+        //     the group passes the rename safety gate (Renamer.CanRename),
+        //     so the interface <-> implementation contract stays consistent
+        //     and configured/critical members are preserved.
+        //  2. Compiler-generated async/iterator state-machine types
+        //     ("<Method>d__N") are renamed alongside their method so the
+        //     original name does not leak through stack traces.
+        //  3. All other virtual methods are skipped (as in the original
+        //     FullRenamer) so override chains and external-interface
+        //     contracts are never broken.
         // -----------------------------------------------------------------
 
-        var members = Context.Parameters.Members;
-        var membersList = members.ToList();
+        var membersList = Context.Parameters.Members.ToList();
         var allTypes = membersList.OfType<TypeDefinition>().ToList();
         var allMethods = membersList.OfType<MethodDefinition>().ToList();
         var allFields = membersList.OfType<FieldDefinition>().ToList();
 
-        // Track which methods have already received a new name through
-        // phase 1 so the standard loop below can skip them.
         var alreadyRenamed = new HashSet<MethodDefinition>();
 
-        // Phase 1: collect interface methods in scope, reserve a random
-        //          name for each, and apply the same name to every
-        //          matching implementation that is also in scope.
         var concreteTypes = allTypes
             .Where(t => !t.IsInterface && !t.IsModuleType && !t.IsCompilerGenerated())
             .ToList();
 
+        // Phase 1: interface methods together with their implementations.
         foreach (var iface in allTypes.Where(t => t.IsInterface && !t.IsCompilerGenerated()))
         {
+            // Generic interfaces are skipped: matching implementations by signature is
+            // unreliable across generic instantiations (e.g. T vs the concrete argument),
+            // so we cannot be confident we found every implementation.
+            if (iface.GenericParameters.Count > 0)
+            {
+                continue;
+            }
             foreach (var ifaceMethod in iface.Methods.ToList())
             {
                 if (ifaceMethod.IsConstructor) continue;
                 if (ifaceMethod.IsCompilerGenerated()) continue;
-                if (!ShouldRenameMethodName(ifaceMethod)) continue;
+                if (alreadyRenamed.Contains(ifaceMethod)) continue;
 
-                var groupName = _renamer.RenameUnsafely();
+                var originalName = ifaceMethod.Name?.Value;
+                if (string.IsNullOrEmpty(originalName)) continue;
 
-                // Capture the original name so we can match implementations
-                // by name + signature BEFORE we overwrite the interface name.
-                var originalIfaceName = ifaceMethod.Name?.Value;
-
-                ifaceMethod.Name = groupName;
-                alreadyRenamed.Add(ifaceMethod);
-                RenameParametersOf(ifaceMethod);
-                RenameAsyncStateMachineFor(ifaceMethod, originalIfaceName);
-
-                // Find matching implementations.
+                // Collect the interface method and every matching implementation in scope.
+                var group = new List<MethodDefinition> { ifaceMethod };
                 foreach (var concrete in concreteTypes)
                 {
                     if (!ImplementsInterface(concrete, iface)) continue;
-
                     foreach (var implMethod in concrete.Methods.ToList())
                     {
                         if (implMethod.IsConstructor) continue;
                         if (implMethod.IsCompilerGenerated()) continue;
                         if (alreadyRenamed.Contains(implMethod)) continue;
-                        if (originalIfaceName == null) continue;
-                        if (implMethod.Name?.Value != originalIfaceName) continue;
+                        if (implMethod.Name?.Value != originalName) continue;
                         if (!SignatureCompatible(implMethod, ifaceMethod)) continue;
-
-                        var originalImplName = implMethod.Name?.Value;
-                        implMethod.Name = groupName;
-                        alreadyRenamed.Add(implMethod);
-                        RenameParametersOf(implMethod);
-                        RenameAsyncStateMachineFor(implMethod, originalImplName);
+                        group.Add(implMethod);
                     }
+                }
+
+                // Require at least one in-scope implementation: an interface method with
+                // none found is likely implemented outside the obfuscation scope, so
+                // renaming it would break that external contract.
+                if (group.Count == 1) continue;
+
+                // Atomic + gated: only rename when every member can be renamed safely.
+                if (group.Any(method => !_renamer.CanRename(method))) continue;
+
+                var groupName = _renamer.RenameUnsafely();
+                foreach (var method in group)
+                {
+                    method.Name = groupName;
+                    alreadyRenamed.Add(method);
+                    RenameParametersOf(method);
+                    RenameAsyncStateMachineFor(method, originalName);
                 }
             }
         }
 
-        // Phase 2: standard rename loop for everything that was not
-        //          handled by phase 1.
+        // Phase 2: everything else, skipping all virtual methods so override chains and
+        // external-interface implementations are never broken (interface methods and their
+        // implementations were already handled atomically in phase 1).
         foreach (var method in allMethods)
         {
             if (alreadyRenamed.Contains(method)) continue;
             if (method.DeclaringType?.IsModuleType == true) continue;
             if (method.IsConstructor) continue;
             if (method.IsCompilerGenerated()) continue;
-
-            // Skip true overrides: IsVirtual && !IsNewSlot means the
-            // method reuses an inherited vtable slot (override keyword
-            // in C#). Renaming it would break the link to the base
-            // class method.
-            if (method.IsVirtual && !method.IsNewSlot) continue;
-
-            // Skip implementations of external interfaces. The C#
-            // compiler marks implicit interface impls with
-            // IsVirtual+IsNewSlot+IsFinal+IsHideBySig. If phase 1 did
-            // not pick them up (alreadyRenamed check above), the
-            // corresponding interface lives in another assembly. If we
-            // rename the impl, the contract breaks and the CLR throws
-            // at assembly load time:
-            //   System.TypeLoadException: Method '...' in type '...'
-            //   does not have an implementation.
-            if (method.IsVirtual && method.IsNewSlot && method.IsFinal) continue;
+            if (method.IsVirtual) continue;
 
             var originalName = method.Name?.Value;
             _renamer.Rename(method);
@@ -136,7 +124,6 @@ public class FullRenamer : Protection
             }
         }
 
-        // Type renames - unchanged from the original logic.
         foreach (var type in allTypes)
         {
             if (type.IsModuleType) continue;
@@ -144,7 +131,6 @@ public class FullRenamer : Protection
             _renamer.Rename(type);
         }
 
-        // Field renames - unchanged from the original logic.
         foreach (var field in allFields)
         {
             if (field.DeclaringType?.IsModuleType == true) continue;
@@ -153,13 +139,6 @@ public class FullRenamer : Protection
         }
 
         return Task.CompletedTask;
-    }
-
-    private static bool ShouldRenameMethodName(MethodDefinition method)
-    {
-        if (method.IsCompilerGenerated()) return false;
-        if (method.IsConstructor) return false;
-        return true;
     }
 
     private void RenameParametersOf(MethodDefinition method)
@@ -176,13 +155,15 @@ public class FullRenamer : Protection
     {
         if (string.IsNullOrEmpty(originalName)) return;
         var declaring = method.DeclaringType;
-        if (declaring == null) return;
-        if (declaring.NestedTypes == null) return;
+        if (declaring?.NestedTypes == null) return;
 
-        // Compiler-generated state-machine types are named
-        // "<MethodName>d__N" (async/await) or "<MethodName>b__N_M"
-        // (lambdas). Once we know the original method name, we can find
-        // the related nested types and rename them along with it.
+        // Compiler-generated async/iterator state-machine types are named
+        // "<MethodName>d__N". Once we know the original method name we can find the
+        // related nested types and rename them so the name does not leak through them.
+        // The state-machine TYPE NAME is compiler-generated and not part of any
+        // contract (the IAsyncStateMachine implementation is by its methods, not its
+        // name), so it is always safe to rename even though the standard type gate
+        // would treat IAsyncStateMachine as a critical interface.
         var prefix = "<" + originalName + ">";
         foreach (var nested in declaring.NestedTypes.ToList())
         {
@@ -195,14 +176,15 @@ public class FullRenamer : Protection
 
     private static bool ImplementsInterface(TypeDefinition type, TypeDefinition iface)
     {
-        if (type.Interfaces == null) return false;
-        foreach (var implemented in type.Interfaces)
+        if (type.Interfaces != null)
         {
-            var resolved = implemented.Interface?.Resolve();
-            if (resolved == iface) return true;
+            foreach (var implemented in type.Interfaces)
+            {
+                if (implemented.Interface?.ResolveOrNull() == iface) return true;
+            }
         }
         // Also walk the base-type chain.
-        var baseTypeDef = type.BaseType?.Resolve();
+        var baseTypeDef = type.BaseType?.ResolveOrNull();
         if (baseTypeDef != null && baseTypeDef != type)
         {
             return ImplementsInterface(baseTypeDef, iface);
@@ -215,14 +197,10 @@ public class FullRenamer : Protection
         if (a.Signature == null || b.Signature == null) return false;
         if (a.Signature.ParameterTypes.Count != b.Signature.ParameterTypes.Count) return false;
         if (a.Signature.GenericParameterCount != b.Signature.GenericParameterCount) return false;
-        var aRet = a.Signature.ReturnType?.FullName;
-        var bRet = b.Signature.ReturnType?.FullName;
-        if (!string.Equals(aRet, bRet, StringComparison.Ordinal)) return false;
+        if (!string.Equals(a.Signature.ReturnType?.FullName, b.Signature.ReturnType?.FullName, StringComparison.Ordinal)) return false;
         for (int i = 0; i < a.Signature.ParameterTypes.Count; i++)
         {
-            var aParam = a.Signature.ParameterTypes[i]?.FullName;
-            var bParam = b.Signature.ParameterTypes[i]?.FullName;
-            if (!string.Equals(aParam, bParam, StringComparison.Ordinal)) return false;
+            if (!string.Equals(a.Signature.ParameterTypes[i]?.FullName, b.Signature.ParameterTypes[i]?.FullName, StringComparison.Ordinal)) return false;
         }
         return true;
     }
