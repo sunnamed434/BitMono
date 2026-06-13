@@ -17,6 +17,7 @@ Table of Contents:
 
    usage/how-to-use
    usage/msbuild-integration
+   usage/native-aot
    usage/assembly-signing
    usage/nuget-configuration
    usage/troubleshooting
