@@ -14,15 +14,24 @@ WPF / XAML (BAML)
 -----------------
 
 WPF compiles XAML into BAML (inside ``<assembly>.g.resources``) that refers to your types and
-members by name. BitMono reads that BAML and automatically keeps the referenced types (and their
-members - event handlers, bound properties, custom controls, the ``x:Class`` types) unrenamed, so
-the app still loads its XAML after obfuscation. Everything not referenced by XAML is still renamed.
+members by name. BitMono reads that BAML so renaming doesn't break the app at XAML load.
 
-This is the safe baseline: BitMono does **not** rewrite BAML, so XAML-referenced types simply keep
-their names. Renaming them *and* rewriting the BAML to match is not supported yet. One gap: a type
-that XAML binds to only through a code-behind ``DataContext`` (so its name appears only as a binding
-path string) is not detected - exclude it via ``criticals.json`` or ``[Obfuscation(Exclude = true)]``
-if needed.
+With ``WpfBamlRewrite`` enabled (the default) BitMono **renames the XAML-referenced type names and
+rewrites the BAML to match**, so your WPF types get obfuscated too. To stay safe it deliberately:
+
+- renames only type *names*; the **members are kept**, because binding paths and event-handler
+  wiring reference members as plain strings in BAML and renaming them would break bindings silently;
+- skips a type whose name appears anywhere as a BAML string value (an ``{x:Type}``/``TargetType``
+  reference, which isn't rewritten);
+- keeps namespaces, and uses dot-free names so BAML type resolution still works.
+
+Set ``"WpfBamlRewrite": false`` in ``obfuscation.json`` to instead leave XAML-referenced types fully
+untouched (the older keep-only behaviour). Either way, everything not referenced by XAML is renamed
+as usual.
+
+One gap: a type that XAML binds to only through a code-behind ``DataContext`` (its name appears only
+as a binding-path string) is not detected - exclude it via ``criticals.json`` or
+``[Obfuscation(Exclude = true)]`` if needed.
 
 Protection Type
 ---------------
