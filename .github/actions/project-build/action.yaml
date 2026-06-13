@@ -113,8 +113,35 @@ runs:
       with:
         user: ${{ inputs.nuget_user }}
 
-    # Push to NuGet on each tag, but only if not a pre-release version (Release)
+    # Push to NuGet on each tag, but only if not a pre-release version (Release).
+    # No --skip-duplicate here on purpose: a version can never be reused on nuget.org, so a 409 means the
+    # version is already taken (or was burned by a deleted / failed-validation prior push) and must fail
+    # the build loudly instead of being swallowed as a warning.
     - name: Push to NuGet (Release)
       if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
-      run: dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ inputs.project_path }}/bin/Release/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       shell: bash
+
+    # A successful push only returns 201; nuget.org then runs async validation (incl. virus/malware
+    # scanning). If that fails the package never appears, yet the push step stays green. Poll the flat
+    # container until the version is live so a silent validation rejection turns the build red instead.
+    - name: Verify published on nuget.org
+      if: ${{ inputs.nuget_push == 'true' && github.event_name == 'create' && github.event.ref_type == 'tag' && steps.check-prerelease.outputs.is_prerelease == 'false' }}
+      shell: bash
+      run: |
+        id="$(basename '${{ inputs.project_path }}')"
+        nupkg="$(basename "$(ls ${{ inputs.project_path }}/bin/Release/${id}.*.nupkg | head -1)")"
+        ver="${nupkg#${id}.}"; ver="${ver%.nupkg}"
+        lower="$(echo "$id" | tr '[:upper:]' '[:lower:]')"
+        url="https://api.nuget.org/v3-flatcontainer/${lower}/index.json"
+        echo "Verifying ${id} ${ver} is live on nuget.org (${url})"
+        for i in $(seq 1 40); do
+          if curl -fsS "$url" 2>/dev/null | grep -q "\"${ver}\""; then
+            echo "OK: ${id} ${ver} is available on nuget.org"
+            exit 0
+          fi
+          echo "  attempt ${i}/40: not visible yet, waiting 30s..."
+          sleep 30
+        done
+        echo "::error::${id} ${ver} did not appear on nuget.org after ~20 min. The push was accepted (201) but async validation (e.g. a virus/malware scan) likely rejected it. Check the package status and notification email on nuget.org, and contact support if it is a false positive."
+        exit 1
