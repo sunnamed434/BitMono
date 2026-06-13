@@ -31,7 +31,9 @@ public class Renamer
 
     private bool ShouldRenameType(TypeDefinition? typeDefinition)
     {
-        return typeDefinition == null || (_nameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) && !typeDefinition.IsExplicitLayout);
+        // Types in framework-reserved namespaces (e.g. PolySharp polyfills) are matched by full
+        // name by the compiler/runtime and must never be renamed. See IsInReservedNamespace.
+        return typeDefinition == null || (_nameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) && !typeDefinition.IsExplicitLayout && !typeDefinition.IsInReservedNamespace());
     }
 
     /// <summary>
@@ -89,7 +91,7 @@ public class Renamer
     {
         if (member is TypeDefinition type)
         {
-            if (_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type))
+            if (_specificNamespaceCriticalAnalyzer.NotCriticalToMakeChanges(type) && !type.IsInReservedNamespace())
             {
                 type.Namespace = string.Empty;
             }
@@ -98,7 +100,7 @@ public class Renamer
         {
             if (_nameCriticalAnalyzer.NotCriticalToMakeChanges(method))
             {
-                if (method.DeclaringType != null)
+                if (method.DeclaringType != null && !method.DeclaringType.IsInReservedNamespace())
                 {
                     method.DeclaringType.Namespace = string.Empty;
                 }
@@ -106,7 +108,7 @@ public class Renamer
         }
         if (member is FieldDefinition field)
         {
-            if (field.DeclaringType != null)
+            if (field.DeclaringType != null && !field.DeclaringType.IsInReservedNamespace())
             {
                 field.DeclaringType.Namespace = string.Empty;
             }

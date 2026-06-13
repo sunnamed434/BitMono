@@ -15,6 +15,12 @@ public class NoNamespaces : Protection
             {
                 continue;
             }
+            // Keep framework-reserved namespaces (e.g. PolySharp polyfills) intact - the
+            // compiler/runtime match those types by full name. See IsInReservedNamespace.
+            if (type.IsInReservedNamespace())
+            {
+                continue;
+            }
 
             type.Namespace = string.Empty;
         }
