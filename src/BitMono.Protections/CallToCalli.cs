@@ -46,7 +46,7 @@ public class CallToCalli : Protection
                 {
                     continue;
                 }
-                var callingMethod = methodDescriptor.Resolve();
+                var callingMethod = methodDescriptor.ResolveOrNull();
                 if (callingMethod?.Signature == null)
                 {
                     continue;

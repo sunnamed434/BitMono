@@ -16,7 +16,7 @@ public class CustomInjector
     {
         var factory = module.CorLibTypeFactory;
         var attributeReference = new TypeReference(module, module, @namespace, name);
-        var signature = MethodSignature.CreateInstance(factory.Void, factory.String);
+        var signature = MethodSignature.CreateInstance(factory.Void, [factory.String]);
         var attributeCtor = new MemberReference(attributeReference, ".ctor", signature);
         var customAttribute = new CustomAttribute(attributeCtor);
 #pragma warning disable CS8602
