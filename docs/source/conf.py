@@ -6,8 +6,8 @@ project = 'BitMono'
 copyright = '2022-2026, BitMono'
 author = 'sunnamed434'
 
-version = '0.40'
-release = '0.40.1'
+version = '0.41'
+release = '0.41.1'
 
 # -- General configuration
 

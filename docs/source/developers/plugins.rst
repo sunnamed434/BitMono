@@ -95,7 +95,7 @@ your own plugin DLL behind.
 
     <ItemGroup>
       <!-- Use the version that matches the BitMono you run the plugin against. -->
-      <PackageReference Include="BitMono.Core" Version="0.40.1">
+      <PackageReference Include="BitMono.Core" Version="0.41.1">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
     </ItemGroup>
