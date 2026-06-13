@@ -28,6 +28,10 @@
   // Set to true indicates whether enabled
   "NotifyProtections": true,
 
+  // Outputs short, helpful tips after obfuscation (how to exclude members, disable watermark, etc)
+  // Set to true indicates whether enabled
+  "Tips": true,
+
   // Exclude from obfuscation if method has [MethodImpl(MethodImplOptions.NoInlining)] attribute or NoInlining bit
   // Set to true indicates whether enabled
   "NoInliningMethodObfuscationExclude": true,

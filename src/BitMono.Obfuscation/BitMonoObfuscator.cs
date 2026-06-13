@@ -13,6 +13,7 @@ public class BitMonoObfuscator
     private readonly ProtectionsNotifier _protectionsNotifier;
     private readonly ProtectionsConfigureForNativeCodeNotifier _protectionsConfigureForNativeCodeNotifier;
     private readonly ProtectionExecutionNotifier _protectionExecutionNotifier;
+    private readonly TipsNotifier _tipsNotifier;
     private readonly ILogger _logger;
     private ProtectionsSort? _protectionsSort;
     private PEImageBuildResult? _imageBuild;
@@ -39,6 +40,7 @@ public class BitMonoObfuscator
         _protectionsNotifier = new ProtectionsNotifier(_obfuscationSettings, _logger);
         _protectionsConfigureForNativeCodeNotifier = new ProtectionsConfigureForNativeCodeNotifier(_obfuscationSettings, _logger);
         _protectionExecutionNotifier = new ProtectionExecutionNotifier(_logger);
+        _tipsNotifier = new TipsNotifier(_obfuscationSettings, _logger);
     }
 
     public async Task ProtectAsync()
@@ -63,6 +65,12 @@ public class BitMonoObfuscator
         await _pipeline.InvokeAsync(WriteModuleAsync);
         await _pipeline.InvokeAsync(PackAsync);
         await _pipeline.InvokeAsync(OutputElapsedTime);
+        await _pipeline.InvokeAsync(OutputTips);
+    }
+
+    private void OutputTips()
+    {
+        _tipsNotifier.Notify();
     }
 
     private void OutputLoadedModule()
