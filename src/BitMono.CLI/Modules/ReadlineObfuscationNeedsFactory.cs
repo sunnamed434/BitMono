@@ -44,6 +44,12 @@ internal class ReadlineObfuscationNeedsFactory
                 var loadedSettings = SettingsLoader.Load<ProtectionSettings>(KnownConfigNames.Protections);
                 protectionSettings = loadedSettings?.Protections;
             }
+
+            if (ProtectionPresets.Expand(obfuscationSettings?.Preset) is { } presetProtectionSettings)
+            {
+                protectionSettings = presetProtectionSettings.Protections;
+                Console.WriteLine($"Using protection preset: {ProtectionPresets.Parse(obfuscationSettings?.Preset)} ({presetProtectionSettings.Protections.Count} protection(s)).");
+            }
         }
         catch (Exception ex)
         {

@@ -86,6 +86,11 @@ internal class OptionsObfuscationNeedsFactory
                 }).ToList()
             };
         }
+        else if (ProtectionPresets.Expand(options.Preset ?? obfuscationSettings?.Preset) is { } presetProtectionSettings)
+        {
+            protectionSettings = presetProtectionSettings;
+            Console.WriteLine($"Using protection preset: {ProtectionPresets.Parse(options.Preset ?? obfuscationSettings?.Preset)} ({presetProtectionSettings.Protections.Count} protection(s)).");
+        }
         else
         {
             // Try to find protections.json for fallback

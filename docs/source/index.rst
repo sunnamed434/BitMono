@@ -95,6 +95,7 @@ Table of Contents:
    :caption: Configuration
    :name: sec-configuration
 
+   configuration/presets
    configuration/exclude-obfuscation
    configuration/third-party-issues
    configuration/protections

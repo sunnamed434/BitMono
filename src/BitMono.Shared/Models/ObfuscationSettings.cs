@@ -24,4 +24,8 @@ public class ObfuscationSettings
     public string[]? RandomStrings { get; set; }
     public string? StrongNameKeyFile { get; set; }
     public string? OutputFileName { get; set; }
+
+    // User-selected protection preset/level: Custom (default, use protections.json as-is),
+    // Minimal, Balanced, or Maximum. Never auto-detected. A CLI --preset overrides this.
+    public string? Preset { get; set; }
 }

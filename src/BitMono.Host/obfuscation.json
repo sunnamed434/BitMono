@@ -12,6 +12,12 @@
   // Set to true indicates whether enabled
   "ForceObfuscation": false,
 
+  // Protection preset/level: "Custom" (default; use the protections list in protections.json
+  // as-is), "Minimal", "Balanced", or "Maximum". When not "Custom" the preset decides which
+  // protections run and protections.json is ignored. Chosen by you, never auto-detected.
+  // The CLI --preset flag overrides this value.
+  "Preset": "Custom",
+
   // Name of the references directory
   "ReferencesDirectoryName": "libs",
 

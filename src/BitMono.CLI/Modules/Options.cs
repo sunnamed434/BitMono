@@ -34,4 +34,7 @@ internal class Options
 
     [Option('n', "output-name", Required = false, HelpText = "Set output file name.")]
     public string? OutputName { get; set; }
+
+    [Option("preset", Required = false, HelpText = "Protection preset/level: Custom, Minimal, Balanced, or Maximum. When not Custom it overrides protections.json (an explicit -p/--protections list still wins; CLI --preset wins over obfuscation.json).")]
+    public string? Preset { get; set; }
 }
