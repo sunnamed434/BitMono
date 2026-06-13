@@ -12,7 +12,7 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 7. Elapsed time counter
 8. Resolve References
 9. Expand Macros
-11. Run Protection, PipelineProtection and child pipeline protections
+10. Run Protection, PipelineProtection and child pipeline protections
 
 
 .. code-block:: csharp
@@ -22,11 +22,11 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 	public class Pipeline : PipelineProtection
 
 
-12. Optimize Macros
-13. [ObfuscationAttribute] cleanup
-14 Create PE Image
-15. Write Module
-16. Run Packers
+11. Optimize Macros
+12. [ObfuscationAttribute] cleanup
+13. Create PE Image
+14. Write Module
+15. Run Packers
 
 
 .. code-block:: csharp
@@ -34,4 +34,4 @@ BitMono uses its own obfuscation execution order which is good to be known, and 
 	public class Packer : PackerProtection
 
 
-17. Output Elapsed Time since obfuscation 
+16. Output Elapsed Time since obfuscation 

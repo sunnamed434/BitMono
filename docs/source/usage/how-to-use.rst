@@ -187,7 +187,7 @@ You can use glob patterns (``*``) in base types and method patterns.
 Most settings have sensible defaults. You only need to change them if you want something different.
 
 Unity Integration
-----------------
+-----------------
 
 BitMono includes Unity integration that automatically obfuscates your assemblies during the Unity build process. 
 The integration hooks into Unity's build pipeline and runs BitMono CLI to protect your game code.
@@ -197,7 +197,7 @@ The integration hooks into Unity's build pipeline and runs BitMono CLI to protec
    IL2CPP is not supported yet, however is planned to be supported in the future.
 
 Installation
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Download the Unity Integration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -273,8 +273,26 @@ Just build your project normally:
 
 That's it! No extra steps needed.
 
+MSBuild Integration (NuGet)
+---------------------------
+
+Obfuscate your project automatically on every ``Release`` build by adding a single NuGet package
+reference — no separate tool run. Install ``BitMono.Integration`` as a development dependency:
+
+.. code-block:: xml
+
+   <ItemGroup>
+     <PackageReference Include="BitMono.Integration" Version="0.26.0">
+       <PrivateAssets>all</PrivateAssets>
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+     </PackageReference>
+   </ItemGroup>
+
+Configure it with the same ``protections.json`` / ``criticals.json`` / ``obfuscation.json`` files placed
+next to your ``.csproj``. See the dedicated :doc:`msbuild-integration` guide for full details.
+
 Troubleshooting
---------------
+---------------
 
 For detailed troubleshooting information, see the `troubleshooting guide <troubleshooting.html>`_.
 

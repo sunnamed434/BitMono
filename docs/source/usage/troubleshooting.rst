@@ -1,18 +1,18 @@
 Troubleshooting
-==============
+===============
 
 Common Issues and Solutions
---------------------------
+---------------------------
 
 Access Denied
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 **Problem**: You get an "Access Denied" error when BitMono tries to open the output directory.
 
 **Solution**: Set `OpenFileDestinationInFileExplorer` to `false` in `obfuscation.json`.
 
 Missing Dependencies
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 **Problem**: BitMono can't find required dependencies.
 
@@ -33,7 +33,7 @@ Framework Mismatch
 - Unity/Mono applications → Use .NET Framework version of BitMono
 
 No Protections Enabled
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 **Problem**: BitMono says no protections are enabled.
 
@@ -42,7 +42,7 @@ No Protections Enabled
 - Or specify protections via command line: `-p ProtectionName1,ProtectionName2`
 
 Permission Errors
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 **Problem**: BitMono can't write to the output directory.
 
@@ -52,7 +52,7 @@ Permission Errors
 - Check that the output path is valid and accessible
 
 Getting More Help
-----------------
+-----------------
 
 If you're still having issues:
 

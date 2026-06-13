@@ -1,16 +1,16 @@
 Building BitMono
-===============
+================
 
 Getting Binaries
----------------
+----------------
 
 If you just need the compiled binaries, grab them `from releases <https://github.com/sunnamed434/BitMono/releases>`_. Open the dropdown button `Assets` and pick the archive you want. These binaries are built automatically via CI/CD pipeline.
 
 Building from Source
--------------------
+--------------------
 
 Prerequisites
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Recommended to install tools via Visual Studio installer, otherwise you can grab those tools directly via the links below:
 
@@ -43,7 +43,7 @@ To run tests:
    dotnet test
 
 Release Archives
----------------
+----------------
 
 Archive examples (versions and naming might be different):
 
@@ -64,7 +64,7 @@ Archive naming explained:
 - ``net10.0``, ``net9.0``, ``net8.0``, etc. is the target framework BitMono was built on
 
 Getting Help
------------
+------------
 
 If you run into issues or have questions:
 

@@ -11,13 +11,16 @@ public static class AssemblyResolver
         var resolvedReferences = new List<AssemblyReference>();
         var failedToResolveReferences = new List<AssemblyReference>();
         var signatureComparer = new SignatureComparer(SignatureComparisonFlags.AcceptNewerVersions);
+        var runtimeContext = context.Module.RuntimeContext;
 
         foreach (var originalReference in context.Module.AssemblyReferences)
         {
             context.ThrowIfCancellationRequested();
 
             var resolved = false;
-            if (context.AssemblyResolver.HasCached(originalReference))
+            // AsmResolver 6.0 moved assembly caching into RuntimeContext (IAssemblyResolver.HasCached was removed).
+            // A reference already loaded into the context counts as resolved.
+            if (runtimeContext.GetLoadedAssemblies().Any(loaded => signatureComparer.Equals(originalReference, loaded)))
             {
                 resolvedReferences.Add(originalReference);
                 continue;
@@ -36,7 +39,8 @@ public static class AssemblyResolver
                     var definition = AssemblyDefinition.FromBytes(data);
                     if (signatureComparer.Equals(originalReference, definition))
                     {
-                        context.AssemblyResolver.Resolve(definition);
+                        // Register the matched dependency into the context so later resolution finds it.
+                        runtimeContext.LoadAssembly(data);
                         resolvedReferences.Add(originalReference);
                         resolved = true;
                         break;
