@@ -74,6 +74,18 @@ See :doc:`how-to-use` for the full schema of each file. Example ``protections.js
 
 If you provide none of these files, BitMono uses the defaults bundled inside the package.
 
+Prefer not to keep config files in your repo? Pick the protections (or a preset) right in the
+``.csproj`` — no ``protections.json`` on disk:
+
+.. code-block:: xml
+
+   <PropertyGroup>
+     <!-- specific protections... -->
+     <BitMonoProtections>FullRenamer;StringsEncryption</BitMonoProtections>
+     <!-- ...or a preset instead -->
+     <!-- <BitMonoPreset>Balanced</BitMonoPreset> -->
+   </PropertyGroup>
+
 .. important::
 
    Keep your config files out of the build output so they are not shipped with your app:
@@ -113,6 +125,13 @@ All behavior is overridable from your ``.csproj`` (or a ``Directory.Build.props`
    * - ``BitMonoStrongNameKey``
      - *(empty)*
      - Path to a ``.snk`` to re-sign the obfuscated assembly (see Signing below).
+   * - ``BitMonoProtections``
+     - *(empty)*
+     - Semicolon-separated protection list (e.g. ``FullRenamer;StringsEncryption``) set right in the
+       ``.csproj`` — no ``protections.json`` file needed. Wins over ``protections.json`` and ``BitMonoPreset``.
+   * - ``BitMonoPreset``
+     - *(empty)*
+     - Protection preset: ``Minimal``, ``Balanced`` or ``Maximum``. Used when ``BitMonoProtections`` is not set.
    * - ``BitMonoObfuscationFile`` / ``BitMonoProtectionsFile`` / ``BitMonoCriticalsFile`` / ``BitMonoLoggingFile``
      - project-root JSON
      - Override the path to a specific config file.

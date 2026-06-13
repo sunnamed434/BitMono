@@ -68,8 +68,14 @@
       <_BitMonoNoWatermarkArg Condition=" '$(BitMonoNoWatermark)' == 'true' ">--no-watermark</_BitMonoNoWatermarkArg>
       <_BitMonoSnkArg Condition=" '$(BitMonoStrongNameKey)' != '' ">--strong-name-key &quot;$(BitMonoStrongNameKey)&quot;</_BitMonoSnkArg>
 
+      <!-- Inline protection list / preset from the .csproj, so no protections.json on disk is needed.
+           BitMonoProtections is ';'-separated (e.g. FullRenamer;StringsEncryption) and takes
+           precedence over both a protections.json and a preset. -->
+      <_BitMonoProtectionsArg Condition=" '$(BitMonoProtections)' != '' ">-p $(BitMonoProtections.Replace(';',' '))</_BitMonoProtectionsArg>
+      <_BitMonoPresetArg Condition=" '$(BitMonoPreset)' != '' ">--preset &quot;$(BitMonoPreset)&quot;</_BitMonoPresetArg>
+
       <!-- -n makes the produced path deterministic: <out>/$(TargetFileName). -->
-      <_BitMonoArgs>-f &quot;$(_BitMonoInput)&quot; -l &quot;$(_BitMonoTempLibs)&quot; -o &quot;$(_BitMonoTempOut)&quot; -n &quot;$(TargetFileName)&quot; $(_BitMonoObfArg) $(_BitMonoProtArg) $(_BitMonoCritArg) $(_BitMonoLogArg) $(_BitMonoNoWatermarkArg) $(_BitMonoSnkArg)</_BitMonoArgs>
+      <_BitMonoArgs>-f &quot;$(_BitMonoInput)&quot; -l &quot;$(_BitMonoTempLibs)&quot; -o &quot;$(_BitMonoTempOut)&quot; -n &quot;$(TargetFileName)&quot; $(_BitMonoObfArg) $(_BitMonoProtArg) $(_BitMonoCritArg) $(_BitMonoLogArg) $(_BitMonoNoWatermarkArg) $(_BitMonoSnkArg) $(_BitMonoProtectionsArg) $(_BitMonoPresetArg)</_BitMonoArgs>
     </PropertyGroup>
 
     <Message Importance="$(BitMonoMessageImportance)" Text="[BitMono] $(BitMonoDotnetHost) &quot;$(BitMonoCliDll)&quot; $(_BitMonoArgs)" />
