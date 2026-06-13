@@ -13,10 +13,13 @@ public class StringsEncryption : Protection
     public override Task ExecuteAsync()
     {
         var module = Context.Module;
-        var globalModuleType = module.GetOrCreateModuleType();
-        MscorlibInjector.InjectCompilerGeneratedValueType(module, globalModuleType, _renamer.RenameUnsafely());
-        var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
-        var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, Data.SaltBytes, _renamer.RenameUnsafely());
+        // Host the injected helper types in a dedicated top-level type rather than <Module>.
+        // Nested types inside <Module> make .NET 9+ throw BadImageFormatException
+        // ("Enclosing type(s) not found") on startup (dotnet/runtime#111164).
+        var containerType = MscorlibInjector.InjectGlobalContainerType(module, _renamer.RenameUnsafely());
+        MscorlibInjector.InjectCompilerGeneratedValueType(module, containerType, _renamer.RenameUnsafely());
+        var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(module, containerType, Data.CryptKeyBytes, _renamer.RenameUnsafely());
+        var saltBytesField = MscorlibInjector.InjectCompilerGeneratedArray(module, containerType, Data.SaltBytes, _renamer.RenameUnsafely());
 
         var runtimeModule = Context.RuntimeModule;
         var runtimeDecryptorType = runtimeModule.ResolveOrThrow<TypeDefinition>(typeof(Decryptor));
@@ -50,7 +53,7 @@ public class StringsEncryption : Protection
 
                 var data = Encryptor.EncryptContent(content, Data.SaltBytes, Data.CryptKeyBytes);
                 var arrayName = _renamer.RenameUnsafely();
-                var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(module, globalModuleType, data, arrayName);
+                var encryptedDataFieldDef = MscorlibInjector.InjectCompilerGeneratedArray(module, containerType, data, arrayName);
 
                 instruction.ReplaceWith(CilOpCodes.Ldsfld, encryptedDataFieldDef);
                 instructions.InsertRange(i + 1,

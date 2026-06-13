@@ -47,6 +47,27 @@ public class MscorlibInjector
         type.NestedTypes.Add(result);
         return result;
     }
+    /// <summary>
+    /// Creates and registers a top-level type intended to host nested compiler-generated
+    /// helper types (e.g. the value types that back RVA field arrays).
+    /// </summary>
+    /// <remarks>
+    /// Nested types must NOT be placed inside the global &lt;Module&gt; type: starting with
+    /// .NET 9 the runtime throws <c>BadImageFormatException</c> ("Enclosing type(s) not found")
+    /// at startup for any assembly that has a nested type inside &lt;Module&gt;
+    /// (see https://github.com/dotnet/runtime/issues/111164, the fix was declined for .NET 9+).
+    /// Using a regular top-level type as the host instead mirrors how the C# compiler emits
+    /// &lt;PrivateImplementationDetails&gt; and works on every runtime.
+    /// </remarks>
+    public static TypeDefinition InjectGlobalContainerType(ModuleDefinition module, string? name = null)
+    {
+        var @object = module.CorLibTypeFactory.Object.ToTypeDefOrRef();
+        var type = new TypeDefinition(null, name ?? "<PrivateImplementationDetails>",
+            TypeAttributes.NotPublic | TypeAttributes.Sealed, @object);
+        InjectCompilerGeneratedAttribute(module, type);
+        module.TopLevelTypes.Add(type);
+        return type;
+    }
     public static CustomAttribute InjectCompilerGeneratedAttribute(ModuleDefinition module, IHasCustomAttribute @in)
     {
         var attribute = CreateCompilerGeneratedAttribute(module);
