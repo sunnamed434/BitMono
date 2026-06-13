@@ -48,17 +48,11 @@ public class MscorlibInjector
         return result;
     }
     /// <summary>
-    /// Creates and registers a top-level type intended to host nested compiler-generated
-    /// helper types (e.g. the value types that back RVA field arrays).
+    /// Creates and registers a top-level type to host nested compiler-generated helper types.
+    /// Nested types must not live inside &lt;Module&gt; - that crashes .NET 9+ with
+    /// BadImageFormatException (dotnet/runtime#111164) - so this mirrors the compiler's
+    /// &lt;PrivateImplementationDetails&gt; instead.
     /// </summary>
-    /// <remarks>
-    /// Nested types must NOT be placed inside the global &lt;Module&gt; type: starting with
-    /// .NET 9 the runtime throws <c>BadImageFormatException</c> ("Enclosing type(s) not found")
-    /// at startup for any assembly that has a nested type inside &lt;Module&gt;
-    /// (see https://github.com/dotnet/runtime/issues/111164, the fix was declined for .NET 9+).
-    /// Using a regular top-level type as the host instead mirrors how the C# compiler emits
-    /// &lt;PrivateImplementationDetails&gt; and works on every runtime.
-    /// </remarks>
     public static TypeDefinition InjectGlobalContainerType(ModuleDefinition module, string? name = null)
     {
         var @object = module.CorLibTypeFactory.Object.ToTypeDefOrRef();

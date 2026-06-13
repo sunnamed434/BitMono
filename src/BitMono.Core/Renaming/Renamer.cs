@@ -31,8 +31,6 @@ public class Renamer
 
     private bool ShouldRenameType(TypeDefinition? typeDefinition)
     {
-        // Types in framework-reserved namespaces (e.g. PolySharp polyfills) are matched by full
-        // name by the compiler/runtime and must never be renamed. See IsInReservedNamespace.
         return typeDefinition == null || (_nameCriticalAnalyzer.NotCriticalToMakeChanges(typeDefinition) && !typeDefinition.IsExplicitLayout && !typeDefinition.IsInReservedNamespace());
     }
 

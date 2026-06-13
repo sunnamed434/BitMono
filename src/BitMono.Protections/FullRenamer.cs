@@ -30,17 +30,10 @@ public class FullRenamer : Protection
         //     contracts are never broken.
         // -----------------------------------------------------------------
 
-        // Member access through a generic instantiation (e.g. Template<int>.Do() or .Field) is
-        // encoded as a MemberReference whose Name is a standalone metadata string. Renaming the
-        // underlying MethodDefinition/FieldDefinition does NOT update it, so the call/field access
-        // breaks at runtime. Record reference -> definition links now, while the names still match
-        // and the references resolve, then re-sync the reference names once renaming is done.
-        // See https://github.com/sunnamed434/BitMono/issues/220.
+        // Generic-instance member refs (e.g. Template<int>.Do()) carry their own name string that
+        // renaming the definition won't update; capture them now and re-sync after. See #220.
         var memberReferences = CollectModuleMemberReferences(Context.Module);
 
-        // Note: types referenced by WPF BAML are kept out of Context.Parameters.Members by the
-        // MemberInclusionFlags.Baml gate on this protection (see BamlCriticalAnalyzer), so the loops
-        // below never see them.
         var membersList = Context.Parameters.Members.ToList();
         var allTypes = membersList.OfType<TypeDefinition>().ToList();
         var allMethods = membersList.OfType<MethodDefinition>().ToList();
@@ -153,10 +146,8 @@ public class FullRenamer : Protection
         return Task.CompletedTask;
     }
 
-    // Maps every MemberReference used in the module's method bodies to the in-module definition it
-    // points to. Resolution happens before any renaming, while reference and definition names
-    // still match. References whose definition lives in another module (e.g. framework calls) are
-    // ignored - we never rename those, so their names must stay intact.
+    // Maps each MemberReference in the module's method bodies to the in-module definition it points
+    // to, resolved before renaming while names still match.
     private static Dictionary<MemberReference, IMemberDefinition> CollectModuleMemberReferences(ModuleDefinition module)
     {
         var moduleTypes = new HashSet<TypeDefinition>(module.GetAllTypes());

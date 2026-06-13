@@ -13,9 +13,8 @@ public class StringsEncryption : Protection
     public override Task ExecuteAsync()
     {
         var module = Context.Module;
-        // Host the injected helper types in a dedicated top-level type rather than <Module>.
-        // Nested types inside <Module> make .NET 9+ throw BadImageFormatException
-        // ("Enclosing type(s) not found") on startup (dotnet/runtime#111164).
+        // Inject into a top-level type, not <Module>: nested types in <Module> crash .NET 9+
+        // with BadImageFormatException (dotnet/runtime#111164).
         var containerType = MscorlibInjector.InjectGlobalContainerType(module, _renamer.RenameUnsafely());
         MscorlibInjector.InjectCompilerGeneratedValueType(module, containerType, _renamer.RenameUnsafely());
         var cryptKeyField = MscorlibInjector.InjectCompilerGeneratedArray(module, containerType, Data.CryptKeyBytes, _renamer.RenameUnsafely());

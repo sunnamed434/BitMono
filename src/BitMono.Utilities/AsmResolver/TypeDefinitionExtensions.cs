@@ -11,24 +11,9 @@ public static class TypeDefinitionExtensions
         return Utf8String.IsNullOrEmpty(source.Namespace) == false;
     }
 
-    // Compiler/runtime-recognised "magic" types are matched by their exact full name, so when a
-    // project ships them as in-assembly polyfills/shims (e.g. PolySharp) they must keep their
-    // original name AND namespace - renaming or namespace-stripping silently breaks the feature
-    // they back. Real application code never lives in these framework-owned namespaces, so any
-    // type defined under them is left untouched. See
-    // https://github.com/sunnamed434/BitMono/issues/97.
-    //
-    //   System.Runtime.CompilerServices - IsExternalInit, RequiredMemberAttribute,
-    //       CompilerFeatureRequiredAttribute, ModuleInitializerAttribute, SkipLocalsInitAttribute,
-    //       CallerArgumentExpressionAttribute, InterpolatedStringHandler*, CallConv* markers, ...
-    //   System.Diagnostics.CodeAnalysis - nullable analysis attributes (AllowNull, NotNull,
-    //       MemberNotNull, ...), DynamicallyAccessedMembers, RequiresUnreferencedCode, ...
-    //   System.Runtime.Versioning      - SupportedOSPlatform/UnsupportedOSPlatform,
-    //       RequiresPreviewFeaturesAttribute, ...
-    //   System.Runtime.InteropServices - UnmanagedCallersOnlyAttribute is resolved by the runtime
-    //       by name to set up reverse P/Invoke; renaming it breaks the call.
-    //   System.Diagnostics             - StackTraceHiddenAttribute is read by the runtime by name
-    //       when formatting stack traces.
+    // Framework-owned namespaces that hold compiler/runtime "magic" types matched by full name
+    // (e.g. PolySharp polyfills). User code never lives here, so any type defined under them is left
+    // unrenamed/unstripped - renaming would break the feature it backs. See #97.
     private static readonly string[] ReservedNamespaces =
     {
         "System.Runtime.CompilerServices",
