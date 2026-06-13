@@ -13,8 +13,8 @@ Download
 
 Get BitMono from `GitHub releases <https://github.com/sunnamed434/BitMono/releases/latest>`_:
 
-- .NET 8 apps: ``BitMono-v0.25.3-CLI-net8.0-win-x64.zip``
-- .NET Framework apps: ``BitMono-v0.25.3-CLI-net462-win-x64.zip``
+- .NET 8 apps: ``BitMono-v0.39.0-CLI-net8.0-win-x64.zip``
+- .NET Framework apps: ``BitMono-v0.39.0-CLI-net462-win-x64.zip``
 - Unity/Mono: Use the .NET Framework version
 
 Usage
