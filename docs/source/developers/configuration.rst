@@ -1,15 +1,14 @@
 Configuration
 =============
 
-Injecting Configuration(s) in Protection constructor.
-BitMono have such configurations and all of them you can inject in your protection constructor:
+Need BitMono's settings inside your protection? Inject any of these through your constructor and the DI
+container hands them to you:
 
-- ProtectionSettings
-- CriticalsSettings
-- ObfuscationSettings
+- ``ProtectionSettings``
+- ``CriticalsSettings``
+- ``ObfuscationSettings``
 
-
-Here's example how to do that:
+Here's how:
 
 
 .. code-block:: csharp

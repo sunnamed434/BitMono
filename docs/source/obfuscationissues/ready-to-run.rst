@@ -30,7 +30,7 @@ For more information `see here <https://learn.microsoft.com/en-us/dotnet/core/de
 Use .dll File with Managed Code Instead of .exe File
 ----------------------------------------------------
 
-Usually, in the output folder of your project (if it's a `.exe`), there should be a `.dll` file with managed code. Use this `.dll` file for obfuscation instead, if there's no such file or it has a native code then use upper solution.
+Usually, in the output folder of your project (if it's a `.exe`), there should be a `.dll` file with managed code. Use that `.dll` for obfuscation instead. If there's no such file, or it's also native code, fall back to disabling ReadyToRun as described above.
 
 Didn't Help?
 ------------

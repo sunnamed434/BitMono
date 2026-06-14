@@ -3,9 +3,16 @@ CorLib not found
 
 The problem
 -----------
-You're getting an error it says: `Could not load file or assembly CorLib Version=x.x.x.x, etc` 
 
+You're getting an error like ``Could not load file or assembly CorLib Version=x.x.x.x, ...``.
 
 Solution
 --------
-The thing that may cause this issue is that you're running on .NET Framework (the obfuscator project) and the actual obfuscator project is running on .NET Core (let's say - 6.0), and you're trying to run the obfuscated file on Mono, you might already catch the problem, you need to change the obfuscator project TargetFramework (i.e in this case to .NET Framework) to approximately the same version as target file for obfuscation.
+
+This usually means a framework mismatch. You're running a BitMono build that targets one runtime (say the
+.NET / .NET Core build), but the file you're obfuscating is meant for another (say Mono). When the
+runtimes don't line up, BitMono can't resolve the core library.
+
+Fix it by using the BitMono build whose target framework matches the file you're protecting. For a Mono
+target, use the .NET Framework build of BitMono. See :doc:`compatibility` for the full framework-matching
+rundown.

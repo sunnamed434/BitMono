@@ -8,9 +8,12 @@ Creating your first Protection
 
 Create your protection in the ``BitMono.Protections`` namespace.
 
-- The Dependency Injection (DI) container will automatically register your protections.
-- The BitMono Obfuscation Engine will invoke your protection based on its type and the order specified in the configuration file.
-- The order of execution is determined by the position of each protection in the ``protections.json`` file within the configuration file. For example, AntiILdasm is executed first (because this protection is first in configuration) and Packers always run last after all protections, even if you set this ``Packer`` protection as a first one in configuration it will anyway gonna be called last.
+- The Dependency Injection (DI) container registers your protections automatically.
+- The BitMono Obfuscation Engine invokes your protection based on its type and its position in the
+  configuration file.
+- Execution order follows the order in ``protections.json``, e.g. ``AntiILdasm`` runs first because it's
+  listed first. The exception is Packers: they always run last, no matter where you place them in the
+  list.
 
 
 .. code-block:: csharp

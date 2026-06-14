@@ -1,7 +1,8 @@
 Obfuscation Engine Execution Order
 ==================================
 
-BitMono uses its own obfuscation execution order which is good to be known, and it reminds ConfuserEx a lot, if you're familiar with it you can be easier with it.
+BitMono runs through a fixed order every time it obfuscates, worth knowing if you're writing your own
+protection. If you've used ConfuserEx, a lot of this will feel familiar.
 
 1. Output Loaded Module Info
 2. Output Information about BitMono (example, is it intended for .NET Core or Mono or .NET Framework, etc.) and running OS, etc.

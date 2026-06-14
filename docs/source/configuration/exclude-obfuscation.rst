@@ -1,76 +1,87 @@
-Exclude member from being obfuscated
-====================================
+Exclude a member from being obfuscated
+======================================
 
-Let's say you have something specific that you don't want to protect, in this case you can add an ``[ObfuscationAttribute]`` and specify there protection name.
-
-.. note::
-
-    Set to false the ``ObfuscationAttributeObfuscationExclude`` parameter in ``obfuscation.json``, to ignore these attributes.
-
+Got a method, class, or whole assembly you don't want touched? Mark it in your source with the standard
+``[Obfuscation]`` attribute (``System.Reflection.ObfuscationAttribute``) and BitMono leaves it alone.
 
 .. code-block:: csharp
 
-	using System;
-	using System.Xml.Serialization;
-	using System.Runtime.CompilerServices;
-	using Newtonsoft.Json;
-	
-	[assembly: Obfuscation(Feature = "DotNetHook")] // Ignoring whole assembly or in the AssemblyInfo.cs (sometimes it would not exist in your project)
-	[assembly: Obfuscation(Feature = "NoNamespaces")] // Ignoring whole assembly or in the AssemblyInfo.cs (sometimes it would not exist in your project)
-	namespace Project
-	{
-	}
-	
-	// Enough to add attribute to whole class type to ignore obfuscation of concrete protection
-	[Obfuscation(Feature = "FullRenamer")] // Add this attribute to ignore renaming of method
-	class MyClass
-	{
-	    [MethodImpl(MethodImplOptions.NoInlining)] // Add this attribute to ignore renaming of method
-	    void MyMethod()
-	    {
-	        // potential critical code used to be here
-	    }
-	
-	    // Add this attribute to ignore renaming of method
-	    [Obfuscation(Feature = "ObjectReturnType")]  // This attribute is won`t work in this case, because 'MyClass' has attribute with the same feature and `ApplyToMembers` set to true
-	    [Obfuscation(Feature = "CallToCalli")] 
-	    void MyAnotherMethod()
-	    {
-	        // potential critical code used to be here
-	    }
-	}
-	
-	// Obfuscation will be still applied to the inherted type
-	[Obfuscation(Feature = "BitDotNet")] // Adding ObfuscationAttribute once is enough to ignore members
-	public interface IInterface
-	{
-	    string Text { get; }
-	
-	    [Obfuscation(Feature = "FullRenamer")]
-	    Task DoSomethingAsync();
-	}
-	
-	// IInterface obfuscation attribute doesn`t work in implementation
-	[Obfuscation(Feature = "FullRenamer")] // Adding ObfuscationAttribute once is enough to ignore members
-	public class InterfaceImplementation : IInterface
-	{
-	    public string Text { get; }
-	
-	    [Obfuscation(Feature = "BitMethodDotnet")]
-	    public Task DoSomethingAsync()
-	    {
-	        return Task.CompletedTask;
-	    }
-	}
-	
-	
-	[Serializable] // Marking as serializable attribute is enough to ignore everything in this model
-	class ProductModel
-	{
-	    [XmlAttribute("Product Name")] // Marking as Xml attribute
-	    string Name { get; set; }
-	    [JsonProperty("Product Description")] // Or marking as Json Property
-	    string Description { get; set; }
-	    [XmlAttribute("Product Price")]
-	    double Price { get; set; }
-	}
+    using System.Reflection;
+
+    [Obfuscation(Feature = "FullRenamer")] // keep this class out of FullRenamer
+    class MyClass
+    {
+        void MyMethod()
+        {
+        }
+    }
+
+``Feature`` is the name of the protection to skip (the same name you use in ``protections.json``). Leave
+``Feature`` off and the member is excluded from **every** protection:
+
+.. code-block:: csharp
+
+    [Obfuscation] // skip this class entirely, all protections
+    class KeepMeReadable
+    {
+    }
+
+A few things worth knowing:
+
+- **``Exclude`` defaults to ``true``**, so just adding the attribute excludes the member. Set
+  ``Exclude = false`` if you ever want to *opt a member back in*.
+- **It covers members too.** Put it on a class and its methods/fields are excluded as well
+  (``ApplyToMembers`` is ``true`` by default, set it ``false`` to limit the attribute to the class itself).
+- **It's stripped from the output** after obfuscation by default, so the attribute doesn't leak into your
+  shipped assembly (``StripAfterObfuscation``).
+- Stack several attributes to skip several protections on the same member:
+
+  .. code-block:: csharp
+
+      [Obfuscation(Feature = "FullRenamer")]
+      [Obfuscation(Feature = "CallToCalli")]
+      void MyMethod() { }
+
+.. note::
+
+    This whole mechanism is controlled by ``ObfuscationAttributeObfuscationExclude`` in
+    ``obfuscation.json``. It's on by default, set it ``false`` if you want BitMono to ignore
+    ``[Obfuscation]`` attributes entirely.
+
+Skipping NoInlining methods
+---------------------------
+
+BitMono can also skip any method marked with ``[MethodImpl(MethodImplOptions.NoInlining)]``, handy when you
+already use that attribute and don't want to add ``[Obfuscation]`` on top of it. Turn it on with
+``NoInliningMethodObfuscationExclude`` in ``obfuscation.json``:
+
+.. code-block:: csharp
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    void MyMethod()
+    {
+    }
+
+Data models and serialization
+-----------------------------
+
+Types that get serialized (``[Serializable]``, ``[XmlAttribute]``, ``[JsonProperty]``, …) usually need
+their names left intact, or deserialization breaks. Marking the model is enough:
+
+.. code-block:: csharp
+
+    [Serializable] // keeps the whole model intact
+    class ProductModel
+    {
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+
+Which attributes count as "a model" is configurable, and that list already covers the common serializers.
+See :doc:`third-party-issues` for the ``criticals.json`` side of this.
+
+Can't edit the source?
+----------------------
+
+Attributes only work on code you own. For third-party types, Unity messages, plugin base types, and
+anything else you can't annotate, exclude it by name instead, see :doc:`third-party-issues`.

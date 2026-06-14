@@ -1,17 +1,20 @@
-Which base Protection better to select and why?
-===============================================
+Which base Protection to pick, and why
+======================================
 
-Since BitMono contains inside the heart 3 different types of protection, it's very necessary to understand what you're working on and what type of protection you need to select.
+BitMono has three kinds of protection at its core, and picking the right base for what you're building
+matters. They are:
 
-So, 3 different type of protections:
+1. ``Protection``
+2. ``PipelineProtection``
+3. ``PackerProtection``
 
-1. Protection
-2. PipelineProtection
-3. PackerProtection
+Start by asking what your protection actually needs to do:
 
-First of all, you need to understand what kinda type of work your protection is going to do
-
-- You need something for fast testing and access to the Module then simply use ``Protection``
-- If you need access to the Module and you want to modify it you can use ``Protection``
-- You want to split your protection into different layers with access to the Module, e.g, populating of child protection then you can use ``PipelineProtection``
-- You don't need access to the Module, but, if you want to change the actual file structure i.e modify ``PE``, then ``PackerProtection`` is your choice, actually you can have an access to the Module, but you need to rewrite it again because at this point file is already written.
+- **Just need the Module?** Reading or modifying types, methods, IL, anything in the managed metadata,
+  use ``Protection``. It's also the simplest one to start with for quick testing.
+- **Want to split the work into layers?** If your protection naturally breaks into stages, or it spawns
+  child protections, use ``PipelineProtection``. You still get full access to the Module.
+- **Changing the file itself (the PE)?** Use ``PackerProtection``. Packers run *last*, after the module
+  has already been written to disk, so this is where you rewrite the actual file structure. You can still
+  reach the Module from here, but you'd have to write it out again, so only do this if you really need to
+  touch the PE.

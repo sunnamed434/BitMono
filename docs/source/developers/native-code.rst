@@ -10,6 +10,9 @@ If you want to use a native code in the protection you must do the following:
     public class CustomProtection : Protection
 
 
-A good example is ``UnmanagedString`` protection. It uses native code to encrypt strings. You can find the source code in the ``UnmanagedString`` file.
+A good example is the ``UnmanagedString`` protection, it uses native code to encrypt strings. Have a look
+at the ``UnmanagedString`` source if you want to see it in action.
 
-This thing is so important to do, before actually it was automatically done before the obfuscation without any attributes, however we found that this might break an app, because it changes the architecture of the app, so we decided to make it optional.
+Don't skip the attribute. BitMono used to switch to native code automatically, without any attribute, but
+that changes the app's architecture and could break it. So now it's opt-in, and you have to ask for it
+with ``[ConfigureForNativeCode]``.

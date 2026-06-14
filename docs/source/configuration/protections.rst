@@ -1,14 +1,18 @@
 Protections
 ===========
 
-Let's say you want to execute the same protection twice or even execute protections in a different orders, etc.
+Maybe you want to run the same protection twice, or run protections in a different order. That's all
+controlled by ``protections.json``.
 
 Keep in mind:
 
-- The order of execution is determined by the position of each protection in the ``protections.json`` file within the configuration file. For example, AntiILdasm is executed first (because this protection is first in configuration) and Packers always run last after all protections, even if you set this ``Packer`` protection as a first one in configuration it will anyway gonna be called last.
+- Execution order follows the position of each protection in ``protections.json``. ``AntiILdasm`` runs
+  first here because it's listed first. The one exception is **Packers**, they always run last, after
+  every other protection, no matter where you put them in the list.
 
-Use ``protections.json`` - by default all protections are configured as they should, if something works not as intentionally you always may disable something, enable and even remove.
-Default config (it can be different with new updates, but just let's see how it looks like):
+By default everything is already configured the way it should be. If something doesn't behave the way you
+want, you're free to enable, disable, reorder, or remove entries. Here's roughly how the default looks
+(it can change between releases):
 
 
 .. code-block:: json
