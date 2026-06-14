@@ -1,82 +1,53 @@
 Protection Runtime Moniker
 ==========================
 
-You have protection that works only with specific runtime and you want to let it know to the user.
-By default BitMono provides an opportunity to talk with the users, to warn them, like be careful, this protection working only with ``Mono``.
+Some protections only make sense on one runtime. If yours is built for Mono and would do nothing (or
+break things) elsewhere, say so with a **runtime moniker** attribute. BitMono then warns the user when
+they enable it, something like *"Intended for Mono runtime"*, so nobody's surprised.
 
 .. code-block:: csharp
 
-	[RuntimeMonikerMono] // Add this Attribute which says this protections works only with Mono Runtime
-	public class MonoPacker : Packer
+    [RuntimeMonikerMono] // this protection is meant for the Mono runtime
+    public class MonoPacker : Packer
 
+That's all you have to do. BitMono reads the attribute by reflection and shows the message in the
+protections list (CLI or GUI), no registration, no extra wiring.
 
-If you will check what's going on under the hood, you will see that it simply specifies ``Mono`` inside of the constructor.
+Built-in monikers
+-----------------
 
+- ``[RuntimeMonikerMono]`` — Mono
+- ``[RuntimeMonikerNETCore]`` — .NET / .NET Core
+- ``[RuntimeMonikerNETFramework]`` — .NET Framework
 
-.. code-block:: csharp
+No moniker at all means the protection is assumed to work everywhere.
 
-	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
-	public class RuntimeMonikerMonoAttribute : RuntimeMonikerAttribute
-	{
-		// public const string Mono = "Mono";
-	    public RuntimeMonikerMonoAttribute() : base(KnownRuntimeMonikers.Mono)
-	    {
-	    }
-	}
+Your own moniker
+----------------
 
-
-If you will go further, you can see what's actually going on here, it says ``Intended for Mono runtime``, so that means to the endpoint user it will output this information and warn they.
-
-
-.. code-block:: csharp
-
-	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
-	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-	public abstract class RuntimeMonikerAttribute : Attribute
-	{
-	    protected RuntimeMonikerAttribute(string name)
-	    {
-	        Name = name;
-	    }
-	
-	    public string Name { get; }
-	
-	    [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
-	    public virtual string GetMessage()
-	    {
-	        return $"Intended for {Name} runtime";
-	    }
-	}
-
-
-Let's create your own Rust Runtime Moniker Attribute.
-
+Need a runtime that isn't in the list? Subclass ``RuntimeMonikerAttribute`` and pass its name, the name
+is what shows up in the warning message:
 
 .. code-block:: csharp
 
-	public class RuntimeMonikerRustAttribute : RuntimeMonikerAttribute
-	{
-	    public RuntimeMonikerRustAttribute() : base("Rust")
-	    {
-	    }
-	}
+    public class RuntimeMonikerRustAttribute : RuntimeMonikerAttribute
+    {
+        public RuntimeMonikerRustAttribute() : base("Rust")
+        {
+        }
+    }
 
-
-
-Specify Rust Runtime Moniker Attribute.
-
+Then use it like any built-in one:
 
 .. code-block:: csharp
 
-	[RuntimeMonikerRust] // Add this Attribute which says this protections works only with Rust Runtime
-	public class RustPacker : Packer // or instead use Protection or PipelineProtection
+    [RuntimeMonikerRust] // works on Protection, PipelineProtection or Packer
+    public class RustPacker : Packer
 
-
-
-After that user need to use the ``RustPacker`` and they will receive an message that the ``RustPacker`` "is intended for Rust runtime".
-
-
+Now anyone enabling ``RustPacker`` gets told it's *"intended for Rust runtime"*.
 
 .. note::
 
-	You don't need to make any services registration or instance creation for the ``RuntimeMonikerRust`` due to it will get the attribute automatically behind the hood using Reflection, and Protections Info Output in the Console/GUI (whatever is used, user will get a message notification about that). So, you don't need to care about ``RuntimeMonikerRust`` anymore, simply add it on top of the feature and have fun!
+    A moniker only *informs* the user, it doesn't stop the protection from running. If you need a
+    protection skipped automatically on a given build, that's a different mechanism, see
+    :doc:`il2cpp-compatibility`.

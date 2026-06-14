@@ -1,59 +1,44 @@
 IL2CPP Compatibility
 ====================
 
-On a Unity **IL2CPP** build the managed ``Assembly-CSharp.dll`` is not shipped: ``il2cpp.exe`` consumes it
-and converts it to C++ (``GameAssembly.dll``). BitMono obfuscates the assembly *before* that conversion, so
-pure managed/metadata protections (renaming, string encryption, ...) carry through into
-``global-metadata.dat``. Protections that emit native code, ``calli``, pack the PE, or otherwise produce
-output ``il2cpp.exe`` can't handle would break the build (or only affect the managed PE that IL2CPP throws
-away), so they must be skipped on IL2CPP builds.
-
-You mark such a protection with ``[IL2CPPIncompatible]``. When BitMono runs in IL2CPP mode (the Unity
-integration sets it automatically when the scripting backend is IL2CPP, or you pass ``--il2cpp`` /
-``"IL2CPP": true``), every protection marked this way is skipped and the reason is logged.
+Some protections can't survive a Unity **IL2CPP** build. Mark those with ``[IL2CPPIncompatible]`` and
+BitMono skips them automatically whenever it runs in IL2CPP mode, while still running them normally on
+Mono and standalone .NET.
 
 .. code-block:: csharp
 
     [IL2CPPIncompatible("Emits calli, which IL2CPP's AOT compiler does not support")]
     public class CallToCalli : Protection
 
-The reason you pass is shown to the user so they understand why the protection was skipped:
+The reason you pass is shown to the user, so they understand why it was skipped:
 
 .. code-block:: text
 
     [IL2CPP] CallToCalli - Emits calli, which IL2CPP's AOT compiler does not support
 
-Under the hood a protection is treated as IL2CPP-incompatible when it is marked with
-``[IL2CPPIncompatible]`` **or** with :doc:`native-code` (``[ConfigureForNativeCode]``) - native method
-bodies can never be converted to C++, so they are always excluded even without an explicit attribute.
+Like the :doc:`runtime moniker <protection-runtime-moniker>`, the attribute is read by reflection, you
+don't register anything. Add it on top of the protection (built-in or a :doc:`plugin <plugins>`) and
+you're done. IL2CPP mode is set automatically by the Unity integration when the scripting backend is
+IL2CPP, or by hand with the CLI ``--il2cpp`` flag / ``"IL2CPP": true`` in ``obfuscation.json``.
 
-.. code-block:: csharp
+Should I mark my protection?
+----------------------------
 
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class IL2CPPIncompatibleAttribute : Attribute
-    {
-        public IL2CPPIncompatibleAttribute(string reason = "")
-        {
-            Reason = reason;
-        }
+On an IL2CPP build the managed ``Assembly-CSharp.dll`` isn't shipped, ``il2cpp.exe`` consumes it and
+converts it to C++ (``GameAssembly.dll``). BitMono obfuscates *before* that conversion, so where your
+protection's output ends up decides this:
 
-        public string Reason { get; }
-
-        public string GetMessage()
-        {
-            return string.IsNullOrWhiteSpace(Reason)
-                ? "Not supported on IL2CPP builds"
-                : Reason;
-        }
-    }
+- **Don't mark it** if it only does managed metadata/IL edits ``il2cpp.exe`` can parse, renaming,
+  clearing namespaces, swapping ``ldstr`` for a managed decryptor call. That effect carries through into
+  ``global-metadata.dat``, which is exactly what you want.
+- **Mark it** if it emits native code, ``calli``, packs the PE, or otherwise produces output
+  ``il2cpp.exe`` can't handle. It would either break the conversion or only touch the managed PE that
+  IL2CPP throws away.
 
 .. note::
 
-   The attribute is read automatically by reflection, the same way as
-   :doc:`protection-runtime-moniker` - you don't register anything. Add it on top of the protection (a
-   built-in one or a :doc:`plugin <plugins>`) and BitMono skips it on IL2CPP builds while still running it
-   normally on Mono / standalone .NET builds.
+   Protections marked with :doc:`native-code` (``[ConfigureForNativeCode]``) are treated as
+   IL2CPP-incompatible automatically, native method bodies can never become C++, so you don't need to add
+   ``[IL2CPPIncompatible]`` on top of them as well.
 
-If a protection only does pure managed metadata/IL edits that ``il2cpp.exe`` can parse (renaming, clearing
-namespaces, replacing ``ldstr`` with a managed decryptor call, ...), **don't** mark it - it should keep
-running on IL2CPP so its effect lands in ``global-metadata.dat``.
+See :doc:`../protection-list/unity` for which built-in protections run on IL2CPP and which are skipped.

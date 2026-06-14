@@ -29,6 +29,16 @@ That's it, AsmResolver should resolve now.
 The packages
 ------------
 
+Most people only ever need one of these:
+
+- `BitMono.Integration <https://www.nuget.org/packages/BitMono.Integration/>`_ - obfuscate your project
+  on every build by adding one ``<PackageReference>``. See :doc:`msbuild-integration`.
+- `BitMono.GlobalTool <https://www.nuget.org/packages/BitMono.GlobalTool/>`_ - the BitMono CLI as a .NET
+  global tool (``dotnet tool install --global BitMono.GlobalTool``). See :doc:`how-to-use`.
+
+The rest are the engine packages, for building your own tools on top of BitMono (see
+:doc:`../developers/configuration`):
+
 - `BitMono.API <https://www.nuget.org/packages/BitMono.API/>`_ - core interfaces and abstractions
 - `BitMono.Core <https://www.nuget.org/packages/BitMono.Core/>`_ - the obfuscation engine
 - `BitMono.Protections <https://www.nuget.org/packages/BitMono.Protections/>`_ - the protection implementations
@@ -37,4 +47,3 @@ The packages
 - `BitMono.Utilities <https://www.nuget.org/packages/BitMono.Utilities/>`_ - helper functions
 - `BitMono.Obfuscation <https://www.nuget.org/packages/BitMono.Obfuscation/>`_ - high-level obfuscation orchestrator
 - `BitMono.Runtime <https://www.nuget.org/packages/BitMono.Runtime/>`_ - runtime components for obfuscated assemblies
-- `BitMono.GlobalTool <https://www.nuget.org/packages/BitMono.GlobalTool/>`_ - the .NET global tool
