@@ -1,6 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/logo/BitMonoLogo.png" alt="BitMono logo" width="180" /><br>
-  Free open-source obfuscator that targeting Mono and whole .NET<br>
+  <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/brand/readme-header-1280.png" alt="BitMono — free & open-source obfuscator for .NET and Mono" width="100%" />
 </p>
 
 ## BitMono

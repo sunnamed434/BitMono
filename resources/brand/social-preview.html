@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BitMono — Social Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:#0b0c0e; }
+  /* preview-fit: scaled down so the full 1280x640 frame is visible; removed for export */
+  body.fit { display:flex; align-items:flex-start; justify-content:flex-start; }
+  body.fit .frame { transform:scale(var(--fit, 0.71)); transform-origin:top left; }
+  .frame {
+    width:1280px; height:640px; position:relative; overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 18% 28%, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%),
+      radial-gradient(140% 120% at 100% 110%, rgba(255,255,255,0.04), rgba(0,0,0,0) 55%),
+      #0b0c0e;
+    font-family:"Space Grotesk", sans-serif;
+  }
+  /* faint technical grid */
+  .frame::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:radial-gradient(120% 100% at 50% 40%, #000 30%, transparent 78%);
+            mask-image:radial-gradient(120% 100% at 50% 40%, #000 30%, transparent 78%);
+  }
+  /* oversized head watermark bleeding off the right */
+  .wm{
+    position:absolute; right:-160px; top:50%; transform:translateY(-50%);
+    width:760px; height:760px; opacity:0.05;
+    background:url('mark-inverted.png') center/contain no-repeat;
+    filter:grayscale(1) contrast(1.1);
+  }
+  .lockup{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    gap:58px; padding:0 96px;
+  }
+  .markwrap{
+    width:284px; height:284px; flex:0 0 auto; position:relative; border-radius:35px;
+    box-shadow:
+      0 0 0 1.5px rgba(255,255,255,0.10) inset,
+      0 0 80px 4px rgba(255,255,255,0.05),
+      0 30px 70px -20px rgba(0,0,0,0.8);
+  }
+  .markwrap img{ width:100%; height:100%; display:block; }
+  .divider{ width:1px; height:212px; background:linear-gradient(180deg, transparent, rgba(255,255,255,0.16) 18%, rgba(255,255,255,0.16) 82%, transparent); flex:0 0 auto; }
+  .text{ flex:0 0 auto; max-width:560px; }
+  .text .word{ height:70px; display:block; }
+  .text .word img{ height:100%; display:block; }
+  .tag{
+    margin-top:24px; font-size:27px; line-height:1.34; font-weight:400; letter-spacing:-0.01em;
+    color:#c7c9cd;
+  }
+  .tag b{ color:#fff; font-weight:600; }
+  .meta{
+    margin-top:30px; display:flex; align-items:center; gap:14px;
+    font-family:"JetBrains Mono", monospace; font-size:18px; color:#7e828a; letter-spacing:0.01em;
+  }
+  .dot{ width:8px; height:8px; border-radius:50%; background:#e8e8e8; box-shadow:0 0 10px 1px rgba(255,255,255,0.55); }
+  .meta .sep{ color:#3a3d43; }
+</style>
+</head>
+<body>
+  <div class="frame" data-screen-label="Social Preview 1280x640">
+    <div class="lockup">
+      <div class="markwrap"><img src="mark-primary.png" alt="BitMono mark"></div>
+      <div class="divider"></div>
+      <div class="text">
+        <span class="word"><img src="wordmark-light.png" alt="bitmono"></span>
+        <div class="tag">Free &amp; open-source <b>obfuscator</b> for <b>.NET</b> and <b>Mono</b></div>
+        <div class="meta"><span class="dot"></span>github.com/sunnamed434/BitMono<span class="sep">/</span>MIT</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
