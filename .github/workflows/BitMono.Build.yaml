@@ -181,7 +181,7 @@ jobs:
           fi
       
       - name: Setup Unity for Package Export
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v5
         env:
           PACKAGE_VERSION: ${{ steps.cli-build.outputs.version }}
           VERSION: ${{ steps.cli-build.outputs.version }}
