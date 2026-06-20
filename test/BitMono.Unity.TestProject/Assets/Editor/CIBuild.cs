@@ -38,4 +38,34 @@ public static class CIBuild
             EditorApplication.Exit(2);
         }
     }
+
+    // Android IL2CPP build targeting x86_64 so it runs natively on the standard x86_64 emulator (used to
+    // validate the #276 Android decryptor). Invoke: -executeMethod CIBuild.BuildAndroidIl2cpp -buildTarget Android
+    public static void BuildAndroidIl2cpp()
+    {
+        try
+        {
+#if UNITY_2021_2_OR_NEWER
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+#else
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+#endif
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.X86_64;
+            var options = new BuildPlayerOptions
+            {
+                scenes = new[] { "Assets/Scenes/TestScene.unity" },
+                locationPathName = "Build/Android/BitMonoTest.apk",
+                target = BuildTarget.Android,
+                options = BuildOptions.None,
+            };
+            var report = BuildPipeline.BuildPlayer(options);
+            Debug.Log("[CIBuild] android result=" + report.summary.result + " errors=" + report.summary.totalErrors);
+            EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[CIBuild] " + e);
+            EditorApplication.Exit(2);
+        }
+    }
 }
