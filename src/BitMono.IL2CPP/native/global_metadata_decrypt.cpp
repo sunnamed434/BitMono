@@ -40,6 +40,9 @@
 #  define BITMONO_IL2CPP_KEY_BYTES 'B','i','t','M','o','n','o','-','I','L','2','C','P','P','!','!'
 #endif
 
+// The metadata file IL2CPP loads; the hook intercepts an open of any path ending in this name.
+#define BITMONO_METADATA_NAME "global-metadata.dat"
+
 namespace {
 
 #pragma pack(push, 1)
@@ -53,6 +56,8 @@ struct BitMonoFrontHeader
 #pragma pack(pop)
 
 const uint64_t kBitMonoSanity = 0x505043324C494D42ULL;
+// global-metadata.dat's own magic; a successful decrypt restores it at the head of the file.
+const uint32_t kIl2cppMetadataMagic = 0xFAB11BAF;
 
 // XXTEA decrypt over little-endian uint32 words (matches C# Xxtea.Decrypt).
 void XxteaDecrypt(uint32_t* v, int n, const uint32_t key[4])
@@ -137,7 +142,7 @@ bool EndsWithMetadataName(LPCWSTR path)
 {
     if (!path)
         return false;
-    static const wchar_t kName[] = L"global-metadata.dat";
+    static const wchar_t kName[] = L"" BITMONO_METADATA_NAME;
     const size_t nameLen = (sizeof(kName) / sizeof(wchar_t)) - 1;
     size_t len = 0;
     while (path[len])
@@ -262,6 +267,7 @@ HANDLE WINAPI HookedCreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD
 // unlike address matching). Hooks every matching import slot. Returns true if at least one was patched.
 bool InstallCreateFileWHook(HMODULE mod)
 {
+    static const char kCreateFileW[] = "CreateFileW";
     if (!mod)
         return false;
     BYTE* base = (BYTE*)mod;
@@ -287,7 +293,7 @@ bool InstallCreateFileWHook(HMODULE mod)
             if (names->u1.Ordinal & IMAGE_ORDINAL_FLAG)
                 continue; // imported by ordinal - no name to match
             IMAGE_IMPORT_BY_NAME* byName = (IMAGE_IMPORT_BY_NAME*)(base + names->u1.AddressOfData);
-            if (strcmp((const char*)byName->Name, "CreateFileW") != 0)
+            if (strcmp((const char*)byName->Name, kCreateFileW) != 0)
                 continue;
             if (!g_origCreateFileW)
                 g_origCreateFileW = (CreateFileW_t)iat->u1.Function;
@@ -302,7 +308,7 @@ bool InstallCreateFileWHook(HMODULE mod)
     }
     // Fall back to the real export if we never captured an original (e.g. nothing imported it yet).
     if (hooked && !g_origCreateFileW)
-        g_origCreateFileW = (CreateFileW_t)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "CreateFileW");
+        g_origCreateFileW = (CreateFileW_t)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), kCreateFileW);
     return hooked && g_origCreateFileW != nullptr;
 }
 
@@ -336,6 +342,184 @@ struct BitMonoAutoInstall
 BitMonoAutoInstall g_bitMonoAutoInstall;
 } // namespace
 #endif // _WIN32 && !BITMONO_STANDALONE_TEST && !BITMONO_HOOK_TEST
+
+// ---------------------------------------------------------------------------------------------------------
+// Android: the POSIX analog of the Windows hook. IL2CPP open()s the (encrypted) global-metadata.dat and
+// mmap()s it; we GOT-hook open() in our own libil2cpp.so so the read returns plaintext. 64-bit only
+// (arm64 + x86_64 are both ELF64 and share this code); 32-bit ARMv7 would need ELF32/REL handling.
+// ---------------------------------------------------------------------------------------------------------
+#if defined(__ANDROID__) && defined(__LP64__) && !defined(BITMONO_STANDALONE_TEST)
+#include <link.h>
+#include <dlfcn.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdarg.h>
+
+namespace {
+
+typedef int (*open_t)(const char*, int, ...);
+open_t g_origOpen = nullptr;
+
+bool EndsWithMetadataNameA(const char* path)
+{
+    static const char kName[] = BITMONO_METADATA_NAME;
+    const size_t nameLen = sizeof(kName) - 1;
+    if (!path)
+        return false;
+    size_t len = strlen(path);
+    return len >= nameLen && strcmp(path + (len - nameLen), kName) == 0;
+}
+
+bool ReadAllFd(int fd, uint8_t* buf, size_t len)
+{
+    size_t done = 0;
+    while (done < len)
+    {
+        ssize_t n = read(fd, buf + done, len - done);
+        if (n <= 0)
+            return false;
+        done += (size_t)n;
+    }
+    return true;
+}
+
+// Decrypt and stash in a temp file in the metadata's own (app-writable) dir, unlinked immediately so it's
+// gone on close. Returns an fd at offset 0; IL2CPP then mmaps it and sees plaintext.
+int ServeDecryptedFd(const char* origPath, const uint8_t* enc)
+{
+    const void* dec = BitMonoDecryptMetadata(enc);
+    if (dec == enc)
+        return -1;
+    uint32_t len = ((const BitMonoFrontHeader*)enc)->bodyLength;
+
+    static const char kTempName[] = "bmmXXXXXX"; // mkstemp template, placed in the metadata's own writable dir
+    char tmpl[4096];
+    const char* slash = strrchr(origPath, '/');
+    size_t dirLen = slash ? (size_t)(slash - origPath) + 1 : 0;
+    if (dirLen + sizeof(kTempName) >= sizeof(tmpl))
+    {
+        free((void*)dec);
+        return -1;
+    }
+    memcpy(tmpl, origPath, dirLen);
+    memcpy(tmpl + dirLen, kTempName, sizeof(kTempName));
+
+    int fd = mkstemp(tmpl);
+    if (fd >= 0)
+    {
+        unlink(tmpl); // delete-on-close
+        size_t done = 0;
+        bool ok = true;
+        while (done < len)
+        {
+            ssize_t w = write(fd, (const uint8_t*)dec + done, len - done);
+            if (w <= 0) { ok = false; break; }
+            done += (size_t)w;
+        }
+        if (ok)
+            lseek(fd, 0, SEEK_SET);
+        else { close(fd); fd = -1; }
+    }
+    free((void*)dec);
+    return fd;
+}
+
+int HookedOpen(const char* path, int oflag, ...)
+{
+    mode_t mode = 0;
+    if (oflag & O_CREAT) { va_list ap; va_start(ap, oflag); mode = (mode_t)va_arg(ap, int); va_end(ap); }
+    int real = g_origOpen(path, oflag, mode);
+    if (real < 0 || !EndsWithMetadataNameA(path))
+        return real;
+
+    off_t size = lseek(real, 0, SEEK_END);
+    lseek(real, 0, SEEK_SET);
+    if (size < (off_t)sizeof(BitMonoFrontHeader) || size > 0x7FFFFFFF)
+        return real;
+    uint8_t* enc = (uint8_t*)malloc((size_t)size);
+    if (!enc)
+        return real;
+    if (ReadAllFd(real, enc, (size_t)size) && ((const BitMonoFrontHeader*)enc)->sanity == kBitMonoSanity)
+    {
+        int served = ServeDecryptedFd(path, enc);
+        free(enc);
+        if (served >= 0) { close(real); return served; }
+        int re = g_origOpen(path, oflag, mode); // decrypt failed - hand back a fresh, rewound fd
+        close(real);
+        return re;
+    }
+    free(enc);
+    lseek(real, 0, SEEK_SET);
+    return real;
+}
+
+// Patch our own libil2cpp.so's GOT slot for open() (the ELF analog of the Windows IAT patch): walk the PLT
+// relocations (DT_JMPREL) of the module we live in and swap the entry whose dynsym name is open/open64.
+bool InstallOpenHook()
+{
+    Dl_info info;
+    if (!dladdr((void*)&HookedOpen, &info) || !info.dli_fbase)
+        return false;
+    const uint8_t* base = (const uint8_t*)info.dli_fbase;
+    const ElfW(Ehdr)* ehdr = (const ElfW(Ehdr)*)base;
+    const ElfW(Phdr)* phdr = (const ElfW(Phdr)*)(base + ehdr->e_phoff);
+
+    const ElfW(Dyn)* dyn = nullptr;
+    for (int i = 0; i < ehdr->e_phnum; i++)
+        if (phdr[i].p_type == PT_DYNAMIC) { dyn = (const ElfW(Dyn)*)(base + phdr[i].p_vaddr); break; }
+    if (!dyn)
+        return false;
+
+    const ElfW(Sym)* symtab = nullptr;
+    const char* strtab = nullptr;
+    const ElfW(Rela)* jmprel = nullptr;
+    size_t pltrelsz = 0;
+    for (const ElfW(Dyn)* d = dyn; d->d_tag != DT_NULL; d++)
+    {
+        if (d->d_tag == DT_SYMTAB)   symtab = (const ElfW(Sym)*)(base + d->d_un.d_ptr);
+        else if (d->d_tag == DT_STRTAB)   strtab = (const char*)(base + d->d_un.d_ptr);
+        else if (d->d_tag == DT_JMPREL)   jmprel = (const ElfW(Rela)*)(base + d->d_un.d_ptr);
+        else if (d->d_tag == DT_PLTRELSZ) pltrelsz = (size_t)d->d_un.d_val;
+    }
+    if (!symtab || !strtab || !jmprel || !pltrelsz)
+        return false;
+
+    size_t pageSize = (size_t)sysconf(_SC_PAGESIZE);
+    size_t count = pltrelsz / sizeof(ElfW(Rela));
+    for (size_t i = 0; i < count; i++)
+    {
+        const char* name = strtab + symtab[ELF64_R_SYM(jmprel[i].r_info)].st_name;
+        if (strcmp(name, "open") != 0 && strcmp(name, "open64") != 0)
+            continue;
+        void** slot = (void**)(base + jmprel[i].r_offset);
+        if (!g_origOpen)
+            g_origOpen = (open_t)*slot;
+        void* page = (void*)((uintptr_t)slot & ~(pageSize - 1));
+        if (mprotect(page, pageSize, PROT_READ | PROT_WRITE) == 0)
+        {
+            *slot = (void*)&HookedOpen;
+            mprotect(page, pageSize, PROT_READ); // restore (RELRO leaves the GOT read-only)
+            return g_origOpen != nullptr;
+        }
+    }
+    return false;
+}
+
+} // namespace
+#endif // __ANDROID__ && __LP64__ && !BITMONO_STANDALONE_TEST
+
+// Android auto-install: a .init_array constructor runs at dlopen(libil2cpp.so), before il2cpp_init.
+#if defined(__ANDROID__) && defined(__LP64__) && !defined(BITMONO_STANDALONE_TEST) && !defined(BITMONO_HOOK_TEST)
+extern "C" __attribute__((visibility("default"), used)) int BitMonoIl2cppKeepAlive() { return 0xB117C0DE; }
+namespace {
+__attribute__((constructor)) void BitMonoAndroidInstall()
+{
+    InstallOpenHook();
+    (void)&BitMonoIl2cppKeepAlive;
+}
+} // namespace
+#endif // __ANDROID__ && __LP64__ && !BITMONO_STANDALONE_TEST && !BITMONO_HOOK_TEST
 
 // ---------------------------------------------------------------------------------------------------------
 // Offline validator: decrypt an .enc and confirm it matches the original .dat byte-for-byte.
@@ -427,7 +611,7 @@ int main(int argc, char** argv)
 
     uint32_t magic = *(const uint32_t*)view;
     int32_t version = *(const int32_t*)(view + 4);
-    bool ok = magic == 0xFAB11BAF;
+    bool ok = magic == kIl2cppMetadataMagic;
     printf("mapped magic: 0x%08X (want 0xFAB11BAF), version: %d -> %s\n",
         magic, version, ok ? "HOOK SERVED DECRYPTED METADATA" : "FAILED (got ciphertext)");
 

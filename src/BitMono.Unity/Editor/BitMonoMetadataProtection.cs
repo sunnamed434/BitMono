@@ -11,24 +11,28 @@ using Debug = UnityEngine.Debug;
 
 namespace BitMono.Unity.Editor
 {
-    // On an IL2CPP Windows build, encrypt the output global-metadata.dat so static dumpers (Il2CppDumper,
-    // Cpp2IL) can't parse it - the decryptor shipped as a source plugin in GameAssembly.dll restores it in
-    // memory at startup. A fresh random key is generated per build, baked into the plugin (pre-build) and
-    // passed to the encrypt step (post-build), so shipped games don't all share one key. Opt-in via
-    // BitMonoConfig.EncryptIl2CppMetadata. See #276.
+    // On an IL2CPP build, encrypt the output global-metadata.dat so static dumpers (Il2CppDumper, Cpp2IL)
+    // can't parse it - the decryptor shipped as a source plugin (compiled into GameAssembly.dll on Windows,
+    // libil2cpp.so on Android) restores it in memory at startup. A fresh random key is generated per build,
+    // baked into the plugin (pre-build) and passed to the encrypt step, so shipped games don't share one key.
+    // Windows is handled here (post-build file swap); Android is handled in BitMonoAndroidMetadataProtection
+    // (the APK is signed by post-build, so its metadata is encrypted earlier in the Gradle project). Opt-in
+    // via BitMonoConfig.EncryptIl2CppMetadata. See #276.
     public class BitMonoMetadataProtection : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
         // "BMIL2CPP" little-endian - the plaintext marker at the start of every encrypted file, so it's public
-        // anyway (not the key). Read here only to skip re-encrypting on an incremental build.
-        private const ulong EncryptedSanity = 0x505043324C494D42UL;
+        // anyway (not the key). Read only to skip re-encrypting on an incremental build.
+        internal const ulong EncryptedSanity = 0x505043324C494D42UL;
 
-        private const string KeyHeaderName = "bitmono_il2cpp_key.h";
-        // Carries the per-build key from OnPreprocessBuild to OnPostprocessBuild within the same build.
-        private const string KeyStateKey = "BitMono.Il2cppMetadataKeyHex";
+        internal const string KeyHeaderName = "bitmono_il2cpp_key.h";
+        // Carries the per-build key from the pre-build step to the encrypt step within the same build.
+        internal const string KeyStateKey = "BitMono.Il2cppMetadataKeyHex";
+        // The IL2CPP metadata file BitMono encrypts and the native plugin decrypts.
+        internal const string GlobalMetadataFileName = "global-metadata.dat";
 
         public int callbackOrder => 1000;
 
-        // Before the build: bake a fresh random key into the plugin so it compiles into GameAssembly.dll.
+        // Before the build: bake a fresh random key into the plugin so it compiles into the IL2CPP output.
         public void OnPreprocessBuild(BuildReport report)
         {
             SessionState.EraseString(KeyStateKey);
@@ -40,7 +44,8 @@ namespace BitMono.Unity.Editor
             {
                 return;
             }
-            if (report.summary.platform != BuildTarget.StandaloneWindows64)
+            var platform = report.summary.platform;
+            if (platform != BuildTarget.StandaloneWindows64 && platform != BuildTarget.Android)
             {
                 return;
             }
@@ -53,8 +58,7 @@ namespace BitMono.Unity.Editor
                 return;
             }
 
-            // The key still rides in GameAssembly.dll (obfuscation strength, not a secret), but it now differs
-            // per game instead of being the fixed key shared by every BitMono build.
+            // The key still rides in the binary (obfuscation strength, not a secret), but it differs per game.
             var key = new byte[16];
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -64,7 +68,7 @@ namespace BitMono.Unity.Editor
             SessionState.SetString(KeyStateKey, ToHex(key));
         }
 
-        // After the build: encrypt global-metadata.dat with the same key, then drop the generated header.
+        // After the build: on Windows, encrypt global-metadata.dat with the same key. Always drop the header.
         public void OnPostprocessBuild(BuildReport report)
         {
             var config = LoadConfig();
@@ -82,37 +86,32 @@ namespace BitMono.Unity.Editor
             {
                 return;
             }
-            // The native decryptor is Windows x64 only (CreateFileW hook); only encrypt where it can decrypt.
-            if (report.summary.platform != BuildTarget.StandaloneWindows64)
+            if (report.summary.platform == BuildTarget.StandaloneWindows64)
             {
-                Debug.LogWarning("[BitMono] Encrypt IL2CPP Metadata is on, but it currently supports Windows x64 " +
-                                 "only. Leaving global-metadata.dat unencrypted for this platform.");
-                return;
+                var metadata = FindMetadata(report.summary.outputPath);
+                if (metadata != null && !IsEncrypted(metadata))
+                {
+                    RunEncrypt(metadata, keyHex);
+                }
             }
+            // Android is handled in BitMonoAndroidMetadataProtection (before the APK is packaged + signed).
+            // Other platforms have no decryptor, so OnPreprocessBuild wrote no key header - nothing to encrypt.
+        }
 
-            var metadata = FindMetadata(report.summary.outputPath);
-            if (metadata == null)
-            {
-                // No metadata = not an IL2CPP build (Mono backend). Nothing to do.
-                return;
-            }
-            if (IsEncrypted(metadata))
-            {
-                return; // already done (idempotent for incremental builds)
-            }
-
+        // Encrypt metadataPath in place via the CLI (writes <path>.enc, swaps it in). Shared by Windows and
+        // Android. keyHex is the per-build key (empty = the CLI's fixed dev key). Returns true on success.
+        internal static bool RunEncrypt(string metadataPath, string keyHex)
+        {
             var cli = FindCli();
             if (cli == null)
             {
                 Debug.LogError("[BitMono] Encrypt IL2CPP Metadata is on but BitMono.CLI.exe wasn't found. " +
                                "global-metadata.dat is left UNENCRYPTED.");
-                return;
+                return false;
             }
-
             try
             {
-                // --encrypt-metadata writes <path>.enc and self-verifies the round-trip; key matches the plugin.
-                var args = $"--encrypt-metadata \"{metadata}\"";
+                var args = $"--encrypt-metadata \"{metadataPath}\"";
                 if (!string.IsNullOrEmpty(keyHex))
                 {
                     args += $" --metadata-key {keyHex}";
@@ -134,25 +133,26 @@ namespace BitMono.Unity.Editor
                 {
                     Debug.LogError($"[BitMono] --encrypt-metadata failed (exit {process.ExitCode}); " +
                                    $"global-metadata.dat left UNENCRYPTED.\n{stdout}\n{stderr}");
-                    return;
+                    return false;
                 }
-
-                var enc = metadata + ".enc";
+                var enc = metadataPath + ".enc";
                 if (!File.Exists(enc))
                 {
                     Debug.LogError("[BitMono] --encrypt-metadata reported success but produced no .enc file; " +
                                    "global-metadata.dat left UNENCRYPTED.");
-                    return;
+                    return false;
                 }
-                File.Copy(enc, metadata, overwrite: true);
+                File.Copy(enc, metadataPath, overwrite: true);
                 File.Delete(enc);
                 Debug.Log("[BitMono] Encrypted IL2CPP global-metadata.dat: static dumpers are blocked; " +
-                          "GameAssembly.dll decrypts it at startup.");
+                          "the IL2CPP binary decrypts it at startup.");
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[BitMono] IL2CPP metadata encryption failed: {ex}. " +
                                "global-metadata.dat left UNENCRYPTED.");
+                return false;
             }
         }
 
@@ -165,15 +165,14 @@ namespace BitMono.Unity.Editor
                 return null;
             }
             var name = Path.GetFileNameWithoutExtension(outputPath);
-            var expected = Path.Combine(dir, name + "_Data", "il2cpp_data", "Metadata", "global-metadata.dat");
+            var expected = Path.Combine(dir, name + "_Data", "il2cpp_data", "Metadata", GlobalMetadataFileName);
             if (File.Exists(expected))
             {
                 return expected;
             }
-            // Fallback for unusual output layouts.
             try
             {
-                return Directory.GetFiles(dir, "global-metadata.dat", SearchOption.AllDirectories).FirstOrDefault();
+                return Directory.GetFiles(dir, GlobalMetadataFileName, SearchOption.AllDirectories).FirstOrDefault();
             }
             catch
             {
@@ -181,7 +180,7 @@ namespace BitMono.Unity.Editor
             }
         }
 
-        private static bool IsEncrypted(string path)
+        internal static bool IsEncrypted(string path)
         {
             try
             {
@@ -244,21 +243,23 @@ namespace BitMono.Unity.Editor
 
         private static string ToHex(byte[] bytes) => string.Concat(bytes.Select(b => b.ToString("x2")));
 
-        private static string FindCli()
+        private const string CliExeName = "BitMono.CLI.exe";
+
+        internal static string FindCli()
         {
             var dataPath = UnityEngine.Application.dataPath;
             var paths = new[]
             {
                 // BitMono.CLI~ is Unity-ignored (~) so its DLLs never ship into the player; the .exe still runs.
-                Path.Combine(dataPath, "BitMono.Unity", "BitMono.CLI~", "BitMono.CLI.exe"),
-                Path.Combine(dataPath, "BitMono.Unity", "BitMono.CLI", "BitMono.CLI.exe"),
-                Path.Combine(dataPath, "..", "BitMono.CLI", "BitMono.CLI.exe"),
-                Path.Combine(dataPath, "..", "..", "src", "BitMono.CLI", "bin", "Release", "net462", "BitMono.CLI.exe"),
+                Path.Combine(dataPath, "BitMono.Unity", "BitMono.CLI~", CliExeName),
+                Path.Combine(dataPath, "BitMono.Unity", "BitMono.CLI", CliExeName),
+                Path.Combine(dataPath, "..", "BitMono.CLI", CliExeName),
+                Path.Combine(dataPath, "..", "..", "src", "BitMono.CLI", "bin", "Release", "net462", CliExeName),
             };
             return paths.FirstOrDefault(File.Exists);
         }
 
-        private static BitMonoConfig LoadConfig()
+        internal static BitMonoConfig LoadConfig()
         {
             var guids = AssetDatabase.FindAssets("t:BitMonoConfig");
             if (guids.Length == 0)
@@ -268,5 +269,45 @@ namespace BitMono.Unity.Editor
             return AssetDatabase.LoadAssetAtPath<BitMonoConfig>(AssetDatabase.GUIDToAssetPath(guids[0]));
         }
     }
+
+#if UNITY_ANDROID
+    // Android: encrypt global-metadata.dat in the generated Gradle project, after libil2cpp.so is compiled
+    // (with the decryptor + this build's key) but before Gradle packages and signs the APK - you can't swap a
+    // file inside a signed APK, so it has to happen here.
+    public class BitMonoAndroidMetadataProtection : UnityEditor.Android.IPostGenerateGradleAndroidProject
+    {
+        public int callbackOrder => 1000;
+
+        public void OnPostGenerateGradleAndroidProject(string path)
+        {
+            var config = BitMonoMetadataProtection.LoadConfig();
+            if (config == null || !config.EncryptIl2CppMetadata)
+            {
+                return;
+            }
+            var keyHex = SessionState.GetString(BitMonoMetadataProtection.KeyStateKey, "");
+            string metadata;
+            try
+            {
+                metadata = Directory.GetFiles(path, BitMonoMetadataProtection.GlobalMetadataFileName, SearchOption.AllDirectories).FirstOrDefault();
+            }
+            catch
+            {
+                metadata = null;
+            }
+            if (metadata == null)
+            {
+                Debug.LogWarning("[BitMono] Android: global-metadata.dat not found in the Gradle project; " +
+                                 "left UNENCRYPTED.");
+                return;
+            }
+            if (BitMonoMetadataProtection.IsEncrypted(metadata))
+            {
+                return;
+            }
+            BitMonoMetadataProtection.RunEncrypt(metadata, keyHex);
+        }
+    }
+#endif
 }
 #endif
