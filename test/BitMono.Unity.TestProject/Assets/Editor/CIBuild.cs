@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -11,7 +10,9 @@ public static class CIBuild
     {
         try
         {
-            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.IL2CPP);
+            // BuildTargetGroup overload (not NamedBuildTarget): NamedBuildTarget is Unity 2021.2+, and the
+            // Build matrix also runs 2019.4/2020.3 where it doesn't exist (CS0103). This overload works on all.
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.IL2CPP);
             var options = new BuildPlayerOptions
             {
                 scenes = new[] { "Assets/Scenes/TestScene.unity" },
