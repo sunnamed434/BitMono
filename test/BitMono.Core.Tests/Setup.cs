@@ -34,4 +34,8 @@ public static class Setup
     {
         return new ReflectionCriticalAnalyzer(obfuscation);
     }
+    public static SerializationCriticalAnalyzer SerializationCriticalAnalyzer(ObfuscationSettings obfuscation)
+    {
+        return new SerializationCriticalAnalyzer(obfuscation);
+    }
 }
