@@ -49,6 +49,15 @@ namespace BitMono.Unity.Editor
             {
                 return;
             }
+            // The Android decryptor is 64-bit only; an ARMv7 slice would ship encrypted metadata with no
+            // decryptor and crash on 32-bit devices. Warn loudly rather than break those builds silently.
+            if (platform == BuildTarget.Android &&
+                (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0)
+            {
+                Debug.LogWarning("[BitMono] Encrypt IL2CPP Metadata is on and this Android build targets ARMv7 " +
+                                 "(32-bit), which the decryptor doesn't support - ARMv7 devices would crash on the " +
+                                 "encrypted metadata. Target ARM64/x86_64 only, or turn the toggle off for ARMv7.");
+            }
 
             var pluginDir = FindPluginDir();
             if (pluginDir == null)
