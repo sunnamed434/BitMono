@@ -156,6 +156,8 @@ public class FullRenamer : Protection
 
     // Maps each MemberReference in the module's method bodies to the in-module definition it points
     // to, resolved before renaming while names still match.
+    [SuppressMessage("Usage", "BITM0001:Iterate Context.Parameters.Members, not the module",
+        Justification = "Builds a MemberReference->definition map to re-sync generic-instance names after renaming (#220); reads the module, doesn't obfuscate, so [DoNotResolve] filtering doesn't apply.")]
     private static Dictionary<MemberReference, IMemberDefinition> CollectModuleMemberReferences(ModuleDefinition module)
     {
         var moduleTypes = new HashSet<TypeDefinition>(module.GetAllTypes());

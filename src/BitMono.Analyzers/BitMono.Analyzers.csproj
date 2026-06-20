@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Analyzer assembly: ships inside the BitMono.Core package (analyzers/dotnet/cs), it is not
+       its own package. Must stay netstandard2.0 so Roslyn/the IDE can load it. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- CSharp = the analyzer, CSharp.Workspaces = the code fix. PrivateAssets=all so neither leaks
+         as a dependency (we ship a single DLL into analyzers/dotnet/cs). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

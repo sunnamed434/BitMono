@@ -17,4 +17,10 @@
     <PackageReference Include="NullGuard.Fody" Version="3.1.1" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Run BitMono's own protection-authoring analyzers on the built-in protections. -->
+    <ProjectReference Include="..\BitMono.Analyzers\BitMono.Analyzers.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
 </Project>

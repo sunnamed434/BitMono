@@ -87,3 +87,13 @@ Iterate ``Context.Parameters.Members`` instead and pull out the member kinds you
 One catch: the *member list* is sorted, but the members hanging off a type aren't. If you grab a type and
 then read ``type.Methods``, those methods skipped the filter. Always go through the list for each kind you
 touch, rather than reaching into ``type.Methods``, ``type.Fields``, and so on.
+
+The analyzer has your back
+--------------------------
+
+You don't have to keep all this in your head. BitMono ships a small Roslyn analyzer (``BITM0001``) that
+spots ``Context.Module.GetAllTypes()`` inside a protection and nudges you toward
+``Context.Parameters.Members``, with a one-click fix to swap it over. It rides along with the
+``BitMono.Core`` package, so it lights up in :doc:`plugin <plugins>` projects too, not just the built-in
+protections. If you really do mean to walk the raw module (collecting references and the like), hit
+``Alt+Enter`` / ``Ctrl+.`` on the warning and suppress it - that's a normal thing to do, not a hack.

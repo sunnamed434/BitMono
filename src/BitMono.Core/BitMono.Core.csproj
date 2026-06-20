@@ -12,6 +12,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Ship the analyzers inside this package (analyzers/dotnet/cs) so plugin authors who reference
+         BitMono.Core get the protection-authoring warnings in their own IDE. The ProjectReference is
+         build-order only (no runtime/package dependency). -->
+    <ProjectReference Include="..\BitMono.Analyzers\BitMono.Analyzers.csproj"
+                      ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <!-- ponytail: bin-path include is the simple way to pack a sibling analyzer; if the path ever
+         drifts, switch to a TargetOutputs-from-MSBuild target. -->
+    <None Include="..\BitMono.Analyzers\bin\$(Configuration)\netstandard2.0\BitMono.Analyzers.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Echo">
       <HintPath>..\..\lib\Echo.dll</HintPath>
     </Reference>
