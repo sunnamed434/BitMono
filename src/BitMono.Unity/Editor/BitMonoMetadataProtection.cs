@@ -32,6 +32,9 @@ namespace BitMono.Unity.Editor
         public void OnPreprocessBuild(BuildReport report)
         {
             SessionState.EraseString(KeyStateKey);
+            // Clear any stale key header so the plugin's compile-time gate reflects the current toggle exactly:
+            // with no header the plugin compiles to nothing, so a build with the feature off ships no hook.
+            CleanupKeyHeader();
             var config = LoadConfig();
             if (config == null || !config.EncryptIl2CppMetadata)
             {

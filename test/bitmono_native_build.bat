@@ -28,10 +28,15 @@ cl /nologo /EHsc /O2 /DBITMONO_HOOK_TEST /Fe:"%OUT%\bm_hook.exe" "%SRC%" 1>cl2.t
 if errorlevel 1 ( echo COMPILE_FAILED & type cl2.txt & exit /b 1 )
 echo compiled OK
 
-echo ===== 3) PLUGIN (default mode, no defines = Unity source-plugin) =====
-cl /nologo /EHsc /O2 /LD /Fe:"%OUT%\bm_plugin.dll" "%SRC%" 1>cl3.txt 2>&1
+echo ===== 3) PLUGIN enabled (key header present) - hook compiled in =====
+cl /nologo /EHsc /O2 /LD /DBITMONO_IL2CPP_ENABLED /Fe:"%OUT%\bm_plugin.dll" "%SRC%" 1>cl3.txt 2>&1
 if errorlevel 1 ( echo COMPILE_FAILED & type cl3.txt & exit /b 1 )
-dumpbin /exports "%OUT%\bm_plugin.dll" | findstr /i "BitMono"
+dumpbin /exports "%OUT%\bm_plugin.dll" | findstr /i "BitMono" >nul && echo   hook present (BitMonoIl2cppKeepAlive) || ( echo   ERROR: enabled plugin has no hook & exit /b 1 )
+
+echo ===== 3b) PLUGIN disabled (no key header) - gated out, no hook =====
+cl /nologo /EHsc /O2 /LD /Fe:"%OUT%\bm_plugin_off.dll" "%SRC%" 1>cl3b.txt 2>&1
+if errorlevel 1 ( echo COMPILE_FAILED & type cl3b.txt & exit /b 1 )
+dumpbin /exports "%OUT%\bm_plugin_off.dll" | findstr /i "BitMono" >nul && ( echo   ERROR: disabled plugin still exports the hook & exit /b 1 ) || echo   gated out OK (no BitMono exports)
 
 REM Optional data-driven run against a built test player (only exists after a Unity IL2CPP build).
 set MD=%~dp0BitMono.Unity.TestProject\Build\Il2cpp\BitMonoTest_Data\il2cpp_data\Metadata

@@ -9,22 +9,33 @@
 // untouched when it isn't BitMono-encrypted, so a plain build still works. (It can also be injected straight
 // into GlobalMetadata::Initialize: s_GlobalMetadata = BitMonoDecryptMetadata(s_GlobalMetadata).)
 //
-// Build modes: no define = the shipped plugin (auto-installs on Windows); BITMONO_STANDALONE_TEST = offline
-// validator (decrypt an .enc, compare to the .dat); BITMONO_HOOK_TEST = exercise the CreateFileW hook path.
+// Build modes: no define = the shipped plugin; BITMONO_STANDALONE_TEST = offline validator (decrypt an .enc,
+// compare to the .dat); BITMONO_HOOK_TEST = exercise the CreateFileW hook path.
+//
+// The plugin only compiles its machinery when enabled. The shipped build keys that off the per-build key
+// header: BitMono's build hook writes bitmono_il2cpp_key.h next to this file only when EncryptIl2CppMetadata
+// is on, so a build that doesn't use the feature leaves this file empty and ships no CreateFileW hook at all.
 
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
-// The 16-byte XXTEA key (must match the CLI's --encrypt-metadata key). The dev default below is overridden
-// per build: BitMono's build hook writes a random key into bitmono_il2cpp_key.h next to this file, so each
-// shipped game gets a different key. The key still rides in GameAssembly.dll - obfuscation strength, not a
-// secret - but it's no longer shared across every BitMono game.
+// Enabled (and keyed) by the generated header, or forced on for the self-tests.
 #if defined(__has_include)
 #  if __has_include("bitmono_il2cpp_key.h")
 #    include "bitmono_il2cpp_key.h"
+#    define BITMONO_IL2CPP_ENABLED 1
 #  endif
 #endif
+#if defined(BITMONO_STANDALONE_TEST) || defined(BITMONO_HOOK_TEST)
+#  define BITMONO_IL2CPP_ENABLED 1
+#endif
+
+#if defined(BITMONO_IL2CPP_ENABLED)
+
+// The 16-byte XXTEA key (must match the CLI's --encrypt-metadata key). The dev default is overridden per build
+// by the generated header above, so each shipped game gets a different key - obfuscation strength (it still
+// rides in GameAssembly.dll), not a secret, but no longer shared across every BitMono game.
 #ifndef BITMONO_IL2CPP_KEY_BYTES
 #  define BITMONO_IL2CPP_KEY_BYTES 'B','i','t','M','o','n','o','-','I','L','2','C','P','P','!','!'
 #endif
@@ -444,3 +455,5 @@ int main(int argc, char** argv)
     return ok ? 0 : 1;
 }
 #endif
+
+#endif // BITMONO_IL2CPP_ENABLED
