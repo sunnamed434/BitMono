@@ -8,6 +8,7 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Integration.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Integration/**'
       - 'src/BitMono.CLI/**'
       - 'props/**'
@@ -15,6 +16,7 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Integration.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Integration/**'
       - 'src/BitMono.CLI/**'
       - 'props/**'

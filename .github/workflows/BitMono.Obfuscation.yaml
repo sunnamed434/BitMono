@@ -8,12 +8,14 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Obfuscation.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Obfuscation/**'
       - 'src/props/**'
   pull_request:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Obfuscation.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Obfuscation/**'
       - 'src/props/**'
 

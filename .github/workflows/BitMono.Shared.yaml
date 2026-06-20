@@ -8,12 +8,14 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Shared.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Shared/**'
       - 'src/props/**'
   pull_request:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Shared.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Shared/**'
       - 'src/props/**'
 

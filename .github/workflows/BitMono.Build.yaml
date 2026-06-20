@@ -7,6 +7,7 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Build.yaml'
+      - '.github/actions/project-build/**'
       - 'props/SharedPackages.props'
       - 'props/SharedProjectProps.props'
       - 'props/SharedTestProps.props'
@@ -15,6 +16,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/BitMono.Build.yaml'
+      - '.github/actions/project-build/**'
       - 'props/SharedPackages.props'
       - 'props/SharedProjectProps.props'
       - 'props/SharedTestProps.props'

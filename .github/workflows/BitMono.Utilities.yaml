@@ -8,12 +8,14 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Utilities.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Utilities/**'
       - 'src/props/**'
   pull_request:
     branches: [ main ]
     paths:
       - '.github/workflows/BitMono.Utilities.yaml'
+      - '.github/actions/project-build/**'
       - 'src/BitMono.Utilities/**'
       - 'src/props/**'
 
