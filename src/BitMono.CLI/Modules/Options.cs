@@ -2,7 +2,9 @@ namespace BitMono.CLI.Modules;
 
 internal class Options
 {
-    [Option('f', "file", Required = true, HelpText = "Set file path.")]
+    // Not Required: standalone modes like --inspect-metadata don't need it. The obfuscation path reports a
+    // missing file itself (File.Exists below), so dropping the parser-level requirement loses nothing.
+    [Option('f', "file", Required = false, HelpText = "Set file path.")]
     public string? File { get; set; }
 
     [Option('l', "libraries", Required = false, HelpText = "Set one or more dependency (libs) directories, e.g. -l \"C:\\a\" \"C:\\b\" (space-separated).")]
@@ -43,4 +45,7 @@ internal class Options
 
     [Option("il2cpp", Required = false, HelpText = "Build the assembly for a Unity IL2CPP game: skip protections that aren't IL2CPP-compatible (native code, calli, PE packers, etc.) so the il2cpp.exe build doesn't break. Set automatically by the BitMono Unity integration.")]
     public bool IL2CPP { get; set; }
+
+    [Option("inspect-metadata", Required = false, HelpText = "Parse a Unity IL2CPP global-metadata.dat and print its version + the names/literals it exposes, then exit. Standalone diagnostic; doesn't obfuscate.")]
+    public string? InspectMetadata { get; set; }
 }

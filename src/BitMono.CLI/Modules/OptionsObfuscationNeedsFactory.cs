@@ -24,6 +24,16 @@ internal class OptionsObfuscationNeedsFactory
         }
         var options = parserResult.Value;
 
+        // --inspect-metadata is a standalone diagnostic, not an obfuscation run; hand it straight to Main. See #276.
+        if (!string.IsNullOrEmpty(options.InspectMetadata))
+        {
+            return new ObfuscationNeeds
+            {
+                Way = ObfuscationNeedsWay.Options,
+                InspectMetadataPath = options.InspectMetadata
+            };
+        }
+
         ObfuscationSettings? obfuscationSettings = null;
         try
         {

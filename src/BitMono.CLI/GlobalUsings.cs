@@ -1,5 +1,6 @@
 global using BitMono.CLI.Modules;
 global using BitMono.Host;
+global using BitMono.IL2CPP;
 global using BitMono.Host.Extensions;
 global using BitMono.Host.Ioc;
 global using BitMono.Host.Modules;

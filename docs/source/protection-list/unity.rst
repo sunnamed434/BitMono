@@ -76,11 +76,27 @@ Skipped on IL2CPP (would break the ``il2cpp.exe`` build, or only affect the disc
 **AntiDe4dot**, **BillionNops**, **AntiILdasm**, **BitTimeDateStamp**, **AntiDecompiler**, **BitMono**,
 **BitDotNet**, **BitDecompiler**.
 
+Inspecting the metadata
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To see what actually ended up in a build's ``global-metadata.dat`` (its il2cpp version, and how many
+identifier names and string literals it carries), point the CLI at the file:
+
+.. code-block:: text
+
+   BitMono.CLI --inspect-metadata "path/to/global-metadata.dat"
+
+It just reads and prints - it doesn't change the file. It also splits the names into *reserved* ones that
+must never be renamed (``Awake``, ``Start``, constructors, anything the engine looks up by name) and
+*rename candidates*. If the candidates still read like plain English, your renaming didn't reach the
+metadata. Handy for confirming your names came through obfuscated, or before reporting a metadata issue.
+
 .. note::
 
-   Protecting the IL2CPP *output* itself (encrypting ``global-metadata.dat`` and injecting a native
-   decryptor into ``GameAssembly.dll``) is tracked separately as future work in
-   `#276 <https://github.com/sunnamed434/BitMono/issues/276>`_.
+   The full job of protecting the IL2CPP *output* itself - encrypting ``global-metadata.dat`` and
+   injecting a native decryptor into ``GameAssembly.dll`` - is tracked in
+   `#276 <https://github.com/sunnamed434/BitMono/issues/276>`_. The ``--inspect-metadata`` reader above is
+   the first piece of it; the native decryptor half is still to come.
 
 Additional Considerations
 -------------------------

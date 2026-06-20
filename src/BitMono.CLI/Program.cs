@@ -32,6 +32,12 @@ internal class Program
                 return statusCode;
             }
 
+            // Standalone IL2CPP metadata inspection - no obfuscation pipeline, DI or config needed. See #276.
+            if (needs.InspectMetadataPath is { } metadataPath)
+            {
+                return MetadataInspector.Run(metadataPath);
+            }
+
             var module = new BitMonoModule(
                 configureContainer: container => container.AddProtections(),
                 obfuscationSettings: needs.ObfuscationSettings,

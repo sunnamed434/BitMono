@@ -16,6 +16,8 @@ internal class ObfuscationNeeds
     public string? ObfuscationFile { get; set; }
     public string? ProtectionsFile { get; set; }
     public ObfuscationSettings? ObfuscationSettings { get; set; }
+    // Set when the run is a standalone --inspect-metadata diagnostic instead of an obfuscation. See #276.
+    public string? InspectMetadataPath { get; set; }
 #pragma warning restore CS8618
 }
 
