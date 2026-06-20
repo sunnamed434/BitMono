@@ -8,7 +8,7 @@ namespace BitMono.IL2CPP;
 /// name at runtime - renaming them breaks the build. This is the part of the rename policy you can decide
 /// from the string alone. Names that are unsafe for *contextual* reasons - classes referenced by scenes/
 /// assets, reflection targets, <c>[SerializeField]</c> members - can't be told apart from a bare string and
-/// are NOT covered here; they need separate analysis. See #276.
+/// are NOT covered here; they need separate analysis.
 /// </summary>
 public static class ReservedNames
 {

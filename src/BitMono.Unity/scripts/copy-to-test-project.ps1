@@ -16,7 +16,7 @@ if (Get-ChildItem "..\Editor\*.asmdef.meta" -ErrorAction SilentlyContinue) { Cop
 Copy-Item "..\package.json" $TestProject -Force
 Copy-Item "..\README.md" $TestProject -Force
 
-# #276 native decryptor source plugin. Single source of truth is src/BitMono.IL2CPP/native; refresh the
+# Native IL2CPP metadata decryptor source plugin. Single source of truth is src/BitMono.IL2CPP/native; refresh the
 # package copy from it, then mirror into the test project so Unity compiles it into GameAssembly.dll.
 $NativeSource = "..\..\BitMono.IL2CPP\native\global_metadata_decrypt.cpp"
 $PackagePlugins = "..\Plugins\BitMono"

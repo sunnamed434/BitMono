@@ -10,7 +10,7 @@ namespace BitMono.IL2CPP;
 /// the two string regions Il2CppDumper reconstructs your code from: the identifier names (type/method/
 /// field names) and the string literals from your code. This header prefix is identical across every
 /// il2cpp metadata version, so no per-version branching is needed for it. The later per-version tables
-/// (types, methods, fields, ...) are intentionally not parsed yet - that's the rest of #276.
+/// (types, methods, fields, ...) are intentionally not parsed yet.
 /// </summary>
 public sealed class GlobalMetadataFile
 {

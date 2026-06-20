@@ -33,7 +33,7 @@ namespace BitMono.Unity.Editor
                 new GUIContent("Encrypt IL2CPP Metadata",
                     "On IL2CPP Windows x64 builds, encrypt the output global-metadata.dat so static dumpers " +
                     "(Il2CppDumper, Cpp2IL) can't parse it. GameAssembly.dll decrypts it in memory at startup. " +
-                    "Independent of the managed obfuscation - you can use either or both. See issue #276."),
+                    "Independent of the managed obfuscation - you can use either or both."),
                 config.EncryptIl2CppMetadata);
 
             EditorGUILayout.Space();

@@ -63,7 +63,7 @@ namespace BitMono.Editor
                     "Editor/BitMonoConfig.cs",
                     "Editor/BitMonoConfigInspector.cs",
                     "Editor/BitMono.Unity.Editor.asmdef",
-                    // #276 native decryptor, compiled into GameAssembly.dll on IL2CPP Win64 builds.
+                    // Native IL2CPP metadata decryptor, compiled into GameAssembly.dll on Win64 builds.
                     "Plugins/BitMono/global_metadata_decrypt.cpp",
                     "package.json",
                     "BitMonoConfig.asset"

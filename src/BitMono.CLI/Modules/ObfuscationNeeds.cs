@@ -16,9 +16,9 @@ internal class ObfuscationNeeds
     public string? ObfuscationFile { get; set; }
     public string? ProtectionsFile { get; set; }
     public ObfuscationSettings? ObfuscationSettings { get; set; }
-    // Set when the run is a standalone --inspect-metadata diagnostic instead of an obfuscation. See #276.
+    // Set when the run is a standalone --inspect-metadata diagnostic instead of an obfuscation.
     public string? InspectMetadataPath { get; set; }
-    // Set when the run is a standalone --encrypt-metadata step instead of an obfuscation. See #276.
+    // Set when the run is a standalone --encrypt-metadata step instead of an obfuscation.
     public string? EncryptMetadataPath { get; set; }
     // CLI --nologo: suppress the ASCII banner on startup.
     public bool NoLogo { get; set; }

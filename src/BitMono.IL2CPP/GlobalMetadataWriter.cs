@@ -9,12 +9,12 @@ namespace BitMono.IL2CPP;
 /// Writes modified <c>global-metadata.dat</c> bytes. For now it only does same-length, in-place edits of the
 /// identifier <c>string</c> region - the one rewrite that needs no offset fix-up, since every <c>nameIndex</c>
 /// keeps pointing at the same place (Tulach's approach). Arbitrary-length renames need a full rebuild that
-/// re-points every referent, which waits on the per-version table parser. See #276.
+/// re-points every referent, which waits on the per-version table parser.
 /// </summary>
 /// <remarks>
 /// This is only the offline half: a renamed metadata file loads correctly at runtime <i>only</i> if a matching
-/// decryptor/forwarder is present in <c>GameAssembly.dll</c> to map name lookups back. That native piece is
-/// still open #276 work - this primitive on its own will break a build.
+/// forwarder is present in <c>GameAssembly.dll</c> to map name lookups back. That forwarder isn't built (the
+/// shipped protection encrypts the metadata instead of renaming), so this primitive alone will break a build.
 /// </remarks>
 public static class GlobalMetadataWriter
 {

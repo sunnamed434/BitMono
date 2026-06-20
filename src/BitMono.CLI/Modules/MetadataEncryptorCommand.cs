@@ -4,7 +4,7 @@ namespace BitMono.CLI.Modules;
 
 // Standalone --encrypt-metadata step: encrypt a Unity IL2CPP global-metadata.dat so static dumpers can't
 // parse it, then self-verify the round-trip. Writes <path>.enc. The matching native decryptor (compiled
-// into GameAssembly.dll) uses the same key + format to restore it at runtime. See #276.
+// into GameAssembly.dll) uses the same key + format to restore it at runtime.
 internal static class MetadataEncryptorCommand
 {
     // Demo key: must byte-match the key compiled into the native decryptor stub. 16 bytes (128-bit XXTEA).

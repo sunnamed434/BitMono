@@ -1,8 +1,7 @@
 namespace BitMono.CLI.Modules;
 
 // Standalone --inspect-metadata mode: parse a Unity IL2CPP global-metadata.dat and print what survived
-// into it (version + the names/literals Il2CppDumper would read back). The encrypt/rewrite half is the
-// rest of #276.
+// into it (version + the names/literals Il2CppDumper would read back).
 internal static class MetadataInspector
 {
     private const int SampleSize = 10;

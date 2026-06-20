@@ -24,7 +24,7 @@ internal class OptionsObfuscationNeedsFactory
         }
         var options = parserResult.Value;
 
-        // --inspect-metadata is a standalone diagnostic, not an obfuscation run; hand it straight to Main. See #276.
+        // --inspect-metadata is a standalone diagnostic, not an obfuscation run; hand it straight to Main.
         if (!string.IsNullOrEmpty(options.InspectMetadata))
         {
             return new ObfuscationNeeds
@@ -34,7 +34,7 @@ internal class OptionsObfuscationNeedsFactory
             };
         }
 
-        // --encrypt-metadata is likewise a standalone step (the offline half of #276), not an obfuscation run.
+        // --encrypt-metadata is likewise a standalone step (the offline half), not an obfuscation run.
         if (!string.IsNullOrEmpty(options.EncryptMetadata))
         {
             return new ObfuscationNeeds

@@ -32,13 +32,13 @@ internal class Program
                 return statusCode;
             }
 
-            // Standalone IL2CPP metadata inspection - no obfuscation pipeline, DI or config needed. See #276.
+            // Standalone IL2CPP metadata inspection - no obfuscation pipeline, DI or config needed.
             if (needs.InspectMetadataPath is { } metadataPath)
             {
                 return MetadataInspector.Run(metadataPath);
             }
 
-            // Standalone IL2CPP metadata encryption (offline half of #276), same deal.
+            // Standalone IL2CPP metadata encryption (the offline half), same deal.
             if (needs.EncryptMetadataPath is { } encryptPath)
             {
                 return MetadataEncryptorCommand.Run(encryptPath);

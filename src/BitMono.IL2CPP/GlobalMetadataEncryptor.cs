@@ -7,9 +7,8 @@ namespace BitMono.IL2CPP;
 /// Offline half of the #276 metadata-encryption protection: turns a plain <c>global-metadata.dat</c> into an
 /// encrypted blob that a native decryptor (compiled into <c>GameAssembly.dll</c>) restores in memory at
 /// startup, so static dumpers can't parse it. The format is a small plaintext front header followed by the
-/// XXTEA-encrypted metadata. <see cref="Decrypt"/> is the reference the native stub mirrors. The key ships in
-/// the binary, so this is obfuscation strength, not secrecy. The native decryptor + PE injection are still
-/// open #276 work - see il2cpp-output-protection.md.
+/// XXTEA-encrypted metadata. <see cref="Decrypt"/> is the reference the native decryptor mirrors. The key
+/// ships in the binary, so this is obfuscation strength, not secrecy.
 /// </summary>
 public static class GlobalMetadataEncryptor
 {

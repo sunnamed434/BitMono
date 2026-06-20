@@ -5,7 +5,7 @@ namespace BitMono.IL2CPP;
 // XXTEA (Corrected Block TEA) - the cipher Ether uses for global-metadata.dat. Works on the data as
 // little-endian uint32 words with a 128-bit key. We encrypt the whole metadata file so static dumpers
 // (Il2CppDumper/Cpp2IL) can't parse it; the key ships in the decryptor, so this is obfuscation strength,
-// not secrecy. The native runtime decryptor must mirror this exactly. See il2cpp-output-protection.md (#276).
+// not secrecy. The native runtime decryptor must mirror this exactly.
 internal static class Xxtea
 {
     private const uint Delta = 0x9E3779B9;

@@ -1,35 +1,23 @@
-// Native IL2CPP global-metadata.dat decryptor for #276.
+// Native IL2CPP global-metadata.dat decryptor (BitMono #276).
 //
-// Two ways this file reaches GameAssembly.dll:
+// Ships as a Unity source plugin: Unity compiles this loose .cpp into GameAssembly.dll for IL2CPP, and a
+// file-scope initializer IAT-hooks CreateFileW at load - before il2cpp_init - so when IL2CPP opens an
+// encrypted global-metadata.dat it transparently gets the decrypted bytes. No editing of the user's Unity
+// install, no per-version libil2cpp patching: the Win32 file API is stable across Unity versions.
 //
-//  1. As a Unity native SOURCE PLUGIN (the productionized path). Drop this .cpp in Assets/Plugins with
-//     Win64+IL2CPP import settings and Unity compiles it into GameAssembly.dll. Define BITMONO_UNITY_PLUGIN
-//     and a file-scope initializer installs an IAT hook on CreateFileW at module load - before il2cpp_init
-//     reads metadata - so when IL2CPP opens an encrypted global-metadata.dat it transparently gets the
-//     decrypted bytes. No editing of the user's Unity install (which the license forbids), no per-version
-//     libil2cpp source patching: the Win32 file API is the same on every Unity version.
+// BitMonoDecryptMetadata mirrors C# GlobalMetadataEncryptor.Decrypt byte-for-byte and returns the input
+// untouched when it isn't BitMono-encrypted, so a plain build still works. (It can also be injected straight
+// into GlobalMetadata::Initialize: s_GlobalMetadata = BitMonoDecryptMetadata(s_GlobalMetadata).)
 //
-//  2. As an in-source edit (the original validation path): inject
-//        s_GlobalMetadata = BitMonoDecryptMetadata(s_GlobalMetadata);
-//     right after LoadMetadataFile in GlobalMetadata::Initialize. Kept working for reference/testing.
-//
-// BitMonoDecryptMetadata mirrors C# GlobalMetadataEncryptor.Decrypt byte-for-byte: parse the FrontHeader,
-// XXTEA-decrypt the body with the build key, verify the CRC32. If the input isn't BitMono-encrypted (sanity
-// mismatch) it's returned untouched, so a plain build still works.
-//
-// Build modes (all self-contained, no deps):
-//   (no define)                 the shipped plugin: on Windows, auto-install the hook at load. This is the
-//                               default precisely so a loose Unity .cpp - which gets no custom -D flags -
-//                               behaves as the plugin with zero configuration.
-//   -DBITMONO_STANDALONE_TEST   offline validator: decrypt an .enc and compare to the original .dat.
-//   -DBITMONO_HOOK_TEST         exercise the real CreateFileW->mapping hook path against an .enc file.
+// Build modes: no define = the shipped plugin (auto-installs on Windows); BITMONO_STANDALONE_TEST = offline
+// validator (decrypt an .enc, compare to the .dat); BITMONO_HOOK_TEST = exercise the CreateFileW hook path.
 
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
 // The 16-byte XXTEA key. Ships in the binary, so this is obfuscation strength, not secrecy - it only has to
-// match the CLI's --encrypt-metadata key. Overridable at compile time (per-build keying is a future #276 step).
+// match the CLI's --encrypt-metadata key. Overridable at compile time (per-build keying is a future step).
 #ifndef BITMONO_IL2CPP_KEY
 #define BITMONO_IL2CPP_KEY "BitMono-IL2CPP!!"
 #endif

@@ -1,5 +1,5 @@
 @echo off
-REM Validates the #276 native decryptor (src/BitMono.IL2CPP/native/global_metadata_decrypt.cpp) in all three
+REM Validates the native IL2CPP metadata decryptor (src/BitMono.IL2CPP/native/global_metadata_decrypt.cpp) in all three
 REM build modes with MSVC. Compile-checks always run; the data-driven tests run only if a built test player's
 REM global-metadata.dat(.enc/.plain) is present. Needs Visual Studio (Build Tools) with the C++ workload.
 setlocal

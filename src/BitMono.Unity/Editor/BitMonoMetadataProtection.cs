@@ -10,10 +10,9 @@ using Debug = UnityEngine.Debug;
 
 namespace BitMono.Unity.Editor
 {
-    // Post-build half of #276: after an IL2CPP Windows player is built, encrypt its global-metadata.dat in
-    // place so static dumpers (Il2CppDumper, Cpp2IL) can't parse it. The native decryptor shipped as a source
-    // plugin (Plugins/BitMono/global_metadata_decrypt.cpp) is compiled into GameAssembly.dll and restores the
-    // metadata in memory at startup. Opt-in via BitMonoConfig.EncryptIl2CppMetadata.
+    // After an IL2CPP Windows player is built, encrypt its global-metadata.dat in place so static dumpers
+    // (Il2CppDumper, Cpp2IL) can't parse it - the decryptor shipped as a source plugin in GameAssembly.dll
+    // restores it in memory at startup. Opt-in via BitMonoConfig.EncryptIl2CppMetadata. See #276.
     public class BitMonoMetadataProtection : IPostprocessBuildWithReport
     {
         // "BMIL2CPP" little-endian - the marker GlobalMetadataEncryptor writes; lets us stay idempotent.
@@ -93,7 +92,7 @@ namespace BitMono.Unity.Editor
                 }
                 File.Copy(enc, metadata, overwrite: true);
                 File.Delete(enc);
-                Debug.Log("[BitMono] Encrypted IL2CPP global-metadata.dat (#276): static dumpers are blocked; " +
+                Debug.Log("[BitMono] Encrypted IL2CPP global-metadata.dat: static dumpers are blocked; " +
                           "GameAssembly.dll decrypts it at startup.");
             }
             catch (Exception ex)
