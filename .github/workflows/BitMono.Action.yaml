@@ -1,0 +1,47 @@
+name: BitMono.Action
+
+# Smoke test for the composite action (action.yml): build Sandbox, obfuscate it, assert output exists.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'action.yml'
+      - '.github/workflows/BitMono.Action.yaml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'action.yml'
+      - '.github/workflows/BitMono.Action.yaml'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: "Action smoke test"
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          # 9.x is BitMono.GlobalTool's runtime ceiling; 10.x is the latest SDK.
+          dotnet-version: |
+            10.x
+            9.x
+
+      - name: Build the existing Sandbox app
+        run: dotnet build test/Sandbox/Sandbox.csproj -c Release
+
+      - name: Obfuscate via the local action
+        uses: ./
+        with:
+          file: test/Sandbox/bin/Release/net9.0/Sandbox.dll
+          libraries: test/Sandbox/bin/Release/net9.0
+          preset: Minimal
+          output: test/Sandbox/obf
+
+      - name: Assert output exists
+        run: test -f test/Sandbox/obf/Sandbox.dll

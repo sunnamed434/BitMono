@@ -1,0 +1,120 @@
+name: 'BitMono Obfuscator'
+description: 'Obfuscate a compiled .NET assembly with BitMono in CI - no source changes, no .csproj edits.'
+author: 'sunnamed434'
+branding:
+  icon: 'lock'
+  color: 'purple'
+
+inputs:
+  file:
+    description: 'Path to the compiled assembly to obfuscate (e.g. bin/Release/net9.0/MyApp.dll).'
+    required: true
+  output:
+    description: 'Output directory for the obfuscated assembly. Default: <file dir>/output.'
+    required: false
+  output-name:
+    description: 'Output file name (-n). Default: keeps the original name.'
+    required: false
+  libraries:
+    description: 'Space-separated dependency directories (-l), e.g. "bin/Release/net9.0".'
+    required: false
+  protections:
+    description: 'Space-separated protections (-p), e.g. "FullRenamer StringsEncryption". Overrides preset/json.'
+    required: false
+  preset:
+    description: 'Protection preset: Minimal, Balanced, or Maximum.'
+    required: false
+  obfuscation-file:
+    description: 'Path to obfuscation.json.'
+    required: false
+  protections-file:
+    description: 'Path to protections.json.'
+    required: false
+  criticals-file:
+    description: 'Path to criticals.json.'
+    required: false
+  logging-file:
+    description: 'Path to logging.json.'
+    required: false
+  no-watermark:
+    description: 'Disable the BitMono watermark.'
+    required: false
+    default: 'false'
+  no-logo:
+    description: 'Suppress the BitMono ASCII banner on startup (--nologo). Tidier CI logs.'
+    required: false
+    default: 'false'
+  strong-name-key:
+    description: 'Path to a .snk strong-name key to re-sign the obfuscated assembly.'
+    required: false
+  extra-args:
+    description: 'Extra raw arguments passed through to the BitMono CLI verbatim.'
+    required: false
+  version:
+    description: 'BitMono.GlobalTool version to install. Default: latest. Pin it for reproducible builds.'
+    required: false
+
+outputs:
+  output:
+    description: 'The directory the obfuscated assembly was written to.'
+    value: ${{ steps.run.outputs.output }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: run
+      shell: bash
+      # Inputs via env, never interpolated into the run script (shell-injection safe).
+      env:
+        # Tool targets up to net9.0; roll forward onto newer runtimes (e.g. a .NET 10-only runner).
+        DOTNET_ROLL_FORWARD: LatestMajor
+        DOTNET_CLI_TELEMETRY_OPTOUT: true
+        DOTNET_NOLOGO: true
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+        IN_FILE: ${{ inputs.file }}
+        IN_OUTPUT: ${{ inputs.output }}
+        IN_OUTPUT_NAME: ${{ inputs.output-name }}
+        IN_LIBRARIES: ${{ inputs.libraries }}
+        IN_PROTECTIONS: ${{ inputs.protections }}
+        IN_PRESET: ${{ inputs.preset }}
+        IN_OBFUSCATION_FILE: ${{ inputs.obfuscation-file }}
+        IN_PROTECTIONS_FILE: ${{ inputs.protections-file }}
+        IN_CRITICALS_FILE: ${{ inputs.criticals-file }}
+        IN_LOGGING_FILE: ${{ inputs.logging-file }}
+        IN_NO_WATERMARK: ${{ inputs.no-watermark }}
+        IN_NO_LOGO: ${{ inputs.no-logo }}
+        IN_STRONG_NAME_KEY: ${{ inputs.strong-name-key }}
+        IN_EXTRA_ARGS: ${{ inputs.extra-args }}
+        IN_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        # Idempotent local install, no global PATH munging.
+        TOOL_DIR="${RUNNER_TEMP:-/tmp}/bitmono-tool"
+        if [ -n "$IN_VERSION" ]; then
+          dotnet tool install --tool-path "$TOOL_DIR" BitMono.GlobalTool --version "$IN_VERSION"
+        else
+          dotnet tool install --tool-path "$TOOL_DIR" BitMono.GlobalTool
+        fi
+
+        out="$IN_OUTPUT"
+        [ -z "$out" ] && out="$(dirname "$IN_FILE")/output"
+
+        args=(-f "$IN_FILE" -o "$out")
+        [ -n "$IN_OUTPUT_NAME" ]      && args+=(-n "$IN_OUTPUT_NAME")
+        [ -n "$IN_LIBRARIES" ]        && args+=(-l $IN_LIBRARIES)      # word-split intentional: multiple dirs
+        [ -n "$IN_PROTECTIONS" ]      && args+=(-p $IN_PROTECTIONS)    # word-split intentional: multiple names
+        [ -n "$IN_PRESET" ]           && args+=(--preset "$IN_PRESET")
+        [ -n "$IN_OBFUSCATION_FILE" ] && args+=(--obfuscation-file "$IN_OBFUSCATION_FILE")
+        [ -n "$IN_PROTECTIONS_FILE" ] && args+=(--protections-file "$IN_PROTECTIONS_FILE")
+        [ -n "$IN_CRITICALS_FILE" ]   && args+=(--criticals-file "$IN_CRITICALS_FILE")
+        [ -n "$IN_LOGGING_FILE" ]     && args+=(--logging-file "$IN_LOGGING_FILE")
+        [ "$IN_NO_WATERMARK" = "true" ] && args+=(--no-watermark)
+        [ "$IN_NO_LOGO" = "true" ]      && args+=(--nologo)
+        [ -n "$IN_STRONG_NAME_KEY" ]  && args+=(--strong-name-key "$IN_STRONG_NAME_KEY")
+
+        echo "::group::BitMono obfuscation"
+        "$TOOL_DIR/bitmono.console" "${args[@]}" $IN_EXTRA_ARGS
+        echo "::endgroup::"
+
+        echo "output=$out" >> "$GITHUB_OUTPUT"

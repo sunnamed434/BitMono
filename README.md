@@ -114,6 +114,22 @@ Obfuscate automatically on every `Release` build by adding one package reference
 - Configure with the usual `protections.json` / `criticals.json` / `obfuscation.json` next to your `.csproj`.
 - See the [MSBuild integration guide](https://docs.bitmono.dev/en/latest/usage/msbuild-integration.html).
 
+**GitHub Actions (CI/CD):**
+Obfuscate in your pipeline without touching your source or `.csproj` — build, then point the action at the artifact:
+```yaml
+- uses: actions/setup-dotnet@v5
+  with: { dotnet-version: 9.x }
+- run: dotnet build -c Release
+- uses: sunnamed434/BitMono@0.43.0   # pin the latest release tag (see Releases)
+  with:
+    file: bin/Release/net9.0/MyApp.dll
+    preset: Maximum
+    # version: 0.43.0   # optional: pin the obfuscator too (default: latest) for byte-stable builds
+```
+The action is versioned by the repo's git tags — it ships from its first tagged release onward, so use the newest tag on the [releases page][bitmono_releases]. Pin the tag to lock the wrapper; also set `version:` to the same number to lock the obfuscator.
+
+No action needed if you prefer: it just wraps the global tool, so `dotnet tool install --global BitMono.GlobalTool` then `bitmono.console -f bin/Release/net9.0/MyApp.dll --preset Maximum` does the same thing in two lines. Inputs (`file`, `output`, `libraries`, `protections`, `preset`, `no-watermark`, `no-logo`, `strong-name-key`, config files, `version`, `extra-args`) map 1:1 to the CLI — see [`action.yml`](action.yml).
+
 **NuGet Package Users:**
 If you encounter dependency resolution issues when using BitMono as a NuGet package, see the [NuGet configuration guide](https://docs.bitmono.dev/en/latest/usage/nuget-configuration.html) in the documentation.
 
