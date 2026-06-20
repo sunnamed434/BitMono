@@ -65,7 +65,11 @@ runs:
     - name: Common commands
       id: common-commands
       run: |
-        echo "dotnet-restore=dotnet restore \$PROJECT_PATH ${{ steps.set-runtime-flag.outputs.runtime }} -p:Configuration=Release -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
+        # TargetFramework is intentionally NOT passed to restore: restore is a superset (all TFMs anyway),
+        # and a global TargetFramework (empty for multi-TFM libs, a concrete TFM for the CLI matrix) leaks
+        # into the netstandard2.0-only BitMono.Analyzers ProjectReference and breaks restore ("Invalid
+        # framework identifier ''") or the later build (NETSDK1005). Build/test below still pass it.
+        echo "dotnet-restore=dotnet restore \$PROJECT_PATH ${{ steps.set-runtime-flag.outputs.runtime }} -p:Configuration=Release" >> $GITHUB_OUTPUT
         echo "dotnet-build=dotnet build \$PROJECT_PATH --configuration Release --no-restore ${{ steps.set-runtime-flag.outputs.runtime }} -p:TargetFramework=${{ inputs.target_framework }} -p:BitMonoVersion=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
         echo "dotnet-test=dotnet test \$PROJECT_PATH --configuration Release --no-restore --no-build ${{ steps.set-runtime-flag.outputs.runtime }} -p:TargetFramework=${{ inputs.target_framework }}" >> $GITHUB_OUTPUT
       shell: bash
