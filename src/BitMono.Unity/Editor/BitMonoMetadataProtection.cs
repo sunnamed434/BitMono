@@ -15,7 +15,8 @@ namespace BitMono.Unity.Editor
     // restores it in memory at startup. Opt-in via BitMonoConfig.EncryptIl2CppMetadata. See #276.
     public class BitMonoMetadataProtection : IPostprocessBuildWithReport
     {
-        // "BMIL2CPP" little-endian - the marker GlobalMetadataEncryptor writes; lets us stay idempotent.
+        // "BMIL2CPP" little-endian - the plaintext marker at the start of every encrypted file, so it's public
+        // anyway (not the key). Read here only to skip re-encrypting on an incremental build.
         private const ulong EncryptedSanity = 0x505043324C494D42UL;
 
         public int callbackOrder => 1000; // run last, once the player (and its metadata) is fully written
