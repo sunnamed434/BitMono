@@ -30,7 +30,9 @@ internal static class MetadataEncryptorCommand
 #if NET6_0_OR_GREATER || NETSTANDARD2_1
             var roundTrips = restored.AsSpan().SequenceEqual(original); // vectorized memcmp
 #else
-            var roundTrips = restored.Length == original.Length && restored.SequenceEqual(original);
+            // Fully-qualified LINQ: on net462 both MonoMod.Backports and System.Memory polyfill the span
+            // MemoryExtensions.SequenceEqual, so an unqualified call is ambiguous (CS0121).
+            var roundTrips = restored.Length == original.Length && Enumerable.SequenceEqual(restored, original);
 #endif
             var stillParses = TryParse(encrypted);
 
