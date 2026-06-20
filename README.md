@@ -5,7 +5,7 @@
 ## BitMono
 
 [![MIT License][image_license]][license]
-[![Documentation Status](https://readthedocs.org/projects/bitmono/badge/?version=latest)](https://bitmono.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/bitmono/badge/?version=latest)](https://docs.bitmono.dev/en/latest/?badge=latest)
 [![Nuget feed][bitmono_nuget_shield]][bitmono_nuget_packages]
 [![BitMono Discord][image_bitmono_discord]][bitmono_discord]
 
@@ -83,7 +83,7 @@ The **[docs][bitmono_docs]** cover every protection, configuration option, and m
 * AntiDe4dot
 * AntiILdasm
 * and you can integrate existing/make own feature ;)
-* **Plugins** - drop your own protections in a `plugins` folder, no rebuild required ([guide](https://bitmono.readthedocs.io/en/latest/developers/plugins.html))
+* **Plugins** - drop your own protections in a `plugins` folder, no rebuild required ([guide](https://docs.bitmono.dev/en/latest/developers/plugins.html))
 
 ## Getting Started
 
@@ -112,20 +112,20 @@ Full usage and installation guides live in the **[docs][bitmono_docs]**.
 Obfuscate automatically on every `Release` build by adding one package reference to your `.csproj` — no separate tool run:
 - `dotnet add package BitMono.Integration` (then set `<PrivateAssets>all</PrivateAssets>` on the reference) and build in `Release`.
 - Configure with the usual `protections.json` / `criticals.json` / `obfuscation.json` next to your `.csproj`.
-- See the [MSBuild integration guide](https://bitmono.readthedocs.io/en/latest/usage/msbuild-integration.html).
+- See the [MSBuild integration guide](https://docs.bitmono.dev/en/latest/usage/msbuild-integration.html).
 
 **NuGet Package Users:**
-If you encounter dependency resolution issues when using BitMono as a NuGet package, see the [NuGet configuration guide](https://bitmono.readthedocs.io/en/latest/usage/nuget-configuration.html) in the documentation.
+If you encounter dependency resolution issues when using BitMono as a NuGet package, see the [NuGet configuration guide](https://docs.bitmono.dev/en/latest/usage/nuget-configuration.html) in the documentation.
 
 For detailed installation and usage instructions, see the **[documentation][bitmono_docs]**.
 
 ### Troubleshooting
 
-Having issues? See the [troubleshooting guide](https://bitmono.readthedocs.io/en/latest/usage/troubleshooting.html) in the documentation.
+Having issues? See the [troubleshooting guide](https://docs.bitmono.dev/en/latest/usage/troubleshooting.html) in the documentation.
 
 ### Building
 
-If you want to build BitMono yourself - see the [building guide](https://bitmono.readthedocs.io/en/latest/developers/building.html) in the documentation.
+If you want to build BitMono yourself - see the [building guide](https://docs.bitmono.dev/en/latest/developers/building.html) in the documentation.
 
 ### Supported Frameworks
 
@@ -171,7 +171,7 @@ Credits
 [dnlib]: https://github.com/0xd4d/dnlib
 [bitmono_issues]: https://github.com/sunnamed434/BitMono/issues
 [bitmono_releases]: https://github.com/sunnamed434/BitMono/releases
-[bitmono_docs]: https://bitmono.readthedocs.io/en/latest/
+[bitmono_docs]: https://docs.bitmono.dev/en/latest/
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
