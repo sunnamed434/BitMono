@@ -405,3 +405,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Per-build IL2CPP metadata key, generated at build time (#276)
+bitmono_il2cpp_key.h
+bitmono_il2cpp_key.h.meta

@@ -16,10 +16,17 @@
 #include <cstdlib>
 #include <cstring>
 
-// The 16-byte XXTEA key. Ships in the binary, so this is obfuscation strength, not secrecy - it only has to
-// match the CLI's --encrypt-metadata key. Overridable at compile time (per-build keying is a future step).
-#ifndef BITMONO_IL2CPP_KEY
-#define BITMONO_IL2CPP_KEY "BitMono-IL2CPP!!"
+// The 16-byte XXTEA key (must match the CLI's --encrypt-metadata key). The dev default below is overridden
+// per build: BitMono's build hook writes a random key into bitmono_il2cpp_key.h next to this file, so each
+// shipped game gets a different key. The key still rides in GameAssembly.dll - obfuscation strength, not a
+// secret - but it's no longer shared across every BitMono game.
+#if defined(__has_include)
+#  if __has_include("bitmono_il2cpp_key.h")
+#    include "bitmono_il2cpp_key.h"
+#  endif
+#endif
+#ifndef BITMONO_IL2CPP_KEY_BYTES
+#  define BITMONO_IL2CPP_KEY_BYTES 'B','i','t','M','o','n','o','-','I','L','2','C','P','P','!','!'
 #endif
 
 namespace {
@@ -84,7 +91,8 @@ extern "C" const void* BitMonoDecryptMetadata(const void* data)
         return data; // plain metadata - leave it alone
 
     uint32_t key[4];
-    memcpy(key, BITMONO_IL2CPP_KEY, 16); // must match the CLI's --encrypt-metadata key
+    static const unsigned char kKey[16] = { BITMONO_IL2CPP_KEY_BYTES };
+    memcpy(key, kKey, 16); // must match the CLI's --encrypt-metadata key
 
     uint32_t bodyLength = header->bodyLength;
     uint32_t paddedLength = (bodyLength + 3) & ~3u;

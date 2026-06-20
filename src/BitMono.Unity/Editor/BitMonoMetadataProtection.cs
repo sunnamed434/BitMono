@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -10,17 +11,57 @@ using Debug = UnityEngine.Debug;
 
 namespace BitMono.Unity.Editor
 {
-    // After an IL2CPP Windows player is built, encrypt its global-metadata.dat in place so static dumpers
-    // (Il2CppDumper, Cpp2IL) can't parse it - the decryptor shipped as a source plugin in GameAssembly.dll
-    // restores it in memory at startup. Opt-in via BitMonoConfig.EncryptIl2CppMetadata. See #276.
-    public class BitMonoMetadataProtection : IPostprocessBuildWithReport
+    // On an IL2CPP Windows build, encrypt the output global-metadata.dat so static dumpers (Il2CppDumper,
+    // Cpp2IL) can't parse it - the decryptor shipped as a source plugin in GameAssembly.dll restores it in
+    // memory at startup. A fresh random key is generated per build, baked into the plugin (pre-build) and
+    // passed to the encrypt step (post-build), so shipped games don't all share one key. Opt-in via
+    // BitMonoConfig.EncryptIl2CppMetadata. See #276.
+    public class BitMonoMetadataProtection : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
         // "BMIL2CPP" little-endian - the plaintext marker at the start of every encrypted file, so it's public
         // anyway (not the key). Read here only to skip re-encrypting on an incremental build.
         private const ulong EncryptedSanity = 0x505043324C494D42UL;
 
-        public int callbackOrder => 1000; // run last, once the player (and its metadata) is fully written
+        private const string KeyHeaderName = "bitmono_il2cpp_key.h";
+        // Carries the per-build key from OnPreprocessBuild to OnPostprocessBuild within the same build.
+        private const string KeyStateKey = "BitMono.Il2cppMetadataKeyHex";
 
+        public int callbackOrder => 1000;
+
+        // Before the build: bake a fresh random key into the plugin so it compiles into GameAssembly.dll.
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            SessionState.EraseString(KeyStateKey);
+            var config = LoadConfig();
+            if (config == null || !config.EncryptIl2CppMetadata)
+            {
+                return;
+            }
+            if (report.summary.platform != BuildTarget.StandaloneWindows64)
+            {
+                return;
+            }
+
+            var pluginDir = FindPluginDir();
+            if (pluginDir == null)
+            {
+                Debug.LogWarning("[BitMono] Encrypt IL2CPP Metadata is on but the decryptor plugin " +
+                                 "(global_metadata_decrypt.cpp) wasn't found; the build won't be protected.");
+                return;
+            }
+
+            // The key still rides in GameAssembly.dll (obfuscation strength, not a secret), but it now differs
+            // per game instead of being the fixed key shared by every BitMono build.
+            var key = new byte[16];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(key);
+            }
+            File.WriteAllText(Path.Combine(pluginDir, KeyHeaderName), BuildKeyHeader(key));
+            SessionState.SetString(KeyStateKey, ToHex(key));
+        }
+
+        // After the build: encrypt global-metadata.dat with the same key, then drop the generated header.
         public void OnPostprocessBuild(BuildReport report)
         {
             var config = LoadConfig();
@@ -28,8 +69,12 @@ namespace BitMono.Unity.Editor
             {
                 return;
             }
-            // Don't gate on result == Succeeded: OnPostprocessBuild runs before the report is finalized, so the
-            // result is usually BuildResult.Unknown here. Only bail on an explicit failure/cancel.
+
+            // The plugin is compiled by now; grab the key and remove the generated header so it doesn't linger.
+            var keyHex = SessionState.GetString(KeyStateKey, "");
+            SessionState.EraseString(KeyStateKey);
+            CleanupKeyHeader();
+
             if (report.summary.result == BuildResult.Failed || report.summary.result == BuildResult.Cancelled)
             {
                 return;
@@ -63,11 +108,16 @@ namespace BitMono.Unity.Editor
 
             try
             {
-                // --encrypt-metadata writes <path>.enc and self-verifies the round-trip.
+                // --encrypt-metadata writes <path>.enc and self-verifies the round-trip; key matches the plugin.
+                var args = $"--encrypt-metadata \"{metadata}\"";
+                if (!string.IsNullOrEmpty(keyHex))
+                {
+                    args += $" --metadata-key {keyHex}";
+                }
                 var psi = new ProcessStartInfo
                 {
                     FileName = cli,
-                    Arguments = $"--encrypt-metadata \"{metadata}\"",
+                    Arguments = args,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -141,6 +191,55 @@ namespace BitMono.Unity.Editor
                 return false;
             }
         }
+
+        // Directory holding the native decryptor plugin - where the generated key header goes so the plugin's
+        // #include "bitmono_il2cpp_key.h" picks it up.
+        private static string FindPluginDir()
+        {
+            try
+            {
+                var cpp = Directory
+                    .GetFiles(UnityEngine.Application.dataPath, "global_metadata_decrypt.cpp", SearchOption.AllDirectories)
+                    .FirstOrDefault();
+                return cpp == null ? null : Path.GetDirectoryName(cpp);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static string BuildKeyHeader(byte[] key)
+        {
+            var bytes = string.Join(",", key.Select(b => "0x" + b.ToString("x2")));
+            return "// Auto-generated per build by BitMono - do not edit or commit. This build's metadata key.\n" +
+                   "#define BITMONO_IL2CPP_KEY_BYTES " + bytes + "\n";
+        }
+
+        private static void CleanupKeyHeader()
+        {
+            var dir = FindPluginDir();
+            if (dir == null)
+            {
+                return;
+            }
+            foreach (var file in new[] { Path.Combine(dir, KeyHeaderName), Path.Combine(dir, KeyHeaderName + ".meta") })
+            {
+                try
+                {
+                    if (File.Exists(file))
+                    {
+                        File.Delete(file);
+                    }
+                }
+                catch
+                {
+                    // best-effort cleanup
+                }
+            }
+        }
+
+        private static string ToHex(byte[] bytes) => string.Concat(bytes.Select(b => b.ToString("x2")));
 
         private static string FindCli()
         {

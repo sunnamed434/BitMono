@@ -41,7 +41,7 @@ internal class Program
             // Standalone IL2CPP metadata encryption (the offline half), same deal.
             if (needs.EncryptMetadataPath is { } encryptPath)
             {
-                return MetadataEncryptorCommand.Run(encryptPath);
+                return MetadataEncryptorCommand.Run(encryptPath, needs.EncryptMetadataKey);
             }
 
             var module = new BitMonoModule(

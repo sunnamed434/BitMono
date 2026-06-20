@@ -65,11 +65,11 @@ Unity from the **BitMonoConfig** asset: tick **Encrypt IL2CPP Metadata**. Window
       [x] Enable Obfuscation          (managed renaming/strings, runs before il2cpp.exe)
       [x] Encrypt IL2CPP Metadata     (encrypts global-metadata.dat, decrypts in GameAssembly.dll)
 
-Under the hood it's two halves that share one key:
+Under the hood it's two halves that share a key BitMono generates fresh for every build:
 
-- **Offline:** after the player is built, BitMono runs ``BitMono.CLI --encrypt-metadata global-metadata.dat``.
-  That XXTEA-encrypts the whole file behind a small header and self-checks the round-trip. You can run it by
-  hand for CI builds too.
+- **Offline:** after the player is built, BitMono runs ``BitMono.CLI --encrypt-metadata global-metadata.dat
+  --metadata-key <hex>``. That XXTEA-encrypts the whole file behind a small header and self-checks the
+  round-trip. You can run it by hand for CI builds too (omit ``--metadata-key`` to use the fixed dev key).
 - **Runtime:** the source plugin ``global_metadata_decrypt.cpp`` (shipped in the Unity package, compiled into
   ``GameAssembly.dll``) hooks the file read of ``global-metadata.dat`` and hands IL2CPP the decrypted bytes.
   It's a no-op on a plain build, so it only does anything when the file is actually encrypted.
@@ -79,8 +79,9 @@ Under the hood it's two halves that share one key:
    This stops **static** dumping, the shipped ``global-metadata.dat`` is unreadable, so anything that parses
    the file off disk is dead in the water. It does **not** stop a **memory** dumper that reads the already
    decrypted bytes out of the running process; nothing that ships the key in the binary can. Treat it as one
-   more wall on top of the managed renaming, not a magic bullet. The key ships inside ``GameAssembly.dll``, so
-   it's obfuscation strength, not a secret.
+   more wall on top of the managed renaming, not a magic bullet. The key ships inside ``GameAssembly.dll`` so
+   it's obfuscation strength, not a secret - but it's random per build, so cracking one game's key doesn't
+   unlock every other BitMono game.
 
 Validated end to end on a real Unity 6000.2 IL2CPP build (metadata version 31). The encryption is whole-file,
 so it doesn't care about the per-version metadata layout; only the decryptor's file hook is platform-specific

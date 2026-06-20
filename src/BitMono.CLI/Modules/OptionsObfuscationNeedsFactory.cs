@@ -40,7 +40,8 @@ internal class OptionsObfuscationNeedsFactory
             return new ObfuscationNeeds
             {
                 Way = ObfuscationNeedsWay.Options,
-                EncryptMetadataPath = options.EncryptMetadata
+                EncryptMetadataPath = options.EncryptMetadata,
+                EncryptMetadataKey = options.MetadataKey
             };
         }
 
