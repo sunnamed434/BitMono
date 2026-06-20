@@ -27,7 +27,6 @@ global using Echo.DataFlow;
 global using Echo.DataFlow.Analysis;
 global using Echo.Platforms.AsmResolver;
 global using JetBrains.Annotations;
-global using Newtonsoft.Json;
 global using BitMono.Shared.Extensions;
 global using System;
 global using System.Collections.Generic;

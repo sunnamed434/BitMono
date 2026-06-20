@@ -9,7 +9,6 @@ global using BitMono.Core.Resolvers;
 global using BitMono.Core.Services;
 global using BitMono.Host.Ioc;
 global using BitMono.Shared;
-global using BitMono.Shared.Configuration;
 global using BitMono.Shared.DependencyInjection;
 global using BitMono.Shared.Logging;
 global using BitMono.Shared.Models;

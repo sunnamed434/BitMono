@@ -7,7 +7,6 @@ global using BitMono.Obfuscation;
 global using BitMono.Obfuscation.Files;
 global using BitMono.Obfuscation.Starter;
 global using BitMono.Shared;
-global using BitMono.Shared.Configuration;
 global using BitMono.Shared.DependencyInjection;
 global using BitMono.Shared.Logging;
 global using BitMono.Shared.Models;

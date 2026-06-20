@@ -36,12 +36,12 @@ internal class ReadlineObfuscationNeedsFactory
         {
             if (File.Exists(obfuscationFile ?? KnownConfigNames.Obfuscation))
             {
-                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(obfuscationFile ?? KnownConfigNames.Obfuscation);
+                obfuscationSettings = Json.LoadFile<ObfuscationSettings>(obfuscationFile ?? KnownConfigNames.Obfuscation);
             }
 
             if (File.Exists(KnownConfigNames.Protections))
             {
-                var loadedSettings = SettingsLoader.Load<ProtectionSettings>(KnownConfigNames.Protections);
+                var loadedSettings = Json.LoadFile<ProtectionSettings>(KnownConfigNames.Protections);
                 protectionSettings = loadedSettings?.Protections;
             }
 

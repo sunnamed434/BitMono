@@ -29,11 +29,11 @@ internal class OptionsObfuscationNeedsFactory
         {
             if (options.ObfuscationFile != null && File.Exists(options.ObfuscationFile))
             {
-                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(options.ObfuscationFile);
+                obfuscationSettings = Json.LoadFile<ObfuscationSettings>(options.ObfuscationFile);
             }
             else if (File.Exists(KnownConfigNames.Obfuscation))
             {
-                obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(KnownConfigNames.Obfuscation);
+                obfuscationSettings = Json.LoadFile<ObfuscationSettings>(KnownConfigNames.Obfuscation);
             }
             else
             {
@@ -41,7 +41,7 @@ internal class OptionsObfuscationNeedsFactory
                 var baseObfuscationFile = Path.Combine(AppContext.BaseDirectory, KnownConfigNames.Obfuscation);
                 if (File.Exists(baseObfuscationFile))
                 {
-                    obfuscationSettings = SettingsLoader.Load<ObfuscationSettings>(baseObfuscationFile);
+                    obfuscationSettings = Json.LoadFile<ObfuscationSettings>(baseObfuscationFile);
                 }
             }
 

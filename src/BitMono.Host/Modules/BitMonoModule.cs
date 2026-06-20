@@ -5,7 +5,6 @@ using BitMono.Core.Factories;
 using BitMono.Core.Renaming;
 using BitMono.Core.Services;
 using BitMono.Host.Ioc;
-using BitMono.Shared.Configuration;
 using BitMono.Shared.DependencyInjection;
 using BitMono.Shared.Logging;
 using BitMono.Shared.Models;
@@ -63,16 +62,16 @@ public class BitMonoModule : IModule
         var logger = new Logger(loggerConfiguration);
         container.Register<ILogger>(logger).AsSingleton();
 
-        var criticalsSettings = SettingsLoader.Load<CriticalsSettings>(
+        var criticalsSettings = Json.LoadFile<CriticalsSettings>(
             _criticalsFile ?? KnownConfigNames.Criticals);
         container.Register(criticalsSettings).AsSingleton();
 
         var obfuscationSettings = _obfuscationSettings ??
-            SettingsLoader.Load<ObfuscationSettings>(_obfuscationFile ?? KnownConfigNames.Obfuscation);
+            Json.LoadFile<ObfuscationSettings>(_obfuscationFile ?? KnownConfigNames.Obfuscation);
         container.Register(obfuscationSettings).AsSingleton();
 
         var protectionSettings = _protectionSettings ??
-            SettingsLoader.Load<ProtectionSettings>(_protectionsFile ?? KnownConfigNames.Protections);
+            Json.LoadFile<ProtectionSettings>(_protectionsFile ?? KnownConfigNames.Protections);
         container.Register(protectionSettings).AsSingleton();
 
         container.Register<IEngineContextAccessor, EngineContextAccessor>().AsSingleton();
