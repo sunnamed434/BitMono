@@ -1,6 +1,7 @@
 ﻿namespace BitMono.Protections;
 
 [IL2CPPIncompatible("Installs runtime method detours by overwriting JIT-compiled native code; IL2CPP is AOT-compiled and has no JIT to hook")]
+[DoNotResolve(MemberInclusionFlags.MethodBody)]
 public class DotNetHook : Protection
 {
     private readonly Renamer _renamer;

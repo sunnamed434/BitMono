@@ -1,49 +1,44 @@
 namespace BitMono.Core.Analyzing;
 
+/// <summary>
+/// Finds members that user code looks up by name through <see cref="System.Reflection"/> so the
+/// renamer (and IL rewriters) leave them alone - renaming a reflected member turns a lookup into a
+/// runtime <c>null</c>. Built on Washi's Echo data-flow graph (see <see cref="ReflectionDataFlow"/>):
+/// the whole module is analyzed once, up front, and every query is then a pure identity lookup.
+/// Intra-method only, like ConfuserEx. See ConfuserEx#39 for the original design discussion.
+/// </summary>
 [SuppressMessage("ReSharper", "InvertIf")]
 public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
 {
+    private enum MemberKind { Method, Field, Property, Event, NestedType, All }
+
     private readonly ObfuscationSettings _obfuscationSettings;
-    private readonly ArgumentTracer _argumentTracer;
-    private readonly List<MethodDefinition> _cachedMethods;
-    private readonly List<FieldDefinition> _cachedFields;
-    private readonly List<PropertyDefinition> _cachedProperties;
-    private readonly List<EventDefinition> _cachedEvents;
-    private readonly List<TypeDefinition> _cachedTypes;
+    private readonly HashSet<ModuleDefinition> _analyzedModules = [];
+    private readonly List<MethodDefinition> _cachedMethods = [];
+    private readonly List<FieldDefinition> _cachedFields = [];
+    private readonly List<PropertyDefinition> _cachedProperties = [];
+    private readonly List<EventDefinition> _cachedEvents = [];
+    private readonly List<TypeDefinition> _cachedTypes = [];
+    private readonly List<MethodDefinition> _cachedMethodBodies = [];
+    private ModuleDefinition? _analyzingModule;
 
-    private static readonly string[] ReflectionMethods =
+    // Method names that may start a reflection lookup. Only a cheap pre-filter so we skip building a
+    // data-flow graph for bodies that obviously can't reflect; the real check verifies declaring type.
+    private static readonly HashSet<string> ReflectionMethodNames =
     [
-        nameof(Type.GetMethod),
-        nameof(Type.GetField),
-        nameof(Type.GetProperty),
-        nameof(Type.GetEvent),
-        nameof(Type.GetMember),
-        nameof(Type.GetTypeFromHandle),
-        nameof(Type.GetMethods),
-        nameof(Type.GetFields),
-        nameof(Type.GetProperties),
-        nameof(Type.GetEvents),
-        nameof(Type.GetMembers)
+        "GetMethod", "GetField", "GetProperty", "GetEvent", "GetMember", "InvokeMember",
+        "GetNestedType", "GetInterface",
+        "GetMethods", "GetFields", "GetProperties", "GetEvents", "GetMembers", "GetNestedTypes",
+        "GetRuntimeMethod", "GetRuntimeField", "GetRuntimeProperty", "GetRuntimeEvent",
+        "GetRuntimeMethods", "GetRuntimeFields", "GetRuntimeProperties", "GetRuntimeEvents",
+        "GetType", "CreateInstance", "CreateInstanceFrom", "CreateDelegate",
+        "GetName", "GetNames", "Parse", "TryParse", "IsDefined", "Format",
+        "GetMethodBody", "GetILAsByteArray",
     ];
-
-    private enum MemberType
-    {
-        Method,
-        Field,
-        Property,
-        Event,
-        All
-    }
 
     public ReflectionCriticalAnalyzer(ObfuscationSettings obfuscationSettings)
     {
         _obfuscationSettings = obfuscationSettings;
-        _argumentTracer = new ArgumentTracer();
-        _cachedMethods = [];
-        _cachedFields = [];
-        _cachedProperties = [];
-        _cachedEvents = [];
-        _cachedTypes = [];
     }
 
     public IReadOnlyList<MethodDefinition> CachedMethods => _cachedMethods.AsReadOnly();
@@ -51,6 +46,7 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
     public IReadOnlyList<PropertyDefinition> CachedProperties => _cachedProperties.AsReadOnly();
     public IReadOnlyList<EventDefinition> CachedEvents => _cachedEvents.AsReadOnly();
     public IReadOnlyList<TypeDefinition> CachedTypes => _cachedTypes.AsReadOnly();
+    public IReadOnlyList<MethodDefinition> CachedMethodBodies => _cachedMethodBodies.AsReadOnly();
 
     public bool NotCriticalToMakeChanges(MethodDefinition method)
     {
@@ -58,62 +54,8 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-
-        if (_cachedMethods.FirstOrDefault(x => x.Name.Equals(method.Name)) != null)
-        {
-            return false;
-        }
-
-        bool foundReflection = false;
-
-        if (method.CilMethodBody is { } body)
-        {
-            body.ConstructSymbolicFlowGraph(out var dataFlowGraph);
-            foreach (var node in dataFlowGraph.Nodes)
-            {
-                var orderedDependencies =
-                    node.GetOrderedDependencies(DependencyCollectionFlags.IncludeStackDependencies);
-                foreach (var order in orderedDependencies)
-                {
-                    var instruction = order.Contents;
-                    if ((instruction?.OpCode.Code == CilCode.Call || instruction?.OpCode.Code == CilCode.Callvirt) &&
-                        instruction.Operand is IMethodDefOrRef calledMethod)
-                    {
-                        if (calledMethod.DeclaringType.IsSystemType() &&
-                            ReflectionMethods.Contains(calledMethod.Name.Value))
-                        {
-                            foundReflection |=
-                                AnalyzeReflectionCall(body, instruction, calledMethod, method.DeclaringModule);
-                        }
-                        else if (calledMethod.DeclaringType.IsSystemType() &&
-                                 calledMethod.Name.Value == nameof(Type.GetTypeFromHandle))
-                        {
-                            var typeFromHandle = _argumentTracer.TraceTypeArgument(body, instruction, 0);
-                            if (typeFromHandle != null && !_cachedTypes.Contains(typeFromHandle))
-                            {
-                                _cachedTypes.Add(typeFromHandle);
-                                foundReflection = true;
-                            }
-                        }
-                    }
-                    else if (instruction?.OpCode == CilOpCodes.Ldtoken && instruction.Operand is ITypeDefOrRef typeRef)
-                    {
-                        if (typeRef.ResolveOrNull() is TypeDefinition typeDef && !_cachedTypes.Contains(typeDef))
-                        {
-                            _cachedTypes.Add(typeDef);
-                            foundReflection = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (foundReflection && !_cachedMethods.Contains(method))
-        {
-            _cachedMethods.Add(method);
-        }
-
-        return !foundReflection;
+        EnsureAnalyzed(ModuleOf(method));
+        return !_cachedMethods.Contains(method);
     }
 
     public bool NotCriticalToMakeChanges(FieldDefinition field)
@@ -122,8 +64,8 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-
-        return _cachedFields.FirstOrDefault(x => x.Name.Equals(field.Name)) == null;
+        EnsureAnalyzed(ModuleOf(field));
+        return !_cachedFields.Contains(field);
     }
 
     public bool NotCriticalToMakeChanges(PropertyDefinition property)
@@ -132,8 +74,8 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-
-        return _cachedProperties.FirstOrDefault(x => x.Name.Equals(property.Name)) == null;
+        EnsureAnalyzed(ModuleOf(property));
+        return !_cachedProperties.Contains(property);
     }
 
     public bool NotCriticalToMakeChanges(EventDefinition eventDef)
@@ -142,8 +84,8 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-
-        return _cachedEvents.FirstOrDefault(x => x.Name.Equals(eventDef.Name)) == null;
+        EnsureAnalyzed(ModuleOf(eventDef));
+        return !_cachedEvents.Contains(eventDef);
     }
 
     public bool NotCriticalToMakeChanges(TypeDefinition type)
@@ -152,620 +94,537 @@ public class ReflectionCriticalAnalyzer : ICriticalAnalyzer<MethodDefinition>
         {
             return true;
         }
-
-        return _cachedTypes.FirstOrDefault(x => x.Name.Equals(type.Name)) == null;
+        EnsureAnalyzed(ModuleOf(type));
+        return !_cachedTypes.Contains(type);
     }
 
-    private bool AnalyzeReflectionCall(CilMethodBody body, CilInstruction instruction, IMethodDefOrRef calledMethod,
-        ModuleDefinition module)
+    /// <summary>
+    /// Whether <paramref name="method"/>'s raw IL is read back via reflection and therefore must not
+    /// be mutated by IL-rewriting protections. Renaming is still allowed (refetch-by-name works).
+    /// </summary>
+    public bool IsMethodBodyCritical(MethodDefinition method)
     {
-        var argumentIndices = _argumentTracer.TraceArguments(body, instruction);
-        if (argumentIndices == null)
+        if (!_obfuscationSettings.ReflectionMembersObfuscationExclude)
         {
-            return AnalyzeReflectionCallLegacy(body, instruction, calledMethod, module);
-        }
-
-        TypeDefinition? targetType = null;
-        if (instruction.Operand is IMethodDefOrRef methodRef)
-        {
-            var resolvedMethod = methodRef.ResolveOrNull();
-            if (resolvedMethod?.Signature != null && resolvedMethod.Signature.HasThis)
-            {
-                var argumentCount = resolvedMethod.Signature.ParameterTypes.Count;
-                if (resolvedMethod.Signature.HasThis)
-                {
-                    argumentCount++;
-                }
-
-                var thisArgumentIndices = _argumentTracer.TraceArgumentsRobust(body, instruction, argumentCount);
-                if (thisArgumentIndices != null && thisArgumentIndices.Length > 0)
-                {
-                    targetType = ExtractTargetType(body, thisArgumentIndices, thisArgumentIndices.Length - 1);
-                }
-            }
-        }
-
-        var typesToSearch = targetType != null
-            ? targetType.GetTypeAndBaseTypes()
-            : module.GetAllTypes();
-
-        var methodName = calledMethod.Name.Value;
-        bool foundReflection = false;
-
-        var memberName = _argumentTracer.TraceStringArgument(body, instruction, 0);
-
-        switch (methodName)
-        {
-            case nameof(Type.GetMethod):
-                foundReflection |= AnalyzeSingleMember(body, instruction, typesToSearch, memberName, MemberType.Method);
-                break;
-            case nameof(Type.GetField):
-                foundReflection |= AnalyzeSingleMember(body, instruction, typesToSearch, memberName, MemberType.Field);
-                break;
-            case nameof(Type.GetProperty):
-                foundReflection |=
-                    AnalyzeSingleMember(body, instruction, typesToSearch, memberName, MemberType.Property);
-                break;
-            case nameof(Type.GetEvent):
-                foundReflection |= AnalyzeSingleMember(body, instruction, typesToSearch, memberName, MemberType.Event);
-                break;
-            case nameof(Type.GetMember):
-                foundReflection |= AnalyzeAllMembers(body, instruction, typesToSearch, memberName);
-                break;
-            case nameof(Type.GetMethods):
-                foundReflection |= AnalyzeAllMembers(typesToSearch, MemberType.Method);
-                break;
-            case nameof(Type.GetFields):
-                foundReflection |= AnalyzeAllMembers(typesToSearch, MemberType.Field);
-                break;
-            case nameof(Type.GetProperties):
-                foundReflection |= AnalyzeAllMembers(typesToSearch, MemberType.Property);
-                break;
-            case nameof(Type.GetEvents):
-                foundReflection |= AnalyzeAllMembers(typesToSearch, MemberType.Event);
-                break;
-            case nameof(Type.GetMembers):
-                foundReflection |= AnalyzeAllMembers(typesToSearch, MemberType.All);
-                break;
-        }
-
-        return foundReflection;
-    }
-
-    private TypeDefinition? ExtractTargetType(CilMethodBody body, int[] argumentIndices, int typeArgumentIndex)
-    {
-        if (typeArgumentIndex >= argumentIndices.Length)
-            return null;
-
-        var typeInstructionIndex = argumentIndices[typeArgumentIndex];
-        if (typeInstructionIndex < 0 || typeInstructionIndex >= body.Instructions.Count)
-            return null;
-
-        var typeInstruction = body.Instructions[typeInstructionIndex];
-
-        if (typeInstruction.OpCode == CilOpCodes.Ldtoken && typeInstruction.Operand is ITypeDefOrRef typeRef)
-        {
-            return typeRef.ResolveOrNull();
-        }
-
-        if (typeInstruction.OpCode == CilOpCodes.Call && typeInstruction.Operand is IMethodDefOrRef method)
-        {
-            if (method.DeclaringType.IsSystemType() && method.Name.Value == nameof(Type.GetTypeFromHandle))
-            {
-                return _argumentTracer.TraceTypeArgument(body, typeInstruction, 0);
-            }
-        }
-
-        return null;
-    }
-
-    private bool AnalyzeSingleMember(CilMethodBody body, CilInstruction callInstruction,
-        IEnumerable<TypeDefinition> typesToSearch, string? memberName, MemberType memberType)
-    {
-        if (string.IsNullOrEmpty(memberName))
             return false;
-
-        bool found = false;
-        foreach (var type in typesToSearch)
-        {
-            switch (memberType)
-            {
-                case MemberType.Method:
-                    foreach (var method in type.Methods.Where(m => m.Name.Equals(memberName)))
-                    {
-                        if (!_cachedMethods.Contains(method))
-                        {
-                            _cachedMethods.Add(method);
-                            found = true;
-                        }
-
-                        HandleMemberOverrideReferences(method);
-                    }
-
-                    break;
-                case MemberType.Field:
-                    foreach (var field in type.Fields.Where(f => f.Name.Equals(memberName)))
-                    {
-                        if (!_cachedFields.Contains(field))
-                        {
-                            _cachedFields.Add(field);
-                            found = true;
-                        }
-                    }
-
-                    break;
-                case MemberType.Property:
-                    foreach (var property in type.Properties.Where(p => p.Name.Equals(memberName)))
-                    {
-                        if (!_cachedProperties.Contains(property))
-                        {
-                            _cachedProperties.Add(property);
-                            found = true;
-                        }
-
-                        HandleMemberOverrideReferences(property);
-                    }
-
-                    break;
-                case MemberType.Event:
-                    foreach (var eventDef in type.Events.Where(e => e.Name.Equals(memberName)))
-                    {
-                        if (!_cachedEvents.Contains(eventDef))
-                        {
-                            _cachedEvents.Add(eventDef);
-                            found = true;
-                        }
-
-                        HandleMemberOverrideReferences(eventDef);
-                    }
-
-                    break;
-            }
         }
-
-        return found;
+        EnsureAnalyzed(ModuleOf(method));
+        return _cachedMethodBodies.Contains(method);
     }
 
-    private bool AnalyzeAllMembers(CilMethodBody body, CilInstruction callInstruction,
-        IEnumerable<TypeDefinition> typesToSearch, string? memberName)
+    private void EnsureAnalyzed(ModuleDefinition? module)
     {
-        if (string.IsNullOrEmpty(memberName))
-            return false;
-
-        bool found = false;
-        foreach (var type in typesToSearch)
+        if (module == null || !_analyzedModules.Add(module))
         {
-            foreach (var method in type.Methods.Where(m => m.Name.Equals(memberName)))
+            return;
+        }
+        _analyzingModule = module;
+        foreach (var type in module.GetAllTypes())
+        {
+            foreach (var method in type.Methods)
             {
-                if (!_cachedMethods.Contains(method))
+                if (method.CilMethodBody is not { } body || !MayReflect(body))
                 {
-                    _cachedMethods.Add(method);
-                    found = true;
+                    continue;
                 }
-            }
-
-            foreach (var field in type.Fields.Where(f => f.Name.Equals(memberName)))
-            {
-                if (!_cachedFields.Contains(field))
+                try
                 {
-                    _cachedFields.Add(field);
-                    found = true;
+                    AnalyzeBody(body, module);
                 }
-            }
-
-            foreach (var property in type.Properties.Where(p => p.Name.Equals(memberName)))
-            {
-                if (!_cachedProperties.Contains(property))
+                catch
                 {
-                    _cachedProperties.Add(property);
-                    found = true;
+                    // ponytail: skip a body Echo can't model rather than abort the whole-module pass;
+                    // missing one obscure reflection site beats failing every member query.
                 }
-            }
-
-            foreach (var eventDef in type.Events.Where(e => e.Name.Equals(memberName)))
-            {
-                if (!_cachedEvents.Contains(eventDef))
-                {
-                    _cachedEvents.Add(eventDef);
-                    found = true;
-                }
-            }
-
-            if (type.Name.Equals(memberName) && !_cachedTypes.Contains(type))
-            {
-                _cachedTypes.Add(type);
-                found = true;
             }
         }
-
-        return found;
     }
 
-    private bool AnalyzeAllMembers(IEnumerable<TypeDefinition> typesToSearch, MemberType memberType)
+    private void AnalyzeBody(CilMethodBody body, ModuleDefinition module)
     {
-        bool found = false;
-        foreach (var type in typesToSearch)
+        body.ConstructSymbolicFlowGraph(out var dataFlowGraph);
+        foreach (var node in dataFlowGraph.Nodes)
         {
-            switch (memberType)
+            if (node.Contents is not { } instruction ||
+                (instruction.OpCode.Code != CilCode.Call && instruction.OpCode.Code != CilCode.Callvirt))
             {
-                case MemberType.Method:
-                    foreach (var method in type.Methods)
-                    {
-                        if (!_cachedMethods.Contains(method))
-                        {
-                            _cachedMethods.Add(method);
-                            found = true;
-                        }
-                    }
-                    break;
-                case MemberType.Field:
-                    foreach (var field in type.Fields)
-                    {
-                        if (!_cachedFields.Contains(field))
-                        {
-                            _cachedFields.Add(field);
-                            found = true;
-                        }
-                    }
-                    break;
-                case MemberType.Property:
-                    foreach (var property in type.Properties)
-                    {
-                        if (!_cachedProperties.Contains(property))
-                        {
-                            _cachedProperties.Add(property);
-                            found = true;
-                        }
-                    }
-                    break;
-                case MemberType.Event:
-                    foreach (var eventDef in type.Events)
-                    {
-                        if (!_cachedEvents.Contains(eventDef))
-                        {
-                            _cachedEvents.Add(eventDef);
-                            found = true;
-                        }
-                    }
-                    break;
-                case MemberType.All:
-                    foreach (var method in type.Methods)
-                    {
-                        if (!_cachedMethods.Contains(method))
-                        {
-                            _cachedMethods.Add(method);
-                            found = true;
-                        }
-                    }
-
-                    foreach (var field in type.Fields)
-                    {
-                        if (!_cachedFields.Contains(field))
-                        {
-                            _cachedFields.Add(field);
-                            found = true;
-                        }
-                    }
-
-                    foreach (var property in type.Properties)
-                    {
-                        if (!_cachedProperties.Contains(property))
-                        {
-                            _cachedProperties.Add(property);
-                            found = true;
-                        }
-                    }
-
-                    foreach (var eventDef in type.Events)
-                    {
-                        if (!_cachedEvents.Contains(eventDef))
-                        {
-                            _cachedEvents.Add(eventDef);
-                            found = true;
-                        }
-                    }
-
-                    break;
+                continue;
+            }
+            var called = instruction.Operand as IMethodDefOrRef
+                         ?? (instruction.Operand as MethodSpecification)?.Method;
+            if (called != null)
+            {
+                AnalyzeCall(node, called, module);
             }
         }
-
-        return found;
     }
 
-    private bool AnalyzeReflectionCallLegacy(CilMethodBody body, CilInstruction instruction,
-        IMethodDefOrRef calledMethod, ModuleDefinition module)
+    private static bool MayReflect(CilMethodBody body)
     {
-        var traceArgument = TraceStringArgument(body, instruction);
-        if (traceArgument?.Operand is string memberName)
+        foreach (var instruction in body.Instructions)
         {
-            var allMembers = module.FindMembers();
-            return ProcessLegacyReflection(calledMethod, memberName, allMembers);
+            if (instruction.OpCode.Code is CilCode.Call or CilCode.Callvirt)
+            {
+                var name = (instruction.Operand as IMethodDefOrRef
+                            ?? (instruction.Operand as MethodSpecification)?.Method)?.Name?.Value;
+                if (name != null && ReflectionMethodNames.Contains(name))
+                {
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 
-    private bool ProcessLegacyReflection(IMethodDefOrRef calledMethod, string memberName,
-        List<IMetadataMember> allMembers)
+    private void AnalyzeCall(DataFlowNode<CilInstruction> node, IMethodDefOrRef called, ModuleDefinition module)
     {
-        bool found = false;
-        switch (calledMethod.Name.Value)
+        var declaringType = called.DeclaringType;
+        if (declaringType == null)
         {
-            case nameof(Type.GetMethod):
-                foreach (var possibleMethod in allMembers.OfType<MethodDefinition>()
-                             .Where(x => x.Name.Equals(memberName)))
-                {
-                    if (!_cachedMethods.Contains(possibleMethod))
-                    {
-                        _cachedMethods.Add(possibleMethod);
-                        found = true;
-                    }
-                }
-
-                break;
-            case nameof(Type.GetField):
-                foreach (var possibleField in allMembers.OfType<FieldDefinition>()
-                             .Where(x => x.Name.Equals(memberName)))
-                {
-                    if (!_cachedFields.Contains(possibleField))
-                    {
-                        _cachedFields.Add(possibleField);
-                        found = true;
-                    }
-                }
-
-                break;
-            case nameof(Type.GetProperty):
-                foreach (var possibleProperty in allMembers.OfType<PropertyDefinition>()
-                             .Where(x => x.Name.Equals(memberName)))
-                {
-                    if (!_cachedProperties.Contains(possibleProperty))
-                    {
-                        _cachedProperties.Add(possibleProperty);
-                        found = true;
-                    }
-                }
-
-                break;
-            case nameof(Type.GetEvent):
-                foreach (var possibleEvent in allMembers.OfType<EventDefinition>()
-                             .Where(x => x.Name.Equals(memberName)))
-                {
-                    if (!_cachedEvents.Contains(possibleEvent))
-                    {
-                        _cachedEvents.Add(possibleEvent);
-                        found = true;
-                    }
-                }
-
-                break;
-            case nameof(Type.GetMember):
-                foreach (var possibleMember in allMembers)
-                {
-                    string? memberNameToCheck = possibleMember switch
-                    {
-                        MethodDefinition m => m.Name,
-                        FieldDefinition f => f.Name,
-                        PropertyDefinition p => p.Name,
-                        EventDefinition e => e.Name,
-                        TypeDefinition t => t.Name,
-                        _ => null
-                    };
-
-                    if (memberNameToCheck != null && memberNameToCheck.Equals(memberName))
-                    {
-                        switch (possibleMember)
-                        {
-                            case MethodDefinition m:
-                                if (!_cachedMethods.Contains(m))
-                                {
-                                    _cachedMethods.Add(m);
-                                }
-
-                                break;
-                            case FieldDefinition f:
-                                if (!_cachedFields.Contains(f))
-                                {
-                                    _cachedFields.Add(f);
-                                }
-
-                                break;
-                            case PropertyDefinition p:
-                                if (!_cachedProperties.Contains(p))
-                                {
-                                    _cachedProperties.Add(p);
-                                }
-
-                                break;
-                            case EventDefinition e:
-                                if (!_cachedEvents.Contains(e))
-                                {
-                                    _cachedEvents.Add(e);
-                                }
-
-                                break;
-                            case TypeDefinition t:
-                                if (!_cachedTypes.Contains(t))
-                                {
-                                    _cachedTypes.Add(t);
-                                }
-
-                                break;
-                        }
-
-                        found = true;
-                    }
-                }
-                break;
-        }
-        return found;
-    }
-
-    private static CilInstruction? TraceStringArgument(CilMethodBody body, CilInstruction instruction)
-    {
-        var callIndex = body.Instructions.IndexOf(instruction);
-        if (callIndex <= 0) return null;
-
-        for (var i = callIndex - 1; i >= 0; i--)
-        {
-            var previousInstruction = body.Instructions[i];
-
-            if (previousInstruction.OpCode == CilOpCodes.Ldstr)
-            {
-                return previousInstruction;
-            }
-
-            if (previousInstruction.OpCode == CilOpCodes.Ldloc_0 ||
-                previousInstruction.OpCode == CilOpCodes.Ldloc_1 ||
-                previousInstruction.OpCode == CilOpCodes.Ldloc_2 ||
-                previousInstruction.OpCode == CilOpCodes.Ldloc_3 ||
-                previousInstruction.OpCode == CilOpCodes.Ldloc_S ||
-                previousInstruction.OpCode == CilOpCodes.Ldloc)
-            {
-                var variableIndex = GetVariableIndex(previousInstruction);
-                if (variableIndex >= 0)
-                {
-                    var stringInstruction = FindStringAssignmentToVariable(body, variableIndex, i);
-                    if (stringInstruction != null)
-                    {
-                        return stringInstruction;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static int GetVariableIndex(CilInstruction instruction)
-    {
-        return instruction.OpCode.Code switch
-        {
-            CilCode.Ldloc_0 => 0,
-            CilCode.Ldloc_1 => 1,
-            CilCode.Ldloc_2 => 2,
-            CilCode.Ldloc_3 => 3,
-            CilCode.Ldloc_S => ((CilLocalVariable)instruction.Operand!).Index,
-            CilCode.Ldloc => ((CilLocalVariable)instruction.Operand!).Index,
-            _ => -1
-        };
-    }
-
-    private static CilInstruction? FindStringAssignmentToVariable(CilMethodBody body, int variableIndex, int maxIndex)
-    {
-        for (var i = 0; i < maxIndex; i++)
-        {
-            var instruction = body.Instructions[i];
-
-            if ((instruction.OpCode == CilOpCodes.Stloc_0 && variableIndex == 0) ||
-                (instruction.OpCode == CilOpCodes.Stloc_1 && variableIndex == 1) ||
-                (instruction.OpCode == CilOpCodes.Stloc_2 && variableIndex == 2) ||
-                (instruction.OpCode == CilOpCodes.Stloc_3 && variableIndex == 3) ||
-                (instruction.OpCode == CilOpCodes.Stloc_S && ((CilLocalVariable)instruction.Operand!).Index == variableIndex) ||
-                (instruction.OpCode == CilOpCodes.Stloc && ((CilLocalVariable)instruction.Operand!).Index == variableIndex))
-            {
-                for (var j = i - 1; j >= 0; j--)
-                {
-                    var prevInstruction = body.Instructions[j];
-                    if (prevInstruction.OpCode == CilOpCodes.Ldstr)
-                    {
-                        return prevInstruction;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Handles member override references to prevent base members from being obfuscated.
-    /// </summary>
-    /// <param name="member">The member that was found through reflection.</param>
-    private void HandleMemberOverrideReferences(IMemberDefinition member)
-    {
-        if (member is not (MethodDefinition or PropertyDefinition or EventDefinition))
             return;
-
-        var baseMembers = GetBaseMembers(member);
-
-        foreach (var baseMember in baseMembers)
+        }
+        var name = called.Name?.Value;
+        if (name == null)
         {
-            switch (baseMember)
+            return;
+        }
+
+        if (declaringType.IsSystemType())
+        {
+            switch (name)
             {
-                case MethodDefinition baseMethod when !_cachedMethods.Contains(baseMethod):
-                    _cachedMethods.Add(baseMethod);
-                    break;
-                case PropertyDefinition baseProperty when !_cachedProperties.Contains(baseProperty):
-                    _cachedProperties.Add(baseProperty);
-                    break;
-                case EventDefinition baseEvent when !_cachedEvents.Contains(baseEvent):
-                    _cachedEvents.Add(baseEvent);
+                case "GetMethod": ExcludeMembers(node, module, MemberKind.Method); break;
+                case "GetField": ExcludeMembers(node, module, MemberKind.Field); break;
+                case "GetProperty": ExcludeMembers(node, module, MemberKind.Property); break;
+                case "GetEvent": ExcludeMembers(node, module, MemberKind.Event); break;
+                case "GetMember":
+                case "InvokeMember": ExcludeMembers(node, module, MemberKind.All); break;
+                case "GetNestedType": ExcludeMembers(node, module, MemberKind.NestedType); break;
+                case "GetMethods": ExcludeAllMembers(node, module, MemberKind.Method); break;
+                case "GetFields": ExcludeAllMembers(node, module, MemberKind.Field); break;
+                case "GetProperties": ExcludeAllMembers(node, module, MemberKind.Property); break;
+                case "GetEvents": ExcludeAllMembers(node, module, MemberKind.Event); break;
+                case "GetMembers": ExcludeAllMembers(node, module, MemberKind.All); break;
+                case "GetNestedTypes": ExcludeAllMembers(node, module, MemberKind.NestedType); break;
+                case "GetType":
+                case "GetInterface": ExcludeTypesByName(node, module); break;
+            }
+            return;
+        }
+        if (declaringType.IsTypeOf("System.Reflection", "RuntimeReflectionExtensions"))
+        {
+            switch (name)
+            {
+                case "GetRuntimeMethod": ExcludeMembers(node, module, MemberKind.Method); break;
+                case "GetRuntimeField": ExcludeMembers(node, module, MemberKind.Field); break;
+                case "GetRuntimeProperty": ExcludeMembers(node, module, MemberKind.Property); break;
+                case "GetRuntimeEvent": ExcludeMembers(node, module, MemberKind.Event); break;
+                case "GetRuntimeMethods": ExcludeAllMembers(node, module, MemberKind.Method); break;
+                case "GetRuntimeFields": ExcludeAllMembers(node, module, MemberKind.Field); break;
+                case "GetRuntimeProperties": ExcludeAllMembers(node, module, MemberKind.Property); break;
+                case "GetRuntimeEvents": ExcludeAllMembers(node, module, MemberKind.Event); break;
+            }
+            return;
+        }
+        if (declaringType.IsTypeOf("System.Reflection", "Assembly") ||
+            declaringType.IsTypeOf("System.Reflection", "Module"))
+        {
+            if (name == "GetType")
+            {
+                ExcludeTypesByName(node, module);
+            }
+            return;
+        }
+        if (declaringType.IsTypeOf("System", "Activator"))
+        {
+            if (name is "CreateInstance" or "CreateInstanceFrom")
+            {
+                ExcludeTypesByName(node, module);
+            }
+            return;
+        }
+        if (declaringType.IsTypeOf("System", "Delegate") || declaringType.IsTypeOf("System", "MulticastDelegate"))
+        {
+            if (name == "CreateDelegate")
+            {
+                ExcludeMembers(node, module, MemberKind.Method);
+            }
+            return;
+        }
+        if (declaringType.IsTypeOf("System", "Enum"))
+        {
+            if (name is "GetName" or "GetNames" or "Parse" or "TryParse" or "IsDefined" or "Format")
+            {
+                foreach (var type in ResolveTypes(node, module))
+                {
+                    if (type.IsEnum)
+                    {
+                        foreach (var field in type.Fields)
+                        {
+                            AddField(field);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        if ((declaringType.IsTypeOf("System.Reflection", "MethodBody") && name == "GetILAsByteArray") ||
+            (declaringType.IsTypeOf("System.Reflection", "MethodBase") && name == "GetMethodBody"))
+        {
+            ExcludeMethodBody(node, module);
+        }
+    }
+
+    private void ExcludeMembers(DataFlowNode<CilInstruction> node, ModuleDefinition module, MemberKind kind)
+    {
+        var names = ResolveStrings(node);
+        if (names.Count == 0)
+        {
+            return;
+        }
+        var types = ResolveTypes(node, module);
+        // Known target type -> precise (that type + its bases). Unknown (e.g. instance.GetType()) ->
+        // fall back to a name-scoped sweep of the module. Never widens past the queried name.
+        var searchTypes = types.Count > 0
+            ? types.SelectMany(t => t.GetTypeAndBaseTypes())
+            : module.GetAllTypes();
+        foreach (var type in searchTypes)
+        {
+            foreach (var name in names)
+            {
+                ExcludeMatchingMembers(type, name, kind);
+            }
+        }
+    }
+
+    private void ExcludeAllMembers(DataFlowNode<CilInstruction> node, ModuleDefinition module, MemberKind kind)
+    {
+        var types = ResolveTypes(node, module);
+        if (types.Count == 0)
+        {
+            // GetMethods()/GetFields()/... with an unknown type: refuse to freeze every member of a
+            // kind across the module. Caller must pin the type for a plural enumeration to count.
+            return;
+        }
+        foreach (var type in types.SelectMany(t => t.GetTypeAndBaseTypes()))
+        {
+            switch (kind)
+            {
+                case MemberKind.Method: foreach (var m in type.Methods) AddMethod(m); break;
+                case MemberKind.Field: foreach (var f in type.Fields) AddField(f); break;
+                case MemberKind.Property: foreach (var p in type.Properties) AddProperty(p); break;
+                case MemberKind.Event: foreach (var e in type.Events) AddEvent(e); break;
+                case MemberKind.NestedType: foreach (var n in type.NestedTypes) AddType(n); break;
+                case MemberKind.All:
+                    foreach (var m in type.Methods) AddMethod(m);
+                    foreach (var f in type.Fields) AddField(f);
+                    foreach (var p in type.Properties) AddProperty(p);
+                    foreach (var e in type.Events) AddEvent(e);
+                    foreach (var n in type.NestedTypes) AddType(n);
                     break;
             }
         }
     }
 
-    /// <summary>
-    /// Gets the base members that the given member overrides.
-    /// </summary>
-    /// <param name="member">The member to find base overrides for.</param>
-    /// <returns>Collection of base members that are overridden.</returns>
-    private static IEnumerable<IMemberDefinition> GetBaseMembers(IMemberDefinition member)
+    private void ExcludeMatchingMembers(TypeDefinition type, string name, MemberKind kind)
     {
-        var declaringType = member.DeclaringType;
-        if (declaringType?.BaseType?.ResolveOrNull() is not TypeDefinition baseType)
-            yield break;
-
-        switch (member)
+        if (kind is MemberKind.Method or MemberKind.All)
         {
-            case MethodDefinition method:
-                foreach (var baseMethod in baseType.Methods)
-                {
-                    if (IsMethodOverride(method, baseMethod))
-                        yield return baseMethod;
-                }
-                break;
-            case PropertyDefinition property:
-                foreach (var baseProperty in baseType.Properties)
-                {
-                    if (baseProperty.Name.Equals(property.Name))
-                        yield return baseProperty;
-                }
-
-                break;
-            case EventDefinition eventDef:
-                foreach (var baseEvent in baseType.Events)
-                {
-                    if (baseEvent.Name.Equals(eventDef.Name))
-                        yield return baseEvent;
-                }
-                break;
+            foreach (var method in type.Methods)
+            {
+                if (method.Name == name) AddMethod(method);
+            }
+        }
+        if (kind is MemberKind.Field or MemberKind.All)
+        {
+            foreach (var field in type.Fields)
+            {
+                if (field.Name == name) AddField(field);
+            }
+        }
+        if (kind is MemberKind.Property or MemberKind.All)
+        {
+            foreach (var property in type.Properties)
+            {
+                if (property.Name == name) AddProperty(property);
+            }
+        }
+        if (kind is MemberKind.Event or MemberKind.All)
+        {
+            foreach (var eventDef in type.Events)
+            {
+                if (eventDef.Name == name) AddEvent(eventDef);
+            }
+        }
+        if (kind is MemberKind.NestedType or MemberKind.All)
+        {
+            foreach (var nested in type.NestedTypes)
+            {
+                if (nested.Name == name) AddType(nested);
+            }
         }
     }
 
-    /// <summary>
-    /// Determines if a method overrides a base method.
-    /// </summary>
-    /// <param name="derivedMethod">The derived method.</param>
-    /// <param name="baseMethod">The potential base method.</param>
-    /// <returns>True if the derived method overrides the base method.</returns>
-    private static bool IsMethodOverride(MethodDefinition derivedMethod, MethodDefinition baseMethod)
+    private void ExcludeTypesByName(DataFlowNode<CilInstruction> node, ModuleDefinition module)
     {
-        if (!derivedMethod.Name.Equals(baseMethod.Name))
-            return false;
-
-        if (derivedMethod.Signature?.ParameterTypes.Count != baseMethod.Signature?.ParameterTypes.Count)
-            return false;
-
-        if (!derivedMethod.Signature?.ReturnType.Equals(baseMethod.Signature?.ReturnType) == true)
-            return false;
-        for (int i = 0; i < derivedMethod.Signature.ParameterTypes.Count; i++)
+        foreach (var name in ResolveStrings(node))
         {
-            if (!derivedMethod.Signature.ParameterTypes[i].Equals(baseMethod.Signature.ParameterTypes[i]))
-                return false;
+            var type = ResolveTypeByName(module, name);
+            if (type != null)
+            {
+                AddType(type);
+            }
+        }
+    }
+
+    private void ExcludeMethodBody(DataFlowNode<CilInstruction> node, ModuleDefinition module)
+    {
+        // Best-effort: walk back from GetILAsByteArray()/GetMethodBody() through the receiver chain to
+        // the GetMethod(...) that produced the MethodInfo, then mark those targets. If the MethodInfo
+        // source can't be pinned we simply can't tell which method's IL is read (same limit ConfuserEx
+        // documented) - rename exclusion via the normal path still applies.
+        var visited = new HashSet<DataFlowNode<CilInstruction>>();
+        var queue = new Queue<DataFlowNode<CilInstruction>>(ReflectionDataFlow.OperandNodes(node));
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (!visited.Add(current) || current.Contents is not { } instruction)
+            {
+                continue;
+            }
+            var called = instruction.Operand as IMethodDefOrRef
+                         ?? (instruction.Operand as MethodSpecification)?.Method;
+            if (called?.DeclaringType?.IsSystemType() == true && called.Name?.Value is "GetMethod" or "GetMethods")
+            {
+                var names = ResolveStrings(current);
+                var types = ResolveTypes(current, module);
+                var searchTypes = types.Count > 0
+                    ? types.SelectMany(t => t.GetTypeAndBaseTypes())
+                    : module.GetAllTypes();
+                foreach (var type in searchTypes)
+                {
+                    foreach (var method in type.Methods)
+                    {
+                        if ((names.Count == 0 || names.Contains(method.Name?.Value)) && InModule(method) &&
+                            !_cachedMethodBodies.Contains(method))
+                        {
+                            _cachedMethodBodies.Add(method);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // chain through e.g. MethodBase.GetMethodBody()
+                foreach (var operand in ReflectionDataFlow.OperandNodes(current))
+                {
+                    queue.Enqueue(operand);
+                }
+            }
+        }
+    }
+
+    private List<string> ResolveStrings(DataFlowNode<CilInstruction> node)
+    {
+        var result = new List<string>();
+        foreach (var operand in ReflectionDataFlow.OperandNodes(node))
+        {
+            if (operand.Contents?.OpCode.Code == CilCode.Ldstr && operand.Contents.Operand is string value &&
+                !result.Contains(value))
+            {
+                result.Add(value);
+            }
+        }
+        return result;
+    }
+
+    private List<TypeDefinition> ResolveTypes(DataFlowNode<CilInstruction> node, ModuleDefinition module)
+    {
+        var result = new List<TypeDefinition>();
+        void Add(TypeDefinition? type)
+        {
+            if (type != null && !result.Contains(type))
+            {
+                result.Add(type);
+            }
         }
 
+        foreach (var operand in ReflectionDataFlow.OperandNodes(node))
+        {
+            Add(ResolveTypeOperand(operand, module));
+        }
+        // Generic reflection (e.g. Enum.Parse<TEnum>): the type rides in the method's type arguments.
+        if (node.Contents?.Operand is MethodSpecification { Signature: { } signature })
+        {
+            foreach (var argument in signature.TypeArguments)
+            {
+                Add(argument.ToTypeDefOrRef().ResolveOrNull());
+            }
+        }
+        return result;
+    }
+
+    private TypeDefinition? ResolveTypeOperand(DataFlowNode<CilInstruction> node, ModuleDefinition module)
+    {
+        var instruction = node.Contents;
+        if (instruction == null)
+        {
+            return null;
+        }
+        if (instruction.OpCode.Code == CilCode.Ldtoken && instruction.Operand is ITypeDefOrRef typeRef)
+        {
+            return typeRef.ResolveOrNull();
+        }
+        if (instruction.OpCode.Code is CilCode.Call or CilCode.Callvirt &&
+            instruction.Operand is IMethodDefOrRef called && called.DeclaringType is { } declaringType)
+        {
+            var name = called.Name?.Value;
+            if (declaringType.IsSystemType() && name == "GetTypeFromHandle")
+            {
+                foreach (var operand in ReflectionDataFlow.OperandNodes(node))
+                {
+                    if (operand.Contents?.OpCode.Code == CilCode.Ldtoken &&
+                        operand.Contents.Operand is ITypeDefOrRef handleType)
+                    {
+                        return handleType.ResolveOrNull();
+                    }
+                }
+            }
+            if (name == "GetType" && (declaringType.IsSystemType() ||
+                declaringType.IsTypeOf("System.Reflection", "Assembly") ||
+                declaringType.IsTypeOf("System.Reflection", "Module")))
+            {
+                foreach (var operand in ReflectionDataFlow.OperandNodes(node))
+                {
+                    if (operand.Contents?.OpCode.Code == CilCode.Ldstr && operand.Contents.Operand is string typeName)
+                    {
+                        var resolved = ResolveTypeByName(module, typeName);
+                        if (resolved != null)
+                        {
+                            return resolved;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static TypeDefinition? ResolveTypeByName(ModuleDefinition module, string? name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+        // Drop any assembly-qualified suffix: "Ns.Type, Assembly" -> "Ns.Type".
+        var comma = name!.IndexOf(',');
+        if (comma >= 0)
+        {
+            name = name.Substring(0, comma).Trim();
+        }
+        return module.GetAllTypes().FirstOrDefault(t => t.FullName == name);
+    }
+
+    private void AddMethod(MethodDefinition method)
+    {
+        if (!InModule(method) || _cachedMethods.Contains(method))
+        {
+            return;
+        }
+        _cachedMethods.Add(method);
+        // A reflected override implies its base declarations are reflected too - freeze them so the
+        // inheritance contract survives renaming.
+        if (method.DeclaringType?.BaseType?.ResolveOrNull() is { } baseType)
+        {
+            foreach (var baseMethod in baseType.Methods)
+            {
+                if (IsMethodOverride(method, baseMethod))
+                {
+                    AddMethod(baseMethod);
+                }
+            }
+        }
+    }
+
+    private void AddField(FieldDefinition field)
+    {
+        if (InModule(field) && !_cachedFields.Contains(field))
+        {
+            _cachedFields.Add(field);
+        }
+    }
+
+    private void AddProperty(PropertyDefinition property)
+    {
+        if (!InModule(property) || _cachedProperties.Contains(property))
+        {
+            return;
+        }
+        _cachedProperties.Add(property);
+        if (property.DeclaringType?.BaseType?.ResolveOrNull() is { } baseType)
+        {
+            foreach (var baseProperty in baseType.Properties)
+            {
+                if (baseProperty.Name == property.Name)
+                {
+                    AddProperty(baseProperty);
+                }
+            }
+        }
+    }
+
+    private void AddEvent(EventDefinition eventDef)
+    {
+        if (!InModule(eventDef) || _cachedEvents.Contains(eventDef))
+        {
+            return;
+        }
+        _cachedEvents.Add(eventDef);
+        if (eventDef.DeclaringType?.BaseType?.ResolveOrNull() is { } baseType)
+        {
+            foreach (var baseEvent in baseType.Events)
+            {
+                if (baseEvent.Name == eventDef.Name)
+                {
+                    AddEvent(baseEvent);
+                }
+            }
+        }
+    }
+
+    private void AddType(TypeDefinition type)
+    {
+        if (InModule(type) && !_cachedTypes.Contains(type))
+        {
+            _cachedTypes.Add(type);
+        }
+    }
+
+    private bool InModule(IMetadataMember member) => ModuleOf(member) == _analyzingModule;
+
+    private static ModuleDefinition? ModuleOf(IMetadataMember member) => member switch
+    {
+        TypeDefinition type => type.DeclaringModule,
+        IMemberDefinition definition => definition.DeclaringType?.DeclaringModule,
+        _ => null
+    };
+
+    private static bool IsMethodOverride(MethodDefinition derived, MethodDefinition baseMethod)
+    {
+        if (derived.Name != baseMethod.Name ||
+            derived.Signature == null || baseMethod.Signature == null ||
+            derived.Signature.ParameterTypes.Count != baseMethod.Signature.ParameterTypes.Count ||
+            !derived.Signature.ReturnType.Equals(baseMethod.Signature.ReturnType))
+        {
+            return false;
+        }
+        for (var i = 0; i < derived.Signature.ParameterTypes.Count; i++)
+        {
+            if (!derived.Signature.ParameterTypes[i].Equals(baseMethod.Signature.ParameterTypes[i]))
+            {
+                return false;
+            }
+        }
         return true;
     }
 }

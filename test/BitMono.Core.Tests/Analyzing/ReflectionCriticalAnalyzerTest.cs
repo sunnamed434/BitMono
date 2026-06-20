@@ -4,865 +4,239 @@ public class ReflectionCriticalAnalyzerTest
 {
     private static ReflectionCriticalAnalyzer CreateAnalyzer(bool reflectionEnabled = true)
     {
-        var obfuscation = new ObfuscationSettings
+        return Setup.ReflectionCriticalAnalyzer(new ObfuscationSettings
         {
             ReflectionMembersObfuscationExclude = reflectionEnabled
-        };
-        return Setup.ReflectionCriticalAnalyzer(obfuscation);
+        });
     }
 
-    private static (ModuleDefinition module, TypeDefinition type) GetTestData()
+    private static ModuleDefinition GetModule()
     {
-        var module = ModuleDefinition.FromFile(typeof(ReflectionMethods).Assembly.Location);
-        var type = module.TopLevelTypes.First(t => t.Name == nameof(ReflectionMethods));
-        return (module, type);
+        return ModuleDefinition.FromFile(typeof(ReflectionMethods).Assembly.Location);
+    }
+
+    private static TypeDefinition Type(ModuleDefinition module, string name)
+    {
+        return module.GetAllTypes().First(t => t.Name == name);
+    }
+
+    private static MethodDefinition Method(TypeDefinition type, string name)
+    {
+        return type.Methods.First(m => m.Name == name);
+    }
+
+    // --- targets are excluded -------------------------------------------------------------------
+
+    [Fact]
+    public void ReflectedMethod_IsExcluded()
+    {
+        var type = Type(GetModule(), nameof(ReflectionMethods));
+        var analyzer = CreateAnalyzer();
+
+        analyzer.NotCriticalToMakeChanges(Method(type, nameof(ReflectionMethods.UsesReflectionOnItSelf)))
+            .Should().BeFalse();
     }
 
     [Fact]
-    public void ShouldDetectSelfReflection()
+    public void ReflectedField_IsExcluded()
     {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectMultipleReflectionCalls()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.Uses3Reflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectFieldReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesFieldReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectPrivateFieldReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesPrivateFieldReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectPropertyReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesPropertyReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectReadOnlyPropertyReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReadOnlyPropertyReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectEventReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesEventReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMemberForMethod()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForMethod));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMemberForField()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForField));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMemberForProperty()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForProperty));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMemberForEvent()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForEvent));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectVariableForMethodReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForMethodReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectVariableForFieldReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForFieldReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectVariableForPropertyReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForPropertyReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectVariableForEventReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForEventReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectTypeGetTypeFromHandle()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesTypeGetTypeFromHandle));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectLdtokenForType()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesTypeGetTypeFromHandle));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectMultipleReflectionTypes()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesAllReflectionTypes));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectReflectionWithBindingFlags()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionWithBindingFlags));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldNotDetectReflectionWhenDisabled()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer(false);
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ShouldNotDetectReflectionInNonReflectionMethod()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.VoidMethod));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ShouldDetectComplexReflectionPatterns()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesComplexReflectionPatterns));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldCacheReflectedMethods()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        result1.Should().BeFalse();
-
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedMethods.Should().Contain(method);
-    }
-
-    [Fact]
-    public void ShouldCacheReflectedFields()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesFieldReflection));
+        var type = Type(GetModule(), nameof(ReflectionMethods));
         var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
-        var criticalAnalyzer = CreateAnalyzer();
 
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        result1.Should().BeFalse();
-
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().Contain(field);
+        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeFalse();
     }
 
     [Fact]
-    public void ShouldCacheReflectedProperties()
+    public void ReflectedProperty_IsExcluded()
     {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesPropertyReflection));
+        var type = Type(GetModule(), nameof(ReflectionMethods));
         var property = type.Properties.First(p => p.Name == nameof(ReflectionMethods.TestProperty));
-        var criticalAnalyzer = CreateAnalyzer();
 
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        result1.Should().BeFalse();
-
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().Contain(property);
+        CreateAnalyzer().NotCriticalToMakeChanges(property).Should().BeFalse();
     }
 
     [Fact]
-    public void ShouldCacheReflectedEvents()
+    public void ReflectedEvent_IsExcluded()
     {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesEventReflection));
+        var type = Type(GetModule(), nameof(ReflectionMethods));
         var eventDef = type.Events.First(e => e.Name == nameof(ReflectionMethods.TestEvent));
-        var criticalAnalyzer = CreateAnalyzer();
 
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        result1.Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(eventDef).Should().BeFalse();
+    }
 
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().Contain(eventDef);
+    // --- the over-exclusion fixes (the point of the rewrite) ------------------------------------
+
+    [Fact]
+    public void MethodThatReflectsOnlyOnOthers_IsNotExcluded()
+    {
+        // ReflectsOnOthers reflects on ProbeReflected.Shared and a field - never on itself, so renaming
+        // the caller can't break anything. The old analyzer froze every reflection-using method.
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.ReflectsOnOthers)))
+            .Should().BeTrue();
     }
 
     [Fact]
-    public void ShouldCacheReflectedTypes()
+    public void SameNamedMemberOnUnrelatedType_StaysObfuscatable()
     {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesTypeGetTypeFromHandle));
-        var criticalAnalyzer = CreateAnalyzer();
+        // Only ProbeReflected.Shared is reflected. The identically named ProbeUntouched.Shared must
+        // stay obfuscatable - the old name-only matcher froze both.
+        var module = GetModule();
+        var reflected = Method(Type(module, nameof(ProbeReflected)), nameof(ProbeReflected.Shared));
+        var untouched = Method(Type(module, nameof(ProbeUntouched)), nameof(ProbeUntouched.Shared));
+        var analyzer = CreateAnalyzer();
 
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        result1.Should().BeFalse();
-
-        criticalAnalyzer.CachedTypes.Should().NotBeEmpty();
-        criticalAnalyzer.CachedTypes.Should().Contain(type);
+        analyzer.NotCriticalToMakeChanges(reflected).Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(untouched).Should().BeTrue();
     }
 
     [Fact]
-    public void ShouldPreventDuplicateCacheEntries()
+    public void BareTypeof_DoesNotExcludeTheType()
     {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
+        // typeof(X) with no name-based lookup must not freeze X (it used to).
+        var type = Type(GetModule(), nameof(BareTypeofProbe));
 
-        var result1 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        var result2 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-        var result3 = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result1.Should().BeFalse();
-        result2.Should().BeFalse();
-        result3.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().HaveCount(1);
-        criticalAnalyzer.CachedMethods.Should().Contain(method);
+        CreateAnalyzer().NotCriticalToMakeChanges(type).Should().BeTrue();
     }
 
     [Fact]
-    public void ShouldDetectCrossMethodReflection()
+    public void NonReflectedMember_IsNotExcluded()
     {
-        var (_, type) = GetTestData();
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesFieldReflection));
-        var targetMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
 
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(targetMethod);
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.Untouched)))
+            .Should().BeTrue();
+    }
 
-        reflectionResult.Should().BeFalse();
-        result.Should().BeFalse();
+    // --- type-by-name ---------------------------------------------------------------------------
+
+    [Fact]
+    public void GetTypeByName_ExcludesTheType()
+    {
+        var type = Type(GetModule(), nameof(GetTypeProbe));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(type).Should().BeFalse();
+    }
+
+    // --- newly covered reflection APIs ----------------------------------------------------------
+
+    [Fact]
+    public void GetRuntimeMethod_ExcludesTarget()
+    {
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.Target)))
+            .Should().BeFalse();
     }
 
     [Fact]
-    public void ShouldHandleFieldNotCriticalToMakeChanges()
+    public void GetRuntimeProperty_ExcludesTarget()
     {
-        var (_, type) = GetTestData();
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+        var property = type.Properties.First(p => p.Name == nameof(ReflectionApiCases.ApiProperty));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(property).Should().BeFalse();
+    }
+
+    [Fact]
+    public void CreateDelegateByName_ExcludesTarget()
+    {
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.DelegateTarget)))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void EnumParse_ExcludesEnumFieldsButNotTheEnumType()
+    {
+        var module = GetModule();
+        var color = Type(module, nameof(Color));
+        var red = color.Fields.First(f => f.Name == nameof(Color.Red));
+        var analyzer = CreateAnalyzer();
+
+        analyzer.NotCriticalToMakeChanges(red).Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(color).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetNestedType_ExcludesNested()
+    {
+        var nested = Type(GetModule(), nameof(ReflectionApiCases.Nested));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(nested).Should().BeFalse();
+    }
+
+    [Fact]
+    public void ReflectedOverride_FreezesBaseDeclaration()
+    {
+        var module = GetModule();
+        var derived = Method(Type(module, nameof(DerivedProbe)), nameof(DerivedProbe.Virt));
+        var baseMethod = Method(Type(module, nameof(BaseProbe)), nameof(BaseProbe.Virt));
+        var analyzer = CreateAnalyzer();
+
+        analyzer.NotCriticalToMakeChanges(derived).Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(baseMethod).Should().BeFalse();
+    }
+
+    [Fact]
+    public void PluralGetMethods_ExcludesEveryMethodOfTheResolvedType()
+    {
+        // ReflectionMethods.UsesGetMethods does typeof(ReflectionMethods).GetMethods().
+        var type = Type(GetModule(), nameof(ReflectionMethods));
+
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionMethods.VoidMethod)))
+            .Should().BeFalse();
+    }
+
+    // --- GetILAsByteArray -> method-body critical -----------------------------------------------
+
+    [Fact]
+    public void ReadingIlViaReflection_MarksTargetMethodBodyCritical()
+    {
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+
+        CreateAnalyzer().IsMethodBodyCritical(Method(type, nameof(ReflectionApiCases.IlTarget)))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void MethodBodyCritical_IsFalseForMethodsWhoseIlIsNotRead()
+    {
+        // Target is rename-excluded (GetRuntimeMethod) but its IL is never read - IL rewriters may touch it.
+        var type = Type(GetModule(), nameof(ReflectionApiCases));
+
+        CreateAnalyzer().IsMethodBodyCritical(Method(type, nameof(ReflectionApiCases.Target)))
+            .Should().BeFalse();
+    }
+
+    // --- setting toggle -------------------------------------------------------------------------
+
+    [Fact]
+    public void WhenReflectionExcludeDisabled_NothingIsCritical()
+    {
+        var module = GetModule();
+        var type = Type(module, nameof(ReflectionMethods));
+        var method = Method(type, nameof(ReflectionMethods.UsesReflectionOnItSelf));
         var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesFieldReflection));
-        var criticalAnalyzer = CreateAnalyzer();
+        var analyzer = CreateAnalyzer(reflectionEnabled: false);
 
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(field);
-
-        reflectionResult.Should().BeFalse();
-        result.Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(method).Should().BeTrue();
+        analyzer.NotCriticalToMakeChanges(field).Should().BeTrue();
+        analyzer.IsMethodBodyCritical(Method(Type(module, nameof(ReflectionApiCases)), nameof(ReflectionApiCases.IlTarget)))
+            .Should().BeFalse();
     }
 
     [Fact]
-    public void ShouldHandlePropertyNotCriticalToMakeChanges()
+    public void RepeatedQueries_AreStable()
     {
-        var (_, type) = GetTestData();
-        var property = type.Properties.First(p => p.Name == nameof(ReflectionMethods.TestProperty));
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesPropertyReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(property);
-
-        reflectionResult.Should().BeFalse();
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldHandleEventNotCriticalToMakeChanges()
-    {
-        var (_, type) = GetTestData();
-        var eventDef = type.Events.First(e => e.Name == nameof(ReflectionMethods.TestEvent));
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesEventReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(eventDef);
-
-        reflectionResult.Should().BeFalse();
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldHandleTypeNotCriticalToMakeChanges()
-    {
-        var (_, type) = GetTestData();
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesTypeGetTypeFromHandle));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
-
-        reflectionResult.Should().BeFalse();
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldReturnTrueForNonReflectedMembers()
-    {
-        var (_, type) = GetTestData();
-        var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
-        var property = type.Properties.First(p => p.Name == nameof(ReflectionMethods.TestProperty));
-        var eventDef = type.Events.First(e => e.Name == nameof(ReflectionMethods.TestEvent));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        criticalAnalyzer.NotCriticalToMakeChanges(field).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(property).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(eventDef).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(type).Should().BeTrue();
-    }
-
-    [Fact]
-    public void ShouldReturnTrueWhenReflectionDisabled()
-    {
-        var (_, type) = GetTestData();
-        var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
-        var property = type.Properties.First(p => p.Name == nameof(ReflectionMethods.TestProperty));
-        var eventDef = type.Events.First(e => e.Name == nameof(ReflectionMethods.TestEvent));
-        var criticalAnalyzer = CreateAnalyzer(false);
-
-        criticalAnalyzer.NotCriticalToMakeChanges(field).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(property).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(eventDef).Should().BeTrue();
-        criticalAnalyzer.NotCriticalToMakeChanges(type).Should().BeTrue();
-    }
-
-    [Fact]
-    public void ShouldHandleMultipleReflectionTypesInSingleMethod()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesAllReflectionTypes));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-        criticalAnalyzer.CachedTypes.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldHandleGetMemberReflectionForAllMemberTypes()
-    {
-        var (_, type) = GetTestData();
-        var methodMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForMethod));
-        var fieldMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForField));
-        var propertyMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForProperty));
-        var eventMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMemberForEvent));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var methodResult = criticalAnalyzer.NotCriticalToMakeChanges(methodMethod);
-        var fieldResult = criticalAnalyzer.NotCriticalToMakeChanges(fieldMethod);
-        var propertyResult = criticalAnalyzer.NotCriticalToMakeChanges(propertyMethod);
-        var eventResult = criticalAnalyzer.NotCriticalToMakeChanges(eventMethod);
-
-        methodResult.Should().BeFalse();
-        fieldResult.Should().BeFalse();
-        propertyResult.Should().BeFalse();
-        eventResult.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldHandleVariableBasedReflection()
-    {
-        var (_, type) = GetTestData();
-        var methodMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForMethodReflection));
-        var fieldMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForFieldReflection));
-        var propertyMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForPropertyReflection));
-        var eventMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesVariableForEventReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var methodResult = criticalAnalyzer.NotCriticalToMakeChanges(methodMethod);
-        var fieldResult = criticalAnalyzer.NotCriticalToMakeChanges(fieldMethod);
-        var propertyResult = criticalAnalyzer.NotCriticalToMakeChanges(propertyMethod);
-        var eventResult = criticalAnalyzer.NotCriticalToMakeChanges(eventMethod);
-
-        methodResult.Should().BeFalse();
-        fieldResult.Should().BeFalse();
-        propertyResult.Should().BeFalse();
-        eventResult.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldNotDetectDeepReflectionInCallingMethod()
-    {
-        var (_, type) = GetTestData();
-        var level1Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel1));
-        var level2Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel2));
-        var level3Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel3));
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var level1Result = criticalAnalyzer.NotCriticalToMakeChanges(level1Method);
-        var level2Result = criticalAnalyzer.NotCriticalToMakeChanges(level2Method);
-        var level3Result = criticalAnalyzer.NotCriticalToMakeChanges(level3Method);
-        var reflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-
-        level1Result.Should().BeTrue();
-        level2Result.Should().BeTrue();
-        level3Result.Should().BeTrue();
-        reflectionResult.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ShouldDetectDirectReflectionInMethod()
-    {
-        var (_, type) = GetTestData();
-        var directReflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionDirect));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(directReflectionMethod);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().Contain(directReflectionMethod);
-    }
-
-    [Fact]
-    public void ShouldNotDetectNonReflectionMethods()
-    {
-        var (_, type) = GetTestData();
-        var nonReflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.NonReflectionMethod));
-        var callsNonReflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.CallsNonReflectionMethod));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var nonReflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(nonReflectionMethod);
-        var callsNonReflectionResult = criticalAnalyzer.NotCriticalToMakeChanges(callsNonReflectionMethod);
-
-        nonReflectionResult.Should().BeTrue();
-        callsNonReflectionResult.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ShouldVerifyDeepReflectionCallChain()
-    {
-        var (_, type) = GetTestData();
-        var level1Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel1));
-        var level2Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel2));
-        var level3Method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.DeepReflectionLevel3));
-        var reflectionMethod = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        criticalAnalyzer.NotCriticalToMakeChanges(level1Method);
-        criticalAnalyzer.NotCriticalToMakeChanges(level2Method);
-        criticalAnalyzer.NotCriticalToMakeChanges(level3Method);
-        criticalAnalyzer.NotCriticalToMakeChanges(reflectionMethod);
-
-        criticalAnalyzer.CachedMethods.Should().HaveCount(1);
-        criticalAnalyzer.CachedMethods.Should().Contain(reflectionMethod);
-        criticalAnalyzer.CachedMethods.Should().NotContain(level1Method);
-        criticalAnalyzer.CachedMethods.Should().NotContain(level2Method);
-        criticalAnalyzer.CachedMethods.Should().NotContain(level3Method);
-    }
-
-
-    [Fact]
-    public void ShouldDetectBaseTypeReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesBaseTypeReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectInheritedMemberReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesInheritedMemberReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMethods()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMethods));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGetFields()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetFields));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGetProperties()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetProperties));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGetEvents()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetEvents));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGetMembers()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGetMembers));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-        criticalAnalyzer.CachedTypes.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectGenericTypeReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesGenericTypeReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectConstructedGenericTypeReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesConstructedGenericTypeReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectAssemblyGetType()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesAssemblyGetType));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectAssemblyGetTypeWithReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesAssemblyGetTypeWithReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectComplexTypeResolution()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesComplexTypeResolution));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedFields.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectNestedTypeReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesNestedTypeReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedTypes.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectInterfaceReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesInterfaceReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void ShouldDetectMemberOverrideReflection()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesMemberOverrideReflection));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
-        criticalAnalyzer.CachedProperties.Should().NotBeEmpty();
-        criticalAnalyzer.CachedEvents.Should().NotBeEmpty();
-        
-        var baseType = type.DeclaringModule.TopLevelTypes
-            .First(t => t.Name == "ReflectionMethods")
-            .NestedTypes.First(t => t.Name == "BaseClass");
-        var derivedType = type.DeclaringModule.TopLevelTypes
-            .First(t => t.Name == "ReflectionMethods")
-            .NestedTypes.First(t => t.Name == "DerivedClass");
-        var baseMethods = baseType.Methods.Where(m => m.Name == "BaseMethod" || m.Name == "VirtualMethod");
-        foreach (var baseMethod in baseMethods)
-        {
-            criticalAnalyzer.CachedMethods.Should().Contain(baseMethod);
-        }
-        
-        var baseProperties = baseType.Properties.Where(p => p.Name == "BaseProperty" || p.Name == "VirtualProperty");
-        foreach (var baseProperty in baseProperties)
-        {
-            criticalAnalyzer.CachedProperties.Should().Contain(baseProperty);
-        }
-        
-        var baseEvents = baseType.Events.Where(e => e.Name == "BaseEvent" || e.Name == "VirtualEvent");
-        foreach (var baseEvent in baseEvents)
-        {
-            criticalAnalyzer.CachedEvents.Should().Contain(baseEvent);
-        }
-    }
-
-    [Fact]
-    public void ShouldHandleLegacyFallbackWhenArgumentTracingFails()
-    {
-        var (_, type) = GetTestData();
-        var method = type.Methods.First(m => m.Name == nameof(ReflectionMethods.UsesReflectionOnItSelf));
-        var criticalAnalyzer = CreateAnalyzer();
-
-        var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
-
-        result.Should().BeFalse();
-        criticalAnalyzer.CachedMethods.Should().NotBeEmpty();
+        var type = Type(GetModule(), nameof(ReflectionMethods));
+        var method = Method(type, nameof(ReflectionMethods.UsesReflectionOnItSelf));
+        var analyzer = CreateAnalyzer();
+
+        analyzer.NotCriticalToMakeChanges(method).Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(method).Should().BeFalse();
+        analyzer.CachedMethods.Count(m => m == method).Should().Be(1);
     }
 }

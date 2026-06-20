@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.MethodBody)]
 public class StringsEncryption : Protection
 {
     private readonly Renamer _renamer;

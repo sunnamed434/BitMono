@@ -1,6 +1,6 @@
 ﻿namespace BitMono.Protections;
 
-[DoNotResolve(MemberInclusionFlags.SpecialRuntime)]
+[DoNotResolve(MemberInclusionFlags.SpecialRuntime | MemberInclusionFlags.MethodBody)]
 public class AntiDebugBreakpoints : Protection
 {
     public AntiDebugBreakpoints(IBitMonoServiceProvider serviceProvider) : base(serviceProvider)

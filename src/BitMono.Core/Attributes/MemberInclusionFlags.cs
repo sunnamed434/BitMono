@@ -27,4 +27,12 @@ public enum MemberInclusionFlags
     /// namespace-stripping doesn't leave the BAML pointing at names that no longer exist.
     /// </summary>
     Baml = 0x8,
+
+    /// <summary>
+    /// Exclude a method from IL-mutating protections when its raw IL is read back at runtime via
+    /// reflection (<c>MethodBody.GetILAsByteArray</c>/<c>MethodBase.GetMethodBody</c>). Renaming is
+    /// unaffected - this guards against control-flow and other body rewriters changing bytes the
+    /// program inspects. See ConfuserEx#39.
+    /// </summary>
+    MethodBody = 0x10,
 }

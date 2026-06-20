@@ -4,7 +4,20 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BitMono.Obfuscation\BitMono.Obfuscation.csproj" />
+    <ProjectReference Include="..\..\src\BitMono.Host\BitMono.Host.csproj" />
+    <!-- Referenced so their DLLs land in the test output for the engine to load at runtime. The test
+         code never touches their types, so BitMono.Protections is only ever Assembly.Load'd (no duplicate). -->
+    <ProjectReference Include="..\..\src\BitMono.Protections\BitMono.Protections.csproj" />
+    <ProjectReference Include="..\..\src\BitMono.Runtime\BitMono.Runtime.csproj" />
     <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.CosturaDecompressor\BitMono.Obfuscation.TestCases.CosturaDecompressor.csproj" />
+    <!-- Build-only: produces the reflection sample exe the end-to-end test obfuscates and runs. -->
+    <ProjectReference Include="..\TestBinaries\DotNet\BitMono.Obfuscation.TestCases.Reflection\BitMono.Obfuscation.TestCases.Reflection.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\BitMono.Host\criticals.json" Link="criticals.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

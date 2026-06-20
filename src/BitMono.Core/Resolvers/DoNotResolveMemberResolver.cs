@@ -85,6 +85,13 @@ public class DoNotResolveMemberResolver : IMemberResolver
                 return false;
             }
         }
+        if (doNotResolveAttribute.MemberInclusion.HasFlag(MemberInclusionFlags.MethodBody))
+        {
+            if (member is MethodDefinition methodBody && _reflectionCriticalAnalyzer.IsMethodBodyCritical(methodBody))
+            {
+                return false;
+            }
+        }
         return true;
     }
 }
