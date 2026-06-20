@@ -21,6 +21,7 @@ public class ObfuscationSettings
     public bool ReflectionMembersObfuscationExclude { get; set; }
     public bool SerializationMembersObfuscationExclude { get; set; }
     public bool UnitySerializedFieldsObfuscationExclude { get; set; }
+    public bool UnityStringInvokeMethodsObfuscationExclude { get; set; }
     public bool StripObfuscationAttributes { get; set; }
     public bool OutputPEImageBuildErrors { get; set; }
     public bool FailOnNoRequiredDependency { get; set; }

@@ -42,4 +42,8 @@ public static class Setup
     {
         return new UnitySerializationCriticalAnalyzer(obfuscation);
     }
+    public static UnityStringInvokeCriticalAnalyzer UnityStringInvokeCriticalAnalyzer(ObfuscationSettings obfuscation)
+    {
+        return new UnityStringInvokeCriticalAnalyzer(obfuscation);
+    }
 }

@@ -8,6 +8,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
     private readonly SerializableBitCriticalAnalyzer _serializableBitCriticalAnalyzer;
     private readonly SerializationCriticalAnalyzer _serializationCriticalAnalyzer;
     private readonly UnitySerializationCriticalAnalyzer _unitySerializationCriticalAnalyzer;
+    private readonly UnityStringInvokeCriticalAnalyzer _unityStringInvokeCriticalAnalyzer;
     private readonly SpecificNamespaceCriticalAnalyzer _specificNamespaceCriticalAnalyzer;
 
     public SafeToMakeChangesMemberResolver(
@@ -17,6 +18,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         SerializableBitCriticalAnalyzer serializableBitCriticalAnalyzer,
         SerializationCriticalAnalyzer serializationCriticalAnalyzer,
         UnitySerializationCriticalAnalyzer unitySerializationCriticalAnalyzer,
+        UnityStringInvokeCriticalAnalyzer unityStringInvokeCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer)
     {
         _obfuscationAttributeResolver = obfuscationAttributeResolver;
@@ -25,6 +27,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         _serializableBitCriticalAnalyzer = serializableBitCriticalAnalyzer;
         _serializationCriticalAnalyzer = serializationCriticalAnalyzer;
         _unitySerializationCriticalAnalyzer = unitySerializationCriticalAnalyzer;
+        _unityStringInvokeCriticalAnalyzer = unityStringInvokeCriticalAnalyzer;
         _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
     }
 
@@ -71,6 +74,10 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
             }
         }
         if (member is PropertyDefinition property && !_serializationCriticalAnalyzer.NotCriticalToMakeChanges(property))
+        {
+            return false;
+        }
+        if (member is MethodDefinition method && !_unityStringInvokeCriticalAnalyzer.NotCriticalToMakeChanges(method))
         {
             return false;
         }
