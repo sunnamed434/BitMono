@@ -621,7 +621,11 @@ namespace BitMono.Unity.Editor
         {
             var paths = new[]
             {
-                // Unity package location (Assets/BitMono.Unity/BitMono.CLI/)
+                // Unity package location. BitMono.CLI~ is a Unity-ignored (~) folder, so its ~160 build-time
+                // DLLs (AsmResolver/MonoMod/...) are never imported and never ship into the IL2CPP player,
+                // where they'd otherwise wedge the build at "Extracting script serialization layouts".
+                Path.Combine(Application.dataPath, "BitMono.Unity", "BitMono.CLI~", "BitMono.CLI.exe"),
+                // Back-compat: older setups put it in a plain (imported) BitMono.CLI folder.
                 Path.Combine(Application.dataPath, "BitMono.Unity", "BitMono.CLI", "BitMono.CLI.exe"),
                 // Project root locations
                 Path.Combine(Application.dataPath, "..", "BitMono.CLI", "BitMono.CLI.exe"),

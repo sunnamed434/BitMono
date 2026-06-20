@@ -37,7 +37,9 @@ set "CLI_SOURCE=!CLI_BASE!\win-x64"
 if not exist "!CLI_SOURCE!\BitMono.CLI.exe" (
     set "CLI_SOURCE=!CLI_BASE!"
 )
-set "CLI_DEST=%TEST_PROJECT%\BitMono.CLI"
+REM BitMono.CLI~ : the ~ suffix makes Unity ignore the folder, so the ~160 build-time DLLs are never
+REM imported and never ship into the IL2CPP player (where they'd wedge the build). The .exe runs from disk.
+set "CLI_DEST=%TEST_PROJECT%\BitMono.CLI~"
 
 if not exist "!CLI_DEST!" mkdir "!CLI_DEST!"
 
@@ -45,25 +47,7 @@ if exist "!CLI_SOURCE!\BitMono.CLI.exe" (
     echo Copying BitMono.CLI from !CLI_SOURCE! to !CLI_DEST!
     xcopy "!CLI_SOURCE!\*" "!CLI_DEST!\" /E /I /Y
     if !ERRORLEVEL! EQU 0 (
-        echo BitMono.CLI copied successfully into Assets ^(import disabled by editor script^)
-        echo Generating .meta files to disable plugin import for CLI DLLs...
-        for /R "!CLI_DEST!" %%F in (*.dll) do (
-            >"%%~fF.meta" echo fileFormatVersion: 2
-            >>"%%~fF.meta" echo guid: %%~nF000000000000000000000000000000
-            >>"%%~fF.meta" echo PluginImporter:
-            >>"%%~fF.meta" echo ^  serializedVersion: 2
-            >>"%%~fF.meta" echo ^  isPreloaded: 0
-            >>"%%~fF.meta" echo ^  isOverridable: 0
-            >>"%%~fF.meta" echo ^  platformData:
-            >>"%%~fF.meta" echo ^  - first:
-            >>"%%~fF.meta" echo ^      Any:
-            >>"%%~fF.meta" echo ^    second:
-            >>"%%~fF.meta" echo ^      enabled: 0
-            >>"%%~fF.meta" echo ^  userData:
-            >>"%%~fF.meta" echo ^  assetBundleName:
-            >>"%%~fF.meta" echo ^  assetBundleVariant:
-        )
-        echo .meta generation complete.
+        echo BitMono.CLI copied into BitMono.CLI~ ^(Unity-ignored, never ships to the player^)
     ) else (
         echo ERROR: Failed to copy BitMono.CLI
     )

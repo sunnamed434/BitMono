@@ -39,35 +39,14 @@ $CliSourceRoot = Join-Path $CliBase "win-x64"
 if (!(Test-Path (Join-Path $CliSourceRoot "BitMono.CLI.exe"))) {
     $CliSourceRoot = $CliBase
 }
-$CliDest = Join-Path $TestProject "BitMono.CLI"
+# BitMono.CLI~ : the ~ suffix makes Unity ignore the folder entirely, so the ~160 build-time DLLs
+# (AsmResolver/MonoMod/...) are never imported and never ship into the IL2CPP player, where they'd
+# otherwise wedge the build at "Extracting script serialization layouts". The .exe still runs from disk.
+$CliDest = Join-Path $TestProject "BitMono.CLI~"
 if (!(Test-Path $CliDest)) { New-Item -ItemType Directory -Path $CliDest -Force | Out-Null }
 if (Test-Path $CliSourceRoot) {
     Copy-Item (Join-Path $CliSourceRoot "*") $CliDest -Recurse -Force
-    Write-Host "BitMono.CLI copied under Assets (import will be disabled by editor script)" -ForegroundColor Green
-    # Generate .meta files to disable plugin import for all CLI DLLs
-    $dlls = Get-ChildItem -Path $CliDest -Filter *.dll -Recurse -ErrorAction SilentlyContinue
-    foreach ($dll in $dlls) {
-        $metaPath = "$($dll.FullName).meta"
-        $guidBase = [System.IO.Path]::GetFileNameWithoutExtension($dll.Name)
-        $content = @"
-fileFormatVersion: 2
-guid: ${guidBase}000000000000000000000000000000
-PluginImporter:
-  serializedVersion: 2
-  isPreloaded: 0
-  isOverridable: 0
-  platformData:
-  - first:
-      Any:
-    second:
-      enabled: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
-"@
-        $content | Out-File -FilePath $metaPath -Encoding ascii -Force
-    }
-    Write-Host ".meta generation complete for CLI DLLs" -ForegroundColor Green
+    Write-Host "BitMono.CLI copied into BitMono.CLI~ (Unity-ignored, never ships to the player)" -ForegroundColor Green
 } else {
     Write-Host "ERROR: BitMono.CLI build output not found at $CliSourceRoot" -ForegroundColor Red
 }
