@@ -38,4 +38,18 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Echo is vendored (lib/, not a NuGet pkg), so its HintPath references aren't packed. Bundle the
+       DLLs into each TFM's lib/ so library consumers (e.g. in-process obfuscation) get Echo at runtime. -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeEchoInPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <Target Name="IncludeEchoInPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(MSBuildThisFileDirectory)..\..\lib\Echo.dll" />
+      <BuildOutputInPackage Include="$(MSBuildThisFileDirectory)..\..\lib\Echo.ControlFlow.dll" />
+      <BuildOutputInPackage Include="$(MSBuildThisFileDirectory)..\..\lib\Echo.DataFlow.dll" />
+      <BuildOutputInPackage Include="$(MSBuildThisFileDirectory)..\..\lib\Echo.Platforms.AsmResolver.dll" />
+    </ItemGroup>
+  </Target>
+
 </Project>
