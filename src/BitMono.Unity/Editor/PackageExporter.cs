@@ -59,9 +59,12 @@ namespace BitMono.Editor
                 var coreFiles = new[]
                 {
                     "Editor/BitMonoBuildProcessor.cs",
+                    "Editor/BitMonoMetadataProtection.cs",
                     "Editor/BitMonoConfig.cs",
                     "Editor/BitMonoConfigInspector.cs",
                     "Editor/BitMono.Unity.Editor.asmdef",
+                    // #276 native decryptor, compiled into GameAssembly.dll on IL2CPP Win64 builds.
+                    "Plugins/BitMono/global_metadata_decrypt.cpp",
                     "package.json",
                     "BitMonoConfig.asset"
                 };

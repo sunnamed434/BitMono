@@ -14,6 +14,12 @@ namespace BitMono.Unity.Editor
         [Tooltip("Enable BitMono obfuscation during Unity builds")]
         public bool EnableObfuscation = true;
 
+        [Header("IL2CPP Metadata Protection (#276)")]
+        [Tooltip("On IL2CPP Windows x64 builds, encrypt the output global-metadata.dat so static dumpers " +
+                 "(Il2CppDumper, Cpp2IL) can't parse it. The native decryptor compiled into GameAssembly.dll " +
+                 "restores it in memory at startup. Independent of the managed obfuscation above.")]
+        public bool EncryptIl2CppMetadata = false;
+
         [Header("Configuration Path")]
         [Tooltip("Custom path to BitMono configuration files (leave empty for auto-detection)")]
         public string ConfigPath = "";

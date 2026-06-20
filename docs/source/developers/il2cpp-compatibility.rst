@@ -42,3 +42,46 @@ protection's output ends up decides this:
    ``[IL2CPPIncompatible]`` on top of them as well.
 
 See :doc:`../protection-list/unity` for which built-in protections run on IL2CPP and which are skipped.
+
+Encrypting the IL2CPP output (global-metadata.dat)
+--------------------------------------------------
+
+Everything above is about the *managed* side, renaming and string encryption that land inside
+``global-metadata.dat`` because BitMono runs before ``il2cpp.exe``. That already cloaks your names, but the
+``global-metadata.dat`` file itself is still a normal, parseable file, so tools like Il2CppDumper and Cpp2IL
+happily read its structure straight off disk.
+
+The IL2CPP metadata encryption protection (issue #276) closes that. When you turn it on, BitMono encrypts
+``global-metadata.dat`` in the built player so static dumpers can't parse it at all, and a tiny native
+decryptor that BitMono compiles into ``GameAssembly.dll`` restores it in memory at startup. The game boots
+exactly as before; the dumpers just see noise.
+
+It's a separate, independent layer from the managed obfuscation, you can use either or both. Turn it on in
+Unity from the **BitMonoConfig** asset: tick **Encrypt IL2CPP Metadata**. Windows x64 builds only for now.
+
+.. code-block:: text
+
+    BitMonoConfig
+      [x] Enable Obfuscation          (managed renaming/strings, runs before il2cpp.exe)
+      [x] Encrypt IL2CPP Metadata     (encrypts global-metadata.dat, decrypts in GameAssembly.dll)
+
+Under the hood it's two halves that share one key:
+
+- **Offline:** after the player is built, BitMono runs ``BitMono.CLI --encrypt-metadata global-metadata.dat``.
+  That XXTEA-encrypts the whole file behind a small header and self-checks the round-trip. You can run it by
+  hand for CI builds too.
+- **Runtime:** the source plugin ``global_metadata_decrypt.cpp`` (shipped in the Unity package, compiled into
+  ``GameAssembly.dll``) hooks the file read of ``global-metadata.dat`` and hands IL2CPP the decrypted bytes.
+  It's a no-op on a plain build, so it only does anything when the file is actually encrypted.
+
+.. note::
+
+   This stops **static** dumping, the shipped ``global-metadata.dat`` is unreadable, so anything that parses
+   the file off disk is dead in the water. It does **not** stop a **memory** dumper that reads the already
+   decrypted bytes out of the running process; nothing that ships the key in the binary can. Treat it as one
+   more wall on top of the managed renaming, not a magic bullet. The key ships inside ``GameAssembly.dll``, so
+   it's obfuscation strength, not a secret.
+
+Validated end to end on a real Unity 6000.2 IL2CPP build (metadata version 31). The encryption is whole-file,
+so it doesn't care about the per-version metadata layout; only the decryptor's file hook is platform-specific
+(Windows x64 today).
