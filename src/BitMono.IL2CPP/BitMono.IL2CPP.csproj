@@ -6,4 +6,9 @@
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\props\SharedProjectProps.props" />
 
+  <ItemGroup>
+    <!-- Tests reach the internal crypto primitives (Xxtea, Crc32) for known-answer checks. -->
+    <InternalsVisibleTo Include="BitMono.IL2CPP.Tests" />
+  </ItemGroup>
+
 </Project>

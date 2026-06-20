@@ -34,6 +34,16 @@ internal class OptionsObfuscationNeedsFactory
             };
         }
 
+        // --encrypt-metadata is likewise a standalone step (the offline half of #276), not an obfuscation run.
+        if (!string.IsNullOrEmpty(options.EncryptMetadata))
+        {
+            return new ObfuscationNeeds
+            {
+                Way = ObfuscationNeedsWay.Options,
+                EncryptMetadataPath = options.EncryptMetadata
+            };
+        }
+
         ObfuscationSettings? obfuscationSettings = null;
         try
         {

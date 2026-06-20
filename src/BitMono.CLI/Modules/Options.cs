@@ -48,4 +48,7 @@ internal class Options
 
     [Option("inspect-metadata", Required = false, HelpText = "Parse a Unity IL2CPP global-metadata.dat and print its version + the names/literals it exposes, then exit. Standalone diagnostic; doesn't obfuscate.")]
     public string? InspectMetadata { get; set; }
+
+    [Option("encrypt-metadata", Required = false, HelpText = "Encrypt a Unity IL2CPP global-metadata.dat (writes <path>.enc) so static dumpers can't parse it. Requires the matching native decryptor in GameAssembly.dll. See #276.")]
+    public string? EncryptMetadata { get; set; }
 }

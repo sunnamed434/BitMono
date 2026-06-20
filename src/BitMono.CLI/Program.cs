@@ -38,6 +38,12 @@ internal class Program
                 return MetadataInspector.Run(metadataPath);
             }
 
+            // Standalone IL2CPP metadata encryption (offline half of #276), same deal.
+            if (needs.EncryptMetadataPath is { } encryptPath)
+            {
+                return MetadataEncryptorCommand.Run(encryptPath);
+            }
+
             var module = new BitMonoModule(
                 configureContainer: container => container.AddProtections(),
                 obfuscationSettings: needs.ObfuscationSettings,

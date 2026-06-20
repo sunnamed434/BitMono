@@ -18,6 +18,8 @@ internal class ObfuscationNeeds
     public ObfuscationSettings? ObfuscationSettings { get; set; }
     // Set when the run is a standalone --inspect-metadata diagnostic instead of an obfuscation. See #276.
     public string? InspectMetadataPath { get; set; }
+    // Set when the run is a standalone --encrypt-metadata step instead of an obfuscation. See #276.
+    public string? EncryptMetadataPath { get; set; }
 #pragma warning restore CS8618
 }
 
