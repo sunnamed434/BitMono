@@ -42,6 +42,7 @@ Available options:
 - ``--obfuscation-file``: Custom obfuscation config file
 - ``-n, --output-name``: Custom output file name (default: same as input)
 - ``--no-watermark``: Turn off watermarking
+- ``--nologo``: Don't show the BitMono logo banner on startup (same idea as ``dotnet --nologo``)
 - ``--strong-name-key``: Path to strong name key (.snk) file for assembly signing
 
 Setup

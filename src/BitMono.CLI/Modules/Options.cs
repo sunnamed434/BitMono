@@ -34,6 +34,9 @@ internal class Options
     [Option("no-watermark", Required = false, HelpText = "Disable watermarking (overrides obfuscation.json setting).")]
     public bool NoWatermark { get; set; }
 
+    [Option("nologo", Required = false, HelpText = "Don't display the BitMono logo (ASCII banner) on startup. Mirrors the dotnet/MSBuild --nologo convention.")]
+    public bool NoLogo { get; set; }
+
     [Option("strong-name-key", Required = false, HelpText = "Path to strong name key (.snk) file for assembly signing.")]
     public string? StrongNameKey { get; set; }
 

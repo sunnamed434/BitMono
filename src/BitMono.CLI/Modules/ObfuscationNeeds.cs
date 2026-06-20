@@ -20,6 +20,8 @@ internal class ObfuscationNeeds
     public string? InspectMetadataPath { get; set; }
     // Set when the run is a standalone --encrypt-metadata step instead of an obfuscation. See #276.
     public string? EncryptMetadataPath { get; set; }
+    // CLI --nologo: suppress the ASCII banner on startup.
+    public bool NoLogo { get; set; }
 #pragma warning restore CS8618
 }
 

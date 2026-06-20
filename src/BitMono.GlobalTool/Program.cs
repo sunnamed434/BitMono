@@ -57,7 +57,10 @@ internal class Program
             logger.Information("File: {0}", needs.FileName);
             logger.Information("Dependencies (libs): {0}", string.Join(", ", needs.ReferencesDirectoryNames));
             logger.Information("Everything is seems to be ok, starting obfuscation..");
-            logger.Information(AsciiArt);
+            if (!needs.NoLogo)
+            {
+                logger.Information(AsciiArt);
+            }
 
             var info = new IncompleteFileInfo(needs.FileName, needs.ReferencesDirectoryNames, needs.OutputPath);
             var engine = new BitMonoStarter(serviceProvider);

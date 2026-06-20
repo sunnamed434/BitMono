@@ -195,6 +195,8 @@ internal class OptionsObfuscationNeedsFactory
             };
         }
 
+        needs.NoLogo = options.NoLogo;
+
         Directory.CreateDirectory(needs.OutputPath);
         Directory.CreateDirectory(needs.ReferencesDirectoryName);
         return needs;
