@@ -7,6 +7,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
     private readonly CriticalAttributeResolver _criticalAttributeResolver;
     private readonly SerializableBitCriticalAnalyzer _serializableBitCriticalAnalyzer;
     private readonly SerializationCriticalAnalyzer _serializationCriticalAnalyzer;
+    private readonly UnitySerializationCriticalAnalyzer _unitySerializationCriticalAnalyzer;
     private readonly SpecificNamespaceCriticalAnalyzer _specificNamespaceCriticalAnalyzer;
 
     public SafeToMakeChangesMemberResolver(
@@ -15,6 +16,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         CriticalAttributeResolver criticalAttributeResolver,
         SerializableBitCriticalAnalyzer serializableBitCriticalAnalyzer,
         SerializationCriticalAnalyzer serializationCriticalAnalyzer,
+        UnitySerializationCriticalAnalyzer unitySerializationCriticalAnalyzer,
         SpecificNamespaceCriticalAnalyzer specificNamespaceCriticalAnalyzer)
     {
         _obfuscationAttributeResolver = obfuscationAttributeResolver;
@@ -22,6 +24,7 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
         _criticalAttributeResolver = criticalAttributeResolver;
         _serializableBitCriticalAnalyzer = serializableBitCriticalAnalyzer;
         _serializationCriticalAnalyzer = serializationCriticalAnalyzer;
+        _unitySerializationCriticalAnalyzer = unitySerializationCriticalAnalyzer;
         _specificNamespaceCriticalAnalyzer = specificNamespaceCriticalAnalyzer;
     }
 
@@ -56,9 +59,16 @@ public class SafeToMakeChangesMemberResolver : IMemberResolver
                 return false;
             }
         }
-        if (member is FieldDefinition field && !_serializationCriticalAnalyzer.NotCriticalToMakeChanges(field))
+        if (member is FieldDefinition field)
         {
-            return false;
+            if (!_serializationCriticalAnalyzer.NotCriticalToMakeChanges(field))
+            {
+                return false;
+            }
+            if (!_unitySerializationCriticalAnalyzer.NotCriticalToMakeChanges(field))
+            {
+                return false;
+            }
         }
         if (member is PropertyDefinition property && !_serializationCriticalAnalyzer.NotCriticalToMakeChanges(property))
         {
