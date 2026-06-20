@@ -45,6 +45,17 @@ internal class OptionsObfuscationNeedsFactory
             };
         }
 
+        // --rename-il2cpp-exports is likewise a standalone post-build step (#276 export renaming).
+        if (!string.IsNullOrEmpty(options.RenameIl2cppExports))
+        {
+            return new ObfuscationNeeds
+            {
+                Way = ObfuscationNeedsWay.Options,
+                RenameExportsPath = options.RenameIl2cppExports,
+                EncryptMetadataKey = options.MetadataKey
+            };
+        }
+
         ObfuscationSettings? obfuscationSettings = null;
         try
         {

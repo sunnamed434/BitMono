@@ -36,6 +36,13 @@ namespace BitMono.Unity.Editor
                     "Independent of the managed obfuscation - you can use either or both."),
                 config.EncryptIl2CppMetadata);
 
+            config.RenameIl2cppExports = EditorGUILayout.Toggle(
+                new GUIContent("Rename IL2CPP Exports",
+                    "On IL2CPP Windows x64 builds, mangle GameAssembly.dll's il2cpp_* exports so dumpers can't " +
+                    "find the IL2CPP API by name. The game still resolves them at runtime. Pairs well with " +
+                    "Encrypt IL2CPP Metadata; you can use either or both."),
+                config.RenameIl2cppExports);
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Configuration Path", EditorStyles.boldLabel);
 

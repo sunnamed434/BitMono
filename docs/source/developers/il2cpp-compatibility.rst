@@ -88,3 +88,27 @@ Under the hood it's two halves that share a key BitMono generates fresh for ever
 Validated end to end on real Unity 6000.2 IL2CPP builds (metadata version 31): Windows x64, and Android
 x86_64 on an emulator (arm64 shares the same 64-bit code path). The encryption is whole-file, so it doesn't
 care about the per-version metadata layout; only the decryptor's file hook is platform-specific.
+
+Renaming the IL2CPP exports
+---------------------------
+
+Metadata encryption blocks *static* dumpers, but a *runtime* dumper (Zygisk-Il2CppDumper, frida-il2cpp-bridge)
+attaches to the live game and walks ``GameAssembly.dll``'s exported ``il2cpp_*`` functions to drive the
+runtime and reconstruct everything from memory. The **Rename IL2CPP Exports** toggle takes those away: after
+the build, BitMono mangles every ``il2cpp_*`` export (``il2cpp_init`` -> ``Z6f8fdaf3`` and friends), so a
+dumper scanning the export table finds nothing it recognises.
+
+The game still needs them, though - UnityPlayer resolves the IL2CPP API by name with ``GetProcAddress``. So
+the same decryptor plugin installs a ``GetProcAddress`` hook: when UnityPlayer asks for ``il2cpp_init`` it
+computes the same mangled name (same per-build key) and hands back the renamed export. The mangling is a
+keyed hash, so it's per-build like the metadata key.
+
+Windows x64 only for now (it rewrites the PE export table via AsmResolver; Android's ELF version is a
+follow-up). It's a separate toggle from metadata encryption - use either or both. Validated end to end on
+Unity 6000.2: after renaming, ``il2cpp_init`` is gone from the export table but the game boots fine.
+
+.. note::
+
+   Same honest caveat as the metadata encryption: this raises the bar against runtime dumpers a lot (they
+   can't find the API by name), but a determined attacker can still hook the plugin's resolver or
+   signature-scan for the functions. It's another wall, not a magic bullet.

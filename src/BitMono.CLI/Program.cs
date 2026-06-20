@@ -44,6 +44,12 @@ internal class Program
                 return MetadataEncryptorCommand.Run(encryptPath, needs.EncryptMetadataKey);
             }
 
+            // Standalone IL2CPP export renaming (#276 follow-up), same standalone deal.
+            if (needs.RenameExportsPath is { } renamePath)
+            {
+                return Il2CppExportRenamerCommand.Run(renamePath, needs.EncryptMetadataKey);
+            }
+
             var module = new BitMonoModule(
                 configureContainer: container => container.AddProtections(),
                 obfuscationSettings: needs.ObfuscationSettings,

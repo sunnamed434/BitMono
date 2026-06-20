@@ -132,6 +132,7 @@ extern "C" const void* BitMonoDecryptMetadata(const void* data)
 #if defined(_WIN32) && !defined(BITMONO_STANDALONE_TEST)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tlhelp32.h>
 
 namespace {
 
@@ -263,11 +264,10 @@ HANDLE WINAPI HookedCreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD
     return served;
 }
 
-// IAT-hook CreateFileW in `mod` by NAME (works whether it's imported from kernel32, kernelbase or an API set,
-// unlike address matching). Hooks every matching import slot. Returns true if at least one was patched.
-bool InstallCreateFileWHook(HMODULE mod)
+// IAT-hook an imported function in `mod` by NAME (works whether it's imported from kernel32, kernelbase or an
+// API set, unlike address matching). Patches every matching slot; captures the first original via outOrig.
+bool IATHookByName(HMODULE mod, const char* importName, void* hookFn, void** outOrig)
 {
-    static const char kCreateFileW[] = "CreateFileW";
     if (!mod)
         return false;
     BYTE* base = (BYTE*)mod;
@@ -293,23 +293,90 @@ bool InstallCreateFileWHook(HMODULE mod)
             if (names->u1.Ordinal & IMAGE_ORDINAL_FLAG)
                 continue; // imported by ordinal - no name to match
             IMAGE_IMPORT_BY_NAME* byName = (IMAGE_IMPORT_BY_NAME*)(base + names->u1.AddressOfData);
-            if (strcmp((const char*)byName->Name, kCreateFileW) != 0)
+            if (strcmp((const char*)byName->Name, importName) != 0)
                 continue;
-            if (!g_origCreateFileW)
-                g_origCreateFileW = (CreateFileW_t)iat->u1.Function;
+            if (outOrig && !*outOrig)
+                *outOrig = (void*)iat->u1.Function;
             DWORD old;
             if (VirtualProtect(&iat->u1.Function, sizeof(void*), PAGE_READWRITE, &old))
             {
-                iat->u1.Function = (ULONGLONG)(uintptr_t)&HookedCreateFileW;
+                iat->u1.Function = (ULONGLONG)(uintptr_t)hookFn;
                 VirtualProtect(&iat->u1.Function, sizeof(void*), old, &old);
                 hooked = true;
             }
         }
     }
+    return hooked;
+}
+
+bool InstallCreateFileWHook(HMODULE mod)
+{
+    bool hooked = IATHookByName(mod, "CreateFileW", (void*)&HookedCreateFileW, (void**)&g_origCreateFileW);
     // Fall back to the real export if we never captured an original (e.g. nothing imported it yet).
     if (hooked && !g_origCreateFileW)
-        g_origCreateFileW = (CreateFileW_t)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), kCreateFileW);
+        g_origCreateFileW = (CreateFileW_t)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "CreateFileW");
     return hooked && g_origCreateFileW != nullptr;
+}
+
+// --- Export renaming (#276 follow-up). The post-build renamer mangles every il2cpp_* export so dumpers can't
+// find the API by name; here we keep UnityPlayer working by intercepting its GetProcAddress and serving the
+// mangled export for any il2cpp_* request. A no-op when the exports aren't renamed (the mangled name won't
+// resolve, so it falls through to the real name). ---
+typedef FARPROC(WINAPI* GetProcAddress_t)(HMODULE, LPCSTR);
+GetProcAddress_t g_origGetProcAddress = nullptr;
+
+// FNV-1a(key ++ name) -> "Z" + 8 lowercase hex. Mirrors C# Il2CppExportName.Mangle byte-for-byte.
+void MangleExportName(const char* name, char out[10])
+{
+    static const unsigned char kKey[16] = { BITMONO_IL2CPP_KEY_BYTES };
+    uint32_t h = 2166136261u;
+    for (int i = 0; i < 16; i++)
+        h = (h ^ kKey[i]) * 16777619u;
+    for (const char* p = name; *p; p++)
+        h = (h ^ (unsigned char)*p) * 16777619u;
+    static const char hex[] = "0123456789abcdef";
+    out[0] = 'Z';
+    for (int i = 0; i < 8; i++)
+        out[1 + i] = hex[(h >> ((7 - i) * 4)) & 0xF];
+    out[9] = 0;
+}
+
+FARPROC WINAPI HookedGetProcAddress(HMODULE mod, LPCSTR name)
+{
+    if ((uintptr_t)name > 0xFFFF && strncmp(name, "il2cpp_", 7) == 0)
+    {
+        char mangled[10];
+        MangleExportName(name, mangled);
+        FARPROC r = g_origGetProcAddress(mod, mangled);
+        if (r)
+            return r;
+    }
+    return g_origGetProcAddress(mod, name);
+}
+
+void InstallGetProcAddressHook()
+{
+    g_origGetProcAddress = GetProcAddress; // real one - our own IAT isn't hooked
+    HMODULE self = nullptr;
+    GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        (LPCWSTR)&HookedGetProcAddress, &self);
+    // Whoever resolves the il2cpp API by name (baselib.dll's Baselib_DynamicLibrary_GetFunction, UnityPlayer,
+    // the exe, ...) calls GetProcAddress through its own IAT - so hook it in every loaded module.
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+    if (snap != INVALID_HANDLE_VALUE)
+    {
+        MODULEENTRY32W me;
+        me.dwSize = sizeof(me);
+        if (Module32FirstW(snap, &me))
+        {
+            do
+            {
+                if (me.hModule != self)
+                    IATHookByName(me.hModule, "GetProcAddress", (void*)&HookedGetProcAddress, nullptr);
+            } while (Module32NextW(snap, &me));
+        }
+        CloseHandle(snap);
+    }
 }
 
 } // namespace
@@ -335,7 +402,8 @@ struct BitMonoAutoInstall
         GetModuleHandleExW(
             GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
             (LPCWSTR)&HookedCreateFileW, &self);
-        InstallCreateFileWHook(self);
+        InstallCreateFileWHook(self);   // #276 metadata decrypt
+        InstallGetProcAddressHook();    // #276 export rename: keep UnityPlayer resolving the mangled exports
         (void)&BitMonoIl2cppKeepAlive;
     }
 };

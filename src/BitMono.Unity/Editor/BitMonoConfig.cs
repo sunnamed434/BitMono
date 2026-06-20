@@ -20,6 +20,11 @@ namespace BitMono.Unity.Editor
                  "restores it in memory at startup. Independent of the managed obfuscation above.")]
         public bool EncryptIl2CppMetadata = false;
 
+        [Tooltip("On IL2CPP Windows x64 builds, mangle the il2cpp_* exports of GameAssembly.dll so dumpers " +
+                 "can't find the IL2CPP API by name (defeats a class of runtime dumpers). The game resolves " +
+                 "them at runtime via the same plugin. Independent of metadata encryption.")]
+        public bool RenameIl2cppExports = false;
+
         [Header("Configuration Path")]
         [Tooltip("Custom path to BitMono configuration files (leave empty for auto-detection)")]
         public string ConfigPath = "";

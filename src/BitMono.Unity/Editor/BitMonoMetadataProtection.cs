@@ -40,18 +40,24 @@ namespace BitMono.Unity.Editor
             // with no header the plugin compiles to nothing, so a build with the feature off ships no hook.
             CleanupKeyHeader();
             var config = LoadConfig();
-            if (config == null || !config.EncryptIl2CppMetadata)
+            if (config == null)
             {
                 return;
             }
             var platform = report.summary.platform;
-            if (platform != BuildTarget.StandaloneWindows64 && platform != BuildTarget.Android)
+            var win64 = platform == BuildTarget.StandaloneWindows64;
+            var android = platform == BuildTarget.Android;
+            // Metadata encryption runs on Win64 + Android; export renaming on Win64 only (PE - Android ELF is a
+            // follow-up). The plugin is the same, so the key header just needs writing for any of them.
+            var anyProtection = (config.EncryptIl2CppMetadata && (win64 || android))
+                                || (config.RenameIl2cppExports && win64);
+            if (!anyProtection)
             {
                 return;
             }
             // The Android decryptor is 64-bit only; an ARMv7 slice would ship encrypted metadata with no
             // decryptor and crash on 32-bit devices. Warn loudly rather than break those builds silently.
-            if (platform == BuildTarget.Android &&
+            if (config.EncryptIl2CppMetadata && android &&
                 (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0)
             {
                 Debug.LogWarning("[BitMono] Encrypt IL2CPP Metadata is on and this Android build targets ARMv7 " +
@@ -62,7 +68,7 @@ namespace BitMono.Unity.Editor
             var pluginDir = FindPluginDir();
             if (pluginDir == null)
             {
-                Debug.LogWarning("[BitMono] Encrypt IL2CPP Metadata is on but the decryptor plugin " +
+                Debug.LogWarning("[BitMono] IL2CPP output protection is on but the decryptor plugin " +
                                  "(global_metadata_decrypt.cpp) wasn't found; the build won't be protected.");
                 return;
             }
@@ -81,7 +87,7 @@ namespace BitMono.Unity.Editor
         public void OnPostprocessBuild(BuildReport report)
         {
             var config = LoadConfig();
-            if (config == null || !config.EncryptIl2CppMetadata)
+            if (config == null || (!config.EncryptIl2CppMetadata && !config.RenameIl2cppExports))
             {
                 return;
             }
@@ -97,14 +103,26 @@ namespace BitMono.Unity.Editor
             }
             if (report.summary.platform == BuildTarget.StandaloneWindows64)
             {
-                var metadata = FindMetadata(report.summary.outputPath);
-                if (metadata != null && !IsEncrypted(metadata))
+                if (config.EncryptIl2CppMetadata)
                 {
-                    RunEncrypt(metadata, keyHex);
+                    var metadata = FindMetadata(report.summary.outputPath);
+                    if (metadata != null && !IsEncrypted(metadata))
+                    {
+                        RunEncrypt(metadata, keyHex);
+                    }
+                }
+                if (config.RenameIl2cppExports)
+                {
+                    var dir = Path.GetDirectoryName(report.summary.outputPath);
+                    var gameAssembly = dir == null ? null : Path.Combine(dir, "GameAssembly.dll");
+                    if (gameAssembly != null && File.Exists(gameAssembly))
+                    {
+                        RunRenameExports(gameAssembly, keyHex);
+                    }
                 }
             }
-            // Android is handled in BitMonoAndroidMetadataProtection (before the APK is packaged + signed).
-            // Other platforms have no decryptor, so OnPreprocessBuild wrote no key header - nothing to encrypt.
+            // Android metadata is handled in BitMonoAndroidMetadataProtection (before the APK is signed); Android
+            // export renaming isn't supported yet. Other platforms have no decryptor - nothing to do.
         }
 
         // Encrypt metadataPath in place via the CLI (writes <path>.enc, swaps it in). Shared by Windows and
@@ -161,6 +179,54 @@ namespace BitMono.Unity.Editor
             {
                 Debug.LogError($"[BitMono] IL2CPP metadata encryption failed: {ex}. " +
                                "global-metadata.dat left UNENCRYPTED.");
+                return false;
+            }
+        }
+
+        // Mangle the il2cpp_* exports of GameAssembly.dll via the CLI (same per-build key as the plugin's
+        // GetProcAddress hook, so the game still resolves them). Windows only for now.
+        internal static bool RunRenameExports(string gameAssemblyPath, string keyHex)
+        {
+            var cli = FindCli();
+            if (cli == null)
+            {
+                Debug.LogError("[BitMono] Rename IL2CPP Exports is on but BitMono.CLI.exe wasn't found. " +
+                               "GameAssembly.dll exports are left as-is.");
+                return false;
+            }
+            try
+            {
+                var args = $"--rename-il2cpp-exports \"{gameAssemblyPath}\"";
+                if (!string.IsNullOrEmpty(keyHex))
+                {
+                    args += $" --metadata-key {keyHex}";
+                }
+                var psi = new ProcessStartInfo
+                {
+                    FileName = cli,
+                    Arguments = args,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                };
+                using var process = Process.Start(psi);
+                var stdout = process.StandardOutput.ReadToEnd();
+                var stderr = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    Debug.LogError($"[BitMono] --rename-il2cpp-exports failed (exit {process.ExitCode}); " +
+                                   $"GameAssembly.dll exports left as-is.\n{stdout}\n{stderr}");
+                    return false;
+                }
+                Debug.Log("[BitMono] Mangled IL2CPP exports in GameAssembly.dll: dumpers can't find the API by " +
+                          "name; the game resolves them at runtime.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[BitMono] IL2CPP export renaming failed: {ex}. GameAssembly.dll exports left as-is.");
                 return false;
             }
         }

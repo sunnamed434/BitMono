@@ -55,6 +55,9 @@ internal class Options
     [Option("encrypt-metadata", Required = false, HelpText = "Encrypt a Unity IL2CPP global-metadata.dat (writes <path>.enc) so static dumpers can't parse it. Requires the matching native decryptor in GameAssembly.dll.")]
     public string? EncryptMetadata { get; set; }
 
-    [Option("metadata-key", Required = false, HelpText = "16-byte key as 32 hex chars for --encrypt-metadata. Must match the key compiled into the native decryptor. Omit to use the fixed dev key; the Unity integration passes a random per-build key.")]
+    [Option("metadata-key", Required = false, HelpText = "16-byte key as 32 hex chars for --encrypt-metadata / --rename-il2cpp-exports. Must match the key compiled into the native decryptor. Omit to use the fixed dev key; the Unity integration passes a random per-build key.")]
     public string? MetadataKey { get; set; }
+
+    [Option("rename-il2cpp-exports", Required = false, HelpText = "Mangle the il2cpp_* exports of a native GameAssembly.dll so dumpers can't find the IL2CPP API by name. Use --metadata-key to match the key compiled into the decryptor; the game resolves them at runtime.")]
+    public string? RenameIl2cppExports { get; set; }
 }
