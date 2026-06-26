@@ -15,7 +15,7 @@
   <!-- JSON: System.Text.Json is in-box on net6.0+, so we add nothing there. The legacy TFMs keep
        Newtonsoft.Json (a single self-contained DLL, no transitive deps) via the Json helper's #if. -->
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'netstandard2.1' ">
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <!-- Packages specific to older frameworks that need polyfills -->
