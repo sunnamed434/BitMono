@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read     # checkout
-      packages: write    # dotnet nuget push -> nuget.pkg.github.com/sunnamed434
+      packages: write    # dotnet nuget push -> nuget.pkg.github.com/<owner>
       id-token: write   # OIDC for NuGet Trusted Publishing
 
     steps:
