@@ -15,6 +15,12 @@ BitMono uses [AsmResolver][asmresolver] instead of [dnlib][dnlib] (which we used
 
 You can also use BitMono as an engine to build custom obfuscators. It is built using dependency injection (DI) with a lightweight custom container based on [MinIoC][minioc_repo] (we used [Autofac][autofac_repo] in the past) and follows the latest C# best practices.
 
+## Try it in your browser — [bitmono.dev][bitmono_dev]
+
+No install needed. Drop a `.dll` or `.exe` at **[bitmono.dev][bitmono_dev]**, pick your protections, and download it back obfuscated — the same engine you see here, running on the web. Your upload is wiped the instant it's obfuscated, and the result the instant you download it; nothing is kept.
+
+It also hosts **[crackmes][bitmono_crackmes]** — a gallery of BitMono-obfuscated .NET reverse-engineering challenges. Submit your own, crack others, write it up, climb the leaderboard.
+
 <p align="center">
 <img src="https://raw.githubusercontent.com/sunnamed434/BitMono/main/resources/images/preview/before-after.png"
   alt="Before and after obfuscation preview by BitMono">
@@ -188,6 +194,8 @@ Credits
 [bitmono_issues]: https://github.com/sunnamed434/BitMono/issues
 [bitmono_releases]: https://github.com/sunnamed434/BitMono/releases
 [bitmono_docs]: https://docs.bitmono.dev/en/latest/
+[bitmono_dev]: https://bitmono.dev
+[bitmono_crackmes]: https://bitmono.dev/crackmes
 [bitdotnet_source]: https://github.com/0x59R11/BitDotNet
 [bitmethoddotnet_source]: https://github.com/sunnamed434/BitMethodDotnet
 [dotnethook_source]: https://github.com/Elliesaur/DotNetHook
