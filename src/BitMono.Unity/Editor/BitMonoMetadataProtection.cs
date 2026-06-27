@@ -152,28 +152,31 @@ namespace BitMono.Unity.Editor
                     RedirectStandardError = true,
                     CreateNoWindow = true,
                 };
-                using var process = Process.Start(psi);
-                var stdout = process.StandardOutput.ReadToEnd();
-                var stderr = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                if (process.ExitCode != 0)
+                // using-statement (not C# 8 'using var'): Unity 2019.4 ships the C# 7.3 compiler.
+                using (var process = Process.Start(psi))
                 {
-                    Debug.LogError($"[BitMono] --encrypt-metadata failed (exit {process.ExitCode}); " +
-                                   $"global-metadata.dat left UNENCRYPTED.\n{stdout}\n{stderr}");
-                    return false;
+                    var stdout = process.StandardOutput.ReadToEnd();
+                    var stderr = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        Debug.LogError($"[BitMono] --encrypt-metadata failed (exit {process.ExitCode}); " +
+                                       $"global-metadata.dat left UNENCRYPTED.\n{stdout}\n{stderr}");
+                        return false;
+                    }
+                    var enc = metadataPath + ".enc";
+                    if (!File.Exists(enc))
+                    {
+                        Debug.LogError("[BitMono] --encrypt-metadata reported success but produced no .enc file; " +
+                                       "global-metadata.dat left UNENCRYPTED.");
+                        return false;
+                    }
+                    File.Copy(enc, metadataPath, overwrite: true);
+                    File.Delete(enc);
+                    Debug.Log("[BitMono] Encrypted IL2CPP global-metadata.dat: static dumpers are blocked; " +
+                              "the IL2CPP binary decrypts it at startup.");
+                    return true;
                 }
-                var enc = metadataPath + ".enc";
-                if (!File.Exists(enc))
-                {
-                    Debug.LogError("[BitMono] --encrypt-metadata reported success but produced no .enc file; " +
-                                   "global-metadata.dat left UNENCRYPTED.");
-                    return false;
-                }
-                File.Copy(enc, metadataPath, overwrite: true);
-                File.Delete(enc);
-                Debug.Log("[BitMono] Encrypted IL2CPP global-metadata.dat: static dumpers are blocked; " +
-                          "the IL2CPP binary decrypts it at startup.");
-                return true;
             }
             catch (Exception ex)
             {
@@ -210,19 +213,22 @@ namespace BitMono.Unity.Editor
                     RedirectStandardError = true,
                     CreateNoWindow = true,
                 };
-                using var process = Process.Start(psi);
-                var stdout = process.StandardOutput.ReadToEnd();
-                var stderr = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                if (process.ExitCode != 0)
+                // using-statement (not C# 8 'using var'): Unity 2019.4 ships the C# 7.3 compiler.
+                using (var process = Process.Start(psi))
                 {
-                    Debug.LogError($"[BitMono] --rename-il2cpp-exports failed (exit {process.ExitCode}); " +
-                                   $"GameAssembly.dll exports left as-is.\n{stdout}\n{stderr}");
-                    return false;
+                    var stdout = process.StandardOutput.ReadToEnd();
+                    var stderr = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        Debug.LogError($"[BitMono] --rename-il2cpp-exports failed (exit {process.ExitCode}); " +
+                                       $"GameAssembly.dll exports left as-is.\n{stdout}\n{stderr}");
+                        return false;
+                    }
+                    Debug.Log("[BitMono] Mangled IL2CPP exports in GameAssembly.dll: dumpers can't find the API by " +
+                              "name; the game resolves them at runtime.");
+                    return true;
                 }
-                Debug.Log("[BitMono] Mangled IL2CPP exports in GameAssembly.dll: dumpers can't find the API by " +
-                          "name; the game resolves them at runtime.");
-                return true;
             }
             catch (Exception ex)
             {
@@ -259,9 +265,12 @@ namespace BitMono.Unity.Editor
         {
             try
             {
-                using var fs = File.OpenRead(path);
-                var head = new byte[8];
-                return fs.Read(head, 0, 8) == 8 && BitConverter.ToUInt64(head, 0) == EncryptedSanity;
+                // using-statement (not C# 8 'using var'): Unity 2019.4 ships the C# 7.3 compiler.
+                using (var fs = File.OpenRead(path))
+                {
+                    var head = new byte[8];
+                    return fs.Read(head, 0, 8) == 8 && BitConverter.ToUInt64(head, 0) == EncryptedSanity;
+                }
             }
             catch
             {
