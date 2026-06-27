@@ -19,48 +19,48 @@ public class UnitySerializationCriticalAnalyzerTest
     [Fact]
     public void PublicFieldOnMonoBehaviourIsCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityPublicField")).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityPublicField")).ShouldBeFalse();
     }
 
     [Fact]
     public void SerializeFieldPrivateIsCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "unitySerialized")).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "unitySerialized")).ShouldBeFalse();
     }
 
     [Fact]
     public void PlainPrivateFieldIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "unityPrivatePlain")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "unityPrivatePlain")).ShouldBeTrue();
     }
 
     [Fact]
     public void StaticFieldIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityStaticField")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityStaticField")).ShouldBeTrue();
     }
 
     [Fact]
     public void ReadonlyFieldIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityReadonlyField")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityReadonlyField")).ShouldBeTrue();
     }
 
     [Fact]
     public void NonSerializedFieldIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityNonSerialized")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityNonSerialized")).ShouldBeTrue();
     }
 
     [Fact]
     public void PublicFieldOnNonUnityTypeIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityNonContainer), "PublicFieldOutsideUnity")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Field(nameof(UnityNonContainer), "PublicFieldOutsideUnity")).ShouldBeTrue();
     }
 
     [Fact]
     public void NothingIsCriticalWhenDisabled()
     {
-        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityPublicField")).Should().BeTrue();
+        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(Field(nameof(UnityPlayer), "UnityPublicField")).ShouldBeTrue();
     }
 }

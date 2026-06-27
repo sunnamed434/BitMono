@@ -31,8 +31,8 @@ public class MethodSlotGrouperTests
 
         var slot = SlotOf(slots, interfaceMethod);
 
-        slot.Methods.Should().Contain(implementation);
-        slot.TiedToExternal.Should().BeFalse();
+        slot.Methods.ShouldContain(implementation);
+        slot.TiedToExternal.ShouldBeFalse();
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class MethodSlotGrouperTests
         var interfaceMethod = Method(module, nameof(ISlotShape), m => m.Name == nameof(ISlotShape.SlotDraw));
         var explicitImplementation = Method(module, nameof(SlotSquare), m => m.Name?.Value?.EndsWith("SlotDraw") == true);
 
-        SlotOf(slots, interfaceMethod).Methods.Should().Contain(explicitImplementation);
+        SlotOf(slots, interfaceMethod).Methods.ShouldContain(explicitImplementation);
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class MethodSlotGrouperTests
 
         var slot = SlotOf(slots, baseMethod);
 
-        slot.Methods.Should().Contain(overrideMethod);
-        slot.TiedToExternal.Should().BeFalse();
+        slot.Methods.ShouldContain(overrideMethod);
+        slot.TiedToExternal.ShouldBeFalse();
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class MethodSlotGrouperTests
         var (module, slots) = Group();
         var toString = Method(module, nameof(SlotWidget), m => m.Name == "ToString");
 
-        SlotOf(slots, toString).TiedToExternal.Should().BeTrue();
+        SlotOf(slots, toString).TiedToExternal.ShouldBeTrue();
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class MethodSlotGrouperTests
 
         var slot = SlotOf(slots, interfaceMethod);
 
-        slot.Methods.Should().Contain(implementation);
-        slot.TiedToExternal.Should().BeFalse();
+        slot.Methods.ShouldContain(implementation);
+        slot.TiedToExternal.ShouldBeFalse();
     }
 }

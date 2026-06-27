@@ -19,30 +19,30 @@ public class UnityStringInvokeCriticalAnalyzerTest
     [Fact]
     public void InvokeTargetIsCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "DelayedSpawn")).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "DelayedSpawn")).ShouldBeFalse();
     }
 
     [Fact]
     public void StartCoroutineTargetIsCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "RunRoutine")).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "RunRoutine")).ShouldBeFalse();
     }
 
     [Fact]
     public void SendMessageTargetIsCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "OnPing")).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "OnPing")).ShouldBeFalse();
     }
 
     [Fact]
     public void NonInvokedMethodIsNotCritical()
     {
-        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "NotInvokedByString")).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "NotInvokedByString")).ShouldBeTrue();
     }
 
     [Fact]
     public void NothingIsCriticalWhenDisabled()
     {
-        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "DelayedSpawn")).Should().BeTrue();
+        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(Method(nameof(UnityInvoker), "DelayedSpawn")).ShouldBeTrue();
     }
 }

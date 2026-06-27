@@ -12,6 +12,6 @@ global using BitMono.Core.TestCases.CustomAttributes;
 global using BitMono.Core.TestCases.Methods;
 global using BitMono.Core.TestCases.Reflection;
 global using BitMono.Shared.Models;
-global using FluentAssertions;
+global using Shouldly;
 global using Xunit;
 global using BitMono.Protections;

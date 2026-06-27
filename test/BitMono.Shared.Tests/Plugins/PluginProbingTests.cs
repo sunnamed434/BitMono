@@ -35,13 +35,13 @@ public class PluginProbingTests : IDisposable
     {
         var missing = Path.Combine(_root, "does-not-exist");
 
-        PluginProbing.EnumeratePluginAssemblies(missing).Should().BeEmpty();
+        PluginProbing.EnumeratePluginAssemblies(missing).ShouldBeEmpty();
     }
 
     [Fact]
     public void EnumeratePluginAssemblies_ReturnsEmpty_WhenPathBlank()
     {
-        PluginProbing.EnumeratePluginAssemblies("  ").Should().BeEmpty();
+        PluginProbing.EnumeratePluginAssemblies("  ").ShouldBeEmpty();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class PluginProbingTests : IDisposable
 
         var result = PluginProbing.EnumeratePluginAssemblies(_root);
 
-        result.Should().BeEquivalentTo(new[] { first, second });
+        result.ShouldBe(new[] { first, second }, ignoreOrder: true);
     }
 
     [Fact]
@@ -64,9 +64,9 @@ public class PluginProbingTests : IDisposable
 
         var result = PluginProbing.EnumeratePluginAssemblies(_root);
 
-        result.Should().Contain(flat);
-        result.Should().Contain(nested);
-        result.Should().Contain(shallowDependency);
+        result.ShouldContain(flat);
+        result.ShouldContain(nested);
+        result.ShouldContain(shallowDependency);
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class PluginProbingTests : IDisposable
 
         var result = PluginProbing.EnumeratePluginAssemblies(_root);
 
-        result.Should().Contain(nested);
-        result.Should().NotContain(deepDependency);
+        result.ShouldContain(nested);
+        result.ShouldNotContain(deepDependency);
     }
 
     [Fact]
@@ -91,13 +91,13 @@ public class PluginProbingTests : IDisposable
 
         var result = PluginProbing.EnumeratePluginAssemblies(_root);
 
-        result.Should().ContainSingle().Which.Should().Be(dll);
+        result.ShouldHaveSingleItem().ShouldBe(dll);
     }
 
     [Fact]
     public void GetProbeDirectories_ReturnsEmpty_WhenDirectoryMissing()
     {
-        PluginProbing.GetProbeDirectories(Path.Combine(_root, "nope")).Should().BeEmpty();
+        PluginProbing.GetProbeDirectories(Path.Combine(_root, "nope")).ShouldBeEmpty();
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public class PluginProbingTests : IDisposable
 
         var directories = PluginProbing.GetProbeDirectories(_root);
 
-        directories.Should().Contain(_root);
-        directories.Should().Contain(Path.Combine(_root, "MyPlugin"));
+        directories.ShouldContain(_root);
+        directories.ShouldContain(Path.Combine(_root, "MyPlugin"));
         // Nested dependency folders are probe-able so the resolver can find deps placed there.
-        directories.Should().Contain(Path.Combine(_root, "MyPlugin", "libs"));
+        directories.ShouldContain(Path.Combine(_root, "MyPlugin", "libs"));
     }
 }

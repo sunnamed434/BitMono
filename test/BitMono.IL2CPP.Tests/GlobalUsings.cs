@@ -4,5 +4,5 @@ global using System.IO;
 global using System.Linq;
 global using System.Text;
 global using BitMono.IL2CPP;
-global using FluentAssertions;
+global using Shouldly;
 global using Xunit;

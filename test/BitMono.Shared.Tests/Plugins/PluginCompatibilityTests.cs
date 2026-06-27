@@ -22,13 +22,13 @@ public class PluginCompatibilityTests
     {
         var result = PluginCompatibility.IsBuiltAgainstNewerContract(new Version(host), new Version(plugin));
 
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
     public void IsBuiltAgainstNewerContract_ReturnsFalse_WhenEitherVersionMissing()
     {
-        PluginCompatibility.IsBuiltAgainstNewerContract(null, new Version(9, 9)).Should().BeFalse();
-        PluginCompatibility.IsBuiltAgainstNewerContract(new Version(0, 40), null).Should().BeFalse();
+        PluginCompatibility.IsBuiltAgainstNewerContract(null, new Version(9, 9)).ShouldBeFalse();
+        PluginCompatibility.IsBuiltAgainstNewerContract(new Version(0, 40), null).ShouldBeFalse();
     }
 }

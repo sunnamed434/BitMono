@@ -37,9 +37,9 @@ public class ProtectionsSorterTests
 
         var sort = sorter.Sort(protections, settings);
 
-        sort.DeprecatedProtections.Select(p => p.GetName()).Should().Equal(nameof(DeprecatedDouble));
-        sort.ObfuscationAttributeExcludeProtections.Should().BeEmpty();
-        sort.SortedProtections.Select(p => p.GetName()).Should().Equal(nameof(ActiveDouble));
+        sort.DeprecatedProtections.Select(p => p.GetName()).ShouldBe(new[] { nameof(DeprecatedDouble) });
+        sort.ObfuscationAttributeExcludeProtections.ShouldBeEmpty();
+        sort.SortedProtections.Select(p => p.GetName()).ShouldBe(new[] { nameof(ActiveDouble) });
     }
 
     private class ActiveDouble : IProtection

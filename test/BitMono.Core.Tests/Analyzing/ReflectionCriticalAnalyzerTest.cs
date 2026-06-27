@@ -34,7 +34,7 @@ public class ReflectionCriticalAnalyzerTest
         var analyzer = CreateAnalyzer();
 
         analyzer.NotCriticalToMakeChanges(Method(type, nameof(ReflectionMethods.UsesReflectionOnItSelf)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionMethods));
         var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeFalse();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionMethods));
         var property = type.Properties.First(p => p.Name == nameof(ReflectionMethods.TestProperty));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(property).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(property).ShouldBeFalse();
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionMethods));
         var eventDef = type.Events.First(e => e.Name == nameof(ReflectionMethods.TestEvent));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(eventDef).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(eventDef).ShouldBeFalse();
     }
 
     // --- the over-exclusion fixes (the point of the rewrite) ------------------------------------
@@ -74,7 +74,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.ReflectsOnOthers)))
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class ReflectionCriticalAnalyzerTest
         var untouched = Method(Type(module, nameof(ProbeUntouched)), nameof(ProbeUntouched.Shared));
         var analyzer = CreateAnalyzer();
 
-        analyzer.NotCriticalToMakeChanges(reflected).Should().BeFalse();
-        analyzer.NotCriticalToMakeChanges(untouched).Should().BeTrue();
+        analyzer.NotCriticalToMakeChanges(reflected).ShouldBeFalse();
+        analyzer.NotCriticalToMakeChanges(untouched).ShouldBeTrue();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class ReflectionCriticalAnalyzerTest
         // typeof(X) with no name-based lookup must not freeze X (it used to).
         var type = Type(GetModule(), nameof(BareTypeofProbe));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(type).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(type).ShouldBeTrue();
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.Untouched)))
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
 
     // --- type-by-name ---------------------------------------------------------------------------
@@ -116,7 +116,7 @@ public class ReflectionCriticalAnalyzerTest
     {
         var type = Type(GetModule(), nameof(GetTypeProbe));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(type).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(type).ShouldBeFalse();
     }
 
     // --- newly covered reflection APIs ----------------------------------------------------------
@@ -127,7 +127,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.Target)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
         var property = type.Properties.First(p => p.Name == nameof(ReflectionApiCases.ApiProperty));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(property).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(property).ShouldBeFalse();
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionApiCases.DelegateTarget)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class ReflectionCriticalAnalyzerTest
         var red = color.Fields.First(f => f.Name == nameof(Color.Red));
         var analyzer = CreateAnalyzer();
 
-        analyzer.NotCriticalToMakeChanges(red).Should().BeFalse();
-        analyzer.NotCriticalToMakeChanges(color).Should().BeTrue();
+        analyzer.NotCriticalToMakeChanges(red).ShouldBeFalse();
+        analyzer.NotCriticalToMakeChanges(color).ShouldBeTrue();
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class ReflectionCriticalAnalyzerTest
     {
         var nested = Type(GetModule(), nameof(ReflectionApiCases.Nested));
 
-        CreateAnalyzer().NotCriticalToMakeChanges(nested).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(nested).ShouldBeFalse();
     }
 
     [Fact]
@@ -176,8 +176,8 @@ public class ReflectionCriticalAnalyzerTest
         var baseMethod = Method(Type(module, nameof(BaseProbe)), nameof(BaseProbe.Virt));
         var analyzer = CreateAnalyzer();
 
-        analyzer.NotCriticalToMakeChanges(derived).Should().BeFalse();
-        analyzer.NotCriticalToMakeChanges(baseMethod).Should().BeFalse();
+        analyzer.NotCriticalToMakeChanges(derived).ShouldBeFalse();
+        analyzer.NotCriticalToMakeChanges(baseMethod).ShouldBeFalse();
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionMethods));
 
         CreateAnalyzer().NotCriticalToMakeChanges(Method(type, nameof(ReflectionMethods.VoidMethod)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     // --- GetILAsByteArray -> method-body critical -----------------------------------------------
@@ -198,7 +198,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().IsMethodBodyCritical(Method(type, nameof(ReflectionApiCases.IlTarget)))
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class ReflectionCriticalAnalyzerTest
         var type = Type(GetModule(), nameof(ReflectionApiCases));
 
         CreateAnalyzer().IsMethodBodyCritical(Method(type, nameof(ReflectionApiCases.Target)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     // --- setting toggle -------------------------------------------------------------------------
@@ -222,10 +222,10 @@ public class ReflectionCriticalAnalyzerTest
         var field = type.Fields.First(f => f.Name == nameof(ReflectionMethods.TestField));
         var analyzer = CreateAnalyzer(reflectionEnabled: false);
 
-        analyzer.NotCriticalToMakeChanges(method).Should().BeTrue();
-        analyzer.NotCriticalToMakeChanges(field).Should().BeTrue();
+        analyzer.NotCriticalToMakeChanges(method).ShouldBeTrue();
+        analyzer.NotCriticalToMakeChanges(field).ShouldBeTrue();
         analyzer.IsMethodBodyCritical(Method(Type(module, nameof(ReflectionApiCases)), nameof(ReflectionApiCases.IlTarget)))
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     [Fact]
@@ -235,8 +235,8 @@ public class ReflectionCriticalAnalyzerTest
         var method = Method(type, nameof(ReflectionMethods.UsesReflectionOnItSelf));
         var analyzer = CreateAnalyzer();
 
-        analyzer.NotCriticalToMakeChanges(method).Should().BeFalse();
-        analyzer.NotCriticalToMakeChanges(method).Should().BeFalse();
-        analyzer.CachedMethods.Count(m => m == method).Should().Be(1);
+        analyzer.NotCriticalToMakeChanges(method).ShouldBeFalse();
+        analyzer.NotCriticalToMakeChanges(method).ShouldBeFalse();
+        analyzer.CachedMethods.Count(m => m == method).ShouldBe(1);
     }
 }

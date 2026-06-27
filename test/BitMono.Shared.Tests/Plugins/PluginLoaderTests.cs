@@ -12,7 +12,7 @@ public class PluginLoaderTests
         var missing = Path.Combine(Path.GetTempPath(), "BitMonoPluginTests", Guid.NewGuid().ToString("N"));
         var loader = new PluginLoader(missing, new StubLogger());
 
-        loader.LoadPlugins().Should().BeEmpty();
+        loader.LoadPlugins().ShouldBeEmpty();
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class PluginLoaderTests
             File.WriteAllText(Path.Combine(directory, "notes.txt"), "not a plugin");
             var loader = new PluginLoader(directory, new StubLogger());
 
-            loader.LoadPlugins().Should().BeEmpty();
+            loader.LoadPlugins().ShouldBeEmpty();
         }
         finally
         {

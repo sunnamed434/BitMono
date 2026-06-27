@@ -17,8 +17,7 @@ public class NoInliningMethodMemberResolverTest
         var result = resolver.Resolve(null, method);
 
         result
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
     [Fact]
     public void WhenNoInliningMethodResolving_AndMethodHasNoInliningBit_ThenShouldBeTrue()
@@ -35,7 +34,6 @@ public class NoInliningMethodMemberResolverTest
         var result = resolver.Resolve(null, method);
 
         result
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 }

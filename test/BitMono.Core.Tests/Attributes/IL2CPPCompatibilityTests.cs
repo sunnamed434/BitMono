@@ -41,8 +41,7 @@ public class IL2CPPCompatibilityTests
     {
         protectionType
             .IsIL2CPPIncompatible()
-            .Should()
-            .BeTrue($"{protectionType.Name} cannot run on IL2CPP builds");
+            .ShouldBeTrue($"{protectionType.Name} cannot run on IL2CPP builds");
     }
 
     [Theory]
@@ -51,29 +50,28 @@ public class IL2CPPCompatibilityTests
     {
         protectionType
             .IsIL2CPPIncompatible()
-            .Should()
-            .BeFalse($"{protectionType.Name} should still run on IL2CPP builds");
+            .ShouldBeFalse($"{protectionType.Name} should still run on IL2CPP builds");
     }
 
     [Fact]
     public void PlainProtection_IsCompatible()
     {
-        typeof(PlainDouble).IsIL2CPPIncompatible().Should().BeFalse();
+        typeof(PlainDouble).IsIL2CPPIncompatible().ShouldBeFalse();
     }
 
     [Fact]
     public void ExplicitlyMarkedProtection_IsIncompatible_WithItsReason()
     {
-        typeof(MarkedDouble).IsIL2CPPIncompatible().Should().BeTrue();
-        new MarkedDouble().GetIL2CPPIncompatibleReason().Should().Be("custom reason");
+        typeof(MarkedDouble).IsIL2CPPIncompatible().ShouldBeTrue();
+        new MarkedDouble().GetIL2CPPIncompatibleReason().ShouldBe("custom reason");
     }
 
     [Fact]
     public void NativeCodeProtection_IsIncompatible_ViaConfigureForNativeCode()
     {
         // A protection that emits native code must be excluded even without an explicit attribute.
-        typeof(NativeDouble).IsIL2CPPIncompatible().Should().BeTrue();
-        new NativeDouble().GetIL2CPPIncompatibleReason().Should().NotBeNullOrWhiteSpace();
+        typeof(NativeDouble).IsIL2CPPIncompatible().ShouldBeTrue();
+        new NativeDouble().GetIL2CPPIncompatibleReason().ShouldNotBeNullOrWhiteSpace();
     }
 
     private class PlainDouble : IProtection

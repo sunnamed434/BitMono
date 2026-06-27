@@ -15,7 +15,6 @@ public class ObfuscateAssemblyAttributeResolverTest
         var result = resolver.Resolve(module.Assembly);
 
         result
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 }

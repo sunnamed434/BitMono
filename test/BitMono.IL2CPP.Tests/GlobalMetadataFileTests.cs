@@ -12,9 +12,9 @@ public class GlobalMetadataFileTests
 
         var metadata = GlobalMetadataFile.Read(bytes);
 
-        metadata.Version.Should().Be(29);
-        metadata.Strings.Should().Equal("", "Awake", "Player");
-        metadata.StringLiterals.Should().Equal("hello", "secret123");
+        metadata.Version.ShouldBe(29);
+        metadata.Strings.ShouldBe(new[] { "", "Awake", "Player" });
+        metadata.StringLiterals.ShouldBe(new[] { "hello", "secret123" });
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class GlobalMetadataFileTests
 
         var read = () => GlobalMetadataFile.Read(bytes);
 
-        read.Should().Throw<InvalidDataException>().WithMessage("*magic*");
+        read.ShouldThrow<InvalidDataException>().Message.ShouldContain("magic");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class GlobalMetadataFileTests
 
         var read = () => GlobalMetadataFile.Read(bytes);
 
-        read.Should().Throw<InvalidDataException>().WithMessage("*version 9999*");
+        read.ShouldThrow<InvalidDataException>().Message.ShouldContain("version 9999");
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class GlobalMetadataFileTests
     {
         var read = () => GlobalMetadataFile.Read(new byte[10]);
 
-        read.Should().Throw<InvalidDataException>().WithMessage("*too small*");
+        read.ShouldThrow<InvalidDataException>().Message.ShouldContain("too small");
     }
 
     [Fact]
@@ -54,6 +54,6 @@ public class GlobalMetadataFileTests
 
         var read = () => GlobalMetadataFile.Read(bytes);
 
-        read.Should().Throw<InvalidDataException>().WithMessage("*outside the file*");
+        read.ShouldThrow<InvalidDataException>().Message.ShouldContain("outside the file");
     }
 }

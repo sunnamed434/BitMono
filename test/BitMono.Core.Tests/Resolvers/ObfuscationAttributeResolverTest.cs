@@ -19,8 +19,7 @@ public class ObfuscationAttributeResolverTest
         var result = resolver.Resolve(feature, type);
 
         result
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
 
     [Theory]
@@ -39,8 +38,7 @@ public class ObfuscationAttributeResolverTest
         var result = resolver.Resolve(feature, type);
 
         result
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 
     [Fact]
@@ -58,8 +56,7 @@ public class ObfuscationAttributeResolverTest
         var result = resolver.Resolve(string.Empty, type);
 
         result
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
     
     [Fact]
@@ -77,8 +74,7 @@ public class ObfuscationAttributeResolverTest
         var result = resolver.Resolve(string.Empty, method);
 
         result
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
 
     [Theory]
@@ -97,12 +93,12 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type, out var attributes);
 
-        result.Should().BeTrue();
-        attributes.Should().NotBeNull();
-        attributes!.Count.Should().Be(1);
-        attributes[0].ApplyToMembers.Should().BeFalse();
-        attributes[0].Exclude.Should().BeTrue();
-        attributes[0].Feature.Should().Be(feature);
+        result.ShouldBeTrue();
+        attributes.ShouldNotBeNull();
+        attributes!.Count.ShouldBe(1);
+        attributes[0].ApplyToMembers.ShouldBeFalse();
+        attributes[0].Exclude.ShouldBeTrue();
+        attributes[0].Feature.ShouldBe(feature);
     }
 
     [Theory]
@@ -121,12 +117,12 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type, out var attributes);
 
-        result.Should().BeTrue();
-        attributes.Should().NotBeNull();
-        attributes!.Count.Should().Be(1);
-        attributes[0].StripAfterObfuscation.Should().BeFalse();
-        attributes[0].Exclude.Should().BeTrue();
-        attributes[0].Feature.Should().Be(feature);
+        result.ShouldBeTrue();
+        attributes.ShouldNotBeNull();
+        attributes!.Count.ShouldBe(1);
+        attributes[0].StripAfterObfuscation.ShouldBeFalse();
+        attributes[0].Exclude.ShouldBeTrue();
+        attributes[0].Feature.ShouldBe(feature);
     }
 
     [Theory]
@@ -145,7 +141,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type);
 
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Theory]
@@ -164,7 +160,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -182,7 +178,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(string.Empty, type);
 
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Theory]
@@ -201,7 +197,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -220,11 +216,11 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type, out var attributes);
 
-        result.Should().BeTrue();
-        attributes.Should().NotBeNull();
-        attributes!.Count.Should().Be(1);
-        attributes[0].Feature.Should().Be("all");
-        attributes[0].Exclude.Should().BeTrue();
+        result.ShouldBeTrue();
+        attributes.ShouldNotBeNull();
+        attributes!.Count.ShouldBe(1);
+        attributes[0].Feature.ShouldBe("all");
+        attributes[0].Exclude.ShouldBeTrue();
     }
 
     [Theory]
@@ -243,13 +239,13 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, type, out var attributes);
 
-        result.Should().BeTrue();
-        attributes.Should().NotBeNull();
-        attributes!.Count.Should().Be(1);
-        attributes[0].Exclude.Should().BeTrue();
-        attributes[0].ApplyToMembers.Should().BeTrue();
-        attributes[0].StripAfterObfuscation.Should().BeTrue();
-        attributes[0].Feature.Should().Be(feature);
+        result.ShouldBeTrue();
+        attributes.ShouldNotBeNull();
+        attributes!.Count.ShouldBe(1);
+        attributes[0].Exclude.ShouldBeTrue();
+        attributes[0].ApplyToMembers.ShouldBeTrue();
+        attributes[0].StripAfterObfuscation.ShouldBeTrue();
+        attributes[0].Feature.ShouldBe(feature);
     }
 
     [Fact]
@@ -266,7 +262,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(nameof(CallToCalli), type);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -283,7 +279,7 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(nameof(CallToCalli), type);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -301,11 +297,11 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, method, out var attributes);
 
-        result.Should().BeTrue();
-        attributes.Should().NotBeNull();
-        attributes!.Count.Should().Be(1);
-        attributes[0].Exclude.Should().BeTrue();
-        attributes[0].Feature.Should().Be(feature);
+        result.ShouldBeTrue();
+        attributes.ShouldNotBeNull();
+        attributes!.Count.ShouldBe(1);
+        attributes[0].Exclude.ShouldBeTrue();
+        attributes[0].Feature.ShouldBe(feature);
     }
 
     [Theory]
@@ -323,6 +319,6 @@ public class ObfuscationAttributeResolverTest
 
         var result = resolver.Resolve(feature, method);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 }

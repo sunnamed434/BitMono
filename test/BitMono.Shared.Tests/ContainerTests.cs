@@ -68,8 +68,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService));
 
-        service.Should().NotBeNull();
-        service.Should().BeOfType<ServiceImpl>();
+        service.ShouldNotBeNull();
+        service.ShouldBeOfType<ServiceImpl>();
     }
 
     [Fact]
@@ -81,9 +81,9 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService)) as ServiceWithDependency;
 
-        service.Should().NotBeNull();
-        service!.OtherService.Should().NotBeNull();
-        service.OtherService.Should().BeOfType<OtherServiceImpl>();
+        service.ShouldNotBeNull();
+        service!.OtherService.ShouldNotBeNull();
+        service.OtherService.ShouldBeOfType<OtherServiceImpl>();
     }
 
     [Fact]
@@ -99,8 +99,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService));
 
-        service.Should().NotBeNull();
-        factoryCalled.Should().BeTrue();
+        service.ShouldNotBeNull();
+        factoryCalled.ShouldBeTrue();
     }
 
     [Fact]
@@ -112,8 +112,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService)) as ServiceWithDependency;
 
-        service.Should().NotBeNull();
-        service!.OtherService.Should().NotBeNull();
+        service.ShouldNotBeNull();
+        service!.OtherService.ShouldNotBeNull();
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class ContainerTests
 
         var resolved = container.GetService(typeof(IService));
 
-        resolved.Should().BeSameAs(instance);
+        resolved.ShouldBeSameAs(instance);
     }
 
     [Fact]
@@ -136,8 +136,8 @@ public class ContainerTests
 
         var service = container.Resolve<IService>();
 
-        service.Should().NotBeNull();
-        service.Should().BeOfType<ServiceImpl>();
+        service.ShouldNotBeNull();
+        service.ShouldBeOfType<ServiceImpl>();
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class ContainerTests
         var service1 = container.GetService(typeof(IService));
         var service2 = container.GetService(typeof(IService));
 
-        service1.Should().NotBeSameAs(service2);
+        service1.ShouldNotBeSameAs(service2);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class ContainerTests
         var service1 = container.GetService(typeof(IService));
         var service2 = container.GetService(typeof(IService));
 
-        service1.Should().BeSameAs(service2);
+        service1.ShouldBeSameAs(service2);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class ContainerTests
         var service1 = scope.GetService(typeof(IService));
         var service2 = scope.GetService(typeof(IService));
 
-        service1.Should().BeSameAs(service2);
+        service1.ShouldBeSameAs(service2);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class ContainerTests
         var service1 = scope1.GetService(typeof(IService));
         var service2 = scope2.GetService(typeof(IService));
 
-        service1.Should().NotBeSameAs(service2);
+        service1.ShouldNotBeSameAs(service2);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class ContainerTests
         using var scope = container.CreateScope();
         var scopeService = scope.GetService(typeof(IService));
 
-        containerService.Should().BeSameAs(scopeService);
+        containerService.ShouldBeSameAs(scopeService);
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class ContainerTests
         var service1 = container1.GetService(typeof(IService));
         var service2 = container2.GetService(typeof(IService));
 
-        service1.Should().NotBeSameAs(service2);
+        service1.ShouldNotBeSameAs(service2);
     }
 
     [Fact]
@@ -232,8 +232,8 @@ public class ContainerTests
         container.GetService(typeof(IDisposableService));
         container.Dispose();
 
-        disposable.Should().NotBeNull();
-        disposable!.IsDisposed.Should().BeTrue();
+        disposable.ShouldNotBeNull();
+        disposable!.IsDisposed.ShouldBeTrue();
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public class ContainerTests
         scope.GetService(typeof(IDisposableService));
         scope.Dispose();
 
-        disposable.Should().NotBeNull();
-        disposable!.IsDisposed.Should().BeTrue();
+        disposable.ShouldNotBeNull();
+        disposable!.IsDisposed.ShouldBeTrue();
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService));
 
-        service.Should().BeNull();
+        service.ShouldBeNull();
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class ContainerTests
 
         var act = () => container.GetService(typeof(IService));
 
-        act.Should().Throw<KeyNotFoundException>();
+        act.ShouldThrow<KeyNotFoundException>();
     }
 
     [Fact]
@@ -285,8 +285,7 @@ public class ContainerTests
 
         var act = () => container.GetService(typeof(CircularA));
 
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Circular dependency*");
+        act.ShouldThrow<InvalidOperationException>().Message.ShouldContain("Circular dependency");
     }
 
     [Fact]
@@ -295,8 +294,8 @@ public class ContainerTests
         using var container = new Container();
         container.Register<IService, ServiceImpl>();
 
-        container.IsRegistered<IService>().Should().BeTrue();
-        container.IsRegistered(typeof(IService)).Should().BeTrue();
+        container.IsRegistered<IService>().ShouldBeTrue();
+        container.IsRegistered(typeof(IService)).ShouldBeTrue();
     }
 
     [Fact]
@@ -304,8 +303,8 @@ public class ContainerTests
     {
         using var container = new Container();
 
-        container.IsRegistered<IService>().Should().BeFalse();
-        container.IsRegistered(typeof(IService)).Should().BeFalse();
+        container.IsRegistered<IService>().ShouldBeFalse();
+        container.IsRegistered(typeof(IService)).ShouldBeFalse();
     }
 
     [Fact]
@@ -316,8 +315,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(ServiceImpl));
 
-        service.Should().NotBeNull();
-        service.Should().BeOfType<ServiceImpl>();
+        service.ShouldNotBeNull();
+        service.ShouldBeOfType<ServiceImpl>();
     }
 
     [Fact]
@@ -328,8 +327,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService));
 
-        service.Should().NotBeNull();
-        service.Should().BeOfType<ServiceImpl>();
+        service.ShouldNotBeNull();
+        service.ShouldBeOfType<ServiceImpl>();
     }
 
     [Fact]
@@ -341,8 +340,8 @@ public class ContainerTests
 
         var service = container.GetService(typeof(IService)) as ServiceWithDependency;
 
-        service.Should().NotBeNull();
-        service!.OtherService.Should().NotBeNull();
+        service.ShouldNotBeNull();
+        service!.OtherService.ShouldNotBeNull();
     }
 
     [Fact]
@@ -353,8 +352,8 @@ public class ContainerTests
 
         var service = container.Resolve<IService>();
 
-        service.Should().NotBeNull();
-        service.Should().BeOfType<ServiceImpl>();
+        service.ShouldNotBeNull();
+        service.ShouldBeOfType<ServiceImpl>();
     }
 
     [Fact]
@@ -365,7 +364,7 @@ public class ContainerTests
 
         var service = container.GetRequiredService<IService>();
 
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     [Fact]
@@ -375,8 +374,7 @@ public class ContainerTests
 
         var act = () => container.GetRequiredService<IService>();
 
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*not registered*");
+        act.ShouldThrow<InvalidOperationException>().Message.ShouldContain("not registered");
     }
 
     [Fact]
@@ -386,6 +384,6 @@ public class ContainerTests
 
         var service = container.GetService<IService>();
 
-        service.Should().BeNull();
+        service.ShouldBeNull();
     }
 }

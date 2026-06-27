@@ -29,48 +29,48 @@ public class SerializationCriticalAnalyzerTest
     public void DataMemberFieldIsCritical()
     {
         var field = Field(Module(), nameof(SerializationDataContractModel), nameof(SerializationDataContractModel.Tagged));
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeFalse();
     }
 
     [Fact]
     public void UntaggedFieldIsNotCritical()
     {
         var field = Field(Module(), nameof(SerializationDataContractModel), nameof(SerializationDataContractModel.Untagged));
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeTrue();
     }
 
     [Fact]
     public void XmlElementFieldIsCritical()
     {
         var field = Field(Module(), nameof(SerializationXmlModel), nameof(SerializationXmlModel.XmlTagged));
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeFalse();
     }
 
     [Fact]
     public void DataContractTypeIsCritical()
     {
         var type = Type(Module(), nameof(SerializationDataContractModel));
-        CreateAnalyzer().NotCriticalToMakeChanges(type).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(type).ShouldBeFalse();
     }
 
     [Fact]
     public void ImplicitXmlSerializerFieldIsCritical()
     {
         var field = Field(Module(), nameof(SerializationImplicitXmlModel), nameof(SerializationImplicitXmlModel.ImplicitField));
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeFalse();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeFalse();
     }
 
     [Fact]
     public void PlainFieldIsNotCritical()
     {
         var field = Field(Module(), nameof(SerializationPlainModel), nameof(SerializationPlainModel.PlainField));
-        CreateAnalyzer().NotCriticalToMakeChanges(field).Should().BeTrue();
+        CreateAnalyzer().NotCriticalToMakeChanges(field).ShouldBeTrue();
     }
 
     [Fact]
     public void NothingIsCriticalWhenDisabled()
     {
         var field = Field(Module(), nameof(SerializationDataContractModel), nameof(SerializationDataContractModel.Tagged));
-        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(field).Should().BeTrue();
+        CreateAnalyzer(enabled: false).NotCriticalToMakeChanges(field).ShouldBeTrue();
     }
 }

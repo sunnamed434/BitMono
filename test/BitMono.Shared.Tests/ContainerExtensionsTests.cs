@@ -40,7 +40,7 @@ public class ContainerExtensionsTests
 
         container.RegisterAssemblyTypes(assemblies, typeof(ITestResolver));
 
-        container.IsRegistered<ITestResolver>().Should().BeTrue();
+        container.IsRegistered<ITestResolver>().ShouldBeTrue();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ContainerExtensionsTests
 
         // Should not throw - abstract TestAnalyzerBase should be skipped
         var service = container.GetService(typeof(ITestAnalyzer<string>));
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class ContainerExtensionsTests
         // This should not throw - generic type definitions should be skipped
         var act = () => container.RegisterAssemblyTypes(assemblies, typeof(IGenericTestResolver<string>));
 
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class ContainerExtensionsTests
             type => type.Name.StartsWith("Concrete"));
 
         var service = container.GetService(typeof(ITestResolver));
-        service.Should().BeOfType<ConcreteTestResolver>();
+        service.ShouldBeOfType<ConcreteTestResolver>();
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class ContainerExtensionsTests
 
         container.RegisterClosedTypesOf(assemblies, typeof(ITestAnalyzer<>));
 
-        container.IsRegistered(typeof(ITestAnalyzer<string>)).Should().BeTrue();
-        container.IsRegistered(typeof(ITestAnalyzer<int>)).Should().BeTrue();
+        container.IsRegistered(typeof(ITestAnalyzer<string>)).ShouldBeTrue();
+        container.IsRegistered(typeof(ITestAnalyzer<int>)).ShouldBeTrue();
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class ContainerExtensionsTests
         // TestAnalyzerBase<T> is abstract and should be skipped
         var act = () => container.RegisterClosedTypesOf(assemblies, typeof(ITestAnalyzer<>));
 
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class ContainerExtensionsTests
 
         var act = () => container.RegisterClosedTypesOf(assemblies, typeof(IGenericTestResolver<>));
 
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -131,10 +131,10 @@ public class ContainerExtensionsTests
         var stringAnalyzer = container.GetService(typeof(ITestAnalyzer<string>));
         var intAnalyzer = container.GetService(typeof(ITestAnalyzer<int>));
 
-        stringAnalyzer.Should().NotBeNull();
-        stringAnalyzer.Should().BeOfType<StringTestAnalyzer>();
-        intAnalyzer.Should().NotBeNull();
-        intAnalyzer.Should().BeOfType<IntTestAnalyzer>();
+        stringAnalyzer.ShouldNotBeNull();
+        stringAnalyzer.ShouldBeOfType<StringTestAnalyzer>();
+        intAnalyzer.ShouldNotBeNull();
+        intAnalyzer.ShouldBeOfType<IntTestAnalyzer>();
     }
 
     [Fact]
@@ -145,8 +145,7 @@ public class ContainerExtensionsTests
 
         var act = () => container.RegisterClosedTypesOf(assemblies, typeof(ITestResolver));
 
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*open generic type*");
+        act.ShouldThrow<ArgumentException>().Message.ShouldContain("open generic type");
     }
 
     [Fact]
@@ -158,8 +157,8 @@ public class ContainerExtensionsTests
         container.RegisterClosedTypesOf(assemblies, typeof(ITestAnalyzer<>),
             type => type.Name.StartsWith("String"));
 
-        container.IsRegistered(typeof(ITestAnalyzer<string>)).Should().BeTrue();
-        container.IsRegistered(typeof(ITestAnalyzer<int>)).Should().BeFalse();
+        container.IsRegistered(typeof(ITestAnalyzer<string>)).ShouldBeTrue();
+        container.IsRegistered(typeof(ITestAnalyzer<int>)).ShouldBeFalse();
     }
 
     /// <summary>
@@ -175,11 +174,11 @@ public class ContainerExtensionsTests
         container.RegisterClosedTypesOf(assemblies, typeof(ITestAnalyzer<>));
 
         // Should be able to resolve by interface
-        container.IsRegistered(typeof(ITestAnalyzer<string>)).Should().BeTrue();
+        container.IsRegistered(typeof(ITestAnalyzer<string>)).ShouldBeTrue();
 
         // Should ALSO be able to resolve by concrete type (this is the fix)
-        container.IsRegistered(typeof(StringTestAnalyzer)).Should().BeTrue();
-        container.IsRegistered(typeof(IntTestAnalyzer)).Should().BeTrue();
+        container.IsRegistered(typeof(StringTestAnalyzer)).ShouldBeTrue();
+        container.IsRegistered(typeof(IntTestAnalyzer)).ShouldBeTrue();
     }
 
     [Fact]
@@ -192,8 +191,8 @@ public class ContainerExtensionsTests
 
         var collection = container.GetService(typeof(ICollection<ITestResolver>)) as ICollection<ITestResolver>;
 
-        collection.Should().NotBeNull();
-        collection!.Count.Should().BeGreaterThan(0);
+        collection.ShouldNotBeNull();
+        collection!.Count.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -206,8 +205,8 @@ public class ContainerExtensionsTests
 
         var collection = container.Resolve<ICollection<ITestResolver>>();
 
-        collection.Should().Contain(r => r is ConcreteTestResolver);
-        collection.Should().Contain(r => r is AnotherTestResolver);
+        collection.ShouldContain(r => r is ConcreteTestResolver);
+        collection.ShouldContain(r => r is AnotherTestResolver);
     }
 
     [Fact]
@@ -219,7 +218,7 @@ public class ContainerExtensionsTests
         // Should not throw when encountering generic type definitions
         var act = () => container.RegisterCollection<ITestResolver>(assemblies);
 
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -233,8 +232,8 @@ public class ContainerExtensionsTests
 
         var collection = container.Resolve<ICollection<ITestResolver>>();
 
-        collection.Count.Should().Be(1);
-        collection.Should().AllBeOfType<ConcreteTestResolver>();
+        collection.Count.ShouldBe(1);
+        collection.ShouldAllBe(e => e is ConcreteTestResolver);
     }
 
     [Fact]
@@ -245,7 +244,7 @@ public class ContainerExtensionsTests
 
         container.RegisterCollection<ITestResolver>(assemblies);
 
-        container.IsRegistered<ConcreteTestResolver>().Should().BeTrue();
-        container.IsRegistered<AnotherTestResolver>().Should().BeTrue();
+        container.IsRegistered<ConcreteTestResolver>().ShouldBeTrue();
+        container.IsRegistered<AnotherTestResolver>().ShouldBeTrue();
     }
 }

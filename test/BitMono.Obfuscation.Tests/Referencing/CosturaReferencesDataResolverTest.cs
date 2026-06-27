@@ -1,4 +1,4 @@
-﻿namespace BitMono.Obfuscation.Tests.Referencing;
+namespace BitMono.Obfuscation.Tests.Referencing;
 
 public class CosturaReferencesDataResolverTest
 {
@@ -11,10 +11,8 @@ public class CosturaReferencesDataResolverTest
 
         var result = resolver.Resolve(module, CancellationToken.None);
 
-        result
-            .Should()
-            .NotBeEmpty().And
-            .HaveCount(countOfEmbeddedCosturaResources);
+        result.ShouldNotBeEmpty();
+        result.Count().ShouldBe(countOfEmbeddedCosturaResources);
     }
     [Theory]
     [InlineData("costura.asmresolver.dll.compressed")]
@@ -38,7 +36,6 @@ public class CosturaReferencesDataResolverTest
 
         result
             .IsEmbeddedCosturaResource()
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 }

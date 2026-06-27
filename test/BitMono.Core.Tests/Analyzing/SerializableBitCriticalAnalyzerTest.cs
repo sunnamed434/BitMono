@@ -16,7 +16,7 @@ public class SerializableBitCriticalAnalyzerTest
 
         var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
     [Fact]
     public void WhenTypeSerializableBitCriticalAnalyzing_AndTypeHasNoSerializableBit_ThenShouldBeTrue()
@@ -32,6 +32,6 @@ public class SerializableBitCriticalAnalyzerTest
 
         var result = criticalAnalyzer.NotCriticalToMakeChanges(type);
 
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 }

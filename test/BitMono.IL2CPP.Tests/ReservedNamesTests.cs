@@ -14,7 +14,7 @@ public class ReservedNamesTests
     [InlineData("")]                  // empty (index 0)
     public void IsReserved_True_ForNamesTheEngineResolvesByText(string name)
     {
-        ReservedNames.IsReserved(name).Should().BeTrue();
+        ReservedNames.IsReserved(name).ShouldBeTrue();
     }
 
     [Theory]
@@ -25,6 +25,6 @@ public class ReservedNamesTests
     [InlineData("Awakening")]         // not the magic method, just shares a prefix
     public void IsReserved_False_ForOrdinaryUserNames(string name)
     {
-        ReservedNames.IsReserved(name).Should().BeFalse();
+        ReservedNames.IsReserved(name).ShouldBeFalse();
     }
 }

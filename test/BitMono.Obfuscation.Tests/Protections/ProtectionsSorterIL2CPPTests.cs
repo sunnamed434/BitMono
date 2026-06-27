@@ -38,10 +38,10 @@ public class ProtectionsSorterIL2CPPTests
 
         var sort = sorter.Sort(protections, settings, il2cpp: true);
 
-        sort.SortedProtections.Select(p => p.GetName()).Should().Equal(nameof(SafeProtection));
+        sort.SortedProtections.Select(p => p.GetName()).ShouldBe(new[] { nameof(SafeProtection) });
         sort.IL2CPPIncompatibleProtections.Select(x => x.Protection.GetName())
-            .Should().BeEquivalentTo(nameof(HookProtection), nameof(NativeProtection));
-        sort.HasProtections.Should().BeTrue();
+            .ShouldBe(new[] { nameof(HookProtection), nameof(NativeProtection) }, ignoreOrder: true);
+        sort.HasProtections.ShouldBeTrue();
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class ProtectionsSorterIL2CPPTests
 
         var sort = sorter.Sort(protections, settings, il2cpp: false);
 
-        sort.SortedProtections.Should().HaveCount(3);
-        sort.IL2CPPIncompatibleProtections.Should().BeEmpty();
+        sort.SortedProtections.Count.ShouldBe(3);
+        sort.IL2CPPIncompatibleProtections.ShouldBeEmpty();
     }
 
     [Fact]
@@ -66,8 +66,8 @@ public class ProtectionsSorterIL2CPPTests
 
         var sort = sorter.Sort(protections, settings, il2cpp: true);
 
-        sort.HasProtections.Should().BeFalse();
-        sort.IL2CPPIncompatibleProtections.Should().HaveCount(1);
+        sort.HasProtections.ShouldBeFalse();
+        sort.IL2CPPIncompatibleProtections.Count.ShouldBe(1);
     }
 
     private class SafeProtection : IProtection

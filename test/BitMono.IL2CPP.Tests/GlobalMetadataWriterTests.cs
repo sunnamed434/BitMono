@@ -12,8 +12,8 @@ public class GlobalMetadataWriterTests
 
         var result = GlobalMetadataWriter.ReplaceNames(bytes, new Dictionary<int, string>());
 
-        result.Should().Equal(bytes);
-        result.Should().NotBeSameAs(bytes);
+        result.ShouldBe(bytes);
+        result.ShouldNotBeSameAs(bytes);
     }
 
     [Fact]
@@ -26,9 +26,9 @@ public class GlobalMetadataWriterTests
             bytes, new Dictionary<int, string> { [playerIndex] = "Hidden" }); // both 6 bytes
 
         var reparsed = GlobalMetadataFile.Read(result);
-        reparsed.Version.Should().Be(29);
-        reparsed.Strings.Should().Equal("", "Awake", "Hidden");
-        reparsed.StringLiterals.Should().Equal("hello", "secret123"); // literals untouched
+        reparsed.Version.ShouldBe(29);
+        reparsed.Strings.ShouldBe(new[] { "", "Awake", "Hidden" });
+        reparsed.StringLiterals.ShouldBe(new[] { "hello", "secret123" }); // literals untouched
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class GlobalMetadataWriterTests
         var replace = () => GlobalMetadataWriter.ReplaceNames(
             bytes, new Dictionary<int, string> { [playerIndex] = "X" });
 
-        replace.Should().Throw<ArgumentException>().WithMessage("*length*");
+        replace.ShouldThrow<ArgumentException>().Message.ShouldContain("length");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class GlobalMetadataWriterTests
         var replace = () => GlobalMetadataWriter.ReplaceNames(
             bytes, new Dictionary<int, string> { [int.MaxValue] = "x" });
 
-        replace.Should().Throw<ArgumentOutOfRangeException>();
+        replace.ShouldThrow<ArgumentOutOfRangeException>();
     }
 
     [Fact]
@@ -60,6 +60,6 @@ public class GlobalMetadataWriterTests
         var replace = () => GlobalMetadataWriter.ReplaceNames(
             new byte[64], new Dictionary<int, string>());
 
-        replace.Should().Throw<InvalidDataException>().WithMessage("*magic*");
+        replace.ShouldThrow<InvalidDataException>().Message.ShouldContain("magic");
     }
 }

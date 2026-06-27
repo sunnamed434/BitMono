@@ -37,8 +37,7 @@ public class CriticalMethodsCriticalAnalyzerTest
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
         result
-            .Should()
-            .BeFalse();
+            .ShouldBeFalse();
     }
     [Theory]
     [ClassData(typeof(MethodsData))]
@@ -60,7 +59,6 @@ public class CriticalMethodsCriticalAnalyzerTest
         var result = criticalAnalyzer.NotCriticalToMakeChanges(method);
 
         result
-            .Should()
-            .BeTrue();
+            .ShouldBeTrue();
     }
 }

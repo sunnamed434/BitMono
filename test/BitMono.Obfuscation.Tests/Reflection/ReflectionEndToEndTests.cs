@@ -10,7 +10,7 @@ using BitMono.Host.Modules;
 using BitMono.Obfuscation.Files;
 using BitMono.Obfuscation.Starter;
 using BitMono.Shared.Models;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace BitMono.Obfuscation.Tests.Reflection;
@@ -49,7 +49,7 @@ public class ReflectionEndToEndTests
     {
         var fixtureBin = FindFixtureBinDirectory();
         var inputDll = Path.Combine(fixtureBin, FixtureName + ".dll");
-        File.Exists(inputDll).Should().BeTrue($"fixture must be built at {inputDll}");
+        File.Exists(inputDll).ShouldBeTrue($"fixture must be built at {inputDll}");
 
         var temp = Path.Combine(Path.GetTempPath(), "bitmono-refl-e2e", Guid.NewGuid().ToString("N"));
         var inputDir = Path.Combine(temp, "in");
@@ -61,10 +61,10 @@ public class ReflectionEndToEndTests
         {
             var workInput = Path.Combine(inputDir, FixtureName + ".dll");
             var succeeded = await ObfuscateAsync(workInput, inputDir, outputDir, protections, reflectionExclude);
-            succeeded.Should().BeTrue();
+            succeeded.ShouldBeTrue();
 
             var obfuscated = FindObfuscatedOutput(outputDir, inputDll);
-            obfuscated.Should().NotBeNull("the engine must write an obfuscated assembly that differs from the input");
+            obfuscated.ShouldNotBeNull("the engine must write an obfuscated assembly that differs from the input");
 
             // Bring the runtime config / deps next to the obfuscated dll so `dotnet` can launch it.
             StageRunPrerequisites(inputDir, Path.GetDirectoryName(obfuscated)!);
@@ -72,12 +72,12 @@ public class ReflectionEndToEndTests
             var (exitCode, stdout, stderr) = Run("dotnet", obfuscated!);
             if (expectRunSuccess)
             {
-                exitCode.Should().Be(0, $"obfuscated reflection sample must run cleanly.\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}");
-                stdout.Should().Contain("OK");
+                exitCode.ShouldBe(0, $"obfuscated reflection sample must run cleanly.\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}");
+                stdout.ShouldContain("OK");
             }
             else
             {
-                exitCode.Should().NotBe(0, "without reflection exclusion the renamed members break the lookups");
+                exitCode.ShouldNotBe(0, "without reflection exclusion the renamed members break the lookups");
             }
         }
         finally
@@ -163,7 +163,7 @@ public class ReflectionEndToEndTests
         {
             root = root.Parent;
         }
-        root.Should().NotBeNull("the repo root (BitMono.sln) must be locatable from the test output");
+        root.ShouldNotBeNull("the repo root (BitMono.sln) must be locatable from the test output");
         return Path.Combine(root!.FullName, "test", "TestBinaries", "DotNet", FixtureName, "bin", configuration, "net10.0");
     }
 

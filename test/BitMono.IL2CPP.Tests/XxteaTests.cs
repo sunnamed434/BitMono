@@ -11,7 +11,7 @@ public class XxteaTests
         // bug that still round-trips can't slip through. key = bytes 0..15, plaintext = "BitMono!".
         var cipher = Xxtea.Encrypt(Encoding.ASCII.GetBytes("BitMono!"), Key);
 
-        BitConverter.ToString(cipher).Replace("-", "").Should().Be("80E18B7F6BEB1EE1");
+        BitConverter.ToString(cipher).Replace("-", "").ShouldBe("80E18B7F6BEB1EE1");
     }
 
     [Fact]
@@ -21,8 +21,8 @@ public class XxteaTests
 
         var roundTrip = Xxtea.Decrypt(Xxtea.Encrypt(plain, Key), Key);
 
-        roundTrip.Should().Equal(plain);
-        Xxtea.Encrypt(plain, Key).Should().NotEqual(plain); // it actually transformed the data
+        roundTrip.ShouldBe(plain);
+        Xxtea.Encrypt(plain, Key).ShouldNotBe(plain); // it actually transformed the data
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class XxteaTests
     {
         var encrypt = () => Xxtea.Encrypt(new byte[8], new byte[15]);
 
-        encrypt.Should().Throw<ArgumentException>().WithMessage("*16 bytes*");
+        encrypt.ShouldThrow<ArgumentException>().Message.ShouldContain("16 bytes");
     }
 }

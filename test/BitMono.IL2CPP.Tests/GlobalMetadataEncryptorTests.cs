@@ -15,12 +15,12 @@ public class GlobalMetadataEncryptorTests
 
         // A static dumper can no longer parse it (the il2cpp magic is gone).
         var readEncrypted = () => GlobalMetadataFile.Read(encrypted);
-        readEncrypted.Should().Throw<InvalidDataException>();
+        readEncrypted.ShouldThrow<InvalidDataException>();
 
         // The decryptor restores the original bytes, and they parse again.
         var decrypted = GlobalMetadataEncryptor.Decrypt(encrypted, Key);
-        decrypted.Should().Equal(metadata);
-        GlobalMetadataFile.Read(decrypted).Strings.Should().Equal("", "Awake", "Player");
+        decrypted.ShouldBe(metadata);
+        GlobalMetadataFile.Read(decrypted).Strings.ShouldBe(new[] { "", "Awake", "Player" });
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class GlobalMetadataEncryptorTests
 
         var decrypt = () => GlobalMetadataEncryptor.Decrypt(encrypted, wrongKey);
 
-        decrypt.Should().Throw<InvalidDataException>().WithMessage("*integrity*");
+        decrypt.ShouldThrow<InvalidDataException>().Message.ShouldContain("integrity");
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class GlobalMetadataEncryptorTests
     {
         var encrypt = () => GlobalMetadataEncryptor.Encrypt(new byte[64], Key);
 
-        encrypt.Should().Throw<InvalidDataException>().WithMessage("*magic*");
+        encrypt.ShouldThrow<InvalidDataException>().Message.ShouldContain("magic");
     }
 
     [Fact]
@@ -49,6 +49,6 @@ public class GlobalMetadataEncryptorTests
 
         var decrypt = () => GlobalMetadataEncryptor.Decrypt(metadata, Key);
 
-        decrypt.Should().Throw<InvalidDataException>().WithMessage("*sanity*");
+        decrypt.ShouldThrow<InvalidDataException>().Message.ShouldContain("sanity");
     }
 }
